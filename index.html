@@ -1,1304 +1,544 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<meta name="theme-color" content="#ffffff"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="点検"/>
-<title>日常点検アプリ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
 <style>
-/* ─── iOS System Tokens ─────────────────────────────────────── */
-:root {
-  --blue:   #007AFF; --blue-bg:  #E8F2FF;
-  --green:  #34C759; --green-bg: #DFFAE9;
-  --red:    #FF3B30; --red-bg:   #FFEBE9;
-  --orange: #FF9500; --orange-bg:#FFF2D9;
-  --gray1:  #8E8E93; --gray2:    #AEAEB2;
-  --gray3:  #C7C7CC; --gray4:    #D1D1D6;
-  --gray5:  #E5E5EA; --gray6:    #F2F2F7;
-  --sep:    rgba(60,60,67,0.22);
-  --bg:     #F2F2F7;
-  --card:   #FFFFFF;
-  --t1:     #000000;
-  --t2:     rgba(60,60,67,0.75);
-  --t3:     rgba(60,60,67,0.50);
-  --f: 'Noto Sans JP', -apple-system, sans-serif;
-  --r-sm:10px; --r-md:13px; --r-lg:16px; --r-xl:22px;
-  --sh-xs: 0 1px 3px rgba(0,0,0,.06);
-  --sh-sm: 0 2px 8px rgba(0,0,0,.08);
-  --sh-md: 0 6px 20px rgba(0,0,0,.10);
-  --sh-lg: 0 12px 40px rgba(0,0,0,.14);
-  --spring: cubic-bezier(0.34,1.56,0.64,1);
-  --ios:    cubic-bezier(0.25,0.46,0.45,0.94);
-  --dur: 0.25s;
+:root{
+  --primary:#E24B4A;--primary-dk:#A32D2D;
+  --ok:#3B6D11;--ok-bg:#EAF3DE;
+  --ng:#A32D2D;--ng-bg:#FCEBEB;
+  --warn-bg:#FAEEDA;--warn:#854F0B;
+  --color-background-primary:#FFFFFF;
+  --color-background-secondary:#F3F4F6;
+  --color-background-tertiary:#F0F0F0;
+  --color-text-primary:#1A1A1A;
+  --color-text-secondary:#6B7280;
+  --color-border-tertiary:#E0E0E0;
+  --color-border-secondary:#C9CDD6;
+  --border-radius-lg:12px;
+  --border-radius-md:8px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;user-select:none;-webkit-user-select:none;}
-::-webkit-scrollbar{display:none;}
-*{scrollbar-width:none;}
-#root{height:100%;display:flex;flex-direction:column;}
-
-/* ─── Page ─── */
-.page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));}
-
-/* ─── Large Title Header ─── */
-.lt-header{
-  padding: calc(env(safe-area-inset-top,0px) + 16px) 20px 0;
-}
-.lt-title{font-size:34px;font-weight:700;letter-spacing:-0.5px;line-height:1.15;color:var(--t1);}
-.lt-date{font-size:15px;color:var(--gray1);font-weight:400;margin-top:2px;margin-bottom:18px;}
-.lt-greeting{font-size:15px;color:var(--t2);font-weight:500;margin-bottom:4px;}
-
-/* ─── Section Label ─── */
-.sec-lbl{font-size:13px;font-weight:600;color:var(--gray1);text-transform:uppercase;letter-spacing:.05em;padding:20px 20px 8px;}
-
-/* ─── iOS Grouped Card ─── */
-.g-card{background:var(--card);border-radius:var(--r-lg);margin:0 20px;box-shadow:var(--sh-xs);overflow:hidden;}
-.g-row{display:flex;align-items:center;padding:14px 16px;background:var(--card);position:relative;cursor:pointer;transition:background var(--dur);}
-.g-row:active{background:var(--gray5);}
-.g-row+.g-row::before{content:'';position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep);}
-.g-row-ncursor{cursor:default;}
-.g-row-ncursor:active{background:var(--card);}
-
-/* ─── Plain Card ─── */
-.p-card{background:var(--card);border-radius:var(--r-lg);margin:0 20px;padding:18px 16px;box-shadow:var(--sh-xs);}
-
-/* ─── Badge ─── */
-.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;}
-.b-grey{background:var(--gray5);color:var(--gray1);}
-.b-green{background:var(--green-bg);color:#1A7A35;}
-.b-orange{background:var(--orange-bg);color:#B35B00;}
-.b-red{background:var(--red-bg);color:#C0160D;}
-.b-blue{background:var(--blue-bg);color:#005EC4;}
-
-/* ─── Buttons ─── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-family:var(--f);font-weight:600;border-radius:var(--r-md);transition:transform var(--dur) var(--spring),opacity .15s;touch-action:manipulation;-webkit-user-select:none;}
-.btn:active{transform:scale(.94);opacity:.85;}
-.btn:disabled{opacity:.35;pointer-events:none;}
-.btn-blue{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(0,122,255,.35);}
-.btn-green{background:var(--green);color:#fff;box-shadow:0 4px 16px rgba(52,199,89,.35);}
-.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(255,59,48,.30);}
-.btn-ghost{background:var(--gray5);color:var(--t1);}
-.btn-text{background:transparent;color:var(--blue);box-shadow:none;}
-
-/* ─── Input ─── */
-.inp{width:100%;padding:12px 14px;border:1.5px solid var(--gray4);border-radius:var(--r-md);font-family:var(--f);font-size:16px;color:var(--t1);background:var(--card);outline:none;transition:border-color var(--dur),box-shadow var(--dur);-webkit-appearance:none;}
-.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,122,255,.12);}
-textarea.inp{resize:none;line-height:1.6;}
-
-/* ─── Animations ─── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes sheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes overlayFade{from{opacity:0}to{opacity:1}}
-@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-@keyframes popBtn{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
-@keyframes shakeSoft{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-@keyframes hlGreen{0%{background:var(--green-bg)}100%{background:var(--card)}}
-.fade-up{animation:fadeUp var(--dur) var(--ios) both;}
-.pop{animation:popBtn .25s var(--spring);}
-.shake{animation:shakeSoft .3s ease;}
-.hl-green{animation:hlGreen 1.2s var(--ios) forwards;}
-
-/* ─── Navigation Bar ─── */
-#nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(56px + env(safe-area-inset-bottom,0px));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  background:rgba(255,255,255,.85);
-  backdrop-filter:saturate(180%) blur(24px);
-  -webkit-backdrop-filter:saturate(180%) blur(24px);
-  border-top:.5px solid var(--sep);
-  display:flex;z-index:100;
-}
-.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;cursor:pointer;position:relative;touch-action:manipulation;padding:6px 0 4px;transition:transform var(--dur) var(--spring);}
-.nav-tab:active{transform:scale(.82);}
-.nav-icon{font-size:20px;line-height:1;position:relative;transition:transform var(--dur) var(--spring);}
-.nav-tab.active .nav-icon{transform:scale(1.1);}
-.nav-label{font-size:10px;font-weight:500;color:var(--gray1);font-family:var(--f);transition:color var(--dur);}
-.nav-tab.active .nav-label{color:var(--blue);font-weight:600;}
-.nav-badge{position:absolute;top:-4px;right:-10px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center;font-family:var(--f);border:1.5px solid #fff;}
-
-/* ─── Page Header (exec / detail) ─── */
-.nav-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;
-  background:rgba(255,255,255,.88);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border-bottom:.5px solid var(--sep);
-  flex-shrink:0;position:sticky;top:0;z-index:10;
-}
-.nh-title{font-size:17px;font-weight:600;color:var(--t1);}
-.back-btn{background:none;border:none;cursor:pointer;font-size:17px;font-weight:400;color:var(--blue);font-family:var(--f);display:flex;align-items:center;gap:3px;padding:4px 0;min-width:60px;touch-action:manipulation;}
-.back-btn:active{opacity:.6;}
-.back-btn svg{width:10px;height:16px;fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-
-/* ─── Cbar ─── */
-.cbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--card);border-bottom:.5px solid var(--sep);flex-shrink:0;}
-.pending-pill{background:var(--orange-bg);color:#B35B00;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;}
-.done-pill{background:var(--green-bg);color:#1A7A35;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;}
-
-/* ─── Stats Grid ─── */
-.stats-grid{display:flex;gap:10px;margin:0 20px;}
-.stat-tile{flex:1;background:var(--card);border-radius:var(--r-lg);text-align:center;padding:16px 8px 14px;box-shadow:var(--sh-xs);}
-.stat-num{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.5px;}
-.stat-lbl{font-size:11px;color:var(--gray1);margin-top:4px;font-weight:500;}
-
-/* ─── Type Card ─── */
-.type-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;margin-right:14px;}
-.type-name{font-size:17px;font-weight:600;color:var(--t1);}
-.type-sub{font-size:12px;color:var(--gray1);margin-top:2px;}
-.chevron-icon{font-size:16px;color:var(--gray3);margin-left:6px;flex-shrink:0;}
-
-/* ─── Item Card ─── */
-.item-card{
-  background:var(--card);margin:0 20px 10px;border-radius:var(--r-lg);
-  padding:18px 16px;box-shadow:var(--sh-xs);
-  transition:background .3s ease,transform .2s var(--spring);
-  overflow:hidden;position:relative;
-}
-.item-card.is-ok{background:var(--green-bg);}
-.item-card.is-ng{background:var(--red-bg);border-left:3px solid var(--red);}
-.swipe-hint-l,.swipe-hint-r{position:absolute;top:50%;transform:translateY(-50%);font-size:22px;font-weight:700;opacity:0;transition:opacity .12s;pointer-events:none;}
-.swipe-hint-r{left:14px;color:var(--green);}
-.swipe-hint-l{right:14px;color:var(--red);}
-.item-card.sw-right .swipe-hint-r{opacity:1;}
-.item-card.sw-left  .swipe-hint-l{opacity:1;}
-.item-label{font-size:16px;font-weight:600;flex:1;line-height:1.4;color:var(--t1);}
-
-/* ─── Choice Buttons ─── */
-.choice-btn{
-  width:54px;height:54px;border-radius:14px;
-  border:1.5px solid var(--gray4);background:var(--gray6);
-  color:var(--gray3);font-size:20px;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s var(--spring);touch-action:manipulation;
-  font-family:var(--f);-webkit-tap-highlight-color:transparent;
-}
-.choice-btn:active{transform:scale(.88);}
-.choice-btn.ok{background:var(--green);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(52,199,89,.42);transform:scale(1.06);}
-.choice-btn.ng{background:var(--red);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(255,59,48,.40);transform:scale(1.06);}
-
-/* ─── Expand Area ─── */
-.expand-area{margin-top:14px;padding-top:14px;border-top:.5px solid var(--sep);}
-.expand-lbl{font-size:12px;font-weight:600;color:var(--gray1);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
-.photo-btn{width:100%;height:52px;border:1.5px dashed var(--gray3);border-radius:var(--r-md);background:transparent;color:var(--gray1);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
-.photo-btn:active{opacity:.7;transform:scale(.98);}
-.photo-preview{position:relative;border-radius:var(--r-md);overflow:hidden;}
-.photo-preview img{width:100%;max-height:200px;object-fit:cover;display:block;}
-.photo-change{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--f);}
-
-/* ─── FAB (Floating Bulk Button) ─── */
-.fab-wrap{
-  position:fixed;
-  bottom:calc(64px + env(safe-area-inset-bottom,0px) + 12px);
-  left:20px;right:20px;z-index:90;
-  animation:fadeUp .28s var(--ios);
-}
-.fab-bulk{
-  width:100%;height:58px;font-size:15px;font-weight:700;border-radius:18px;
-  background:rgba(0,122,255,.9);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  color:#fff;border:none;cursor:pointer;font-family:var(--f);
-  box-shadow:0 8px 28px rgba(0,122,255,.38);
-  transition:transform var(--dur) var(--spring),opacity .15s;
-  touch-action:manipulation;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.fab-bulk:active{transform:scale(.96);opacity:.9;}
-
-/* ─── Overlay / Sheet / Modal ─── */
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200;
-  display:flex;align-items:flex-end;
-  animation:overlayFade .22s ease;
-}
-.overlay-center{align-items:center;justify-content:center;padding:24px;}
-.sheet{
-  background:var(--card);border-radius:22px 22px 0 0;
-  padding:8px 0 calc(24px + env(safe-area-inset-bottom,0px));
-  width:100%;max-height:92vh;overflow-y:auto;
-  animation:sheetIn .32s var(--ios);
-}
-.sheet-handle{width:36px;height:4px;background:var(--gray4);border-radius:99px;margin:0 auto 14px;}
-.sheet-header{font-size:20px;font-weight:700;color:var(--t1);padding:0 20px 16px;border-bottom:.5px solid var(--sep);margin-bottom:4px;}
-.modal-card{
-  background:var(--card);border-radius:22px;
-  padding:24px 20px;width:100%;max-width:340px;
-  animation:scaleIn .25s var(--spring);
-  box-shadow:var(--sh-lg);
-}
-.modal-title{font-size:17px;font-weight:700;text-align:center;color:var(--t1);margin-bottom:8px;}
-.modal-body{font-size:14px;color:var(--gray1);line-height:1.7;text-align:center;margin-bottom:20px;}
-
-/* ─── Filter Row ─── */
-.filter-row{display:flex;gap:8px;overflow-x:auto;padding:12px 20px;}
-.filter-pill{flex-shrink:0;padding:7px 16px;border-radius:99px;border:1.5px solid var(--gray4);background:var(--card);font-size:14px;font-weight:500;color:var(--gray1);cursor:pointer;font-family:var(--f);white-space:nowrap;transition:all .2s;}
-.filter-pill:active{transform:scale(.93);}
-.filter-pill.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-
-/* ─── Detail Item ─── */
-.detail-item{background:var(--card);border-radius:var(--r-md);margin:0 20px 6px;padding:14px 16px;box-shadow:var(--sh-xs);}
-.detail-item.ng-item{background:var(--red-bg);border-left:3px solid var(--red);}
-
-/* ─── List Card ─── */
-.list-card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--sh-xs);margin:0 20px 10px;padding:16px;cursor:pointer;transition:transform .2s var(--spring),background .15s;}
-.list-card:active{background:var(--gray5);transform:scale(.99);}
-
-/* ─── Info Box ─── */
-.info-box{background:#FFF8E6;border:1px solid #FFD060;border-radius:var(--r-md);padding:12px 16px;font-size:14px;color:#7A5000;margin:0 20px 12px;line-height:1.5;}
-
-/* ─── Approve Bar ─── */
-.aprv-bar{padding:16px 20px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid var(--sep);display:flex;gap:10px;flex-shrink:0;}
-
-/* ─── Empty ─── */
-.empty{text-align:center;padding:60px 24px;color:var(--gray1);}
-.empty .ei{font-size:54px;margin-bottom:14px;display:block;}
-.empty p{font-size:16px;font-weight:500;}
-
-/* ─── Name Edit Button ─── */
-.name-edit-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;vertical-align:middle;touch-action:manipulation;}
-.name-set-btn{background:none;border:none;cursor:pointer;color:var(--blue);font-weight:600;font-size:15px;font-family:var(--f);touch-action:manipulation;}
-
-/* ─── Recent item ─── */
-.recent-row{display:flex;align-items:center;padding:13px 16px;cursor:pointer;position:relative;background:var(--card);transition:background .15s;}
-.recent-row:active{background:var(--gray5);}
-.recent-row+.recent-row::before{content:'';position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+#app-wrap{max-width:430px;margin:0 auto;background:var(--color-background-tertiary);position:relative;min-height:700px;overflow:hidden;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);}
+.hdr{background:var(--primary);color:white;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.hdr-title{font-size:17px;font-weight:500;flex:1;}
+.hdr-back{background:rgba(255,255,255,0.22);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-act{background:rgba(255,255,255,0.2);border:none;color:white;padding:5px 12px;border-radius:14px;cursor:pointer;font-size:13px;}
+.scroll{overflow-y:auto;padding:12px 14px 90px;flex:1;}
+.card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px;margin-bottom:10px;}
+.card-tap{cursor:pointer;transition:opacity .15s;} .card-tap:active{opacity:.75;}
+.badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.bOk{background:var(--ok-bg);color:var(--ok);}
+.bNg{background:var(--ng-bg);color:var(--ng);}
+.bWarn{background:var(--warn-bg);color:var(--warn);}
+.bGray{background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.btabs{display:flex;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:6px 0 10px;position:absolute;bottom:0;left:0;right:0;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;color:var(--color-text-secondary);}
+.tab.active{color:var(--primary);}
+.ti{font-size:20px;}
+.icard{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:2px solid var(--color-border-tertiary);padding:16px;margin-bottom:10px;transition:border-color .2s,background .2s;user-select:none;touch-action:pan-y;}
+.icard.rok{border-color:var(--ok);background:var(--ok-bg);}
+.icard.rng{border-color:var(--ng);background:var(--ng-bg);}
+.jbtn{width:68px;height:68px;border-radius:50%;border:2px solid;cursor:pointer;font-size:26px;font-weight:500;transition:transform .1s;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
+.jbtn:active{transform:scale(.9);}
+.jok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);}
+.jok.sel{background:var(--ok);color:white;}
+.jng{background:var(--ng-bg);color:var(--ng);border-color:var(--ng);}
+.jng.sel{background:var(--ng);color:white;}
+.pbtn{background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);padding:13px;font-size:15px;font-weight:500;cursor:pointer;width:100%;transition:opacity .15s;}
+.pbtn:active{opacity:.8;}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:50;display:flex;align-items:flex-end;}
+.sheet{background:var(--color-background-primary);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:85%;overflow-y:auto;}
+.finput{width:100%;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:14px;background:var(--color-background-primary);color:var(--color-text-primary);}
+.flabel{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:5px;}
+.toast{position:absolute;bottom:75px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:18px;font-size:13px;font-weight:500;color:white;z-index:99;white-space:nowrap;pointer-events:none;}
 </style>
-</head>
-<body>
-<div id="root"></div>
-
-<!-- ============================================================
-     ⚠️  Firebase 設定をここに入力してください
-     ============================================================ -->
-<script type="module">
-import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, doc, addDoc, updateDoc,
-         query, orderBy, onSnapshot, serverTimestamp }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getStorage, ref, uploadBytes, getDownloadURL }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
-
-const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
-};
-
-const app     = initializeApp(firebaseConfig);
-const db      = getFirestore(app);
-const storage = getStorage(app);
-
-// ─── Master Data ─────────────────────────────────────────────
-const TYPES = [
-  { id:'daily',   label:'毎日点検', icon:'📋', color:'#007AFF', needsApproval:false },
-  { id:'ten_day', label:'10日点検', icon:'🔧', color:'#AF52DE', needsApproval:true  },
-  { id:'monthly', label:'月次点検', icon:'📊', color:'#FF9500', needsApproval:true  },
-];
-const ITEMS = {
-  daily:[
-    {id:'d1',  cat:'油脂類',   label:'潤滑油量'},
-    {id:'d2',  cat:'油脂類',   label:'冷却水量'},
-    {id:'d3',  cat:'油脂類',   label:'作動油量'},
-    {id:'d4',  cat:'外観',     label:'油漏れ・水漏れ'},
-    {id:'d5',  cat:'外観',     label:'異音・異臭'},
-    {id:'d6',  cat:'外観',     label:'損傷・亀裂'},
-    {id:'d7',  cat:'安全装置', label:'非常停止ボタン'},
-    {id:'d8',  cat:'安全装置', label:'安全カバー'},
-    {id:'d9',  cat:'電気',     label:'電源ランプ'},
-    {id:'d10', cat:'電気',     label:'警告ランプ'},
-    {id:'d11', cat:'動作確認', label:'起動確認'},
-    {id:'d12', cat:'動作確認', label:'停止確認'},
+<div id="app-wrap"><div id="screen" style="display:flex;flex-direction:column;height:700px;"></div></div>
+<script>
+const TODAY='2026-04-09';
+const S={
+  view:'HOME',selectedLine:null,selectedEq:null,inspType:'毎日点検',
+  bulkActive:false,bulkLineId:null,bulkIdx:0,
+  modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},
+  lines:[
+    {id:'L1',name:'組立ライン',desc:'A棟1F',equip:[
+      {id:'E1',name:'組立機A',lid:'L1',items:[{id:'i11',n:'油圧ゲージ確認',t:'毎日'},{id:'i12',n:'潤滑油レベル',t:'毎日'},{id:'i13',n:'異音・異臭確認',t:'毎日'},{id:'i14',n:'ベルト張力確認',t:'10日'},{id:'i15',n:'フィルター清掃',t:'月次'}]},
+      {id:'E2',name:'組立機B',lid:'L1',items:[{id:'i21',n:'油圧ゲージ確認',t:'毎日'},{id:'i22',n:'回転数確認',t:'毎日'},{id:'i23',n:'温度確認',t:'毎日'},{id:'i24',n:'カップリング点検',t:'10日'}]},
+      {id:'E3',name:'コンベア1',lid:'L1',items:[{id:'i31',n:'ベルト状態確認',t:'毎日'},{id:'i32',n:'駆動部潤滑',t:'毎日'},{id:'i33',n:'テンション調整',t:'10日'}]},
+      {id:'E4',name:'溶接ロボット',lid:'L1',items:[{id:'i41',n:'アーム動作確認',t:'毎日'},{id:'i42',n:'ワイヤー残量',t:'毎日'},{id:'i43',n:'冷却水確認',t:'毎日'},{id:'i44',n:'キャリブレーション',t:'月次'}]},
+      {id:'E5',name:'検査装置',lid:'L1',items:[{id:'i51',n:'センサー動作確認',t:'毎日'},{id:'i52',n:'精度チェック',t:'10日'}]},
+    ]},
+    {id:'L2',name:'加工ライン',desc:'A棟2F',equip:[
+      {id:'E6',name:'NC旋盤1',lid:'L2',items:[{id:'i61',n:'主軸回転確認',t:'毎日'},{id:'i62',n:'クーラント確認',t:'毎日'},{id:'i63',n:'刃具摩耗確認',t:'毎日'},{id:'i64',n:'精度測定',t:'10日'}]},
+      {id:'E7',name:'マシニングセンタ',lid:'L2',items:[{id:'i71',n:'ATC動作確認',t:'毎日'},{id:'i72',n:'切削油確認',t:'毎日'},{id:'i73',n:'主軸温度確認',t:'毎日'},{id:'i74',n:'スピンドル点検',t:'月次'}]},
+      {id:'E8',name:'研削盤',lid:'L2',items:[{id:'i81',n:'砥石状態確認',t:'毎日'},{id:'i82',n:'冷却液確認',t:'毎日'},{id:'i83',n:'バランス調整',t:'10日'}]},
+    ]},
+    {id:'L3',name:'塗装ライン',desc:'B棟1F',equip:[
+      {id:'E9',name:'塗装ブース1',lid:'L3',items:[{id:'i91',n:'排気ファン確認',t:'毎日'},{id:'i92',n:'フィルター状態',t:'毎日'},{id:'i93',n:'塗料粘度確認',t:'毎日'}]},
+      {id:'E10',name:'乾燥炉',lid:'L3',items:[{id:'i101',n:'温度プロファイル確認',t:'毎日'},{id:'i102',n:'バーナー状態確認',t:'毎日'},{id:'i103',n:'チェーン潤滑',t:'10日'}]},
+    ]},
   ],
-  ten_day:[
-    {id:'t1',  cat:'機械部品',   label:'ベルト張り'},
-    {id:'t2',  cat:'機械部品',   label:'チェーン状態'},
-    {id:'t3',  cat:'機械部品',   label:'ボルト締め付け'},
-    {id:'t4',  cat:'機械部品',   label:'ブレーキ動作'},
-    {id:'t5',  cat:'油脂類',     label:'グリースアップ'},
-    {id:'t6',  cat:'油脂類',     label:'オイル劣化'},
-    {id:'t7',  cat:'電気',       label:'配線状態'},
-    {id:'t8',  cat:'電気',       label:'端子接続'},
-    {id:'t9',  cat:'フィルター', label:'エアフィルター'},
-    {id:'t10', cat:'フィルター', label:'オイルフィルター'},
+  insps:{},
+  approvals:[
+    {id:'A1',lid:'L1',eid:'E1',type:'10日点検',date:'2026-04-08',status:'pending',by:'山田太郎',approver:null},
+    {id:'A2',lid:'L2',eid:'E6',type:'月次点検',date:'2026-04-05',status:'pending',by:'佐藤花子',approver:null},
+    {id:'A3',lid:'L1',eid:'E3',type:'10日点検',date:'2026-04-01',status:'approved',by:'田中一郎',approver:'鈴木部長'},
   ],
-  monthly:[
-    {id:'m1', cat:'精度確認', label:'寸法精度'},
-    {id:'m2', cat:'精度確認', label:'振動測定'},
-    {id:'m3', cat:'精度確認', label:'騒音測定'},
-    {id:'m4', cat:'部品交換', label:'Vベルト'},
-    {id:'m5', cat:'部品交換', label:'消耗品確認'},
-    {id:'m6', cat:'清掃',     label:'本体清掃'},
-    {id:'m7', cat:'清掃',     label:'内部清掃'},
-    {id:'m8', cat:'記録',     label:'稼働時間記録'},
-    {id:'m9', cat:'記録',     label:'前回対応事項確認'},
+  anomalies:[
+    {id:'AN1',lid:'L1',eid:'E2',iid:'i22',iname:'回転数確認',comment:'異常振動あり。要確認',status:'open',date:'2026-04-09',by:'山田太郎'},
+    {id:'AN2',lid:'L2',eid:'E6',iid:'i63',iname:'刃具摩耗確認',comment:'摩耗が著しい。交換が必要',status:'in-progress',date:'2026-04-08',by:'佐藤花子'},
   ],
 };
-const EQUIP = ['A設備','B設備','C設備','D設備','E設備'];
-
-const STATUS_META = {
-  in_progress:      {label:'実施中',   cls:'b-blue',   icon:'🔄'},
-  waiting_approval: {label:'承認待ち', cls:'b-orange', icon:'⏳'},
-  approved:         {label:'完了',     cls:'b-green',  icon:'✅'},
-  rejected:         {label:'差し戻し', cls:'b-red',    icon:'⚠️'},
-  not_done:         {label:'未実施',   cls:'b-grey',   icon:'—'},
-};
-const ANOM_META = {
-  open:        {label:'未対応', cls:'b-red',    color:'#FF3B30'},
-  in_progress: {label:'対応中', cls:'b-orange', color:'#FF9500'},
-  done:        {label:'完了',   cls:'b-green',  color:'#34C759'},
-};
-
-// ─── Haptic Feedback ─────────────────────────────────────────
-function haptic(type='light'){
-  if(navigator.vibrate){
-    if(type==='light')   navigator.vibrate(8);
-    if(type==='medium')  navigator.vibrate(15);
-    if(type==='error')   navigator.vibrate([10,30,10]);
-    if(type==='success') navigator.vibrate([5,20,8]);
+function getLn(id){return S.lines.find(l=>l.id===id);}
+function getEq(id){for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}return null;}
+function getInsps(eid){return S.insps[eid];}
+function typeItems(eq,type){
+  const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};
+  const t=m[type]||'毎日';
+  if(t==='毎日')return eq.items.filter(i=>i.t==='毎日');
+  if(t==='all2')return eq.items.filter(i=>i.t==='毎日'||i.t==='10日');
+  return eq.items;
+}
+function lineStats(lid){
+  const l=getLn(lid);
+  let done=0,ng=0,pend=0;
+  for(const eq of l.equip){
+    const st=eqStatus(eq.id);
+    if(st==='done')done++;else if(st==='ng')ng++;else pend++;
   }
+  return{total:l.equip.length,done,ng,pend};
 }
-
-// ─── Firestore helpers ───────────────────────────────────────
-async function createSession(type,equip){
-  const items=ITEMS[type.id]||[];
-  const results={};
-  items.forEach(i=>{ results[i.id]={status:'pending',comment:'',photoUrl:''}; });
-  const r2=await addDoc(collection(db,'inspections'),{
-    typeId:type.id,typeLabel:type.label,equipmentName:equip,
-    inspectorName:localStorage.getItem('inspName')||'未設定',
-    status:'in_progress',results,
-    createdAt:serverTimestamp(),startedAt:serverTimestamp(),
-    completedAt:null,approvedAt:null,approvedBy:null,rejectedReason:null
-  });
-  return r2.id;
+function eqStatus(eid){
+  const eq=getEq(eid);
+  const insp=getInsps(eid);
+  const items=typeItems(eq,S.inspType);
+  if(!insp||insp.type!==S.inspType||insp.date!==TODAY)return'pending';
+  const rs=insp.results;
+  if(items.some(i=>rs[i.id]?.r==='ng'))return'ng';
+  if(items.every(i=>rs[i.id]))return'done';
+  return'partial';
 }
-async function saveItem(sid,iid,{status,comment,photoUrl}){
-  await updateDoc(doc(db,'inspections',sid),{
-    [`results.${iid}.status`]:status,
-    [`results.${iid}.comment`]:comment||'',
-    [`results.${iid}.photoUrl`]:photoUrl||'',
-    updatedAt:serverTimestamp()
-  });
+function pendApprovals(){return S.approvals.filter(a=>a.status==='pending');}
+function openAnoms(){return S.anomalies.filter(a=>a.status!=='resolved');}
+function toast(msg,type='ok'){
+  const w=document.getElementById('app-wrap');
+  const old=w.querySelector('.toast');if(old)old.remove();
+  const t=document.createElement('div');
+  t.className='toast';
+  t.style.background=type==='ok'?'#27500A':type==='warn'?'#854F0B':'#185FA5';
+  t.textContent=msg;w.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
 }
-async function bulkOk(sid,ids){
-  const upd={updatedAt:serverTimestamp()};
-  ids.forEach(id=>{ upd[`results.${id}.status`]='ok'; });
-  await updateDoc(doc(db,'inspections',sid),upd);
+function nav(view,data={}){
+  Object.assign(S,{view},data);render();
 }
-async function completeSession(sid,needsApproval){
-  await updateDoc(doc(db,'inspections',sid),{
-    status:needsApproval?'waiting_approval':'approved',
-    completedAt:serverTimestamp(),updatedAt:serverTimestamp()
-  });
-}
-async function doApprove(sid,name){
-  await updateDoc(doc(db,'inspections',sid),{
-    status:'approved',approvedAt:serverTimestamp(),approvedBy:name,updatedAt:serverTimestamp()
-  });
-  await addDoc(collection(db,'approvals'),{inspectionId:sid,action:'approved',approverName:name,createdAt:serverTimestamp()});
-}
-async function doReject(sid,name,reason){
-  await updateDoc(doc(db,'inspections',sid),{
-    status:'rejected',rejectedReason:reason,updatedAt:serverTimestamp()
-  });
-  await addDoc(collection(db,'approvals'),{inspectionId:sid,action:'rejected',approverName:name,reason,createdAt:serverTimestamp()});
-}
-async function saveAnomaly({sid,iid,label,comment,photoUrl,equip}){
-  await addDoc(collection(db,'anomalies'),{
-    inspectionId:sid,itemId:iid,itemLabel:label,
-    comment,photoUrl:photoUrl||'',equipmentName:equip,
-    status:'open',createdAt:serverTimestamp(),updatedAt:serverTimestamp()
-  });
-}
-async function updateAnom(aid,status,note=''){
-  await updateDoc(doc(db,'anomalies',aid),{status,note,updatedAt:serverTimestamp()});
-}
-async function uploadPhoto(file,path){
-  const r=ref(storage,path);
-  await uploadBytes(r,file);
-  return getDownloadURL(r);
-}
-
-// ─── State ───────────────────────────────────────────────────
-let state={
-  tab:'dashboard',
-  inspections:[],
-  anomalies:[],
-  executing:null,
-  showSelector:false,
-  histDetail:null,
-  aprvDetail:null,
-  anomFilter:'all',
-  histFilter:'all',
-  anomEditId:null,
-  nameDialog:!localStorage.getItem('inspName'),
-};
-
-// ─── Subscriptions ───────────────────────────────────────────
-onSnapshot(query(collection(db,'inspections'),orderBy('createdAt','desc')),snap=>{
-  state.inspections=snap.docs.map(d=>({id:d.id,...d.data()}));
+function setResult(itemId,r){
+  if(r==='ng'){S.ngModal={on:true,itemId,comment:'',photos:0};render();return;}
+  const eid=S.selectedEq;
+  if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
+  S.insps[eid].results[itemId]={r:'ok',comment:'',photos:0};
   render();
-});
-onSnapshot(query(collection(db,'anomalies'),orderBy('createdAt','desc')),snap=>{
-  state.anomalies=snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+function bulkOk(){
+  const eid=S.selectedEq;const eq=getEq(eid);
+  const items=typeItems(eq,S.inspType);
+  if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
+  let cnt=0;
+  items.forEach(it=>{if(!S.insps[eid].results[it.id]){S.insps[eid].results[it.id]={r:'ok',comment:'',photos:0};cnt++;}});
+  toast(cnt>0?`${cnt}件を〇に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
+}
+function resetResult(iid){
+  const eid=S.selectedEq;
+  if(S.insps[eid])delete S.insps[eid].results[iid];
   render();
-});
-
-// ─── Render ──────────────────────────────────────────────────
-function render(){
-  const root=document.getElementById('root');
-  if(state.executing)  { root.innerHTML=execScreen();     bindExec();     return; }
-  if(state.histDetail) { root.innerHTML=histDetailScreen();bindHistDetail();return; }
-  if(state.aprvDetail) { root.innerHTML=aprvDetailScreen();bindAprvDetail();return; }
-
-  root.innerHTML =
-    mainScreen() +
-    navHTML() +
-    (state.showSelector ? selectorHTML() : '') +
-    (state.nameDialog   ? nameDialogHTML() : '');
-
-  bindMain();
-  bindNav();
-  if(state.showSelector) bindSelector();
-  if(state.nameDialog)   bindNameDialog();
 }
-
-// ─── Nav ─────────────────────────────────────────────────────
-function navHTML(){
-  const tabs=[
-    {id:'dashboard',label:'ホーム',  icon:'🏠'},
-    {id:'execute',  label:'点検',    icon:'✅'},
-    {id:'history',  label:'履歴',    icon:'📋'},
-    {id:'anomalies',label:'異常',    icon:'⚠️'},
-    {id:'approval', label:'承認',    icon:'🔐'},
-  ];
-  const anomBadge=state.anomalies.filter(a=>a.status==='open').length;
-  const aprvBadge=state.inspections.filter(i=>i.status==='waiting_approval'&&i.typeId!=='daily').length;
-  return `<div id="nav">${tabs.map(t=>{
-    const active=state.tab===t.id;
-    const badge=t.id==='anomalies'?anomBadge:t.id==='approval'?aprvBadge:0;
-    return `<button class="nav-tab${active?' active':''}" data-tab="${t.id}">
-      <div class="nav-icon">${t.icon}${badge>0?`<span class="nav-badge">${badge}</span>`:''}</div>
-      <div class="nav-label">${t.label}</div>
-    </button>`;
-  }).join('')}</div>`;
+function submitInsp(){
+  const eid=S.selectedEq;const eq=getEq(eid);
+  const items=typeItems(eq,S.inspType);
+  const rs=S.insps[eid]?.results||{};
+  const pend=items.filter(i=>!rs[i.id]).length;
+  if(pend>0){toast(`未入力が${pend}件あります`,'warn');return;}
+  if(S.inspType!=='毎日点検'){
+    S.approvals.push({id:'A'+Date.now(),lid:eq.lid,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});
+    toast('点検完了。承認申請しました');
+  }else toast('点検完了しました');
+  if(S.bulkActive){
+    const l=getLn(S.bulkLineId);
+    const ni=S.bulkIdx+1;
+    if(ni<l.equip.length){S.bulkIdx=ni;S.selectedEq=l.equip[ni].id;render();}
+    else{S.bulkActive=false;toast('ライン点検完了！');nav('LINE_DETAIL',{selectedLine:S.bulkLineId});}
+  }else nav('LINE_DETAIL');
 }
-function bindNav(){
-  document.querySelectorAll('.nav-tab').forEach(b=>{
-    b.addEventListener('click',()=>{
-      haptic('light');
-      const t=b.dataset.tab;
-      if(t==='execute'){ state.showSelector=true; render(); return; }
-      state.tab=t; render();
-    });
-  });
+function approve(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='approved';a.approver='管理者';}toast('承認しました');render();}
+function reject(id){const a=S.approvals.find(x=>x.id===id);if(a)a.status='rejected';toast('差し戻しました','warn');render();}
+function anomStatus(id,st){
+  const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;
+  toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();
 }
-
-// ─── Main ────────────────────────────────────────────────────
-function mainScreen(){
-  if(state.tab==='dashboard') return dashHTML();
-  if(state.tab==='history')   return histHTML();
-  if(state.tab==='anomalies') return anomHTML();
-  if(state.tab==='approval')  return aprvHTML();
-  return '';
+function confirmNg(){
+  const c=document.getElementById('ng-c')?.value?.trim()||'';
+  if(!c){toast('コメントを入力してください','warn');return;}
+  if(S.ngModal.photos===0){toast('写真を追加してください','warn');return;}
+  S.ngModal.comment=c;
+  const eid=S.selectedEq;const eq=getEq(eid);
+  const iid=S.ngModal.itemId;const item=eq.items.find(i=>i.id===iid);
+  if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
+  S.insps[eid].results[iid]={r:'ng',comment:c,photos:S.ngModal.photos};
+  if(!S.anomalies.find(a=>a.eid===eid&&a.iid===iid&&a.status!=='resolved')){
+    S.anomalies.push({id:'AN'+Date.now(),lid:eq.lid,eid,iid,iname:item.n,comment:c,status:'open',date:TODAY,by:'現場作業者'});
+  }
+  S.ngModal={on:false,itemId:null,comment:'',photos:0};render();
 }
-function bindMain(){
-  if(state.tab==='dashboard') bindDash();
-  if(state.tab==='history')   bindHist();
-  if(state.tab==='anomalies') bindAnom();
-  if(state.tab==='approval')  bindAprv();
+function addEqConfirm(lid){
+  const n=document.getElementById('meq-n')?.value?.trim();
+  if(!n){toast('設備名を入力してください','warn');return;}
+  getLn(lid).equip.push({id:'E'+Date.now(),name:n,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  S.modal=null;toast(`${n}を追加しました`);render();
 }
-
-// ─── Dashboard ───────────────────────────────────────────────
-function dashHTML(){
-  const ins=state.inspections;
-  const done=ins.filter(i=>i.status==='approved').length;
-  const rej=ins.filter(i=>i.status==='rejected').length;
-  const pending=ins.filter(i=>i.status==='in_progress').length;
-  const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
-  const name=localStorage.getItem('inspName')||'';
-
-  const typeCards=TYPES.map(t=>{
-    const rel=ins.filter(i=>i.typeId===t.id);
-    const st=rel.length?rel[0].status:'not_done';
-    const m=STATUS_META[st]||STATUS_META.not_done;
-    return `<div class="g-row" data-start="${t.id}" style="cursor:pointer;">
-      <div class="type-icon" style="background:${t.color}18">${t.icon}</div>
-      <div class="type-info">
-        <div class="type-name">${t.label}</div>
-        <div class="type-sub">${t.needsApproval?'管理者承認あり':'承認不要'}</div>
+function addLineConfirm(){
+  const n=document.getElementById('mln-n')?.value?.trim();
+  const d=document.getElementById('mln-d')?.value?.trim()||'';
+  if(!n){toast('ライン名を入力してください','warn');return;}
+  S.lines.push({id:'L'+Date.now(),name:n,desc:d,equip:[]});
+  S.modal=null;toast(`${n}を追加しました`);render();
+}
+function delEq(eid){
+  const eq=getEq(eid);
+  if(!confirm(`${eq.name}を削除しますか？`))return;
+  for(const l of S.lines){const i=l.equip.findIndex(e=>e.id===eid);if(i!==-1){l.equip.splice(i,1);break;}}
+  toast('設備を削除しました');render();
+}
+function delLine(lid){
+  const l=getLn(lid);if(!confirm(`${l.name}を削除しますか？`))return;
+  S.lines.splice(S.lines.indexOf(l),1);toast('ラインを削除しました');render();
+}
+function fmtDate(ds){
+  const d=new Date(ds);const dw=['日','月','火','水','木','金','土'];
+  return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${dw[d.getDay()]})`;
+}
+function hdr(title,back,extra=''){
+  const bb=back?`<button class="hdr-back" onclick="nav('${back}')">‹</button>`:`<div style="width:30px;"></div>`;
+  return`<div class="hdr">${bb}<span class="hdr-title">${title}</span>${extra}</div>`;
+}
+function btabs(){
+  const pa=pendApprovals().length,oa=openAnoms().length;
+  const tabs=[['HOME','ホーム','⌂'],['APPROVAL','承認','✓'],['ANOMALY','異常','⚠'],['HISTORY','履歴','≡']];
+  return`<div class="btabs">${tabs.map(([v,l,ic])=>`
+    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')">
+      <div style="position:relative;display:inline-block;">
+        <span class="ti">${ic}</span>
+        ${(v==='APPROVAL'&&pa>0)?`<div style="position:absolute;top:-3px;right:-8px;background:var(--primary);color:white;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">${pa}</div>`:''}
+        ${(v==='ANOMALY'&&oa>0)?`<div style="position:absolute;top:-3px;right:-8px;background:#BA7517;color:white;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">${oa}</div>`:''}
       </div>
-      <span class="badge ${m.cls}" style="margin-right:8px">${m.icon} ${m.label}</span>
-      <svg class="chevron-icon" width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 6,6 1,11"/></svg>
-    </div>`;
-  }).join('');
-
-  const recentCards=ins.slice(0,3).map(i=>{
-    const m=STATUS_META[i.status]||STATUS_META.not_done;
-    const d=i.createdAt?.toDate?.()?.toLocaleDateString('ja-JP')||'—';
-    return `<div class="recent-row" data-hist="${i.id}">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${i.typeLabel} — ${i.equipmentName||'—'}</div>
-        <div style="font-size:12px;color:var(--gray1);margin-top:2px">${d} · ${i.inspectorName||'—'}</div>
-      </div>
-      <span class="badge ${m.cls}" style="margin-left:8px;flex-shrink:0">${m.label}</span>
-    </div>`;
-  }).join('');
-
-  return `<div class="page">
-    <div class="lt-header">
-      <div style="font-size:15px;color:var(--gray1);font-weight:400">${today}</div>
-      <div class="lt-title">日常点検</div>
-      <div style="font-size:15px;color:var(--t2);font-weight:500;margin-bottom:18px">
-        ${name
-          ?`おはようございます、<strong>${name}</strong> さん <button id="editName" class="name-edit-btn">✏️</button>`
-          :`<button id="editName" class="name-set-btn">名前を設定する →</button>`}
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-tile"><div class="stat-num">${ins.length}</div><div class="stat-lbl">総点検数</div></div>
-      <div class="stat-tile"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-lbl">完了</div></div>
-      <div class="stat-tile"><div class="stat-num" style="color:var(--orange)">${pending}</div><div class="stat-lbl">実施中</div></div>
-      <div class="stat-tile"><div class="stat-num" style="color:var(--red)">${rej}</div><div class="stat-lbl">差し戻し</div></div>
-    </div>
-
-    <div class="sec-lbl">点検種別</div>
-    <div class="g-card" style="margin:0 20px">${typeCards}</div>
-
-    ${ins.length?`
-    <div class="sec-lbl">最近の点検</div>
-    <div class="g-card" style="margin:0 20px">${recentCards}</div>
-    `:''}
-    <div style="height:16px"></div>
-  </div>`;
+      <span>${l}</span>
+    </button>`).join('')}</div>`;
 }
-function bindDash(){
-  document.getElementById('editName')?.addEventListener('click',()=>{ haptic('light'); state.nameDialog=true; render(); });
-  document.querySelectorAll('[data-start]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      haptic('light');
-      const t=TYPES.find(x=>x.id===el.dataset.start);
-      if(t){ state.showSelector=true; state._preType=t; render(); }
-    });
-  });
-  document.querySelectorAll('[data-hist]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      haptic('light');
-      const ins=state.inspections.find(i=>i.id===el.dataset.hist);
-      if(ins){ state.histDetail=ins; state.tab='history'; render(); }
-    });
-  });
-}
-
-// ─── History ─────────────────────────────────────────────────
-function histHTML(){
-  const filt=state.histFilter;
-  const list=filt==='all'?state.inspections:state.inspections.filter(i=>i.status===filt);
-  const filters=[['all','すべて'],['approved','完了'],['waiting_approval','承認待ち'],['in_progress','実施中'],['rejected','差し戻し']];
-
-  const cards=list.map((ins,idx)=>{
-    const m=STATUS_META[ins.status]||STATUS_META.not_done;
-    const d=ins.createdAt?.toDate?.()?.toLocaleDateString('ja-JP')||'—';
-    const res=ins.results||{};
-    const ok=Object.values(res).filter(r=>r.status==='ok').length;
-    const ng=Object.values(res).filter(r=>r.status==='ng').length;
-    return `<div class="list-card fade-up" style="animation-delay:${idx*.04}s" data-hid="${ins.id}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:16px;font-weight:600">${ins.typeLabel} — ${ins.equipmentName||'—'}</div>
-          <div style="font-size:12px;color:var(--gray1);margin-top:2px">${d} · ${ins.inspectorName||'—'}</div>
-        </div>
-        <span class="badge ${m.cls}">${m.label}</span>
-      </div>
-      <div style="display:flex;gap:12px;font-size:13px;font-weight:600">
-        <span style="color:var(--green)">〇 ${ok}</span>
-        <span style="color:var(--red)">✕ ${ng}</span>
-        <span style="color:var(--gray1);font-weight:400">/ ${Object.keys(res).length}項目</span>
-      </div>
-      ${ins.status==='rejected'&&ins.rejectedReason?`<div style="margin-top:8px;font-size:12px;color:#C0160D;background:var(--red-bg);padding:7px 10px;border-radius:8px">差し戻し理由：${ins.rejectedReason}</div>`:''}
-    </div>`;
-  }).join('');
-
-  return `<div class="page">
-    <div class="lt-header">
-      <div class="lt-title">点検履歴</div>
-      <div class="lt-date">${state.inspections.length}件</div>
-    </div>
-    <div class="filter-row">
-      ${filters.map(([v,l])=>`<button class="filter-pill${filt===v?' active':''}" data-hf="${v}">${l}</button>`).join('')}
-    </div>
-    ${list.length===0?`<div class="empty"><span class="ei">📋</span><p>履歴がありません</p></div>`:cards}
-  </div>`;
-}
-function bindHist(){
-  document.querySelectorAll('[data-hf]').forEach(b=>{
-    b.addEventListener('click',()=>{ haptic('light'); state.histFilter=b.dataset.hf; render(); });
-  });
-  document.querySelectorAll('[data-hid]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      haptic('light');
-      const ins=state.inspections.find(i=>i.id===el.dataset.hid);
-      if(ins){ state.histDetail=ins; render(); }
-    });
-  });
-}
-
-// ─── History Detail ──────────────────────────────────────────
-function histDetailScreen(){
-  const ins=state.histDetail;
-  const items=ITEMS[ins.typeId]||[];
-  const res=ins.results||{};
-  const cats=[...new Set(items.map(i=>i.cat))];
-  const d=ins.createdAt?.toDate?.()?.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'})||'—';
-  const infoRows=[
-    ['設備',ins.equipmentName],['点検者',ins.inspectorName],['日付',d],
-    ...(ins.approvedBy?[['承認者',ins.approvedBy]]:[])
-  ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid var(--sep)">
-    <span style="font-size:14px;color:var(--gray1);font-weight:500">${k}</span>
-    <span style="font-size:15px;font-weight:600">${v||'—'}</span>
-  </div>`).join('');
-
-  const catSec=cats.map(cat=>`
-    <div class="sec-lbl">${cat}</div>
-    ${items.filter(i=>i.cat===cat).map(item=>{
-      const r=res[item.id]||{};
-      const isNg=r.status==='ng',isOk=r.status==='ok';
-      return `<div class="detail-item${isNg?' ng-item':''}">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:15px;font-weight:600">${item.label}</span>
-          <span style="font-size:20px;font-weight:700;color:${isOk?'var(--green)':isNg?'var(--red)':'var(--gray3)'}">${isOk?'〇':isNg?'✕':'—'}</span>
-        </div>
-        ${isNg&&r.comment?`<div style="margin-top:8px;font-size:13px;color:#3C3C43;background:rgba(255,255,255,.7);padding:8px 10px;border-radius:8px;line-height:1.6">${r.comment}</div>`:''}
-        ${isNg&&r.photoUrl?`<img src="${r.photoUrl}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-top:8px"/>`:''}
-      </div>`;
-    }).join('')}
-  `).join('');
-
-  return `<div style="display:flex;flex-direction:column;height:100%;background:var(--bg)">
-    <div class="nav-header">
-      <button class="back-btn" id="backHist"><svg viewBox="0 0 7 12"><polyline points="6,1 1,6 6,11"/></svg> 一覧へ</button>
-      <div class="nh-title">${ins.typeLabel}</div>
-      <div style="width:60px"></div>
-    </div>
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">
-      <div class="p-card" style="margin:16px 20px">${infoRows}</div>
-      ${catSec}
-      <div style="height:40px"></div>
-    </div>
-  </div>`;
-}
-function bindHistDetail(){
-  document.getElementById('backHist').addEventListener('click',()=>{ haptic('light'); state.histDetail=null; render(); });
-}
-
-// ─── Anomalies ───────────────────────────────────────────────
-function anomHTML(){
-  const filt=state.anomFilter;
-  const list=filt==='all'?state.anomalies:state.anomalies.filter(a=>a.status===filt);
-  const open=state.anomalies.filter(a=>a.status==='open').length;
-  const inp=state.anomalies.filter(a=>a.status==='in_progress').length;
-  const done=state.anomalies.filter(a=>a.status==='done').length;
-  const filters=[['all','すべて'],['open','未対応'],['in_progress','対応中'],['done','完了']];
-
-  const cards=list.map((a,idx)=>{
-    const m=ANOM_META[a.status]||ANOM_META.open;
-    const d=a.createdAt?.toDate?.()?.toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'})||'—';
-    const t=a.createdAt?.toDate?.()?.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})||'';
-    return `<div class="list-card fade-up" style="border-left:3.5px solid ${m.color};animation-delay:${idx*.04}s">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:16px;font-weight:600">${a.itemLabel}</div>
-          <div style="font-size:12px;color:var(--gray1);margin-top:2px">${a.equipmentName} · ${d} ${t}</div>
-        </div>
-        <span class="badge ${m.cls}">${m.label}</span>
-      </div>
-      ${a.comment?`<div style="font-size:13px;color:var(--t2);background:var(--bg);padding:9px 12px;border-radius:9px;line-height:1.6;margin-bottom:10px">${a.comment}</div>`:''}
-      ${a.photoUrl?`<img src="${a.photoUrl}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-bottom:10px"/>`:''}
-      ${a.note?`<div style="font-size:13px;color:var(--t2);background:#EFF6FF;padding:9px 12px;border-radius:9px;margin-bottom:10px"><strong>対応メモ：</strong>${a.note}</div>`:''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">
-        ${a.status!=='in_progress'?`<button style="padding:6px 14px;border-radius:99px;border:1.5px solid var(--orange);background:transparent;font-size:12px;font-weight:600;cursor:pointer;color:var(--orange);font-family:var(--f);touch-action:manipulation" data-aset="${a.id}" data-st="in_progress">対応中にする</button>`:''}
-        ${a.status!=='done'?`<button style="padding:6px 14px;border-radius:99px;border:1.5px solid var(--green);background:transparent;font-size:12px;font-weight:600;cursor:pointer;color:var(--green);font-family:var(--f);touch-action:manipulation" data-aset="${a.id}" data-st="done">完了にする</button>`:''}
-        <button style="padding:6px 14px;border-radius:99px;border:1.5px solid var(--gray3);background:transparent;font-size:12px;font-weight:600;cursor:pointer;color:var(--gray1);font-family:var(--f);touch-action:manipulation" data-aedit="${a.id}">メモ編集</button>
+function renderHome(){
+  const pa=pendApprovals().length,oa=openAnoms().length;
+  const tots=S.lines.reduce((s,l)=>s+l.equip.length,0);
+  let cards=S.lines.map(l=>{
+    const st=lineStats(l.id);
+    return`<div class="card card-tap" onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-weight:500;font-size:15px;margin-bottom:3px;">${l.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l.desc} · 設備${st.total}台</div></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${st.ng>0?`<span class="badge bNg">異常 ${st.ng}</span>`:''}
+        ${st.pend>0?`<span class="badge bGray">未実施 ${st.pend}</span>`:''}
+        ${st.pend===0&&st.ng===0?`<span class="badge bOk">完了</span>`:''}
+        <span style="color:var(--color-text-secondary);font-size:18px;">›</span>
       </div>
     </div>`;
   }).join('');
-
-  const editId=state.anomEditId;
-  const editAnom=editId?state.anomalies.find(a=>a.id===editId):null;
-  const editSheet=editAnom?`
-    <div class="overlay" id="anomOverlay">
-      <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-header">異常ステータス更新</div>
-        <div style="padding:16px 20px">
-          <div style="font-size:12px;font-weight:600;color:var(--gray1);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">ステータス</div>
-          <div style="display:flex;gap:8px;margin-bottom:20px">
-            ${['open','in_progress','done'].map(s=>{
-              const m=ANOM_META[s];
-              const act=state._editAnomSt===s;
-              return `<button style="flex:1;padding:10px 4px;border-radius:12px;border:1.5px solid ${act?m.color:'var(--gray4)'};background:${act?m.color+'18':'var(--bg)'};font-size:13px;font-weight:600;cursor:pointer;color:${act?m.color:'var(--gray1)'};font-family:var(--f);transition:all .2s;touch-action:manipulation" data-ast="${s}">${m.label}</button>`;
-            }).join('')}
-          </div>
-          <div style="font-size:12px;font-weight:600;color:var(--gray1);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">対応メモ</div>
-          <textarea class="inp" id="anomNote" placeholder="対応内容を入力..." rows="4" style="margin-bottom:20px">${state._editAnomNote||''}</textarea>
-          <div style="display:flex;gap:10px">
-            <button class="btn btn-ghost" id="anomCancel" style="flex:1;height:50px;border-radius:14px;font-size:16px">キャンセル</button>
-            <button class="btn btn-blue" id="anomSave" style="flex:1;height:50px;border-radius:14px;font-size:16px">保存する</button>
-          </div>
-        </div>
-      </div>
-    </div>`:'';
-
-  return `<div class="page">
-    <div class="lt-header">
-      <div class="lt-title">異常管理</div>
-      <div class="lt-date">${state.anomalies.length}件</div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-tile"><div class="stat-num" style="color:var(--red)">${open}</div><div class="stat-lbl">未対応</div></div>
-      <div class="stat-tile"><div class="stat-num" style="color:var(--orange)">${inp}</div><div class="stat-lbl">対応中</div></div>
-      <div class="stat-tile"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-lbl">完了</div></div>
-    </div>
-    <div class="filter-row">
-      ${filters.map(([v,l])=>`<button class="filter-pill${filt===v?' active':''}" data-af="${v}">${l}</button>`).join('')}
-    </div>
-    ${list.length===0?`<div class="empty"><span class="ei">✅</span><p>異常はありません</p></div>`:cards}
-  </div>${editSheet}`;
-}
-function bindAnom(){
-  document.querySelectorAll('[data-af]').forEach(b=>{
-    b.addEventListener('click',()=>{ haptic('light'); state.anomFilter=b.dataset.af; render(); });
-  });
-  document.querySelectorAll('[data-aset]').forEach(b=>{
-    b.addEventListener('click',async()=>{ haptic('medium'); await updateAnom(b.dataset.aset,b.dataset.st,''); });
-  });
-  document.querySelectorAll('[data-aedit]').forEach(b=>{
-    b.addEventListener('click',()=>{
-      haptic('light');
-      const a=state.anomalies.find(x=>x.id===b.dataset.aedit);
-      state.anomEditId=b.dataset.aedit;
-      state._editAnomSt=a?.status||'open';
-      state._editAnomNote=a?.note||'';
-      render();
-    });
-  });
-  document.querySelectorAll('[data-ast]').forEach(b=>{
-    b.addEventListener('click',()=>{ haptic('light'); state._editAnomSt=b.dataset.ast; render(); });
-  });
-  document.getElementById('anomCancel')?.addEventListener('click',()=>{ haptic('light'); state.anomEditId=null; render(); });
-  document.getElementById('anomSave')?.addEventListener('click',async()=>{
-    haptic('success');
-    const note=document.getElementById('anomNote').value;
-    await updateAnom(state.anomEditId,state._editAnomSt,note);
-    state.anomEditId=null; render();
-  });
-  document.getElementById('anomOverlay')?.addEventListener('click',e=>{
-    if(e.target===e.currentTarget){ state.anomEditId=null; render(); }
-  });
-}
-
-// ─── Approval ────────────────────────────────────────────────
-function aprvHTML(){
-  const list=state.inspections.filter(i=>i.status==='waiting_approval'&&i.typeId!=='daily');
-  const cards=list.map((ins,idx)=>{
-    const d=ins.createdAt?.toDate?.()?.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'})||'—';
-    const ng=Object.values(ins.results||{}).filter(r=>r.status==='ng').length;
-    return `<div class="list-card fade-up" style="animation-delay:${idx*.05}s" data-apid="${ins.id}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:17px;font-weight:600">${ins.typeLabel}</div>
-          <div style="font-size:12px;color:var(--gray1);margin-top:2px">${ins.equipmentName} · ${d}</div>
-          <div style="font-size:14px;color:var(--t2);margin-top:5px;font-weight:500">点検者：${ins.inspectorName}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-          <span class="badge b-orange">承認待ち</span>
-          ${ng>0?`<span class="badge b-red">異常 ${ng}件</span>`:''}
-        </div>
-      </div>
-      <div style="font-size:13px;color:var(--blue);font-weight:600;margin-top:12px;text-align:right">詳細を確認して承認 ›</div>
-    </div>`;
-  }).join('');
-
-  return `<div class="page">
-    <div class="lt-header">
-      <div class="lt-title">管理者承認</div>
-      <div class="lt-date">${list.length}件</div>
-    </div>
-    ${list.length
-      ?`<div class="info-box" style="margin-top:4px">承認が必要な点検が <strong>${list.length}件</strong> あります</div>${cards}`
-      :`<div class="empty"><span class="ei">✅</span><p>承認待ちの点検はありません</p></div>`}
-  </div>`;
-}
-function bindAprv(){
-  document.querySelectorAll('[data-apid]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      haptic('light');
-      const ins=state.inspections.find(i=>i.id===el.dataset.apid);
-      if(ins){ state.aprvDetail=ins; state._rejectReason=''; state._showReject=false; render(); }
-    });
-  });
-}
-
-// ─── Approval Detail ─────────────────────────────────────────
-function aprvDetailScreen(){
-  const ins=state.aprvDetail;
-  const items=ITEMS[ins.typeId]||[];
-  const res=ins.results||{};
-  const cats=[...new Set(items.map(i=>i.cat))];
-  const ok=Object.values(res).filter(r=>r.status==='ok').length;
-  const ng=Object.values(res).filter(r=>r.status==='ng').length;
-  const ngItems=items.filter(i=>res[i.id]?.status==='ng');
-
-  const ngSec=ngItems.length?`
-    <div class="sec-lbl" style="color:var(--red)">⚠️ 異常項目</div>
-    ${ngItems.map(item=>{
-      const r=res[item.id]||{};
-      return `<div style="background:var(--red-bg);border-radius:var(--r-lg);margin:0 20px 8px;padding:16px;border-left:3px solid var(--red)">
-        <div style="font-size:15px;font-weight:700;color:#991B1B;margin-bottom:6px">${item.label}</div>
-        ${r.comment?`<div style="font-size:13px;color:#7F1D1D;background:rgba(255,255,255,.65);padding:8px 10px;border-radius:8px;line-height:1.6;margin-bottom:8px">${r.comment}</div>`:''}
-        ${r.photoUrl?`<img src="${r.photoUrl}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px"/>`:''}
-      </div>`;
-    }).join('')}`:'';
-
-  const catSec=cats.map(cat=>`
-    <div class="sec-lbl">${cat}</div>
-    ${items.filter(i=>i.cat===cat).map(item=>{
-      const r=res[item.id]||{};
-      const isNg=r.status==='ng',isOk=r.status==='ok';
-      return `<div class="detail-item${isNg?' ng-item':''}">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:15px;font-weight:500">${item.label}</span>
-          <span style="font-size:20px;font-weight:700;color:${isOk?'var(--green)':isNg?'var(--red)':'var(--gray3)'}">${isOk?'〇':isNg?'✕':'—'}</span>
-        </div>
-      </div>`;
-    }).join('')}
-  `).join('');
-
-  const rejectDlg=state._showReject?`
-    <div class="overlay overlay-center" id="rejectOverlay">
-      <div class="modal-card">
-        <div class="modal-title">差し戻し理由</div>
-        <p class="modal-body" style="margin-bottom:14px">理由を入力してください（必須）</p>
-        <textarea class="inp" id="rejectReason" placeholder="例：✕項目の写真が不鮮明です" rows="4" style="margin-bottom:16px">${state._rejectReason||''}</textarea>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-ghost" id="cancelReject" style="flex:1;height:50px;border-radius:14px;font-size:16px">キャンセル</button>
-          <button class="btn btn-red" id="confirmReject" style="flex:1;height:50px;border-radius:14px;font-size:16px">差し戻す</button>
-        </div>
-      </div>
-    </div>`:'';
-
-  return `<div style="display:flex;flex-direction:column;height:100%;background:var(--bg)">
-    <div class="nav-header">
-      <button class="back-btn" id="backAprv"><svg viewBox="0 0 7 12"><polyline points="6,1 1,6 6,11"/></svg> 一覧へ</button>
-      <div class="nh-title">${ins.typeLabel}</div>
-      <div style="width:60px"></div>
-    </div>
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">
-      <div class="p-card" style="margin:16px 20px">
-        <div style="display:flex;justify-content:space-around;padding:4px 0 12px">
-          <div style="text-align:center">
-            <div style="font-size:34px;font-weight:700;color:var(--green);letter-spacing:-.5px">${ok}</div>
-            <div style="font-size:12px;font-weight:600;color:var(--green);margin-top:2px">〇 正常</div>
-          </div>
-          <div style="width:.5px;background:var(--sep)"></div>
-          <div style="text-align:center">
-            <div style="font-size:34px;font-weight:700;color:var(--red);letter-spacing:-.5px">${ng}</div>
-            <div style="font-size:12px;font-weight:600;color:var(--red);margin-top:2px">✕ 異常</div>
-          </div>
-        </div>
-        <div style="font-size:13px;color:var(--gray1);text-align:center;padding-top:8px;border-top:.5px solid var(--sep)">点検者：${ins.inspectorName} · ${ins.equipmentName}</div>
-      </div>
-      ${ngSec}${catSec}
-      <div style="height:100px"></div>
-    </div>
-    <div class="aprv-bar">
-      <button class="btn btn-red" id="doReject" style="flex:1;height:52px;font-size:16px;border-radius:14px">差し戻し</button>
-      <button class="btn btn-green" id="doApprove" style="flex:1;height:52px;font-size:16px;border-radius:14px">✓ 承認する</button>
-    </div>
-    ${rejectDlg}
-  </div>`;
-}
-function bindAprvDetail(){
-  document.getElementById('backAprv').addEventListener('click',()=>{ haptic('light'); state.aprvDetail=null; render(); });
-  document.getElementById('doApprove').addEventListener('click',async()=>{
-    haptic('success');
-    const name=localStorage.getItem('inspName')||'管理者';
-    await doApprove(state.aprvDetail.id,name);
-    state.aprvDetail=null; render();
-  });
-  document.getElementById('doReject').addEventListener('click',()=>{ haptic('light'); state._showReject=true; render(); });
-  document.getElementById('cancelReject')?.addEventListener('click',()=>{ haptic('light'); state._showReject=false; render(); });
-  document.getElementById('rejectOverlay')?.addEventListener('click',e=>{ if(e.target===e.currentTarget){state._showReject=false;render();} });
-  document.getElementById('confirmReject')?.addEventListener('click',async()=>{
-    const r=document.getElementById('rejectReason').value.trim();
-    if(!r){ haptic('error'); document.getElementById('rejectReason').style.borderColor='var(--red)'; return; }
-    haptic('medium');
-    const name=localStorage.getItem('inspName')||'管理者';
-    await doReject(state.aprvDetail.id,name,r);
-    state.aprvDetail=null; state._showReject=false; render();
-  });
-}
-
-// ─── Selector Sheet ──────────────────────────────────────────
-let _selEquip=EQUIP[0];
-function selectorHTML(){
-  return `<div class="overlay" id="selectorOverlay">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-header">点検を開始する</div>
-      <div style="padding:16px 20px">
-        <div style="font-size:12px;font-weight:600;color:var(--gray1);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">設備</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
-          ${EQUIP.map(e=>`<button style="padding:9px 18px;border-radius:99px;border:1.5px solid ${_selEquip===e?'var(--blue)':'var(--gray4)'};background:${_selEquip===e?'var(--blue-bg)':'var(--bg)'};font-size:14px;font-weight:600;color:${_selEquip===e?'var(--blue)':'var(--gray1)'};cursor:pointer;font-family:var(--f);transition:all .2s;touch-action:manipulation" data-eq="${e}">${e}</button>`).join('')}
-        </div>
-        <div style="font-size:12px;font-weight:600;color:var(--gray1);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">点検種別</div>
-        <div class="g-card" style="margin:0 0 16px">
-          ${TYPES.map(t=>`<div class="g-row" data-sel="${t.id}">
-            <div class="type-icon" style="background:${t.color}18;margin-right:14px">${t.icon}</div>
-            <div class="type-info">
-              <div class="type-name">${t.label}</div>
-              <div class="type-sub">${t.needsApproval?'管理者承認あり':'承認不要'}</div>
-            </div>
-            <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="var(--gray3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 6,6 1,11"/></svg>
+  return`
+    <div style="background:var(--primary);padding:18px 16px 22px;color:white;flex-shrink:0;">
+      <div style="font-size:11px;opacity:.75;margin-bottom:2px;">日常点検システム</div>
+      <div style="font-size:19px;font-weight:500;">${fmtDate(TODAY)}</div>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        ${[['ライン',S.lines.length],['設備',tots],['承認待',pa],['異常',oa]].map(([l,v],i)=>`
+          <div style="flex:1;background:rgba(255,255,255,${i>=2&&v>0?.25:.15});border-radius:10px;padding:10px 6px;text-align:center;">
+            <div style="font-size:10px;opacity:.8;">${l}</div>
+            <div style="font-size:22px;font-weight:500;color:${i===3&&v>0?'#FBBF24':'white'};">${v}</div>
           </div>`).join('')}
-        </div>
-        <button class="btn btn-ghost" id="cancelSel" style="width:100%;height:50px;border-radius:14px;font-size:16px">キャンセル</button>
       </div>
     </div>
+    <div class="scroll">
+      <div style="display:flex;gap:7px;margin-bottom:14px;">
+        ${['毎日点検','10日点検','月次点検'].map(t=>`
+          <button onclick="S.inspType='${t}';render();" style="flex:1;padding:7px 3px;border-radius:18px;border:${S.inspType===t?'none':'0.5px solid var(--color-border-tertiary)'};background:${S.inspType===t?'var(--primary)':'var(--color-background-primary)'};color:${S.inspType===t?'white':'var(--color-text-primary)'};font-size:12px;cursor:pointer;">${t}</button>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;">
+        <button onclick="nav('LINE_DETAIL',{selectedLine:S.lines[0].id})" style="background:var(--primary);color:white;border:none;border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;">
+          <div style="font-size:20px;margin-bottom:6px;">▶</div>
+          <div style="font-size:14px;font-weight:500;">点検開始</div>
+          <div style="font-size:11px;opacity:.8;">ライン一括点検</div>
+        </button>
+        <button onclick="nav('APPROVAL')" style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;position:relative;">
+          <div style="font-size:20px;margin-bottom:6px;">✓</div>
+          <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">承認確認</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">承認待ち ${pa}件</div>
+          ${pa>0?`<div style="position:absolute;top:8px;right:8px;background:var(--primary);color:white;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;">${pa}</div>`:''}
+        </button>
+      </div>
+      <div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin-bottom:8px;">ライン一覧</div>
+      ${cards}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px;">
+        ${[['HISTORY','履歴','📋',''],['ANOMALY','異常管理','⚠',oa>0?`<div style="font-size:11px;color:var(--warn);">${oa}件未対応</div>`:''],
+           ['EQUIPMENT_MGMT','設備管理','⚙',''],['LINE_MGMT','ライン管理','🏭','']].map(([v,l,ic,sub])=>`
+          <button onclick="nav('${v}')" style="background:${v==='ANOMALY'&&oa>0?'var(--warn-bg)':'var(--color-background-primary)'};border:0.5px solid ${v==='ANOMALY'&&oa>0?'#EF9F27':'var(--color-border-tertiary)'};border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;">
+            <div style="font-size:20px;margin-bottom:5px;">${ic}</div>
+            <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${l}</div>${sub}
+          </button>`).join('')}
+      </div>
+    </div>${btabs()}`;
+}
+function renderLineDetail(){
+  const l=getLn(S.selectedLine);if(!l)return renderHome();
+  const rows=l.equip.map(eq=>{
+    const st=eqStatus(eq.id);
+    const items=typeItems(eq,S.inspType);
+    const insp=getInsps(eq.id);
+    const done=insp?items.filter(i=>insp.results[i.id]).length:0;
+    const sm={pending:{lbl:'未実施',cls:'bGray'},partial:{lbl:`${done}/${items.length}`,cls:'bWarn'},done:{lbl:'完了',cls:'bOk'},ng:{lbl:'異常あり',cls:'bNg'}};
+    const s=sm[st];
+    return`<div class="card card-tap" onclick="nav('INSPECTION',{selectedEq:'${eq.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-weight:500;font-size:15px;margin-bottom:3px;">${eq.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">点検項目 ${items.length}件</div></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span class="badge ${s.cls}">${s.lbl}</span><span style="color:var(--color-text-secondary);font-size:18px;">›</span></div>
+    </div>`;
+  }).join('');
+  return`${hdr(l.name,'HOME',`<button class="hdr-act" onclick="S.bulkActive=true;S.bulkLineId='${l.id}';S.bulkIdx=0;nav('INSPECTION',{selectedEq:'${l.equip[0].id}'})">一括点検</button>`)}
+  <div class="scroll">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">${S.inspType} · ${fmtDate(TODAY)}</div>
+    ${rows}
+    <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="width:100%;padding:12px;border:1.5px dashed var(--color-border-secondary);background:none;border-radius:var(--border-radius-lg);color:var(--color-text-secondary);cursor:pointer;font-size:14px;margin-top:2px;">+ 設備を追加</button>
+  </div>${btabs()}`;
+}
+function renderInspection(){
+  const eq=getEq(S.selectedEq);if(!eq)return renderHome();
+  const items=typeItems(eq,S.inspType);
+  const insp=getInsps(S.selectedEq);
+  const rs=insp?.results||{};
+  const done=items.filter(i=>rs[i.id]).length;
+  const pend=items.length-done;
+  const pct=Math.round(done/items.length*100);
+  const bulkBar=S.bulkActive?`
+    <div style="background:var(--color-background-secondary);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:12px;color:var(--color-text-secondary);">ライン一括点検</span>
+      <span style="font-size:13px;font-weight:500;">${S.bulkIdx+1}/${getLn(S.bulkLineId).equip.length}台目</span>
+    </div>`:'';
+  const icards=items.map((it,idx)=>{
+    const r=rs[it.id];const isOk=r?.r==='ok';const isNg=r?.r==='ng';
+    return`<div class="icard ${isOk?'rok':isNg?'rng':''}" data-iid="${it.id}" data-idx="${idx}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${r?'10px':'14px'};">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;">No.${idx+1} · ${it.t}点検</div>
+          <div style="font-size:16px;font-weight:500;">${it.n}</div>
+          ${r?.comment?`<div style="font-size:12px;color:var(--ng);margin-top:4px;">コメント: ${r.comment}</div>`:''}
+          ${r?.photos>0?`<div style="font-size:12px;color:var(--ng);">写真 ${r.photos}枚</div>`:''}
+        </div>
+        ${isOk?`<div style="font-size:26px;color:var(--ok);">○</div>`:isNg?`<div style="font-size:26px;color:var(--ng);">✗</div>`:''}
+      </div>
+      ${!r?`
+        <div style="display:flex;gap:14px;justify-content:center;margin-bottom:8px;">
+          <button class="jbtn jng" onclick="setResult('${it.id}','ng')">✗</button>
+          <button class="jbtn jok" onclick="setResult('${it.id}','ok')">○</button>
+        </div>
+        <div style="text-align:center;font-size:11px;color:var(--color-text-secondary);">← スワイプ: ✗  ｜  スワイプ: ○ →</div>
+      `:`<button onclick="resetResult('${it.id}')" style="width:100%;padding:7px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--color-text-secondary);font-size:12px;cursor:pointer;">やり直し</button>`}
+    </div>`;
+  }).join('');
+  return`${hdr(eq.name,S.bulkActive?null:'LINE_DETAIL')}${bulkBar}
+  <div style="padding:10px 14px 4px;flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+      <span style="font-size:12px;color:var(--color-text-secondary);">${S.inspType}</span>
+      <span style="font-size:12px;font-weight:500;">${done}/${items.length} 完了</span>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:4px;height:5px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:${pct===100?'var(--ok)':'var(--primary)'};border-radius:4px;transition:width .3s;"></div>
+    </div>
+  </div>
+  <div class="scroll" style="padding-top:10px;">
+    ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:11px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);color:var(--ok);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span>未入力 ${pend}件 をすべて○に一括入力</span></button>`:''}
+    ${icards}
+    <button onclick="submitInsp()" style="width:100%;padding:14px;background:${pend>0?'var(--color-background-secondary)':'var(--primary)'};color:${pend>0?'var(--color-text-secondary)':'white'};border:${pend>0?'0.5px solid var(--color-border-tertiary)':'none'};border-radius:var(--border-radius-lg);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;">
+      ${pend>0?`点検提出 (未入力 ${pend}件あり)`:'点検完了 · 提出する'}</button>
   </div>`;
 }
-function bindSelector(){
-  document.getElementById('selectorOverlay').addEventListener('click',e=>{
-    if(e.target===e.currentTarget){ haptic('light'); state.showSelector=false; state._preType=null; render(); }
-  });
-  document.getElementById('cancelSel').addEventListener('click',()=>{ haptic('light'); state.showSelector=false; state._preType=null; render(); });
-  document.querySelectorAll('[data-eq]').forEach(b=>{ b.addEventListener('click',()=>{ haptic('light'); _selEquip=b.dataset.eq; render(); }); });
-  document.querySelectorAll('[data-sel]').forEach(b=>{
-    b.addEventListener('click',()=>{
-      haptic('medium');
-      const t=TYPES.find(x=>x.id===b.dataset.sel);
-      if(!t) return;
-      state.showSelector=false; state._preType=null;
-      startExec(t,_selEquip);
-    });
-  });
-}
-
-// ─── Execution ───────────────────────────────────────────────
-let _sid=null, _results={}, _expandedId=null, _bulkConfirm=false, _completeDialog=false, _uploading={};
-
-async function startExec(type,equip){
-  const items=ITEMS[type.id]||[];
-  _results={};
-  items.forEach(i=>{ _results[i.id]={status:'pending',comment:'',photoUrl:''}; });
-  _expandedId=null; _bulkConfirm=false; _completeDialog=false; _uploading={};
-  state.executing={type,equip};
-  render();
-  _sid=await createSession(type,equip);
-}
-
-function execScreen(){
-  const type=state.executing.type;
-  const items=ITEMS[type.id]||[];
-  const pending=items.filter(i=>_results[i.id]?.status==='pending').map(i=>i.id);
-  const ngCount=items.filter(i=>_results[i.id]?.status==='ng').length;
-  const okCount=items.filter(i=>_results[i.id]?.status==='ok').length;
-  const allDone=pending.length===0;
-  const cats=[...new Set(items.map(i=>i.cat))];
-
-  const catSec=cats.map(cat=>`
-    <div class="sec-lbl">${cat}</div>
-    ${items.filter(i=>i.cat===cat).map(item=>{
-      const r=_results[item.id]||{};
-      const isOk=r.status==='ok', isNg=r.status==='ng';
-      const up=_uploading[item.id];
-      return `<div class="item-card${isOk?' is-ok':isNg?' is-ng':''}" id="ic_${item.id}">
-        <span class="swipe-hint-r">〇</span>
-        <span class="swipe-hint-l">✕</span>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <div class="item-label">${item.label}</div>
-          <div style="display:flex;gap:8px;flex-shrink:0">
-            <button class="choice-btn${isOk?' ok':''}" data-tok="${item.id}">〇</button>
-            <button class="choice-btn${isNg?' ng':''}" data-tng="${item.id}">✕</button>
-          </div>
+function renderApproval(){
+  const pend=S.approvals.filter(a=>a.status==='pending');
+  const hist=S.approvals.filter(a=>a.status!=='pending');
+  const acard=(a,editable)=>{
+    const eq=getEq(a.eid);const l=getLn(a.lid);
+    return`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${editable?'10px':'0'};">
+        <div>
+          <span class="badge bWarn" style="margin-bottom:5px;display:inline-block;">${a.type}</span>
+          <div style="font-weight:500;font-size:14px;">${eq?.name||'-'}</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);">${l?.name} · ${a.date} · ${a.by}</div>
         </div>
-        ${isNg?`<div class="expand-area">
-          <label class="expand-lbl">コメント（必須）</label>
-          <textarea class="inp" data-comment="${item.id}" placeholder="異常の内容を入力してください" rows="3">${r.comment||''}</textarea>
-          <label class="expand-lbl" style="margin-top:12px">写真（必須）</label>
-          ${r.photoUrl
-            ?`<div class="photo-preview"><img src="${r.photoUrl}"/><button class="photo-change" data-rephoto="${item.id}">変更</button></div>`
-            :`<button class="photo-btn" data-photo="${item.id}">${up?'⏳ アップロード中...':'📷 写真を追加'}</button>`}
-          <input type="file" accept="image/*" capture="environment" id="fi_${item.id}" style="display:none"/>
-        </div>`:''}
-      </div>`;
-    }).join('')}
-  `).join('');
-
-  const bulkSheet=_bulkConfirm?`
-    <div class="overlay overlay-center" id="bulkOverlay">
-      <div class="modal-card">
-        <div style="font-size:36px;text-align:center;margin-bottom:8px">〇</div>
-        <div class="modal-title">一括〇に設定</div>
-        <p class="modal-body">未入力の <strong>${pending.length}件</strong> をすべて〇（正常）に設定します。<br/>✕（異常）の項目は変更されません。</p>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-ghost" id="bulkCancel" style="flex:1;height:50px;border-radius:14px;font-size:16px">キャンセル</button>
-          <button class="btn btn-blue" id="bulkOk" style="flex:1;height:50px;border-radius:14px;font-size:16px">実行する</button>
-        </div>
+        ${!editable?`<span class="badge ${a.status==='approved'?'bOk':'bNg'}">${a.status==='approved'?'承認済':'差戻'}</span>`:''}
       </div>
-    </div>`:'';
-
-  const completeDlg=_completeDialog?`
-    <div class="overlay overlay-center">
-      <div class="modal-card" style="text-align:center">
-        <div style="font-size:56px;margin-bottom:12px">🎉</div>
-        <div class="modal-title" style="font-size:20px">点検完了！</div>
-        <p class="modal-body">${type.needsApproval?'管理者の承認をお待ちください。':'データが正常に保存されました。'}</p>
-        <button class="btn btn-blue" id="backToDash" style="width:100%;height:52px;border-radius:14px;font-size:17px">ダッシュボードへ</button>
-      </div>
-    </div>`:'';
-
-  return `<div style="display:flex;flex-direction:column;height:100%;background:var(--bg)">
-    <div class="nav-header">
-      <button class="back-btn" id="execBack"><svg viewBox="0 0 7 12"><polyline points="6,1 1,6 6,11"/></svg> 戻る</button>
-      <div class="nh-title">${type.label}</div>
-      <div style="width:60px"></div>
-    </div>
-    <div class="cbar">
-      <div>${pending.length>0
-        ?`<span class="pending-pill">未入力 ${pending.length}件</span>`
-        :`<span class="done-pill">✓ すべて入力済み</span>`}</div>
-      <div style="font-size:14px;font-weight:700">
-        <span style="color:var(--green)">〇 ${okCount}</span>
-        <span style="color:var(--red);margin-left:10px">✕ ${ngCount}</span>
-      </div>
-    </div>
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:4px">
-      ${catSec}
-      ${allDone?`<div style="padding:4px 20px 16px"><button class="btn btn-green" id="doComplete" style="width:100%;height:56px;font-size:17px;border-radius:18px">✓ 点検完了・${type.needsApproval?'承認申請':'登録'}</button></div>`:''}
-      <div style="height:${pending.length>0?'90px':'32px'}"></div>
-    </div>
-    ${pending.length>0?`<div class="fab-wrap">
-      <button class="fab-bulk" id="showBulk">
-        <span style="font-size:18px">〇</span> 未入力をすべて〇にする（${pending.length}件）
-      </button>
-    </div>`:''}
-    ${bulkSheet}${completeDlg}
-  </div>`;
+      ${editable?`<div style="display:flex;gap:8px;">
+        <button onclick="approve('${a.id}')" style="flex:1;padding:9px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);color:var(--ok);font-size:13px;font-weight:500;cursor:pointer;">承認</button>
+        <button onclick="reject('${a.id}')" style="flex:1;padding:9px;background:var(--ng-bg);border:1px solid var(--ng);border-radius:var(--border-radius-md);color:var(--ng);font-size:13px;font-weight:500;cursor:pointer;">差し戻し</button>
+      </div>`:''}
+    </div>`;
+  };
+  return`${hdr('承認管理','HOME')}
+  <div class="scroll">
+    <div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin-bottom:8px;">承認待ち (${pend.length}件)</div>
+    ${pend.length===0?`<div class="card" style="text-align:center;color:var(--color-text-secondary);padding:28px;">承認待ちはありません</div>`:''}
+    ${pend.map(a=>acard(a,true)).join('')}
+    ${hist.length>0?`<div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin:14px 0 8px;">完了済み (${hist.length}件)</div>${hist.map(a=>acard(a,false)).join('')}`:''}
+  </div>${btabs()}`;
 }
-
-function bindExec(){
-  document.getElementById('execBack')?.addEventListener('click',()=>{ haptic('light'); state.executing=null; render(); });
-  document.getElementById('showBulk')?.addEventListener('click',()=>{ haptic('medium'); _bulkConfirm=true; render(); });
-  document.getElementById('bulkCancel')?.addEventListener('click',()=>{ haptic('light'); _bulkConfirm=false; render(); });
-  document.getElementById('bulkOverlay')?.addEventListener('click',e=>{ if(e.target===e.currentTarget){_bulkConfirm=false;render();} });
-  document.getElementById('bulkOk')?.addEventListener('click',async()=>{
-    haptic('success'); _bulkConfirm=false;
-    const items=ITEMS[state.executing.type.id]||[];
-    const pend=items.filter(i=>_results[i.id]?.status==='pending').map(i=>i.id);
-    pend.forEach(id=>{ _results[id]={..._results[id],status:'ok'}; });
-    render();
-    pend.forEach((id,i)=>{
-      setTimeout(()=>{
-        const el=document.getElementById('ic_'+id);
-        if(el){ el.classList.add('hl-green'); setTimeout(()=>el.classList.remove('hl-green'),1200); }
-      },i*40);
-    });
-    if(_sid) await bulkOk(_sid,pend);
+function renderHistory(){
+  const all=Object.entries(S.insps).map(([eid,insp])=>{
+    const eq=getEq(eid);const l=eq?getLn(eq.lid):null;
+    const items=eq?typeItems(eq,insp.type):[];
+    const ok=items.filter(i=>insp.results[i.id]?.r==='ok').length;
+    const ng=items.filter(i=>insp.results[i.id]?.r==='ng').length;
+    return{eq,l,insp,ok,ng,total:items.length};
   });
-  document.getElementById('doComplete')?.addEventListener('click',async()=>{
-    haptic('success');
-    const type=state.executing.type;
-    const newStatus=type.needsApproval?'waiting_approval':'approved';
-
-    // ── 楽観的ローカル更新（Firestore応答を待たずに即反映）──
-    if(_sid){
-      const idx=state.inspections.findIndex(i=>i.id===_sid);
-      if(idx!==-1){
-        state.inspections[idx]={
-          ...state.inspections[idx],
-          status:newStatus,
-          results:Object.fromEntries(
-            Object.entries(_results).map(([k,v])=>[k,{...v}])
-          ),
-          completedAt:{toDate:()=>new Date()}
-        };
-      } else {
-        // まだリストにない場合は先頭に追加
-        state.inspections.unshift({
-          id:_sid,
-          typeId:type.id, typeLabel:type.label,
-          equipmentName:state.executing.equip,
-          inspectorName:localStorage.getItem('inspName')||'未設定',
-          status:newStatus,
-          results:Object.fromEntries(Object.entries(_results).map(([k,v])=>[k,{...v}])),
-          createdAt:{toDate:()=>new Date()},
-          completedAt:{toDate:()=>new Date()}
-        });
-      }
-    }
-
-    _completeDialog=true; render();
-
-    // ── Firestore保存（バックグラウンド）──
-    if(_sid){
-      try{
-        const items=ITEMS[type.id]||[];
-        const ngItems=items.filter(i=>_results[i.id]?.status==='ng');
-        for(const item of ngItems){
-          const r=_results[item.id];
-          if(r&&!r.photoUrl) await saveAnomaly({sid:_sid,iid:item.id,label:item.label,comment:r.comment||'',photoUrl:'',equip:state.executing.equip});
-        }
-        await completeSession(_sid,type.needsApproval);
-      }catch(e){ console.warn('Firestore complete error:',e); }
-    }
-  });
-  document.getElementById('backToDash')?.addEventListener('click',()=>{
-    haptic('light');
-    _sid=null; _results={}; _expandedId=null;
-    _bulkConfirm=false; _completeDialog=false; _uploading={};
-    state.executing=null; state.tab='dashboard'; render();
-  });
-
-  // 〇 / ✕ buttons
-  document.querySelectorAll('[data-tok]').forEach(b=>{
-    b.addEventListener('click',async()=>{
-      haptic('light');
-      const id=b.dataset.tok;
-      const cur=_results[id]?.status;
-      const st=cur==='ok'?'pending':'ok';
-      _results[id]={..._results[id],status:st};
-      if(_expandedId===id) _expandedId=null;
-      b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'),300);
-      render();
-      if(_sid) await saveItem(_sid,id,_results[id]);
-    });
-  });
-  document.querySelectorAll('[data-tng]').forEach(b=>{
-    b.addEventListener('click',async()=>{
-      const id=b.dataset.tng;
-      const cur=_results[id]?.status;
-      const st=cur==='ng'?'pending':'ng';
-      _results[id]={..._results[id],status:st};
-      _expandedId=(st==='ng')?id:(_expandedId===id?null:_expandedId);
-      if(st==='ng'){
-        haptic('error');
-        const card=document.getElementById('ic_'+id);
-        card?.classList.add('shake'); setTimeout(()=>card?.classList.remove('shake'),350);
-      } else {
-        haptic('light');
-      }
-      render();
-      if(_sid) await saveItem(_sid,id,_results[id]);
-    });
-  });
-
-  // Swipe gestures on item cards
-  document.querySelectorAll('.item-card').forEach(card=>{
-    let sx=0, sy=0, moved=false;
-    const id=card.id.replace('ic_','');
-    card.addEventListener('touchstart',e=>{
-      sx=e.touches[0].clientX; sy=e.touches[0].clientY; moved=false;
-    },{passive:true});
-    card.addEventListener('touchmove',e=>{
-      const dx=e.touches[0].clientX-sx;
-      const dy=e.touches[0].clientY-sy;
-      if(Math.abs(dx)>Math.abs(dy)){
-        moved=true;
-        card.classList.remove('sw-right','sw-left');
-        if(dx>30) card.classList.add('sw-right');
-        else if(dx<-30) card.classList.add('sw-left');
-      }
-    },{passive:true});
+  return`${hdr('点検履歴','HOME')}
+  <div class="scroll">
+    ${all.length===0?`<div class="card" style="text-align:center;color:var(--color-text-secondary);padding:48px 16px;"><div style="font-size:32px;margin-bottom:10px;">📋</div>点検履歴はありません</div>`
+    :all.map(({eq,l,insp,ok,ng,total})=>`
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div><div style="font-weight:500;font-size:14px;">${eq?.name||'-'}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l?.name} · ${insp.type} · ${insp.date}</div></div>
+          ${ng>0?`<span class="badge bNg">異常 ${ng}</span>`:`<span class="badge bOk">正常</span>`}
+        </div>
+        <div style="display:flex;gap:14px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary);">
+          <span style="font-size:12px;color:var(--ok);font-weight:500;">○ ${ok}</span>
+          <span style="font-size:12px;color:var(--ng);font-weight:500;">✗ ${ng}</span>
+          <span style="font-size:12px;color:var(--color-text-secondary);">計 ${total}項目</span>
+        </div>
+      </div>`).join('')}
+  </div>${btabs()}`;
+}
+function renderAnomaly(){
+  const open=S.anomalies.filter(a=>a.status==='open');
+  const ip=S.anomalies.filter(a=>a.status==='in-progress');
+  const res=S.anomalies.filter(a=>a.status==='resolved');
+  const acard=a=>{
+    const eq=getEq(a.eid);const l=getLn(a.lid);
+    const sm={open:['bNg','未対応'],['in-progress']:['bWarn','対応中'],resolved:['bOk','解決済']};
+    const [bc,bl]=sm[a.status];
+    return`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
+        <div style="flex:1;"><div style="font-weight:500;font-size:14px;margin-bottom:2px;">${a.iname}</div><div style="font-size:12px;color:var(--color-text-secondary);">${eq?.name||'-'} · ${l?.name} · ${a.date}</div></div>
+        <span class="badge ${bc}">${bl}</span>
+      </div>
+      <div style="font-size:13px;background:var(--color-background-secondary);padding:7px 10px;border-radius:var(--border-radius-md);margin-bottom:8px;">${a.comment}</div>
+      ${a.status==='open'?`<button onclick="anomStatus('${a.id}','in-progress')" style="width:100%;padding:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--color-text-primary);">対応開始</button>`:''}
+      ${a.status==='in-progress'?`<button onclick="anomStatus('${a.id}','resolved')" style="width:100%;padding:8px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--ok);font-weight:500;">解決済にする</button>`:''}
+    </div>`;
+  };
+  return`${hdr('異常管理','HOME')}
+  <div class="scroll">
+    ${open.length>0?`<div style="font-size:12px;color:var(--ng);font-weight:500;margin-bottom:8px;">未対応 (${open.length}件)</div>${open.map(acard).join('')}`:''}
+    ${ip.length>0?`<div style="font-size:12px;color:var(--warn);font-weight:500;margin:12px 0 8px;">対応中 (${ip.length}件)</div>${ip.map(acard).join('')}`:''}
+    ${open.length===0&&ip.length===0?`<div class="card" style="text-align:center;color:var(--ok);padding:28px;"><div style="font-size:28px;margin-bottom:8px;">✓</div>異常はありません</div>`:''}
+    ${res.length>0?`<div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin:14px 0 8px;">解決済 (${res.length}件)</div>${res.map(acard).join('')}`:''}
+  </div>${btabs()}`;
+}
+function renderEqMgmt(){
+  return`${hdr('設備管理','HOME')}
+  <div class="scroll">
+    ${S.lines.map(l=>`
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:7px;display:flex;justify-content:space-between;">
+          <span>${l.name}</span>
+          <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="font-size:12px;color:var(--primary);background:none;border:none;cursor:pointer;">+ 追加</button>
+        </div>
+        ${l.equip.map(eq=>`
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;margin-bottom:7px;">
+            <div><div style="font-weight:500;font-size:14px;">${eq.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">項目 ${eq.items.length}件</div></div>
+            <button onclick="delEq('${eq.id}')" style="padding:5px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--ng);font-size:12px;cursor:pointer;">削除</button>
+          </div>`).join('')}
+      </div>`).join('')}
+  </div>${btabs()}`;
+}
+function renderLineMgmt(){
+  return`${hdr('ライン管理','HOME')}
+  <div class="scroll">
+    ${S.lines.map(l=>`
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:500;font-size:15px;">${l.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l.desc} · 設備${l.equip.length}台</div></div>
+        <button onclick="delLine('${l.id}')" style="padding:5px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--ng);font-size:12px;cursor:pointer;">削除</button>
+      </div>`).join('')}
+    <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:12px;border:1.5px dashed var(--color-border-secondary);background:none;border-radius:var(--border-radius-lg);color:var(--color-text-secondary);cursor:pointer;font-size:14px;margin-top:4px;">+ ラインを追加</button>
+  </div>${btabs()}`;
+}
+function renderNgSheet(){
+  return`<div class="overlay"><div class="sheet">
+    <div style="font-size:17px;font-weight:500;margin-bottom:14px;color:var(--ng);">✗ 異常を記録</div>
+    <div style="margin-bottom:12px;">
+      <label class="flabel">コメント (必須)</label>
+      <textarea id="ng-c" placeholder="異常内容を入力してください" style="width:100%;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:14px;resize:none;height:75px;background:var(--color-background-primary);color:var(--color-text-primary);"></textarea>
+    </div>
+    <div style="margin-bottom:18px;">
+      <label class="flabel">写真 (必須)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="S.ngModal.photos++;render();" style="width:66px;height:66px;border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);cursor:pointer;font-size:22px;color:var(--color-text-secondary);">+</button>
+        ${Array.from({length:S.ngModal.photos},(_,i)=>`<div style="width:66px;height:66px;background:var(--ng-bg);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ng);">写真${i+1}</div>`).join('')}
+      </div>
+      ${S.ngModal.photos===0?`<div style="font-size:11px;color:var(--ng);margin-top:4px;">写真を1枚以上追加してください</div>`:''}
+    </div>
+    <div style="display:flex;gap:9px;">
+      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;color:var(--color-text-primary);">キャンセル</button>
+      <button onclick="confirmNg()" style="flex:2;padding:13px;background:var(--ng);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">異常を登録</button>
+    </div>
+  </div></div>`;
+}
+function renderModalSheet(){
+  const m=S.modal;let inner='';
+  if(m.type==='addEq'){inner=`
+    <div style="font-size:17px;font-weight:500;margin-bottom:14px;">設備を追加</div>
+    <div style="margin-bottom:12px;"><label class="flabel">設備名</label><input id="meq-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
+    <div style="display:flex;gap:9px;margin-top:14px;">
+      <button onclick="S.modal=null;render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;">キャンセル</button>
+      <button onclick="addEqConfirm('${m.lid}')" style="flex:2;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">追加</button>
+    </div>`;}
+  else if(m.type==='addLine'){inner=`
+    <div style="font-size:17px;font-weight:500;margin-bottom:14px;">ラインを追加</div>
+    <div style="margin-bottom:10px;"><label class="flabel">ライン名</label><input id="mln-n" class="finput" type="text" placeholder="例: 検査ライン"></div>
+    <div style="margin-bottom:14px;"><label class="flabel">場所</label><input id="mln-d" class="finput" type="text" placeholder="例: C棟1F"></div>
+    <div style="display:flex;gap:9px;">
+      <button onclick="S.modal=null;render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;">キャンセル</button>
+      <button onclick="addLineConfirm()" style="flex:2;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">追加</button>
+    </div>`;}
+  return`<div class="overlay"><div class="sheet">${inner}</div></div>`;
+}
+function render(){
+  const sc=document.getElementById('screen');
+  let body='';
+  switch(S.view){
+    case'HOME':body=renderHome();break;
+    case'LINE_DETAIL':body=renderLineDetail();break;
+    case'INSPECTION':body=renderInspection();break;
+    case'APPROVAL':body=renderApproval();break;
+    case'HISTORY':body=renderHistory();break;
+    case'ANOMALY':body=renderAnomaly();break;
+    case'EQUIPMENT_MGMT':body=renderEqMgmt();break;
+    case'LINE_MGMT':body=renderLineMgmt();break;
+    default:body=renderHome();
+  }
+  sc.innerHTML=body;
+  if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
+  if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
+  setupSwipe();
+}
+function setupSwipe(){
+  document.querySelectorAll('.icard').forEach(card=>{
+    let sx=0,sy=0;
+    const iid=card.dataset.iid;
+    card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
     card.addEventListener('touchend',e=>{
-      const dx=e.changedTouches[0].clientX-sx;
-      card.classList.remove('sw-right','sw-left');
-      if(!moved) return;
-      if(dx>60){
-        // swipe right → OK
-        haptic('light');
-        _results[id]={..._results[id],status:'ok'};
-        render();
-        if(_sid) saveItem(_sid,id,_results[id]);
-      } else if(dx<-60){
-        // swipe left → NG
-        haptic('error');
-        _results[id]={..._results[id],status:'ng'};
-        _expandedId=id;
-        const card2=document.getElementById('ic_'+id);
-        card2?.classList.add('shake'); setTimeout(()=>card2?.classList.remove('shake'),350);
-        render();
-        if(_sid) saveItem(_sid,id,_results[id]);
+      const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      const insp=getInsps(S.selectedEq);
+      if(insp?.results[iid])return;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>45){
+        if(dx>0)setResult(iid,'ok');else setResult(iid,'ng');
       }
     },{passive:true});
   });
-
-  // Comments
-  document.querySelectorAll('[data-comment]').forEach(ta=>{
-    ta.addEventListener('change',async()=>{
-      const id=ta.dataset.comment;
-      _results[id]={..._results[id],comment:ta.value};
-      if(_sid) await saveItem(_sid,id,_results[id]);
-    });
-  });
-
-  // Photos
-  document.querySelectorAll('[data-photo]').forEach(b=>{
-    b.addEventListener('click',()=>{ document.getElementById('fi_'+b.dataset.photo)?.click(); });
-  });
-  document.querySelectorAll('[data-rephoto]').forEach(b=>{
-    b.addEventListener('click',()=>{ document.getElementById('fi_'+b.dataset.rephoto)?.click(); });
-  });
-  document.querySelectorAll('input[type=file]').forEach(inp=>{
-    inp.addEventListener('change',async()=>{
-      const file=inp.files[0]; if(!file) return;
-      const id=inp.id.replace('fi_','');
-      _uploading[id]=true; render();
-      try{
-        const path=`inspections/${_sid||'tmp'}/${id}_${Date.now()}.jpg`;
-        const url=await uploadPhoto(file,path);
-        _results[id]={..._results[id],photoUrl:url};
-        if(_sid){
-          await saveItem(_sid,id,_results[id]);
-          await saveAnomaly({sid:_sid,iid:id,label:ITEMS[state.executing.type.id]?.find(x=>x.id===id)?.label||'',comment:_results[id].comment||'',photoUrl:url,equip:state.executing.equip});
-        }
-      }finally{ _uploading[id]=false; render(); }
-    });
-  });
 }
-
-// ─── Name Dialog ─────────────────────────────────────────────
-function nameDialogHTML(){
-  return `<div class="overlay overlay-center" id="nameOverlay">
-    <div class="modal-card">
-      <div style="font-size:32px;text-align:center;margin-bottom:8px">👤</div>
-      <div class="modal-title">点検者名を入力</div>
-      <p class="modal-body" style="margin-bottom:16px">お名前を入力してください</p>
-      <input class="inp" id="nameInp" placeholder="例：山田 太郎" value="${localStorage.getItem('inspName')||''}" style="margin-bottom:14px"/>
-      <button class="btn btn-blue" id="saveName" style="width:100%;height:50px;border-radius:14px;font-size:16px">保存する</button>
-    </div>
-  </div>`;
-}
-function bindNameDialog(){
-  document.getElementById('saveName').addEventListener('click',()=>{
-    const v=document.getElementById('nameInp').value.trim();
-    if(v){ haptic('success'); localStorage.setItem('inspName',v); }
-    state.nameDialog=false; render();
-  });
-  document.getElementById('nameInp').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('saveName').click(); });
-}
-
-// ─── Boot ────────────────────────────────────────────────────
 render();
 </script>
-</body>
-</html>
