@@ -48,8 +48,21 @@
 .finput{width:100%;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:14px;background:var(--color-background-primary);color:var(--color-text-primary);}
 .flabel{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:5px;}
 .toast{position:absolute;bottom:75px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:18px;font-size:13px;font-weight:500;color:white;z-index:99;white-space:nowrap;pointer-events:none;}
+.pdf-btn{background:rgba(255,255,255,0.22);border:none;color:white;padding:5px 11px;border-radius:14px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.pdf-btn:active{opacity:.7;}
+@media print{
+  body{margin:0;padding:0;background:white;}
+  #app-wrap{max-width:100%!important;border:none!important;border-radius:0!important;min-height:unset!important;overflow:visible!important;}
+  #screen{height:auto!important;display:block!important;}
+  .btabs,.pdf-btn,.hdr-back{display:none!important;}
+  .scroll{overflow:visible!important;padding-bottom:20px!important;}
+  #print-report{display:block!important;}
+  #main-app{display:none!important;}
+}
+@media screen{#print-report{display:none;}}
 </style>
 <div id="app-wrap"><div id="screen" style="display:flex;flex-direction:column;height:700px;"></div></div>
+<div id="print-report"></div>
 <script>
 const TODAY='2026-04-09';
 const S={
@@ -214,7 +227,53 @@ function fmtDate(ds){
 }
 function hdr(title,back,extra=''){
   const bb=back?`<button class="hdr-back" onclick="nav('${back}')">‹</button>`:`<div style="width:30px;"></div>`;
-  return`<div class="hdr">${bb}<span class="hdr-title">${title}</span>${extra}</div>`;
+  const pdfBtn=`<button class="pdf-btn" onclick="printReport()" title="PDF出力">🖨 PDF</button>`;
+  return`<div class="hdr">${bb}<span class="hdr-title">${title}</span>${extra}${pdfBtn}</div>`;
+}
+function printReport(){
+  const tots=S.lines.reduce((s,l)=>s+l.equip.length,0);
+  const pa=pendApprovals().length,oa=openAnoms().length;
+  let rows='';
+  for(const l of S.lines){
+    for(const eq of l.equip){
+      const st=eqStatus(eq.id);
+      const insp=S.insps[eq.id];
+      const items=typeItems(eq,S.inspType);
+      const done=insp?items.filter(i=>insp.results[i.id]).length:0;
+      const ng=insp?items.filter(i=>insp.results[i.id]?.r==='ng').length:0;
+      const stLabel=st==='done'?'完了':st==='ng'?'異常':st==='partial'?done+'/'+items.length+'件':'未実施';
+      const stColor=st==='done'?'#3B6D11':st==='ng'?'#A32D2D':st==='partial'?'#854F0B':'#6B7280';
+      rows+=`<tr><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${l.name}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${eq.name}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;color:${stColor};font-weight:500;">${stLabel}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${ng>0?'異常 '+ng+'件':'−'}</td></tr>`;
+    }
+  }
+  let anomRows='';
+  for(const a of S.anomalies.filter(x=>x.status!=='resolved')){
+    const eq=getEq(a.eid);const l=eq?S.lines.find(ln=>ln.id===a.lid):null;
+    const stLabel=a.status==='open'?'未対応':'対応中';
+    const stColor=a.status==='open'?'#A32D2D':'#854F0B';
+    anomRows+=`<tr><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${l?.name||''}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${eq?.name||''}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${a.iname}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;color:${stColor};font-weight:500;">${stLabel}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${a.comment}</td></tr>`;
+  }
+  const pr=document.getElementById('print-report');
+  pr.innerHTML=`<div style="font-family:sans-serif;padding:20px;color:#1A1A1A;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #E24B4A;padding-bottom:10px;margin-bottom:16px;">
+      <div><h1 style="font-size:18px;margin:0;color:#E24B4A;">日常点検レポート</h1><div style="font-size:12px;color:#6B7280;margin-top:3px;">${fmtDate(TODAY)} ／ ${S.inspType}</div></div>
+      <div style="font-size:11px;color:#6B7280;text-align:right;">ライン ${S.lines.length} ／ 設備 ${tots}台<br>承認待 ${pa}件 ／ 異常 ${oa}件</div>
+    </div>
+    <h2 style="font-size:14px;margin:0 0 8px;">点検状況一覧</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
+      <thead><tr style="background:#F3F4F6;"><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">ライン</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">設備</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">状態</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">異常</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${anomRows?`<h2 style="font-size:14px;margin:0 0 8px;">未解決の異常</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="background:#FEF3F3;"><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">ライン</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">設備</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">項目</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">状態</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">コメント</th></tr></thead>
+      <tbody>${anomRows}</tbody>
+    </table>`:'<div style="color:#3B6D11;font-size:13px;">✓ 未解決の異常はありません</div>'}
+    <div style="margin-top:24px;border-top:0.5px solid #E0E0E0;padding-top:12px;font-size:11px;color:#9CA3AF;display:flex;justify-content:space-between;">
+      <span>出力日時: ${new Date().toLocaleString('ja-JP')}</span><span>日常点検管理システム</span>
+    </div>
+  </div>`;
+  window.print();
 }
 function btabs(){
   const pa=pendApprovals().length,oa=openAnoms().length;
