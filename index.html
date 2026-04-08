@@ -1,124 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>日常点検システム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --primary:#E24B4A;--primary-dk:#A32D2D;
-  --ok:#3B6D11;--ok-bg:#EAF3DE;
-  --ng:#A32D2D;--ng-bg:#FCEBEB;
-  --warn-bg:#FAEEDA;--warn:#854F0B;
-  --color-background-primary:#FFFFFF;
-  --color-background-secondary:#F3F4F6;
-  --color-background-tertiary:#F0F0F0;
-  --color-text-primary:#1A1A1A;
-  --color-text-secondary:#6B7280;
-  --color-border-tertiary:#E0E0E0;
-  --color-border-secondary:#C9CDD6;
-  --border-radius-lg:12px;
-  --border-radius-md:8px;
+:root {
+  --red:      #E24B4A;
+  --red-dk:   #C73A39;
+  --red-lt:   #FDECEA;
+  --green:    #2E7D32;
+  --green-lt: #E8F5E9;
+  --orange:   #E65100;
+  --orange-lt:#FFF3E0;
+  --bg:       #FFFFFF;
+  --surface:  #FFFFFF;
+  --border:   rgba(0,0,0,0.07);
+  --text:     #111111;
+  --text2:    #666666;
+  --text3:    #AAAAAA;
+  --r-sm:     10px;
+  --r:        16px;
+  --r-lg:     20px;
+  --shadow:   0 2px 12px rgba(0,0,0,0.07);
+  --shadow-md:0 4px 20px rgba(0,0,0,0.10);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111111;--surface:#1E1E1E;
+    --border:rgba(255,255,255,0.09);
+    --text:#F0F0F0;--text2:#999999;--text3:#555555;
+    --shadow:0 2px 12px rgba(0,0,0,0.4);
+    --shadow-md:0 4px 24px rgba(0,0,0,0.5);
+    --red-lt:#2A1010;--green-lt:#0D2010;--orange-lt:#251800;
+  }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;width:100%;}
-
-/* ── Layout ── */
-#app-wrap{display:flex;width:100%;height:100vh;background:var(--color-background-tertiary);overflow:hidden;}
-#sidebar{width:220px;flex-shrink:0;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;overflow:hidden;}
-#screen{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;position:relative;}
+html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;color:var(--text);}
+#app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);}
+.screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 
 /* ── Header ── */
-.hdr{background:var(--primary);color:white;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.hdr-title{font-size:17px;font-weight:500;flex:1;}
-.hdr-back{background:rgba(255,255,255,0.22);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.hdr-act{background:rgba(255,255,255,0.2);border:none;color:white;padding:5px 12px;border-radius:14px;cursor:pointer;font-size:13px;}
-
-/* ── Sidebar (desktop) ── */
-.sb-brand{background:var(--primary);padding:16px;color:white;flex-shrink:0;}
-.sb-brand-title{font-size:14px;font-weight:600;}
-.sb-brand-sub{font-size:11px;opacity:.75;margin-top:2px;}
-.sb-nav{padding:10px 0;flex:1;overflow-y:auto;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:11px 18px;cursor:pointer;font-size:14px;color:var(--color-text-secondary);border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;position:relative;}
-.sb-item:hover{background:var(--color-background-secondary);}
-.sb-item.active{background:rgba(226,75,74,0.09);color:var(--primary);font-weight:500;}
-.sb-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--primary);border-radius:0 3px 3px 0;}
-.sb-ic{font-size:18px;width:22px;text-align:center;}
-.sb-badge{margin-left:auto;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;font-size:11px;}
-.sb-section{font-size:10px;font-weight:600;color:var(--color-text-secondary);padding:14px 18px 4px;letter-spacing:.05em;opacity:.7;}
-.sb-pdf{margin:10px 12px;padding:10px;background:var(--color-background-secondary);border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:13px;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;width:calc(100% - 24px);}
-.sb-pdf:hover{background:var(--color-border-tertiary);}
-
-/* ── Bottom tabs (mobile only) ── */
-.btabs{display:flex;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:6px 0 10px;position:absolute;bottom:0;left:0;right:0;}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;color:var(--color-text-secondary);}
-.tab.active{color:var(--primary);}
-.ti{font-size:20px;}
-
-/* ── Cards & Content ── */
-.scroll{overflow-y:auto;padding:14px 16px 90px;flex:1;}
-.card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px;margin-bottom:10px;}
-.card-tap{cursor:pointer;transition:opacity .15s;}.card-tap:active{opacity:.75;}
-.badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;white-space:nowrap;}
-.bOk{background:var(--ok-bg);color:var(--ok);}
-.bNg{background:var(--ng-bg);color:var(--ng);}
-.bWarn{background:var(--warn-bg);color:var(--warn);}
-.bGray{background:var(--color-background-secondary);color:var(--color-text-secondary);}
-.icard{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:2px solid var(--color-border-tertiary);padding:16px;margin-bottom:10px;transition:border-color .2s,background .2s;user-select:none;touch-action:pan-y;}
-.icard.rok{border-color:var(--ok);background:var(--ok-bg);}
-.icard.rng{border-color:var(--ng);background:var(--ng-bg);}
-.jbtn{width:68px;height:68px;border-radius:50%;border:2px solid;cursor:pointer;font-size:26px;font-weight:500;transition:transform .1s;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
-.jbtn:active{transform:scale(.9);}
-.jok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);}
-.jok.sel{background:var(--ok);color:white;}
-.jng{background:var(--ng-bg);color:var(--ng);border-color:var(--ng);}
-.jng.sel{background:var(--ng);color:white;}
-.pbtn{background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);padding:13px;font-size:15px;font-weight:500;cursor:pointer;width:100%;transition:opacity .15s;}
-.pbtn:active{opacity:.8;}
-.overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:50;display:flex;align-items:flex-end;}
-.sheet{background:var(--color-background-primary);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:85%;overflow-y:auto;}
-.finput{width:100%;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:14px;background:var(--color-background-primary);color:var(--color-text-primary);}
-.flabel{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:5px;}
-.toast{position:absolute;bottom:75px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:18px;font-size:13px;font-weight:500;color:white;z-index:99;white-space:nowrap;pointer-events:none;}
-.pdf-btn{background:rgba(255,255,255,0.22);border:none;color:white;padding:5px 11px;border-radius:14px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.pdf-btn:active{opacity:.7;}
-
-/* ── Desktop layout (≥768px) ── */
-@media(min-width:768px){
-  #sidebar{display:flex;}
-  .btabs{display:none!important;}
-  .hdr-back{display:flex;}
-  .scroll{padding-bottom:20px;}
-  .toast{bottom:20px;}
-  /* wider grid for home quick actions */
-  .home-grid{grid-template-columns:repeat(4,1fr)!important;}
+.phdr{
+  background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 22px;
+  display:flex;align-items:flex-end;gap:14px;
+  flex-shrink:0;overflow:hidden;position:relative;z-index:10;
 }
-/* ── Mobile layout (<768px) ── */
-@media(max-width:767px){
-  #sidebar{display:none;}
-  .btabs{display:flex;}
-  .scroll{padding-bottom:90px;}
+.phdr::before{content:'';position:absolute;top:-60px;right:-50px;width:220px;height:220px;background:rgba(255,255,255,0.07);border-radius:50%;pointer-events:none;}
+.hdr-back-btn{
+  width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:white;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;z-index:1;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform .12s,background .15s;touch-action:manipulation;
 }
-@media print{
-  body{margin:0;padding:0;background:white;}
-  #app-wrap{max-width:100%!important;border:none!important;border-radius:0!important;min-height:unset!important;overflow:visible!important;}
-  #screen{height:auto!important;display:block!important;}
-  .btabs,.pdf-btn,.hdr-back{display:none!important;}
-  .scroll{overflow:visible!important;padding-bottom:20px!important;}
-  #print-report{display:block!important;}
-  #main-app{display:none!important;}
+.hdr-back-btn:active{transform:scale(.90);background:rgba(255,255,255,0.28);}
+.hdr-center{flex:1;position:relative;z-index:1;min-width:0;}
+.hdr-eyebrow{font-size:11px;color:rgba(255,255,255,0.72);font-weight:500;letter-spacing:.5px;margin-bottom:3px;}
+.hdr-title{font-size:22px;font-weight:700;color:white;letter-spacing:-.4px;line-height:1.1;}
+.hdr-action-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.25);border-radius:22px;
+  padding:8px 16px;height:38px;color:white;font-size:13px;font-weight:500;
+  cursor:pointer;flex-shrink:0;white-space:nowrap;position:relative;z-index:1;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:transform .12s;touch-action:manipulation;font-family:inherit;
 }
-@media screen{#print-report{display:none;}}
+.hdr-action-btn:active{transform:scale(.94);}
+.home-hero{
+  background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);
+  padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 28px;
+  flex-shrink:0;position:relative;overflow:hidden;
+}
+.home-hero::before{content:'';position:absolute;top:-80px;right:-40px;width:260px;height:260px;background:rgba(255,255,255,0.07);border-radius:50%;pointer-events:none;}
+.home-hero::after{content:'';position:absolute;bottom:-100px;left:-30px;width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%;pointer-events:none;}
+
+/* ── Scroll ── */
+.scroll{overflow-y:auto;flex:1;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;}
+
+/* ── Cards ── */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:0.5px solid var(--border);}
+.card-tap{cursor:pointer;transition:transform .12s,opacity .12s;}
+.card-tap:active{transform:scale(.98);opacity:.85;}
+.section-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.4px;margin:18px 0 8px 2px;}
+.section-label:first-child{margin-top:0;}
+
+/* ── Inspection Cards ── */
+.icard{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:10px;border:1.5px solid var(--border);transition:border-color .2s,background .2s;user-select:none;}
+.icard.rok{border-color:var(--green);background:var(--green-lt);}
+.icard.rng{border-color:var(--red);background:var(--red-lt);}
+
+/* ── Judge Buttons ── */
+.jbtn{flex:1;height:52px;border-radius:14px;border:1.5px solid;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
+.jbtn:active{transform:scale(.94);}
+.jok{background:var(--green-lt);color:var(--green);border-color:var(--green);}
+.jok:active{background:var(--green);color:white;box-shadow:0 4px 16px rgba(46,125,50,0.3);}
+.jng{background:var(--red-lt);color:var(--red);border-color:var(--red);}
+.jng:active{background:var(--red);color:white;box-shadow:0 4px 16px rgba(226,75,74,0.3);}
+@media(min-width:769px){
+  .jok:hover{background:var(--green);color:white;}
+  .jng:hover{background:var(--red);color:white;}
+}
+
+/* ── Badges ── */
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.bOk{background:var(--green-lt);color:var(--green);}
+.bNg{background:var(--red-lt);color:var(--red);}
+.bWarn{background:var(--orange-lt);color:var(--orange);}
+.bGray{background:rgba(0,0,0,.06);color:var(--text2);}
+
+/* ── Bottom Tabs ── */
+.btabs{display:flex;border-top:0.5px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(255,255,255,0.93);}
+@media(prefers-color-scheme:dark){.btabs{background:rgba(30,30,30,0.93);}}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;font-weight:500;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
+.tab.active{color:var(--red);}
+
+/* ── Progress ── */
+.prog-wrap{background:rgba(0,0,0,.07);border-radius:6px;height:8px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+
+/* ── Pill Selector ── */
+.pill-row{display:flex;gap:4px;background:rgba(0,0,0,.05);border-radius:12px;padding:3px;}
+.pill{flex:1;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;}
+.pill.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+
+/* ── Bulk Bar ── */
+.bulk-bar{background:linear-gradient(90deg,rgba(226,75,74,.07),transparent);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid rgba(226,75,74,.15);}
+
+/* ── Overlay / Sheet ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:50;display:flex;align-items:flex-end;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 24px);width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -8px 40px rgba(0,0,0,0.14);}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ── Form ── */
+.finput{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
+.finput:focus{border-color:var(--red);}
+.flabel{font-size:13px;color:var(--text2);display:block;margin-bottom:6px;font-weight:500;}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:22px;font-size:13px;font-weight:500;color:white;z-index:99;white-space:nowrap;pointer-events:none;animation:fadeUp .25s ease;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
+@keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* ── Utility ── */
+.icon-circle{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text2);}
+.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#E24B4A,#C73A39);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(194,42,42,0.3);transition:transform .12s;touch-action:manipulation;font-family:inherit;}
+.btn-primary:active{transform:scale(.97);}
+.btn-ghost{width:100%;padding:13px;background:none;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;color:var(--text2);transition:transform .12s;touch-action:manipulation;font-family:inherit;}
+.btn-ghost:active{transform:scale(.97);}
+@keyframes cardIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card,.icard{animation:cardIn .2s ease both;}
+
+@media(min-width:769px){
+  #app{max-width:900px;}
+  .btabs{max-width:900px;}
+  .hdr-action-btn:hover{background:rgba(255,255,255,0.3);}
+}
 </style>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<div id="app-wrap">
-  <div id="sidebar">
-    <div class="sb-brand">
-      <div class="sb-brand-title">日常点検システム</div>
-      <div class="sb-brand-sub" id="sb-date"></div>
-    </div>
-    <nav class="sb-nav" id="sb-nav"></nav>
-    <button class="sb-pdf" onclick="printReport()">🖨 PDF出力</button>
-  </div>
-  <div id="screen" style="display:flex;flex-direction:column;"></div>
-</div>
-<div id="print-report"></div>
+</head>
+<body>
+<div id="app"><div id="screen" class="screen"></div></div>
 <script>
-const TODAY='2026-04-09';
+const TODAY=(()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
 const S={
   view:'HOME',selectedLine:null,selectedEq:null,inspType:'毎日点検',
   bulkActive:false,bulkLineId:null,bulkIdx:0,
@@ -152,29 +202,23 @@ const S={
     {id:'AN2',lid:'L2',eid:'E6',iid:'i63',iname:'刃具摩耗確認',comment:'摩耗が著しい。交換が必要',status:'in-progress',date:'2026-04-08',by:'佐藤花子'},
   ],
 };
+
 function getLn(id){return S.lines.find(l=>l.id===id);}
 function getEq(id){for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}return null;}
 function getInsps(eid){return S.insps[eid];}
 function typeItems(eq,type){
-  const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};
-  const t=m[type]||'毎日';
+  const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};const t=m[type]||'毎日';
   if(t==='毎日')return eq.items.filter(i=>i.t==='毎日');
   if(t==='all2')return eq.items.filter(i=>i.t==='毎日'||i.t==='10日');
   return eq.items;
 }
 function lineStats(lid){
-  const l=getLn(lid);
-  let done=0,ng=0,pend=0;
-  for(const eq of l.equip){
-    const st=eqStatus(eq.id);
-    if(st==='done')done++;else if(st==='ng')ng++;else pend++;
-  }
+  const l=getLn(lid);let done=0,ng=0,pend=0;
+  for(const eq of l.equip){const st=eqStatus(eq.id);if(st==='done')done++;else if(st==='ng')ng++;else pend++;}
   return{total:l.equip.length,done,ng,pend};
 }
 function eqStatus(eid){
-  const eq=getEq(eid);
-  const insp=getInsps(eid);
-  const items=typeItems(eq,S.inspType);
+  const eq=getEq(eid);const insp=getInsps(eid);const items=typeItems(eq,S.inspType);
   if(!insp||insp.type!==S.inspType||insp.date!==TODAY)return'pending';
   const rs=insp.results;
   if(items.some(i=>rs[i.id]?.r==='ng'))return'ng';
@@ -183,68 +227,47 @@ function eqStatus(eid){
 }
 function pendApprovals(){return S.approvals.filter(a=>a.status==='pending');}
 function openAnoms(){return S.anomalies.filter(a=>a.status!=='resolved');}
+
 function toast(msg,type='ok'){
-  const w=document.getElementById('app-wrap');
-  const old=w.querySelector('.toast');if(old)old.remove();
-  const t=document.createElement('div');
-  t.className='toast';
-  t.style.background=type==='ok'?'#27500A':type==='warn'?'#854F0B':'#185FA5';
-  t.textContent=msg;w.appendChild(t);
-  setTimeout(()=>t.remove(),2500);
+  const old=document.querySelector('.toast');if(old)old.remove();
+  const t=document.createElement('div');t.className='toast';
+  t.style.background=type==='ok'?'#1B5E20':type==='warn'?'#BF360C':'#0D47A1';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
 }
-function nav(view,data={}){
-  Object.assign(S,{view},data);render();
-}
+function nav(view,data={}){Object.assign(S,{view},data);window.scrollTo(0,0);render();}
 function setResult(itemId,r){
   if(r==='ng'){S.ngModal={on:true,itemId,comment:'',photos:0};render();return;}
   const eid=S.selectedEq;
   if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
-  S.insps[eid].results[itemId]={r:'ok',comment:'',photos:0};
-  render();
+  S.insps[eid].results[itemId]={r:'ok',comment:'',photos:0};render();
 }
 function bulkOk(){
-  const eid=S.selectedEq;const eq=getEq(eid);
-  const items=typeItems(eq,S.inspType);
+  const eid=S.selectedEq;const eq=getEq(eid);const items=typeItems(eq,S.inspType);
   if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
-  let cnt=0;
-  items.forEach(it=>{if(!S.insps[eid].results[it.id]){S.insps[eid].results[it.id]={r:'ok',comment:'',photos:0};cnt++;}});
-  toast(cnt>0?`${cnt}件を〇に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
+  let cnt=0;items.forEach(it=>{if(!S.insps[eid].results[it.id]){S.insps[eid].results[it.id]={r:'ok',comment:'',photos:0};cnt++;}});
+  toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');render();
 }
-function resetResult(iid){
-  const eid=S.selectedEq;
-  if(S.insps[eid])delete S.insps[eid].results[iid];
-  render();
-}
+function resetResult(iid){const eid=S.selectedEq;if(S.insps[eid])delete S.insps[eid].results[iid];render();}
 function submitInsp(){
-  const eid=S.selectedEq;const eq=getEq(eid);
-  const items=typeItems(eq,S.inspType);
-  const rs=S.insps[eid]?.results||{};
-  const pend=items.filter(i=>!rs[i.id]).length;
+  const eid=S.selectedEq;const eq=getEq(eid);const items=typeItems(eq,S.inspType);
+  const rs=S.insps[eid]?.results||{};const pend=items.filter(i=>!rs[i.id]).length;
   if(pend>0){toast(`未入力が${pend}件あります`,'warn');return;}
-  if(S.inspType!=='毎日点検'){
-    S.approvals.push({id:'A'+Date.now(),lid:eq.lid,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});
-    toast('点検完了。承認申請しました');
-  }else toast('点検完了しました');
+  if(S.inspType!=='毎日点検'){S.approvals.push({id:'A'+Date.now(),lid:eq.lid,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});toast('点検完了。承認申請しました');}
+  else toast('点検完了しました');
   if(S.bulkActive){
-    const l=getLn(S.bulkLineId);
-    const ni=S.bulkIdx+1;
+    const l=getLn(S.bulkLineId);const ni=S.bulkIdx+1;
     if(ni<l.equip.length){S.bulkIdx=ni;S.selectedEq=l.equip[ni].id;render();}
     else{S.bulkActive=false;toast('ライン点検完了！');nav('LINE_DETAIL',{selectedLine:S.bulkLineId});}
   }else nav('LINE_DETAIL');
 }
 function approve(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='approved';a.approver='管理者';}toast('承認しました');render();}
 function reject(id){const a=S.approvals.find(x=>x.id===id);if(a)a.status='rejected';toast('差し戻しました','warn');render();}
-function anomStatus(id,st){
-  const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;
-  toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();
-}
+function anomStatus(id,st){const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();}
 function confirmNg(){
   const c=document.getElementById('ng-c')?.value?.trim()||'';
   if(!c){toast('コメントを入力してください','warn');return;}
   if(S.ngModal.photos===0){toast('写真を追加してください','warn');return;}
-  S.ngModal.comment=c;
-  const eid=S.selectedEq;const eq=getEq(eid);
-  const iid=S.ngModal.itemId;const item=eq.items.find(i=>i.id===iid);
+  const eid=S.selectedEq;const eq=getEq(eid);const iid=S.ngModal.itemId;const item=eq.items.find(i=>i.id===iid);
   if(!S.insps[eid])S.insps[eid]={date:TODAY,type:S.inspType,results:{}};
   S.insps[eid].results[iid]={r:'ng',comment:c,photos:S.ngModal.photos};
   if(!S.anomalies.find(a=>a.eid===eid&&a.iid===iid&&a.status!=='resolved')){
@@ -259,15 +282,12 @@ function addEqConfirm(lid){
   S.modal=null;toast(`${n}を追加しました`);render();
 }
 function addLineConfirm(){
-  const n=document.getElementById('mln-n')?.value?.trim();
-  const d=document.getElementById('mln-d')?.value?.trim()||'';
+  const n=document.getElementById('mln-n')?.value?.trim();const d=document.getElementById('mln-d')?.value?.trim()||'';
   if(!n){toast('ライン名を入力してください','warn');return;}
-  S.lines.push({id:'L'+Date.now(),name:n,desc:d,equip:[]});
-  S.modal=null;toast(`${n}を追加しました`);render();
+  S.lines.push({id:'L'+Date.now(),name:n,desc:d,equip:[]});S.modal=null;toast(`${n}を追加しました`);render();
 }
 function delEq(eid){
-  const eq=getEq(eid);
-  if(!confirm(`${eq.name}を削除しますか？`))return;
+  const eq=getEq(eid);if(!confirm(`${eq.name}を削除しますか？`))return;
   for(const l of S.lines){const i=l.equip.findIndex(e=>e.id===eid);if(i!==-1){l.equip.splice(i,1);break;}}
   toast('設備を削除しました');render();
 }
@@ -279,369 +299,351 @@ function fmtDate(ds){
   const d=new Date(ds);const dw=['日','月','火','水','木','金','土'];
   return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${dw[d.getDay()]})`;
 }
-function hdr(title,back,extra=''){
-  const bb=back?`<button class="hdr-back" onclick="nav('${back}')">‹</button>`:`<div style="width:30px;"></div>`;
-  const pdfBtn=`<button class="pdf-btn" onclick="printReport()" title="PDF出力">🖨 PDF</button>`;
-  return`<div class="hdr">${bb}<span class="hdr-title">${title}</span>${extra}${pdfBtn}</div>`;
+
+const BACK_ICO=`<svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M9 1L2 8.5L9 16" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const PDF_ICO=`<svg width="14" height="16" viewBox="0 0 14 16" fill="none"><rect x="1" y="1" width="10" height="14" rx="2" stroke="white" stroke-width="1.6"/><path d="M3.5 6h6M3.5 9h4" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const PLAY_ICO=`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polygon points="2,1 12,6.5 2,12" fill="white"/></svg>`;
+const CHEVR=`<svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="color:var(--text3)"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function phdr(title,back,eyebrow='',right=''){
+  const backEl=back?`<button class="hdr-back-btn" onclick="nav('${back}')">${BACK_ICO}</button>`:`<div style="width:40px;flex-shrink:0;"></div>`;
+  return`<div class="phdr">${backEl}<div class="hdr-center">${eyebrow?`<div class="hdr-eyebrow">${eyebrow}</div>`:''}<div class="hdr-title">${title}</div></div>${right||`<div style="width:40px;flex-shrink:0;"></div>`}</div>`;
 }
-function printReport(){
-  const tots=S.lines.reduce((s,l)=>s+l.equip.length,0);
-  const pa=pendApprovals().length,oa=openAnoms().length;
-  let rows='';
-  for(const l of S.lines){
-    for(const eq of l.equip){
-      const st=eqStatus(eq.id);
-      const insp=S.insps[eq.id];
-      const items=typeItems(eq,S.inspType);
-      const done=insp?items.filter(i=>insp.results[i.id]).length:0;
-      const ng=insp?items.filter(i=>insp.results[i.id]?.r==='ng').length:0;
-      const stLabel=st==='done'?'完了':st==='ng'?'異常':st==='partial'?done+'/'+items.length+'件':'未実施';
-      const stColor=st==='done'?'#3B6D11':st==='ng'?'#A32D2D':st==='partial'?'#854F0B':'#6B7280';
-      rows+=`<tr><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${l.name}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${eq.name}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;color:${stColor};font-weight:500;">${stLabel}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${ng>0?'異常 '+ng+'件':'−'}</td></tr>`;
-    }
-  }
-  let anomRows='';
-  for(const a of S.anomalies.filter(x=>x.status!=='resolved')){
-    const eq=getEq(a.eid);const l=eq?S.lines.find(ln=>ln.id===a.lid):null;
-    const stLabel=a.status==='open'?'未対応':'対応中';
-    const stColor=a.status==='open'?'#A32D2D':'#854F0B';
-    anomRows+=`<tr><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${l?.name||''}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${eq?.name||''}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${a.iname}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;color:${stColor};font-weight:500;">${stLabel}</td><td style="padding:7px 9px;border:0.5px solid #E0E0E0;">${a.comment}</td></tr>`;
-  }
-  const pr=document.getElementById('print-report');
-  pr.innerHTML=`<div style="font-family:sans-serif;padding:20px;color:#1A1A1A;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #E24B4A;padding-bottom:10px;margin-bottom:16px;">
-      <div><h1 style="font-size:18px;margin:0;color:#E24B4A;">日常点検レポート</h1><div style="font-size:12px;color:#6B7280;margin-top:3px;">${fmtDate(TODAY)} ／ ${S.inspType}</div></div>
-      <div style="font-size:11px;color:#6B7280;text-align:right;">ライン ${S.lines.length} ／ 設備 ${tots}台<br>承認待 ${pa}件 ／ 異常 ${oa}件</div>
-    </div>
-    <h2 style="font-size:14px;margin:0 0 8px;">点検状況一覧</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
-      <thead><tr style="background:#F3F4F6;"><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">ライン</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">設備</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">状態</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">異常</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    ${anomRows?`<h2 style="font-size:14px;margin:0 0 8px;">未解決の異常</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead><tr style="background:#FEF3F3;"><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">ライン</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">設備</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">項目</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">状態</th><th style="text-align:left;padding:7px 9px;border:0.5px solid #E0E0E0;">コメント</th></tr></thead>
-      <tbody>${anomRows}</tbody>
-    </table>`:'<div style="color:#3B6D11;font-size:13px;">✓ 未解決の異常はありません</div>'}
-    <div style="margin-top:24px;border-top:0.5px solid #E0E0E0;padding-top:12px;font-size:11px;color:#9CA3AF;display:flex;justify-content:space-between;">
-      <span>出力日時: ${new Date().toLocaleString('ja-JP')}</span><span>日常点検管理システム</span>
-    </div>
-  </div>`;
-  window.print();
+function pdfBtn(){
+  return`<button class="hdr-action-btn" onclick="toast('PDF出力（実装予定）')">${PDF_ICO} PDF</button>`;
 }
 function btabs(){
   const pa=pendApprovals().length,oa=openAnoms().length;
-  const tabs=[['HOME','ホーム','⌂'],['APPROVAL','承認','✓'],['ANOMALY','異常','⚠'],['HISTORY','履歴','≡']];
-  return`<div class="btabs">${tabs.map(([v,l,ic])=>`
+  const tabs=[
+    ['HOME','ホーム',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 20v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`],
+    ['APPROVAL','承認',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M7 11l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`],
+    ['ANOMALY','異常',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L2 19h18L11 3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M11 9v4M11 15.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`],
+    ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
+  ];
+  return`<div class="btabs">${tabs.map(([v,l,ico])=>`
     <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')">
-      <div style="position:relative;display:inline-block;">
-        <span class="ti">${ic}</span>
-        ${(v==='APPROVAL'&&pa>0)?`<div style="position:absolute;top:-3px;right:-8px;background:var(--primary);color:white;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">${pa}</div>`:''}
-        ${(v==='ANOMALY'&&oa>0)?`<div style="position:absolute;top:-3px;right:-8px;background:#BA7517;color:white;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;">${oa}</div>`:''}
+      <div style="position:relative;display:inline-flex;">
+        ${ico}
+        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:var(--red);color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);padding:0 2px;">${pa}</div>`:``}
+        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:var(--orange);color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);padding:0 2px;">${oa}</div>`:``}
       </div>
       <span>${l}</span>
     </button>`).join('')}</div>`;
 }
+
+/* ═══════════ HOME ═══════════ */
 function renderHome(){
-  const pa=pendApprovals().length,oa=openAnoms().length;
-  const tots=S.lines.reduce((s,l)=>s+l.equip.length,0);
-  let cards=S.lines.map(l=>{
-    const st=lineStats(l.id);
-    return`<div class="card card-tap" onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
-      <div><div style="font-weight:500;font-size:15px;margin-bottom:3px;">${l.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l.desc} · 設備${st.total}台</div></div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        ${st.ng>0?`<span class="badge bNg">異常 ${st.ng}</span>`:''}
-        ${st.pend>0?`<span class="badge bGray">未実施 ${st.pend}</span>`:''}
-        ${st.pend===0&&st.ng===0?`<span class="badge bOk">完了</span>`:''}
-        <span style="color:var(--color-text-secondary);font-size:18px;">›</span>
+  const pa=pendApprovals().length,oa=openAnoms().length,tots=S.lines.reduce((s,l)=>s+l.equip.length,0);
+  const stats=[['ライン',S.lines.length,''],['設備',tots,''],['承認待ち',pa,''],['異常',oa,'warn']].map(([l,v,t])=>`
+    <div style="flex:1;background:rgba(255,255,255,${t==='warn'&&v>0?.25:.15});border-radius:12px;padding:12px 6px;text-align:center;backdrop-filter:blur(4px);">
+      <div style="font-size:9px;color:rgba(255,255,255,0.75);font-weight:600;letter-spacing:.5px;margin-bottom:3px;">${l}</div>
+      <div style="font-size:26px;font-weight:700;color:${t==='warn'&&v>0?'#FBBF24':'white'};line-height:1;">${v}</div>
+    </div>`).join('');
+  const lineCards=S.lines.map(l=>{
+    const st=lineStats(l.id);const pct=Math.round(st.done/st.total*100);
+    return`<div class="card card-tap" onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="icon-circle" style="background:${st.ng>0?'var(--red-lt)':st.pend===0?'var(--green-lt)':'rgba(0,0,0,0.05)'};">
+          <span style="font-size:20px;">${st.ng>0?'⚠️':st.pend===0?'✅':'🏭'}</span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="font-weight:600;font-size:15px;">${l.name}</div>
+            <span class="badge ${st.ng>0?'bNg':st.pend===0?'bOk':'bGray'}">${st.ng>0?`異常 ${st.ng}`:st.pend===0?'完了':`未 ${st.pend}`}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:7px;">${l.desc} · 設備 ${st.total}台</div>
+          <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${st.ng>0?'var(--red)':st.pend===0?'var(--green)':'#CCCCCC'};"></div></div>
+        </div>
+        ${CHEVR}
       </div>
     </div>`;
   }).join('');
   return`
-    <div style="background:var(--primary);padding:18px 16px 22px;color:white;flex-shrink:0;">
-      <div style="font-size:11px;opacity:.75;margin-bottom:2px;">日常点検システム</div>
-      <div style="font-size:19px;font-weight:500;">${fmtDate(TODAY)}</div>
-      <div style="display:flex;gap:10px;margin-top:14px;">
-        ${[['ライン',S.lines.length],['設備',tots],['承認待',pa],['異常',oa]].map(([l,v],i)=>`
-          <div style="flex:1;background:rgba(255,255,255,${i>=2&&v>0?.25:.15});border-radius:10px;padding:10px 6px;text-align:center;">
-            <div style="font-size:10px;opacity:.8;">${l}</div>
-            <div style="font-size:22px;font-weight:500;color:${i===3&&v>0?'#FBBF24':'white'};">${v}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-    <div class="scroll">
-      <div style="display:flex;gap:7px;margin-bottom:14px;">
-        ${['毎日点検','10日点検','月次点検'].map(t=>`
-          <button onclick="S.inspType='${t}';render();" style="flex:1;padding:7px 3px;border-radius:18px;border:${S.inspType===t?'none':'0.5px solid var(--color-border-tertiary)'};background:${S.inspType===t?'var(--primary)':'var(--color-background-primary)'};color:${S.inspType===t?'white':'var(--color-text-primary)'};font-size:12px;cursor:pointer;">${t}</button>`).join('')}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;">
-        <button onclick="nav('LINE_DETAIL',{selectedLine:S.lines[0].id})" style="background:var(--primary);color:white;border:none;border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;">
-          <div style="font-size:20px;margin-bottom:6px;">▶</div>
-          <div style="font-size:14px;font-weight:500;">点検開始</div>
-          <div style="font-size:11px;opacity:.8;">ライン一括点検</div>
-        </button>
-        <button onclick="nav('APPROVAL')" style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;position:relative;">
-          <div style="font-size:20px;margin-bottom:6px;">✓</div>
-          <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">承認確認</div>
-          <div style="font-size:11px;color:var(--color-text-secondary);">承認待ち ${pa}件</div>
-          ${pa>0?`<div style="position:absolute;top:8px;right:8px;background:var(--primary);color:white;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;">${pa}</div>`:''}
-        </button>
-      </div>
-      <div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin-bottom:8px;">ライン一覧</div>
-      ${cards}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px;" class="home-grid">
-        ${[['HISTORY','履歴','📋',''],['ANOMALY','異常管理','⚠',oa>0?`<div style="font-size:11px;color:var(--warn);">${oa}件未対応</div>`:''],
-           ['EQUIPMENT_MGMT','設備管理','⚙',''],['LINE_MGMT','ライン管理','🏭','']].map(([v,l,ic,sub])=>`
-          <button onclick="nav('${v}')" style="background:${v==='ANOMALY'&&oa>0?'var(--warn-bg)':'var(--color-background-primary)'};border:0.5px solid ${v==='ANOMALY'&&oa>0?'#EF9F27':'var(--color-border-tertiary)'};border-radius:var(--border-radius-lg);padding:14px;text-align:left;cursor:pointer;">
-            <div style="font-size:20px;margin-bottom:5px;">${ic}</div>
-            <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${l}</div>${sub}
-          </button>`).join('')}
-      </div>
-    </div>${btabs()}`;
-}
-function renderLineDetail(){
-  const l=getLn(S.selectedLine);if(!l)return renderHome();
-  const rows=l.equip.map(eq=>{
-    const st=eqStatus(eq.id);
-    const items=typeItems(eq,S.inspType);
-    const insp=getInsps(eq.id);
-    const done=insp?items.filter(i=>insp.results[i.id]).length:0;
-    const sm={pending:{lbl:'未実施',cls:'bGray'},partial:{lbl:`${done}/${items.length}`,cls:'bWarn'},done:{lbl:'完了',cls:'bOk'},ng:{lbl:'異常あり',cls:'bNg'}};
-    const s=sm[st];
-    return`<div class="card card-tap" onclick="nav('INSPECTION',{selectedEq:'${eq.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
-      <div><div style="font-weight:500;font-size:15px;margin-bottom:3px;">${eq.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">点検項目 ${items.length}件</div></div>
-      <div style="display:flex;align-items:center;gap:8px;"><span class="badge ${s.cls}">${s.lbl}</span><span style="color:var(--color-text-secondary);font-size:18px;">›</span></div>
-    </div>`;
-  }).join('');
-  return`${hdr(l.name,'HOME',`<button class="hdr-act" onclick="S.bulkActive=true;S.bulkLineId='${l.id}';S.bulkIdx=0;nav('INSPECTION',{selectedEq:'${l.equip[0].id}'})">一括点検</button>`)}
   <div class="scroll">
-    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">${S.inspType} · ${fmtDate(TODAY)}</div>
-    ${rows}
-    <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="width:100%;padding:12px;border:1.5px dashed var(--color-border-secondary);background:none;border-radius:var(--border-radius-lg);color:var(--color-text-secondary);cursor:pointer;font-size:14px;margin-top:2px;">+ 設備を追加</button>
+    <div class="pill-row" style="margin-bottom:16px;">
+      ${['毎日点検','10日点検','月次点検'].map(t=>`<button class="pill ${S.inspType===t?'active':''}" onclick="S.inspType='${t}';render();">${t}</button>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <button onclick="nav('LINE_DETAIL',{selectedLine:S.lines[0].id})" style="background:linear-gradient(135deg,#E24B4A,#C73A39);color:white;border:none;border-radius:var(--r);padding:18px 14px;text-align:left;cursor:pointer;box-shadow:0 4px 16px rgba(194,42,42,0.28);transition:transform .12s;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">
+        <div style="font-size:26px;margin-bottom:8px;">▶</div>
+        <div style="font-size:15px;font-weight:600;">点検開始</div>
+        <div style="font-size:11px;opacity:.8;margin-top:2px;">ライン一括点検</div>
+      </button>
+      <button onclick="nav('APPROVAL')" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:18px 14px;text-align:left;cursor:pointer;position:relative;box-shadow:var(--shadow);transition:transform .12s;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">
+        <div style="font-size:26px;margin-bottom:8px;">✓</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);">承認確認</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px;">待ち ${pa}件</div>
+        ${pa>0?`<div style="position:absolute;top:10px;right:10px;background:var(--red);color:white;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">${pa}</div>`:''}
+      </button>
+    </div>
+    <div class="section-label">ライン一覧</div>
+    ${lineCards}
+    <div class="section-label">管理</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${[['HISTORY','点検履歴','📋','記録を確認'],['ANOMALY','異常管理','⚠️',oa>0?`未対応 ${oa}件`:'異常なし'],['EQUIPMENT_MGMT','設備管理','⚙️','設備の編集'],['LINE_MGMT','ライン管理','🏭','ライン設定']].map(([v,l,ic,sub])=>`
+        <button onclick="nav('${v}')" style="background:${v==='ANOMALY'&&oa>0?'var(--orange-lt)':'var(--surface)'};border:0.5px solid ${v==='ANOMALY'&&oa>0?'rgba(230,81,0,.2)':'var(--border)'};border-radius:var(--r);padding:16px 14px;text-align:left;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">
+          <div style="font-size:22px;margin-bottom:7px;">${ic}</div>
+          <div style="font-size:13px;font-weight:600;color:${v==='ANOMALY'&&oa>0?'var(--orange)':'var(--text)'};">${l}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">${sub}</div>
+        </button>`).join('')}
+    </div>
   </div>${btabs()}`;
 }
-function renderInspection(){
-  const eq=getEq(S.selectedEq);if(!eq)return renderHome();
-  const items=typeItems(eq,S.inspType);
-  const insp=getInsps(S.selectedEq);
-  const rs=insp?.results||{};
-  const done=items.filter(i=>rs[i.id]).length;
-  const pend=items.length-done;
-  const pct=Math.round(done/items.length*100);
-  const bulkBar=S.bulkActive?`
-    <div style="background:var(--color-background-secondary);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <span style="font-size:12px;color:var(--color-text-secondary);">ライン一括点検</span>
-      <span style="font-size:13px;font-weight:500;">${S.bulkIdx+1}/${getLn(S.bulkLineId).equip.length}台目</span>
-    </div>`:'';
-  const icards=items.map((it,idx)=>{
-    const r=rs[it.id];const isOk=r?.r==='ok';const isNg=r?.r==='ng';
-    return`<div class="icard ${isOk?'rok':isNg?'rng':''}" data-iid="${it.id}" data-idx="${idx}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${r?'10px':'14px'};">
-        <div style="flex:1;">
-          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;">No.${idx+1} · ${it.t}点検</div>
-          <div style="font-size:16px;font-weight:500;">${it.n}</div>
-          ${r?.comment?`<div style="font-size:12px;color:var(--ng);margin-top:4px;">コメント: ${r.comment}</div>`:''}
-          ${r?.photos>0?`<div style="font-size:12px;color:var(--ng);">写真 ${r.photos}枚</div>`:''}
+
+/* ═══════════ LINE DETAIL ═══════════ */
+function renderLineDetail(){
+  const l=getLn(S.selectedLine);if(!l)return renderHome();
+  const bulkBtn=`<button class="hdr-action-btn" onclick="S.bulkActive=true;S.bulkLineId='${l.id}';S.bulkIdx=0;nav('INSPECTION',{selectedEq:'${l.equip[0].id}'})">${PLAY_ICO} 一括</button>`;
+  const rows=l.equip.map(eq=>{
+    const st=eqStatus(eq.id);const items=typeItems(eq,S.inspType);const insp=getInsps(eq.id);const done=insp?items.filter(i=>insp.results[i.id]).length:0;
+    const sm={pending:{lbl:'未実施',cls:'bGray',emoji:'🔧'},partial:{lbl:`${done}/${items.length}`,cls:'bWarn',emoji:'⏳'},done:{lbl:'完了',cls:'bOk',emoji:'✅'},ng:{lbl:'異常あり',cls:'bNg',emoji:'❌'}};const s=sm[st];
+    return`<div class="card card-tap" onclick="nav('INSPECTION',{selectedEq:'${eq.id}'})">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="icon-circle" style="background:${st==='done'?'var(--green-lt)':st==='ng'?'var(--red-lt)':st==='partial'?'var(--orange-lt)':'rgba(0,0,0,0.05)'};">
+          <span style="font-size:20px;">${s.emoji}</span>
         </div>
-        ${isOk?`<div style="font-size:26px;color:var(--ok);">○</div>`:isNg?`<div style="font-size:26px;color:var(--ng);">✗</div>`:''}
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:15px;margin-bottom:2px;">${eq.name}</div>
+          <div style="font-size:12px;color:var(--text2);">点検項目 ${items.length}件</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;"><span class="badge ${s.cls}">${s.lbl}</span>${CHEVR}</div>
       </div>
-      ${!r?`
-        <div style="display:flex;gap:14px;justify-content:center;margin-bottom:8px;">
-          <button class="jbtn jng" onclick="setResult('${it.id}','ng')">✗</button>
-          <button class="jbtn jok" onclick="setResult('${it.id}','ok')">○</button>
-        </div>
-        <div style="text-align:center;font-size:11px;color:var(--color-text-secondary);">← スワイプ: ✗  ｜  スワイプ: ○ →</div>
-      `:`<button onclick="resetResult('${it.id}')" style="width:100%;padding:7px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--color-text-secondary);font-size:12px;cursor:pointer;">やり直し</button>`}
     </div>`;
   }).join('');
-  return`${hdr(eq.name,S.bulkActive?null:'LINE_DETAIL')}${bulkBar}
-  <div style="padding:10px 14px 4px;flex-shrink:0;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-      <span style="font-size:12px;color:var(--color-text-secondary);">${S.inspType}</span>
-      <span style="font-size:12px;font-weight:500;">${done}/${items.length} 完了</span>
+  return`${phdr(l.name,'HOME',S.inspType,bulkBtn)}
+  <div class="scroll">
+    ${rows}
+    <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="width:100%;padding:14px;border:1.5px dashed var(--border);background:none;border-radius:var(--r);color:var(--text2);cursor:pointer;font-size:14px;margin-top:4px;touch-action:manipulation;font-family:inherit;">＋ 設備を追加</button>
+  </div>${btabs()}`;
+}
+
+/* ═══════════ INSPECTION ═══════════ */
+function renderInspection(){
+  const eq=getEq(S.selectedEq);if(!eq)return renderHome();
+  const items=typeItems(eq,S.inspType);const insp=getInsps(S.selectedEq);const rs=insp?.results||{};
+  const done=items.filter(i=>rs[i.id]).length;const pend=items.length-done;const pct=Math.round(done/items.length*100);
+  const bulkBar=S.bulkActive?`<div class="bulk-bar">
+    <div><div style="font-size:11px;color:var(--red);font-weight:700;margin-bottom:1px;">ライン一括点検</div><div style="font-size:12px;color:var(--text2);">${getLn(S.bulkLineId).name}</div></div>
+    <div style="font-size:22px;font-weight:700;color:var(--red);">${S.bulkIdx+1} <span style="font-size:13px;font-weight:500;color:var(--text2);">/ ${getLn(S.bulkLineId).equip.length}</span></div>
+  </div>`:'';
+  const backDest=S.bulkActive?null:'LINE_DETAIL';
+  const icards=items.map((it,idx)=>{
+    const r=rs[it.id];const isOk=r?.r==='ok';const isNg=r?.r==='ng';
+    const btns=!r
+      ?`<div style="display:flex;gap:10px;margin-top:14px;">
+          <button class="jbtn jng" onclick="setResult('${it.id}','ng')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            異常
+          </button>
+          <button class="jbtn jok" onclick="setResult('${it.id}','ok')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="2.2"/></svg>
+            正常
+          </button>
+        </div>`
+      :`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);">
+          <span style="font-size:12px;font-weight:500;color:${isOk?'var(--green)':'var(--red)'};">${isOk?'✓ 正常確認済':'✗ 異常記録済'}</span>
+          <button onclick="resetResult('${it.id}')" style="padding:5px 14px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text2);font-size:12px;cursor:pointer;touch-action:manipulation;font-family:inherit;">やり直し</button>
+        </div>`;
+    return`<div class="icard ${isOk?'rok':isNg?'rng':''}" data-iid="${it.id}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:4px;">No.${idx+1} · ${it.t}点検</div>
+          <div style="font-size:16px;font-weight:600;line-height:1.3;">${it.n}</div>
+          ${r?.comment?`<div style="font-size:12px;color:var(--red);margin-top:8px;padding:8px 10px;background:rgba(226,75,74,.08);border-radius:8px;">📝 ${r.comment}</div>`:''}
+          ${r?.photos>0?`<div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:500;">📷 写真 ${r.photos}枚</div>`:''}
+        </div>
+        ${isOk?`<div style="width:34px;height:34px;background:var(--green-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8l4 4 7-7" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`:``}
+        ${isNg?`<div style="width:34px;height:34px;background:var(--red-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="var(--red)" stroke-width="2.1" stroke-linecap="round"/></svg></div>`:``}
+      </div>${btns}
+    </div>`;
+  }).join('');
+  return`${phdr(eq.name,backDest,S.inspType)}${bulkBar}
+  <div style="padding:14px 16px 10px;flex-shrink:0;background:var(--surface);border-bottom:0.5px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+      <span style="font-size:13px;font-weight:500;color:var(--text2);">${done} / ${items.length} 完了</span>
+      <span style="font-size:22px;font-weight:700;color:${pct===100?'var(--green)':'var(--red)'};">${pct}<span style="font-size:12px;font-weight:500;color:var(--text2);">%</span></span>
     </div>
-    <div style="background:var(--color-background-secondary);border-radius:4px;height:5px;overflow:hidden;">
-      <div style="height:100%;width:${pct}%;background:${pct===100?'var(--ok)':'var(--primary)'};border-radius:4px;transition:width .3s;"></div>
-    </div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'linear-gradient(90deg,#E24B4A,#C73A39)'};"></div></div>
   </div>
-  <div class="scroll" style="padding-top:10px;">
-    ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:11px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);color:var(--ok);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span>未入力 ${pend}件 をすべて○に一括入力</span></button>`:''}
+  <div class="scroll" style="padding-top:14px;">
+    ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:13px;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;touch-action:manipulation;font-family:inherit;">✓ 未入力 ${pend}件 をすべて正常に一括入力</button>`:''}
     ${icards}
-    <button onclick="submitInsp()" style="width:100%;padding:14px;background:${pend>0?'var(--color-background-secondary)':'var(--primary)'};color:${pend>0?'var(--color-text-secondary)':'white'};border:${pend>0?'0.5px solid var(--color-border-tertiary)':'none'};border-radius:var(--border-radius-lg);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;">
-      ${pend>0?`点検提出 (未入力 ${pend}件あり)`:'点検完了 · 提出する'}</button>
+    <button onclick="submitInsp()" style="width:100%;padding:15px;background:${pend>0?'var(--surface)':'linear-gradient(135deg,#E24B4A,#C73A39)'};color:${pend>0?'var(--text2)':'white'};border:${pend>0?'1.5px solid var(--border)':'none'};border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;touch-action:manipulation;box-shadow:${pend>0?'none':'0 4px 16px rgba(194,42,42,0.28)'};font-family:inherit;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+      ${pend>0?`点検提出（未入力 ${pend}件あり）`:'✓ 点検完了 · 提出する'}
+    </button>
   </div>`;
 }
+
+/* ═══════════ APPROVAL ═══════════ */
 function renderApproval(){
-  const pend=S.approvals.filter(a=>a.status==='pending');
-  const hist=S.approvals.filter(a=>a.status!=='pending');
+  const pend=S.approvals.filter(a=>a.status==='pending');const hist=S.approvals.filter(a=>a.status!=='pending');
   const acard=(a,editable)=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
-    return`<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${editable?'10px':'0'};">
-        <div>
-          <span class="badge bWarn" style="margin-bottom:5px;display:inline-block;">${a.type}</span>
-          <div style="font-weight:500;font-size:14px;">${eq?.name||'-'}</div>
-          <div style="font-size:12px;color:var(--color-text-secondary);">${l?.name} · ${a.date} · ${a.by}</div>
+    return`<div class="card" style="${editable?'border-left:3px solid var(--orange);':''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:${editable?'14px':'0'};">
+        <div style="flex:1;"><span class="badge bWarn" style="margin-bottom:6px;display:inline-block;">${a.type}</span>
+          <div style="font-weight:600;font-size:15px;margin-bottom:3px;">${eq?.name||'-'}</div>
+          <div style="font-size:12px;color:var(--text2);">${l?.name} · ${a.date} · 申請: ${a.by}</div>
         </div>
         ${!editable?`<span class="badge ${a.status==='approved'?'bOk':'bNg'}">${a.status==='approved'?'承認済':'差戻'}</span>`:''}
       </div>
       ${editable?`<div style="display:flex;gap:8px;">
-        <button onclick="approve('${a.id}')" style="flex:1;padding:9px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);color:var(--ok);font-size:13px;font-weight:500;cursor:pointer;">承認</button>
-        <button onclick="reject('${a.id}')" style="flex:1;padding:9px;background:var(--ng-bg);border:1px solid var(--ng);border-radius:var(--border-radius-md);color:var(--ng);font-size:13px;font-weight:500;cursor:pointer;">差し戻し</button>
+        <button onclick="approve('${a.id}')" style="flex:1;padding:11px;background:var(--green-lt);border:1.5px solid var(--green);border-radius:var(--r-sm);color:var(--green);font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">✓ 承認</button>
+        <button onclick="reject('${a.id}')" style="flex:1;padding:11px;background:var(--red-lt);border:1.5px solid var(--red);border-radius:var(--r-sm);color:var(--red);font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">✗ 差し戻し</button>
       </div>`:''}
     </div>`;
   };
-  return`${hdr('承認管理','HOME')}
+  return`${phdr('承認管理','HOME',`承認待ち ${pend.length}件`,pdfBtn())}
   <div class="scroll">
-    <div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin-bottom:8px;">承認待ち (${pend.length}件)</div>
-    ${pend.length===0?`<div class="card" style="text-align:center;color:var(--color-text-secondary);padding:28px;">承認待ちはありません</div>`:''}
+    ${pend.length===0?`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">✅</div><div style="font-weight:600;font-size:16px;margin-bottom:4px;">承認待ちはありません</div><div style="font-size:13px;">すべての申請が処理済みです</div></div>`:``}
+    ${pend.length>0?`<div class="section-label">承認待ち</div>`:''}
     ${pend.map(a=>acard(a,true)).join('')}
-    ${hist.length>0?`<div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin:14px 0 8px;">完了済み (${hist.length}件)</div>${hist.map(a=>acard(a,false)).join('')}`:''}
+    ${hist.length>0?`<div class="section-label">処理済み</div>${hist.map(a=>acard(a,false)).join('')}`:''}
   </div>${btabs()}`;
 }
+
+/* ═══════════ HISTORY ═══════════ */
 function renderHistory(){
   const all=Object.entries(S.insps).map(([eid,insp])=>{
-    const eq=getEq(eid);const l=eq?getLn(eq.lid):null;
-    const items=eq?typeItems(eq,insp.type):[];
-    const ok=items.filter(i=>insp.results[i.id]?.r==='ok').length;
-    const ng=items.filter(i=>insp.results[i.id]?.r==='ng').length;
+    const eq=getEq(eid);const l=eq?getLn(eq.lid):null;const items=eq?typeItems(eq,insp.type):[];
+    const ok=items.filter(i=>insp.results[i.id]?.r==='ok').length;const ng=items.filter(i=>insp.results[i.id]?.r==='ng').length;
     return{eq,l,insp,ok,ng,total:items.length};
   });
-  return`${hdr('点検履歴','HOME')}
+  return`${phdr('点検履歴','HOME',fmtDate(TODAY),pdfBtn())}
   <div class="scroll">
-    ${all.length===0?`<div class="card" style="text-align:center;color:var(--color-text-secondary);padding:48px 16px;"><div style="font-size:32px;margin-bottom:10px;">📋</div>点検履歴はありません</div>`
-    :all.map(({eq,l,insp,ok,ng,total})=>`
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-          <div><div style="font-weight:500;font-size:14px;">${eq?.name||'-'}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l?.name} · ${insp.type} · ${insp.date}</div></div>
-          ${ng>0?`<span class="badge bNg">異常 ${ng}</span>`:`<span class="badge bOk">正常</span>`}
+    ${all.length===0?`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-weight:600;font-size:16px;margin-bottom:4px;">点検履歴はありません</div><div style="font-size:13px;">点検を実施すると記録が表示されます</div></div>`
+    :all.map(({eq,l,insp,ok,ng,total})=>`<div class="card">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="icon-circle" style="background:${ng>0?'var(--red-lt)':'var(--green-lt)'};">
+          <span style="font-size:20px;">${ng>0?'❌':'✅'}</span>
         </div>
-        <div style="display:flex;gap:14px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary);">
-          <span style="font-size:12px;color:var(--ok);font-weight:500;">○ ${ok}</span>
-          <span style="font-size:12px;color:var(--ng);font-weight:500;">✗ ${ng}</span>
-          <span style="font-size:12px;color:var(--color-text-secondary);">計 ${total}項目</span>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+            <div style="font-weight:600;font-size:15px;">${eq?.name||'-'}</div>
+            <span class="badge ${ng>0?'bNg':'bOk'}">${ng>0?`異常 ${ng}`:'正常'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">${l?.name} · ${insp.type} · ${insp.date}</div>
+          <div style="display:flex;gap:14px;">
+            <span style="font-size:12px;color:var(--green);font-weight:600;">○ 正常 ${ok}</span>
+            ${ng>0?`<span style="font-size:12px;color:var(--red);font-weight:600;">✗ 異常 ${ng}</span>`:''}
+            <span style="font-size:12px;color:var(--text3);">計 ${total}項目</span>
+          </div>
         </div>
-      </div>`).join('')}
+      </div>
+    </div>`).join('')}
   </div>${btabs()}`;
 }
+
+/* ═══════════ ANOMALY ═══════════ */
 function renderAnomaly(){
-  const open=S.anomalies.filter(a=>a.status==='open');
-  const ip=S.anomalies.filter(a=>a.status==='in-progress');
-  const res=S.anomalies.filter(a=>a.status==='resolved');
+  const open=S.anomalies.filter(a=>a.status==='open');const ip=S.anomalies.filter(a=>a.status==='in-progress');const res=S.anomalies.filter(a=>a.status==='resolved');
   const acard=a=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
-    const sm={open:['bNg','未対応'],['in-progress']:['bWarn','対応中'],resolved:['bOk','解決済']};
-    const [bc,bl]=sm[a.status];
-    return`<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
-        <div style="flex:1;"><div style="font-weight:500;font-size:14px;margin-bottom:2px;">${a.iname}</div><div style="font-size:12px;color:var(--color-text-secondary);">${eq?.name||'-'} · ${l?.name} · ${a.date}</div></div>
-        <span class="badge ${bc}">${bl}</span>
+    const cfg={open:{cls:'bNg',lbl:'未対応',col:'var(--red)'},['in-progress']:{cls:'bWarn',lbl:'対応中',col:'var(--orange)'},resolved:{cls:'bOk',lbl:'解決済',col:'var(--green)'}};const c=cfg[a.status];
+    return`<div class="card" style="${a.status!=='resolved'?`border-left:3px solid ${c.col};`:''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><span class="badge ${c.cls}" style="margin-bottom:5px;display:inline-block;">${c.lbl}</span>
+          <div style="font-weight:600;font-size:15px;margin-bottom:2px;">${a.iname}</div>
+          <div style="font-size:12px;color:var(--text2);">${eq?.name||'-'} · ${l?.name} · ${a.date}</div>
+        </div>
       </div>
-      <div style="font-size:13px;background:var(--color-background-secondary);padding:7px 10px;border-radius:var(--border-radius-md);margin-bottom:8px;">${a.comment}</div>
-      ${a.status==='open'?`<button onclick="anomStatus('${a.id}','in-progress')" style="width:100%;padding:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--color-text-primary);">対応開始</button>`:''}
-      ${a.status==='in-progress'?`<button onclick="anomStatus('${a.id}','resolved')" style="width:100%;padding:8px;background:var(--ok-bg);border:1px solid var(--ok);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--ok);font-weight:500;">解決済にする</button>`:''}
+      <div style="font-size:13px;padding:10px 12px;background:var(--bg);border-radius:10px;color:var(--text2);margin-bottom:${a.status!=='resolved'?'12px':'0'};">${a.comment}</div>
+      ${a.status==='open'?`<button onclick="anomStatus('${a.id}','in-progress')" style="width:100%;padding:11px;background:var(--orange-lt);border:1px solid var(--orange);border-radius:var(--r-sm);color:var(--orange);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">対応開始</button>`:''}
+      ${a.status==='in-progress'?`<button onclick="anomStatus('${a.id}','resolved')" style="width:100%;padding:11px;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r-sm);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">✓ 解決済にする</button>`:''}
     </div>`;
   };
-  return`${hdr('異常管理','HOME')}
+  return`${phdr('異常管理','HOME',`未対応 ${open.length+ip.length}件`)}
   <div class="scroll">
-    ${open.length>0?`<div style="font-size:12px;color:var(--ng);font-weight:500;margin-bottom:8px;">未対応 (${open.length}件)</div>${open.map(acard).join('')}`:''}
-    ${ip.length>0?`<div style="font-size:12px;color:var(--warn);font-weight:500;margin:12px 0 8px;">対応中 (${ip.length}件)</div>${ip.map(acard).join('')}`:''}
-    ${open.length===0&&ip.length===0?`<div class="card" style="text-align:center;color:var(--ok);padding:28px;"><div style="font-size:28px;margin-bottom:8px;">✓</div>異常はありません</div>`:''}
-    ${res.length>0?`<div style="font-size:12px;color:var(--color-text-secondary);font-weight:500;margin:14px 0 8px;">解決済 (${res.length}件)</div>${res.map(acard).join('')}`:''}
+    ${open.length===0&&ip.length===0?`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">✅</div><div style="font-weight:600;font-size:16px;margin-bottom:4px;">異常はありません</div></div>`:``}
+    ${open.length>0?`<div class="section-label">未対応 (${open.length})</div>${open.map(acard).join('')}`:''}
+    ${ip.length>0?`<div class="section-label">対応中 (${ip.length})</div>${ip.map(acard).join('')}`:''}
+    ${res.length>0?`<div class="section-label">解決済 (${res.length})</div>${res.map(acard).join('')}`:''}
   </div>${btabs()}`;
 }
+
+/* ═══════════ EQ/LINE MGMT ═══════════ */
 function renderEqMgmt(){
-  return`${hdr('設備管理','HOME')}
+  return`${phdr('設備管理','HOME','',pdfBtn())}
   <div class="scroll">
     ${S.lines.map(l=>`
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:7px;display:flex;justify-content:space-between;">
-          <span>${l.name}</span>
-          <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="font-size:12px;color:var(--primary);background:none;border:none;cursor:pointer;">+ 追加</button>
-        </div>
-        ${l.equip.map(eq=>`
-          <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;margin-bottom:7px;">
-            <div><div style="font-weight:500;font-size:14px;">${eq.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">項目 ${eq.items.length}件</div></div>
-            <button onclick="delEq('${eq.id}')" style="padding:5px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--ng);font-size:12px;cursor:pointer;">削除</button>
-          </div>`).join('')}
-      </div>`).join('')}
-  </div>${btabs()}`;
-}
-function renderLineMgmt(){
-  return`${hdr('ライン管理','HOME')}
-  <div class="scroll">
-    ${S.lines.map(l=>`
-      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-weight:500;font-size:15px;">${l.name}</div><div style="font-size:12px;color:var(--color-text-secondary);">${l.desc} · 設備${l.equip.length}台</div></div>
-        <button onclick="delLine('${l.id}')" style="padding:5px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;color:var(--ng);font-size:12px;cursor:pointer;">削除</button>
-      </div>`).join('')}
-    <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:12px;border:1.5px dashed var(--color-border-secondary);background:none;border-radius:var(--border-radius-lg);color:var(--color-text-secondary);cursor:pointer;font-size:14px;margin-top:4px;">+ ラインを追加</button>
-  </div>${btabs()}`;
-}
-function renderNgSheet(){
-  return`<div class="overlay"><div class="sheet">
-    <div style="font-size:17px;font-weight:500;margin-bottom:14px;color:var(--ng);">✗ 異常を記録</div>
-    <div style="margin-bottom:12px;">
-      <label class="flabel">コメント (必須)</label>
-      <textarea id="ng-c" placeholder="異常内容を入力してください" style="width:100%;padding:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:14px;resize:none;height:75px;background:var(--color-background-primary);color:var(--color-text-primary);"></textarea>
-    </div>
-    <div style="margin-bottom:18px;">
-      <label class="flabel">写真 (必須)</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="S.ngModal.photos++;render();" style="width:66px;height:66px;border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);cursor:pointer;font-size:22px;color:var(--color-text-secondary);">+</button>
-        ${Array.from({length:S.ngModal.photos},(_,i)=>`<div style="width:66px;height:66px;background:var(--ng-bg);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ng);">写真${i+1}</div>`).join('')}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:18px 2px 8px;"><span class="section-label" style="margin:0;">${l.name}</span>
+        <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;touch-action:manipulation;font-family:inherit;font-weight:600;">＋ 追加</button>
       </div>
-      ${S.ngModal.photos===0?`<div style="font-size:11px;color:var(--ng);margin-top:4px;">写真を1枚以上追加してください</div>`:''}
+      ${l.equip.map(eq=>`<div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${eq.name}</div><div style="font-size:12px;color:var(--text2);">項目 ${eq.items.length}件</div></div>
+        <button onclick="delEq('${eq.id}')" style="padding:7px 14px;border:1px solid var(--red-lt);border-radius:20px;background:var(--red-lt);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
+      </div>`).join('')}
+    `).join('')}
+  </div>${btabs()}`;
+}
+
+function renderLineMgmt(){
+  return`${phdr('ライン管理','HOME',`全 ${S.lines.length} ライン`)}
+  <div class="scroll">
+    ${S.lines.map(l=>`<div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${l.name}</div><div style="font-size:12px;color:var(--text2);">${l.desc} · 設備 ${l.equip.length}台</div></div>
+      <button onclick="delLine('${l.id}')" style="padding:7px 14px;border:1px solid var(--red-lt);border-radius:20px;background:var(--red-lt);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
+    </div>`).join('')}
+    <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:14px;border:1.5px dashed var(--border);background:none;border-radius:var(--r);color:var(--text2);cursor:pointer;font-size:14px;margin-top:4px;touch-action:manipulation;font-family:inherit;">＋ ラインを追加</button>
+  </div>${btabs()}`;
+}
+
+/* ═══════════ NG SHEET ═══════════ */
+function renderNgSheet(){
+  return`<div class="overlay" onclick="if(event.target===this){S.ngModal={on:false,itemId:null,comment:'',photos:0};render();}">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3l14 14M17 3L3 17" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </div>
+      <div><div style="font-size:18px;font-weight:700;color:var(--red);">異常を記録</div><div style="font-size:12px;color:var(--text2);">コメントと写真が必須です</div></div>
     </div>
-    <div style="display:flex;gap:9px;">
-      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;color:var(--color-text-primary);">キャンセル</button>
-      <button onclick="confirmNg()" style="flex:2;padding:13px;background:var(--ng);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">異常を登録</button>
+    <div style="margin-bottom:14px;">
+      <label class="flabel">異常の内容 <span style="color:var(--red);">*</span></label>
+      <textarea id="ng-c" placeholder="異常内容を詳しく入力してください" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;resize:none;height:80px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+    <div style="margin-bottom:22px;">
+      <label class="flabel">写真 <span style="color:var(--red);">*</span></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="S.ngModal.photos++;render();" style="width:72px;height:72px;border:1.5px dashed var(--border);border-radius:var(--r-sm);background:var(--bg);cursor:pointer;font-size:26px;color:var(--text3);touch-action:manipulation;display:flex;align-items:center;justify-content:center;">+</button>
+        ${Array.from({length:S.ngModal.photos},(_,i)=>`<div style="width:72px;height:72px;background:var(--red-lt);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--red);font-weight:600;">写真${i+1}</div>`).join('')}
+      </div>
+      ${S.ngModal.photos===0?`<div style="font-size:11px;color:var(--red);margin-top:6px;font-weight:500;">写真を1枚以上追加してください</div>`:''}
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
+      <button onclick="confirmNg()" style="flex:2;padding:14px;background:var(--red);color:white;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">異常を登録</button>
     </div>
   </div></div>`;
 }
+
+/* ═══════════ MODAL SHEET ═══════════ */
 function renderModalSheet(){
   const m=S.modal;let inner='';
   if(m.type==='addEq'){inner=`
-    <div style="font-size:17px;font-weight:500;margin-bottom:14px;">設備を追加</div>
-    <div style="margin-bottom:12px;"><label class="flabel">設備名</label><input id="meq-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
-    <div style="display:flex;gap:9px;margin-top:14px;">
-      <button onclick="S.modal=null;render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;">キャンセル</button>
-      <button onclick="addEqConfirm('${m.lid}')" style="flex:2;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">追加</button>
+    <div class="sheet-handle"></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">新しい設備の名前を入力してください</div>
+    <div style="margin-bottom:20px;"><label class="flabel">設備名</label><input id="meq-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
+      <button onclick="addEqConfirm('${m.lid}')" class="btn-primary" style="flex:2;width:auto;padding:13px;">追加する</button>
     </div>`;}
   else if(m.type==='addLine'){inner=`
-    <div style="font-size:17px;font-weight:500;margin-bottom:14px;">ラインを追加</div>
-    <div style="margin-bottom:10px;"><label class="flabel">ライン名</label><input id="mln-n" class="finput" type="text" placeholder="例: 検査ライン"></div>
-    <div style="margin-bottom:14px;"><label class="flabel">場所</label><input id="mln-d" class="finput" type="text" placeholder="例: C棟1F"></div>
-    <div style="display:flex;gap:9px;">
-      <button onclick="S.modal=null;render();" style="flex:1;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:none;font-size:14px;cursor:pointer;">キャンセル</button>
-      <button onclick="addLineConfirm()" style="flex:2;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;">追加</button>
+    <div class="sheet-handle"></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">ラインを追加</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">新しいラインの情報を入力してください</div>
+    <div style="margin-bottom:12px;"><label class="flabel">ライン名</label><input id="mln-n" class="finput" type="text" placeholder="例: 検査ライン"></div>
+    <div style="margin-bottom:20px;"><label class="flabel">場所</label><input id="mln-d" class="finput" type="text" placeholder="例: C棟1F"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
+      <button onclick="addLineConfirm()" class="btn-primary" style="flex:2;width:auto;padding:13px;">追加する</button>
     </div>`;}
-  return`<div class="overlay"><div class="sheet">${inner}</div></div>`;
+  return`<div class="overlay" onclick="if(event.target===this){S.modal=null;render();}"><div class="sheet">${inner}</div></div>`;
 }
-function renderSidebar(){
-  const pa=pendApprovals().length,oa=openAnoms().length;
-  const sb=document.getElementById('sb-nav');
-  if(!sb)return;
-  const items=[
-    {v:'HOME',l:'ホーム',ic:'⌂'},
-    {v:'APPROVAL',l:'承認確認',ic:'✓',badge:pa},
-    {v:'ANOMALY',l:'異常管理',ic:'⚠',badge:oa},
-    {v:'HISTORY',l:'点検履歴',ic:'≡'},
-    {sep:true,label:'管理'},
-    {v:'EQUIPMENT_MGMT',l:'設備管理',ic:'⚙'},
-    {v:'LINE_MGMT',l:'ライン管理',ic:'🏭'},
-  ];
-  sb.innerHTML=items.map(it=>{
-    if(it.sep)return`<div class="sb-section">${it.label}</div>`;
-    return`<button class="sb-item${S.view===it.v?' active':''}" onclick="nav('${it.v}')">
-      <span class="sb-ic">${it.ic}</span><span>${it.l}</span>
-      ${it.badge>0?`<span class="sb-badge">${it.badge}</span>`:''}
-    </button>`;
-  }).join('');
-  const d=document.getElementById('sb-date');
-  if(d)d.textContent=fmtDate(TODAY);
-}
+
+/* ═══════════ RENDER ═══════════ */
 function render(){
   const sc=document.getElementById('screen');
   let body='';
@@ -657,25 +659,11 @@ function render(){
     default:body=renderHome();
   }
   sc.innerHTML=body;
-  renderSidebar();
   if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
-  setupSwipe();
 }
-function setupSwipe(){
-  document.querySelectorAll('.icard').forEach(card=>{
-    let sx=0,sy=0;
-    const iid=card.dataset.iid;
-    card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-    card.addEventListener('touchend',e=>{
-      const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
-      const insp=getInsps(S.selectedEq);
-      if(insp?.results[iid])return;
-      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>45){
-        if(dx>0)setResult(iid,'ok');else setResult(iid,'ng');
-      }
-    },{passive:true});
-  });
-}
+
 render();
 </script>
+</body>
+</html>
