@@ -1583,16 +1583,24 @@ function renderHistoryList(){
     });
   });
 
-  // Sync scroll between left body and right body
+  // Sync vertical scroll between left body and right body
   const syncScript=`
     (function(){
       setTimeout(function(){
         var lb=document.getElementById('cal-lb');
         var rb=document.getElementById('cal-rb');
-        var rr=document.getElementById('cal-rr');
         if(!lb||!rb)return;
-        rb.addEventListener('scroll',function(){lb.scrollTop=rb.scrollTop;rr.scrollLeft=rb.scrollLeft;},{passive:true});
-        lb.addEventListener('scroll',function(){rb.scrollTop=lb.scrollTop;},{passive:true});
+        var syncing=false;
+        rb.addEventListener('scroll',function(){
+          if(syncing)return;syncing=true;
+          lb.scrollTop=rb.scrollTop;
+          syncing=false;
+        },{passive:true});
+        lb.addEventListener('scroll',function(){
+          if(syncing)return;syncing=true;
+          rb.scrollTop=lb.scrollTop;
+          syncing=false;
+        },{passive:true});
         // scroll right pane to show today column
         var todayIdx=${dayStrs.indexOf(TODAY)};
         if(todayIdx>=0)rb.scrollLeft=Math.max(0,(todayIdx-1)*80);
@@ -1631,14 +1639,14 @@ function renderHistoryList(){
       <div class="cal-left-hdr" style="display:flex;align-items:center;padding:0 8px;"><span style="font-size:10px;color:var(--text3);font-weight:600;">設備</span></div>
       <div id="cal-lb" style="flex:1;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;">${leftRows}</div>
     </div>
-    <!-- Right scrollable -->
-    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-      <div id="cal-rr" style="overflow-x:auto;overflow-y:hidden;flex-shrink:0;border-bottom:1px solid var(--border);">
+    <!-- Right scrollable: single container for header + body -->
+    <div id="cal-rb" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;">
+      <!-- Sticky header row -->
+      <div id="cal-rr" style="position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;">
         <div class="cal-right-hdr" style="min-width:${days.length*80}px;">${dayHdrs}</div>
       </div>
-      <div id="cal-rb" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;min-width:0;">
-        <div style="min-width:${days.length*80}px;">${rightRows}</div>
-      </div>
+      <!-- Body rows -->
+      <div style="min-width:${days.length*80}px;flex:1;">${rightRows}</div>
     </div>
   </div>
   <script>${syncScript}<\/script>
