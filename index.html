@@ -127,6 +127,15 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .pill-row{display:flex;gap:4px;background:rgba(0,0,0,.05);border-radius:12px;padding:3px;}
 .pill{flex:1;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;}
 .pill.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+/* ── Inspection-type pill row (home screen) ── */
+.itype-row{display:flex;gap:6px;padding:3px;}
+.itype-pill{flex:1;padding:10px 6px 9px;border-radius:12px;border:none;background:rgba(0,0,0,.04);cursor:pointer;touch-action:manipulation;font-family:inherit;text-align:center;transition:background .15s,transform .1s;}
+.itype-pill:active{transform:scale(.96);}
+.itype-pill .itp-label{font-size:13px;font-weight:700;color:var(--text2);display:block;line-height:1;}
+.itype-pill .itp-sub{font-size:10px;font-weight:500;color:var(--text3);display:block;margin-top:4px;line-height:1.2;}
+.itype-pill.active{background:var(--red);box-shadow:0 3px 12px rgba(226,75,74,0.28);}
+.itype-pill.active .itp-label{color:white;}
+.itype-pill.active .itp-sub{color:rgba(255,255,255,0.82);}
 
 /* ── Bulk Bar ── */
 .bulk-bar{background:linear-gradient(90deg,rgba(226,75,74,.07),transparent);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid rgba(226,75,74,.15);}
@@ -209,6 +218,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 const TODAY=(()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
 const S={
   view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,
+  inspSelectedLines:[],inspLastLines:[],
   selectedLine:null,selectedEq:null,inspType:'毎日点検',histView:'list',histDate:null,histWeekOffset:0,
   bulkActive:false,bulkLineId:null,bulkIdx:0,
   modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},
@@ -1074,7 +1084,7 @@ function renderNameSelect(){
               '</div></div>'
             );
             return(
-              '<div onclick="S.currentName=\'' +name+ '\';nav(\'HOME\');" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);touch-action:manipulation;transition:border-color .15s;" onmousedown="this.style.borderColor=\'var(--red)\'" onmouseup="this.style.borderColor=\'var(--border)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">'+
+              '<div onclick="S.currentName=\'' +name+ '\';if(S.currentRole===\'inspector\'){localStorage.setItem(\'dk_insp_name\',\'' +name+ '\');S.inspSelectedLines=S.inspLastLines.length?[...S.inspLastLines]:[];}nav(\'HOME\');" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);touch-action:manipulation;transition:border-color .15s;" onmousedown="this.style.borderColor=\'var(--red)\'" onmouseup="this.style.borderColor=\'var(--border)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">'+
               '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:var(--red);">'+ini+'</div>'+
               '<div style="flex:1;"><div style="font-size:16px;font-weight:600;color:var(--text);">'+name+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">'+roleLabel+'</div></div>'+
               '<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
@@ -1093,132 +1103,154 @@ function renderHome(){
   return renderAdminHome();
 }
 
-/* ─── Inspector Home (dark, minimal) ─── */
+/* ─── Inspector: change inspector ─── */
+function inspChangeUser(){
+  localStorage.removeItem('dk_insp_name');
+  localStorage.removeItem('dk_insp_lines');
+  S.currentName=null;S.currentRole=null;
+  S.inspSelectedLines=[];S.inspLastLines=[];
+  nav('ROLE_SELECT');
+}
+/* ─── Inspector: toggle line ─── */
+function inspToggleLine(lid){
+  const i=S.inspSelectedLines.indexOf(lid);
+  if(i>=0)S.inspSelectedLines.splice(i,1);
+  else S.inspSelectedLines.push(lid);
+  // update card UI without full re-render
+  const card=document.getElementById('ilc-'+lid);
+  if(card){
+    const on=S.inspSelectedLines.includes(lid);
+    card.classList.toggle('ilc-on',on);
+  }
+  inspUpdateStartBtn();
+}
+function inspUpdateStartBtn(){
+  const n=S.inspSelectedLines.length;
+  const btn=document.getElementById('insp-start-btn');
+  const pill=document.getElementById('insp-sel-cnt');
+  if(!btn)return;
+  btn.disabled=n===0;
+  if(n>0){pill.textContent=n+' ライン';pill.style.display='';}
+  else pill.style.display='none';
+}
+function inspQuickStart(){
+  S.inspSelectedLines=[...S.inspLastLines];
+  inspDoStart();
+}
+function inspDoStart(){
+  if(!S.inspSelectedLines.length)return;
+  localStorage.setItem('dk_insp_lines',JSON.stringify(S.inspSelectedLines));
+  S.inspLastLines=[...S.inspSelectedLines];
+  nav('INSP_RUN');
+}
+
+/* ─── Inspector Home (dark, line-selection) ─── */
 function renderInspectorHome(){
   const displayName=S.currentName||'点検者';
-  // 点検タイプ: 毎日・10日・月次
-  const inspTypes=['毎日点検','10日点検','月次点検'];
-  if(!inspTypes.includes(S.inspType))S.inspType='毎日点検';
+  const hasLast=S.inspLastLines.length>0;
+  const lastNames=S.inspLastLines.map(id=>{const l=getLn(id);return l?l.name:'';}).filter(Boolean);
 
-  // 今日の定期点検アラート
-  const todayAlerts=getTodayScheduledTypes();
-
-  // 次回予定ラベル（タブ下に表示）
-  function scheduleSubLabel(type){
-    if(type==='毎日点検')return'';
-    const next=getNextScheduleLabel(type);
-    const isToday=todayAlerts.includes(type);
-    return next?`<div style="font-size:9px;font-weight:600;margin-top:2px;color:${isToday?'#E24B4A':'inherit'};opacity:${isToday?1:0.6};">${isToday?'▶ 本日実施':'次回 '+next}</div>`:'';
-  }
-
-  const lineCards=S.lines.map(l=>{
-    const st=lineStats(l.id);
-    // Status colors (dark-theme versions)
-    let accentColor,bgGrad,dotColor,statusText,lineIcon;
-    if(st.ng>0){
-      accentColor='#E24B4A';bgGrad='rgba(226,75,74,0.13)';dotColor='#E24B4A';statusText='異常あり';
-      lineIcon=`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L2 19h18L11 3z" stroke="${accentColor}" stroke-width="2" stroke-linejoin="round"/><path d="M11 9v4M11 15.5v.5" stroke="${accentColor}" stroke-width="2" stroke-linecap="round"/></svg>`;
-    } else if(st.pend===0){
-      accentColor='#34C759';bgGrad='rgba(52,199,89,0.10)';dotColor='#34C759';statusText='完了';
-      lineIcon=`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="${accentColor}" stroke-width="2"/><path d="M7 11l3 3 5-5" stroke="${accentColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    } else if(st.done>0){
-      accentColor='#FF9500';bgGrad='rgba(255,149,0,0.10)';dotColor='#FF9500';statusText='入力中';
-      lineIcon=`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="${accentColor}" stroke-width="2" stroke-dasharray="3 2"/><path d="M11 7v4l2.5 2" stroke="${accentColor}" stroke-width="2" stroke-linecap="round"/></svg>`;
-    } else {
-      accentColor='rgba(0,0,0,0.18)';bgGrad='rgba(0,0,0,0.04)';dotColor='rgba(0,0,0,0.15)';statusText='未実施';
-      lineIcon=`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="rgba(0,0,0,0.18)" stroke-width="2"/><path d="M11 7v4l2.5 2" stroke="rgba(0,0,0,0.18)" stroke-width="2" stroke-linecap="round"/></svg>`;
-    }
-    const pct=st.total>0?Math.round((st.done+st.ng)/st.total*100):0;
-
-    return`<div onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})"
-      style="background:linear-gradient(135deg,#FFFFFF 0%,#F5F6F9 100%);border:1px solid ${accentColor==='rgba(0,0,0,0.18)'?'var(--insp-border)':accentColor+'44'};border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;position:relative;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .12s;box-shadow:0 4px 20px rgba(0,0,0,0.3);"
-      onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 2px 10px rgba(0,0,0,0.3)'"
-      onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.3)'"
-      onmouseleave="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.3)'">
-      <!-- background glow -->
-      <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:${bgGrad};border-radius:50%;pointer-events:none;filter:blur(20px);"></div>
-      <div style="display:flex;align-items:center;gap:16px;position:relative;">
-        <!-- Icon -->
-        <div style="width:52px;height:52px;border-radius:16px;background:${bgGrad};border:1px solid ${accentColor==='rgba(0,0,0,0.18)'?'var(--insp-border)':accentColor+'33'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          ${lineIcon}
-        </div>
-        <!-- Info -->
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:18px;font-weight:700;color:var(--insp-text);letter-spacing:-.3px;margin-bottom:4px;">${l.name}</div>
-          <div style="font-size:12px;color:var(--insp-text2);font-weight:500;">${l.desc}・設備 ${st.total}台</div>
-          <!-- Progress bar -->
-          ${pct>0?`<div style="margin-top:10px;height:3px;background:rgba(0,0,0,0.08);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:${accentColor};border-radius:2px;transition:width .3s;"></div></div>`:''}
-        </div>
-        <!-- Status dot + arrow -->
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <div style="width:7px;height:7px;border-radius:50%;background:${dotColor};${st.pend>0&&st.ng===0&&st.done===0?'box-shadow:0 0 6px '+dotColor+';':st.ng>0?'box-shadow:0 0 8px '+accentColor+'88;':''}"></div>
-            <span style="font-size:11px;font-weight:600;color:${accentColor==='rgba(0,0,0,0.18)'?'var(--insp-text2)':accentColor};">${statusText}</span>
-          </div>
-          <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="rgba(0,0,0,0.15)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+  const lineCardsHtml=S.lines.map((l,i)=>{
+    const on=S.inspSelectedLines.includes(l.id);
+    const eqCnt=l.equip.length;
+    const itCnt=l.equip.reduce((s,e)=>s+e.items.length,0);
+    return`<div id="ilc-${l.id}" class="ilc${on?' ilc-on':''}"
+      style="animation-delay:${i*0.05}s;"
+      onclick="inspToggleLine('${l.id}')">
+      <div class="ilc-check">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7l4 4 6-6" stroke="white" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:17px;font-weight:700;color:#111111;margin-bottom:4px;">${l.name}</div>
+        <div style="font-size:12px;color:#666666;font-weight:500;margin-bottom:3px;">${l.desc}</div>
+        <div style="font-size:11px;color:#AAAAAA;font-weight:500;">設備 ${eqCnt} 台 ／ 点検項目 ${itCnt} 件</div>
+      </div>
+      <div style="width:10px;height:10px;border-radius:50%;background:${on?'#E24B4A':'rgba(0,0,0,0.12)'};flex-shrink:0;transition:background .2s;"></div>
     </div>`;
   }).join('');
 
-  const todayDone=S.lines.every(l=>{const st=lineStats(l.id);return st.pend===0;});
-  const anyNg=S.lines.some(l=>lineStats(l.id).ng>0);
-
   return`
-  <div style="display:flex;flex-direction:column;height:100vh;background:var(--insp-bg);overflow:hidden;">
+  <style>
+    /* ── Light Inspector Home ── */
+    .ilc{background:#FFFFFF;border:1.5px solid rgba(0,0,0,0.09);border-radius:18px;
+      padding:18px 20px;display:flex;align-items:center;gap:16px;
+      cursor:pointer;touch-action:manipulation;user-select:none;
+      box-shadow:0 2px 10px rgba(0,0,0,0.05);
+      transition:border-color .2s,background .2s,transform .1s;
+      margin-bottom:10px;animation:ilcIn .25s ease both;}
+    .ilc:active{transform:scale(0.98);}
+    .ilc.ilc-on{border-color:#E24B4A;background:linear-gradient(135deg,rgba(226,75,74,0.06),rgba(226,75,74,0.02));}
+    .ilc-check{width:30px;height:30px;border-radius:50%;border:2.5px solid #CCCCCC;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      transition:border-color .2s,background .2s,box-shadow .2s;}
+    .ilc.ilc-on .ilc-check{border-color:#E24B4A;background:#E24B4A;box-shadow:0 4px 18px rgba(226,75,74,0.42);}
+    .ilc-check svg{opacity:0;transform:scale(0.5);transition:opacity .18s,transform .2s cubic-bezier(.34,1.4,.64,1);}
+    .ilc.ilc-on .ilc-check svg{opacity:1;transform:scale(1);}
+    @keyframes ilcIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    .insp-start-btn{width:100%;padding:17px;
+      background:linear-gradient(135deg,#E24B4A,#C03534);color:white;
+      border:none;border-radius:18px;font-size:16px;font-weight:700;
+      cursor:pointer;touch-action:manipulation;font-family:inherit;
+      box-shadow:0 6px 26px rgba(226,75,74,0.32);
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      transition:transform .12s,opacity .15s,box-shadow .12s;}
+    .insp-start-btn:active{transform:scale(0.97);box-shadow:0 3px 12px rgba(226,75,74,0.22);}
+    .insp-start-btn:disabled{opacity:.3;box-shadow:none;cursor:not-allowed;}
+    .insp-pill{background:rgba(255,255,255,0.25);border-radius:10px;padding:3px 9px;font-size:12px;font-weight:600;}
+    .insp-quick{background:linear-gradient(135deg,rgba(226,75,74,0.09),rgba(194,42,42,0.05));
+      border:1.5px solid rgba(226,75,74,0.28);border-radius:18px;
+      padding:15px 18px;display:flex;align-items:center;gap:14px;
+      cursor:pointer;touch-action:manipulation;overflow:hidden;position:relative;
+      transition:transform .12s;margin:14px 16px 0;}
+    .insp-quick:active{transform:scale(0.98);}
+    .insp-quick::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(226,75,74,0.06),transparent);
+      animation:iqShimmer 2.8s ease-in-out infinite;}
+    @keyframes iqShimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+  </style>
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
     <!-- Header -->
-    <div style="padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 16px;flex-shrink:0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:11px;color:var(--insp-text2);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Today</div>
-          <div style="font-size:26px;font-weight:800;color:var(--insp-text);letter-spacing:-.5px;line-height:1;">日常点検</div>
-        </div>
-        <button onclick="S.currentName=null;nav('NAME_SELECT');"
-          style="display:flex;align-items:center;gap:8px;background:var(--insp-card);border:1px solid var(--insp-border);border-radius:22px;padding:8px 14px 8px 10px;color:var(--insp-text);font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 2px 10px rgba(0,0,0,0.3);">
-          <div style="width:26px;height:26px;background:linear-gradient(135deg,#E24B4A,#C73A39);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;">${displayName.charAt(0)}</div>
-          <span style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${displayName}</span>
-        </button>
+    <div style="padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);background:#FFFFFF;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:11px;color:#AAAAAA;font-weight:600;letter-spacing:.7px;margin-bottom:4px;">あなた</div>
+        <div style="font-size:20px;font-weight:800;color:#111111;letter-spacing:-.4px;">${displayName}</div>
       </div>
-      <!-- Status banner -->
-      ${anyNg?`<div style="margin-top:14px;background:rgba(226,75,74,0.15);border:1px solid rgba(226,75,74,0.3);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#E24B4A" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6.5v3M8 11v.5" stroke="#E24B4A" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <span style="font-size:12px;font-weight:600;color:#E24B4A;">異常が記録されています</span>
-      </div>`:todayDone?`<div style="margin-top:14px;background:rgba(52,199,89,0.12);border:1px solid rgba(52,199,89,0.25);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#34C759" stroke-width="1.6"/><path d="M5 8l2.5 2.5L11 5" stroke="#34C759" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span style="font-size:12px;font-weight:600;color:#34C759;">本日の点検はすべて完了しています</span>
-      </div>`:''}
-      ${todayAlerts.length>0?`<div style="margin-top:10px;background:linear-gradient(135deg,rgba(230,81,0,0.15),rgba(230,81,0,0.08));border:1.5px solid rgba(230,81,0,0.4);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;" onclick="S.inspType='${todayAlerts[0]}';render();">
-        <div style="width:32px;height:32px;background:rgba(230,81,0,0.18);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a7 7 0 100 14A7 7 0 009 2z" stroke="#E65100" stroke-width="1.7"/><path d="M9 6v4M9 12v.5" stroke="#E65100" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <button onclick="inspChangeUser();" style="background:#F0F0F2;border:1.5px solid rgba(0,0,0,0.1);border-radius:20px;padding:8px 15px;font-size:12px;font-weight:600;color:#666666;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,border-color .15s;" onmousedown="this.style.color='#E24B4A';this.style.borderColor='#E24B4A'" onmouseup="this.style.color='';this.style.borderColor=''">変更</button>
+    </div>
+
+    <!-- Scroll area -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-home-scroll">
+
+      <!-- Quick-start banner -->
+      ${hasLast?`<div class="insp-quick" onclick="inspQuickStart()">
+        <div style="width:44px;height:44px;border-radius:14px;background:#E24B4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 20px rgba(226,75,74,0.28);position:relative;z-index:1;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11l5.5 5L17 6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:11px;font-weight:700;color:#E65100;letter-spacing:.3px;margin-bottom:3px;">📋 本日は定期点検の実施日です</div>
-          ${todayAlerts.map(t=>`<div style="font-size:13px;font-weight:700;color:#BF360C;display:flex;align-items:center;gap:5px;">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#BF360C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            ${t}
-          </div>`).join('')}
-          <div style="font-size:10px;color:#E65100;margin-top:4px;opacity:.8;">タップして切り替え →</div>
+        <div style="flex:1;min-width:0;position:relative;z-index:1;">
+          <div style="font-size:14px;font-weight:700;color:#111111;margin-bottom:3px;">前回と同じ内容で開始</div>
+          <div style="font-size:11px;color:#E24B4A;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastNames.join('・')}</div>
+        </div>
+        <div style="position:relative;z-index:1;flex-shrink:0;">
+          <svg width="7" height="13" viewBox="0 0 7 13" fill="none"><path d="M1 1l5.5 5.5L1 12" stroke="#E24B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>`:''}
-    </div>
-    <!-- Type toggle (毎日 / 10日 / 月次) -->
-    <div style="padding:0 20px 14px;flex-shrink:0;">
-      <div style="display:flex;background:#EEEFF3;border-radius:14px;padding:4px;gap:4px;border:1px solid rgba(0,0,0,0.07);">
-        ${inspTypes.map(t=>{
-          const isActive=S.inspType===t;
-          const isAlert=todayAlerts.includes(t);
-          return`<button onclick="S.inspType='${t}';render();" style="flex:1;padding:8px 4px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .15s;background:${isActive?'linear-gradient(135deg,#E24B4A,#C73A39)':'transparent'};color:${isActive?'white':'var(--insp-text2)'};position:relative;">
-            ${isAlert&&!isActive?`<span style="position:absolute;top:4px;right:6px;width:6px;height:6px;background:#E65100;border-radius:50%;border:1.5px solid #EEEFF3;"></span>`:''}
-            ${t}
-            ${scheduleSubLabel(t)}
-          </button>`;
-        }).join('')}
+
+      <div style="font-size:11px;font-weight:700;color:#AAAAAA;letter-spacing:1.2px;text-transform:uppercase;padding:20px 20px 10px;">点検するラインを選択（複数選択可）</div>
+      <div style="padding:0 16px;" id="insp-line-list">
+        ${lineCardsHtml}
       </div>
+      <div style="height:10px;"></div>
     </div>
-    <!-- Line cards -->
-    <div style="flex:1;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 80px);border-top:1px solid rgba(0,0,0,0.07);background:#EDEEF2;-webkit-overflow-scrolling:touch;">
-      <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">ライン一覧</div>
-      ${lineCards}
+
+    <!-- Bottom CTA -->
+    <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 72px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+      <button class="insp-start-btn" id="insp-start-btn" onclick="inspDoStart();" ${S.inspSelectedLines.length===0?'disabled':''}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l10 5.5-10 5.5V2.5z" fill="white"/></svg>
+        点検開始
+        <span class="insp-pill" id="insp-sel-cnt" style="${S.inspSelectedLines.length===0?'display:none;':''}">${S.inspSelectedLines.length} ライン</span>
+      </button>
     </div>
   </div>
   ${btabs()}`;
@@ -1372,8 +1404,47 @@ function renderAdminHome(){
       </div>
       `:''}
 
-      <!-- その他 -->
+      <!-- 点検種別セレクター -->
       <div style="margin-top:${pa===0&&totalAnomActive===0?'0':'20px'};">
+        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">点検種別</div>
+        <div class="itype-row">
+          ${[
+            {type:'毎日点検', sub:'毎日実施'},
+            {type:'10日点検', sub: getTodayScheduledTypes().includes('10日点検') ? '▶ 本日実施' : '次回 '+getNextScheduleLabel('10日点検')},
+            {type:'月次点検', sub: getTodayScheduledTypes().includes('月次点検') ? '▶ 本日実施' : '次回 '+getNextScheduleLabel('月次点検')}
+          ].map(({type,sub})=>`
+            <button class="itype-pill ${S.inspType===type?'active':''}" onclick="S.inspType='${type}';render();">
+              <span class="itp-label">${type.replace('点検','')}<br>点検</span>
+              <span class="itp-sub">${sub}</span>
+            </button>`).join('')}
+        </div>
+      </div>
+
+      <!-- ライン一覧 -->
+      <div style="margin-top:16px;">
+        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">ライン一覧</div>
+        ${S.lines.map(l=>{
+          const st=lineStats(l.id);
+          const allDone=st.done===st.total&&st.ng===0;
+          const hasNg=st.ng>0;
+          return`<div onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:transform .12s,border-color .15s;" onmousedown="this.style.transform='scale(.98)';this.style.borderColor='rgba(226,75,74,0.3)'" onmouseup="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'" onmouseleave="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'">
+            <div style="width:40px;height:40px;background:${allDone?'rgba(52,199,89,0.12)':hasNg?'rgba(226,75,74,0.10)':'rgba(0,0,0,0.06)'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2.5" stroke="${allDone?'#34C759':hasNg?'#E24B4A':'#5A6070'}" stroke-width="1.7"/><path d="M6 9.5l2.5 2.5 5-5" stroke="${allDone?'#34C759':hasNg?'#E24B4A':'#5A6070'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:700;color:#111111;margin-bottom:2px;">${l.name}</div>
+              <div style="font-size:12px;color:#888888;">${l.desc}・設備 ${st.total}台</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+              <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:${allDone?'rgba(52,199,89,0.12)':hasNg?'rgba(226,75,74,0.10)':'rgba(0,0,0,0.06)'};color:${allDone?'#34C759':hasNg?'#E24B4A':'#888888'};">${allDone?'完了':hasNg?`異常 ${st.ng}件`:'未実施'}</span>
+              <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <!-- その他 -->
+      <div style="margin-top:16px;">
         <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">その他</div>
         <div onclick="nav('HISTORY')" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;transition:transform .12s;" onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform=''">
           <div style="width:36px;height:36px;background:rgba(0,0,0,0.06);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1699,11 +1770,15 @@ function renderHistoryList(){
       setTimeout(function(){
         var lb=document.getElementById('cal-lb');
         var rb=document.getElementById('cal-rb');
+        var rh=document.getElementById('cal-rh');
         if(!lb||!rb)return;
         var syncing=false;
+        // Vertical sync: left body <-> right body
         rb.addEventListener('scroll',function(){
           if(syncing)return;syncing=true;
           lb.scrollTop=rb.scrollTop;
+          // Horizontal: sync header with body
+          if(rh)rh.scrollLeft=rb.scrollLeft;
           syncing=false;
         },{passive:true});
         lb.addEventListener('scroll',function(){
@@ -1749,14 +1824,16 @@ function renderHistoryList(){
       <div class="cal-left-hdr" style="display:flex;align-items:center;padding:0 8px;"><span style="font-size:10px;color:var(--text3);font-weight:600;">設備</span></div>
       <div id="cal-lb" style="flex:1;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;">${leftRows}</div>
     </div>
-    <!-- Right scrollable: single container for header + body -->
-    <div id="cal-rb" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;">
-      <!-- Sticky header row -->
-      <div id="cal-rr" style="position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;">
+    <!-- Right: header + body separated (fixes vertical scroll misalignment) -->
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <!-- Fixed header row (not inside the scroll container) -->
+      <div id="cal-rh" style="overflow:hidden;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);">
         <div class="cal-right-hdr" style="min-width:${days.length*80}px;">${dayHdrs}</div>
       </div>
-      <!-- Body rows -->
-      <div style="min-width:${days.length*80}px;flex:1;">${rightRows}</div>
+      <!-- Scrollable body -->
+      <div id="cal-rb" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;">
+        <div style="min-width:${days.length*80}px;">${rightRows}</div>
+      </div>
     </div>
   </div>
   <script>${syncScript}<\/script>
@@ -2532,7 +2609,198 @@ ${pages}
   printHtml(html);
 }
 
-/* ═══════════ RENDER ═══════════ */
+/* ═══════════ INSP RUN (multi-line inspection) ═══════════ */
+function renderInspRun(){
+  const inspName=S.currentName||'点検者';
+  // Gather all items across selected lines (only 毎日点検 items)
+  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  const results=S.inspRunResults||{};
+  let totalItems=0,doneItems=0;
+
+  const lineGroupsHtml=selLines.map(line=>{
+    const eqHtml=line.equip.map(eq=>{
+      const items=eq.items.filter(i=>i.t==='毎日');
+      totalItems+=items.length;
+      const done=items.filter(i=>results[eq.id+'_'+i.id]).length;
+      doneItems+=done;
+      const allDone=done===items.length&&items.length>0;
+      const itemsHtml=items.map(item=>{
+        const key=eq.id+'_'+item.id;
+        const ok=results[key]==='ok',ng=results[key]==='ng';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);" id="ir-${key}">
+          <div style="flex:1;font-size:13px;color:#444444;font-weight:500;line-height:1.4;">${item.n}</div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#30D158;color:white;border-color:#30D158;box-shadow:0 4px 16px rgba(48,209,88,0.35);':'background:white;color:#30D158;border-color:rgba(48,209,88,0.5);'}" id="ibtn-ok-${key}">○</button>
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#E24B4A;color:white;border-color:#E24B4A;box-shadow:0 4px 16px rgba(226,75,74,0.35);':'background:white;color:#E24B4A;border-color:rgba(226,75,74,0.5);'}" id="ibtn-ng-${key}">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+      const pend=items.filter(i=>!results[eq.id+'_'+i.id]).length;
+      const bulkBtn=(!allDone&&pend>0)?`<button onclick="inspBulkOkEq('${eq.id}')" style="width:100%;padding:10px;background:var(--green-lt);border:1px solid var(--green);border-radius:10px;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        未入力 ${pend}件 をすべて正常に一括入力
+      </button>`:'';
+      return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(48,209,88,0.35)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
+        <div style="font-size:14px;font-weight:700;color:#111111;display:flex;align-items:center;gap:8px;margin-bottom:${items.length?'12px':'0'};">
+          ${eq.name}
+          <span id="ep-${eq.id}" style="font-size:${allDone?'10':'11'}px;font-weight:700;padding:${allDone?'3px 9px':'0'};border-radius:8px;margin-left:auto;${allDone?'background:rgba(48,209,88,0.12);color:#2E7D32;':'color:#AAAAAA;'}">${allDone?'完了':`${done}/${items.length}`}</span>
+        </div>
+        ${itemsHtml}${bulkBtn}
+      </div>`;
+    }).join('');
+    return`<div style="margin:14px 16px 0;">
+      <div style="background:#F7F7F9;border:1.5px solid rgba(0,0,0,0.08);border-radius:18px 18px 0 0;border-bottom:none;padding:12px 16px;display:flex;align-items:center;gap:10px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#E24B4A;flex-shrink:0;"></div>
+        <div style="font-size:14px;font-weight:700;color:#111111;flex:1;">${line.name}</div>
+        <div style="font-size:11px;color:#AAAAAA;font-weight:500;">${line.desc}</div>
+      </div>
+      ${eqHtml}
+      <div style="border:1.5px solid rgba(0,0,0,0.08);border-top:none;border-radius:0 0 18px 18px;height:6px;background:#F7F7F9;"></div>
+    </div>`;
+  }).join('');
+
+  const pct=totalItems>0?Math.round(doneItems/totalItems*100):0;
+
+  return`
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+    <!-- Header -->
+    <div style="padding:calc(env(safe-area-inset-top,0px) + 12px) 20px 12px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);background:#FFFFFF;">
+      <button onclick="nav('HOME')" style="width:38px;height:38px;border-radius:12px;background:#F0F0F2;border:1.5px solid rgba(0,0,0,0.09);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1.5L2 7.5l6 6" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;color:#AAAAAA;font-weight:600;margin-bottom:3px;">点検中</div>
+        <div style="font-size:16px;font-weight:700;color:#111111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${inspName}</div>
+      </div>
+    </div>
+    <!-- Progress -->
+    <div style="padding:14px 20px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.07);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;color:#AAAAAA;font-weight:600;">進捗</div>
+        <div style="font-size:14px;font-weight:700;color:#111111;">${doneItems} / ${totalItems}</div>
+      </div>
+      <div style="height:6px;background:#E8E8EC;border-radius:6px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#E24B4A,#FF7070);border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
+      </div>
+    </div>
+    <!-- Content -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-run-scroll">
+      ${lineGroupsHtml}
+      <div style="height:16px;"></div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+      <button onclick="inspFinish()" style="width:100%;padding:16px;background:#30D158;color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(48,209,88,0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 9l5 5 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        点検を完了する
+      </button>
+    </div>
+  </div>`;
+}
+
+function inspBulkOkEq(eqId){
+  if(!S.inspRunResults)S.inspRunResults={};
+  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  let eq=null;
+  for(const line of selLines){eq=line.equip.find(e=>e.id===eqId);if(eq)break;}
+  if(!eq)return;
+  const items=eq.items.filter(i=>i.t==='毎日');
+  let cnt=0;
+  items.forEach(it=>{
+    if(!S.inspRunResults[eqId+'_'+it.id]){
+      S.inspRunResults[eqId+'_'+it.id]='ok';
+      cnt++;
+    }
+  });
+  toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
+  render();
+}
+
+function inspSetRes(eqId,itemId,result){
+  if(!S.inspRunResults)S.inspRunResults={};
+  const key=eqId+'_'+itemId;
+  S.inspRunResults[key]=result;
+  // Update button styles inline (no re-render)
+  const okBtn=document.getElementById('ibtn-ok-'+key);
+  const ngBtn=document.getElementById('ibtn-ng-'+key);
+  if(okBtn){
+    if(result==='ok'){okBtn.style.cssText+='background:#30D158;color:white;border-color:#30D158;box-shadow:0 4px 16px rgba(48,209,88,0.35);';}
+    else{okBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:white;color:#30D158;border-color:rgba(48,209,88,0.5);';}
+  }
+  if(ngBtn){
+    if(result==='ng'){ngBtn.style.cssText+='background:#E24B4A;color:white;border-color:#E24B4A;box-shadow:0 4px 16px rgba(226,75,74,0.35);';}
+    else{ngBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:white;color:#E24B4A;border-color:rgba(226,75,74,0.5);';}
+  }
+  // Update eq card header
+  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  for(const line of selLines){
+    const eq=line.equip.find(e=>e.id===eqId);
+    if(eq){
+      const items=eq.items.filter(i=>i.t==='毎日');
+      const done=items.filter(i=>S.inspRunResults[eqId+'_'+i.id]).length;
+      const allDone=done===items.length&&items.length>0;
+      const card=document.getElementById('ec-'+eqId);
+      const ep=document.getElementById('ep-'+eqId);
+      if(card)card.style.borderColor=allDone?'rgba(48,209,88,0.35)':'rgba(0,0,0,0.07)';
+      if(ep){
+        if(allDone){ep.textContent='完了';ep.style.cssText='font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:auto;background:rgba(48,209,88,0.12);color:#2E7D32;';}
+        else{ep.textContent=done+'/'+items.length;ep.style.cssText='font-size:11px;font-weight:700;margin-left:auto;color:#AAAAAA;';}
+      }
+      break;
+    }
+  }
+  // Update progress bar
+  let total=0,doneAll=0;
+  selLines.forEach(line=>line.equip.forEach(eq=>{
+    const items=eq.items.filter(i=>i.t==='毎日');
+    total+=items.length;
+    doneAll+=items.filter(i=>S.inspRunResults[eq.id+'_'+i.id]).length;
+  }));
+  const pct=total>0?Math.round(doneAll/total*100):0;
+  const fill=document.querySelector('#insp-run-scroll')?.closest('div')?.querySelector('.prog-fill');
+  // Update the progress bar directly
+  const progBars=document.querySelectorAll('[style*="width:'+Math.max(0,pct-1)+'%"]');
+  // Simpler: find via parent traversal
+  const progFill=document.evaluate('//div[contains(@style,"linear-gradient(90deg,#E24B4A")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+  if(progFill)progFill.style.width=pct+'%';
+  const progNums=document.evaluate('//div[contains(text()," / ")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+  if(progNums)progNums.textContent=doneAll+' / '+total;
+}
+
+function inspFinish(){
+  if(!S.inspRunResults)S.inspRunResults={};
+  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  let total=0,done=0,ng=0;
+  selLines.forEach(line=>line.equip.forEach(eq=>{
+    const items=eq.items.filter(i=>i.t==='毎日');
+    total+=items.length;
+    items.forEach(it=>{
+      const r=S.inspRunResults[eq.id+'_'+it.id];
+      if(r)done++;
+      if(r==='ng')ng++;
+    });
+  }));
+  if(done<total){toast(`未入力が ${total-done} 件あります`,'warn');return;}
+  // Also store to S.insps for history
+  selLines.forEach(line=>line.equip.forEach(eq=>{
+    const items=eq.items.filter(i=>i.t==='毎日');
+    const key=eq.id+':毎日点検';
+    S.insps[key]={date:TODAY,results:{}};
+    items.forEach(it=>{
+      const r=S.inspRunResults[eq.id+'_'+it.id]||'ok';
+      S.insps[key].results[it.id]={r,comment:'',photos:0};
+      if(r==='ng'){
+        const existing=S.anomalies.find(a=>a.eid===eq.id&&a.iid===it.id&&a.status!=='resolved');
+        if(!existing)S.anomalies.push({id:'AN'+Date.now()+Math.random().toString(36).slice(2),lid:line.id,eid:eq.id,iid:it.id,iname:it.n,comment:'点検にてNG',status:'open',date:TODAY,by:S.currentName||'点検者'});
+      }
+    });
+  }));
+  S.inspRunResults={};
+  toast(ng>0?`点検完了（異常 ${ng} 件）`:'点検完了！すべて正常です');
+  setTimeout(()=>nav('HOME'),1600);
+}
+
+
 function render(){
   const sc=document.getElementById('screen');
   let body='';
@@ -2540,6 +2808,7 @@ function render(){
     case'ROLE_SELECT':body=renderRoleSelect();break;
     case'NAME_SELECT':body=renderNameSelect();break;
     case'HOME':body=renderHome();break;
+    case'INSP_RUN':body=renderInspRun();break;
     case'LINE_DETAIL':body=renderLineDetail();break;
     case'INSPECTION':body=renderInspection();break;
     case'APPROVAL':body=renderApproval();break;
@@ -2556,6 +2825,19 @@ function render(){
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
 }
+
+// ── LocalStorage restore for inspector ──
+(function(){
+  const sn=localStorage.getItem('dk_insp_name');
+  const sl=JSON.parse(localStorage.getItem('dk_insp_lines')||'[]');
+  if(sn){
+    S.currentRole='inspector';
+    S.currentName=sn;
+    S.inspLastLines=sl;
+    S.inspSelectedLines=sl.length?[...sl]:[];
+    S.view='HOME';
+  }
+})();
 
 render();
 </script>
