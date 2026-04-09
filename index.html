@@ -37,8 +37,6 @@
   --insp-green: #2E7D32;
   --insp-orange:#E65100;
 }
-
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;color:var(--text);}
 #app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);}
@@ -118,7 +116,6 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 
 /* ── Bottom Tabs ── */
 .btabs{display:flex;border-top:0.5px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(255,255,255,0.93);}
-}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;font-weight:500;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
 .tab.active{color:var(--red);}
 
@@ -559,10 +556,21 @@ ${buildRows(monthlyItems,'月\n次','月1回',1,'月次点検')}
 </div>
 <script>window.onload=function(){window.print();}<\/script>
 </body></html>`;
-  const w=window.open('','_blank','width=1200,height=800');
-  w.document.write(html);
-  w.document.close();
+  printHtml(html);
 }
+/* ═══════════ PRINT HELPER ═══════════ */
+function printHtml(html){
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  let fr=document.getElementById('_print_frame');
+  if(!fr){fr=document.createElement('iframe');fr.id='_print_frame';fr.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';document.body.appendChild(fr);}
+  fr.onload=function(){
+    try{fr.contentWindow.focus();fr.contentWindow.print();}catch(e){}
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  };
+  fr.src=url;
+}
+
 /* ═══════════ HISTORY PDF EXPORT ═══════════ */
 
 // 週間サマリーPDF（カレンダー画面から）
@@ -709,9 +717,7 @@ tr:nth-child(even) td{background:#fafafa;}
 </div>
 <script>window.onload=function(){window.print();}<\/script>
 </body></html>`;
-  const w=window.open('','_blank','width=1200,height=850');
-  if(!w){toast('ポップアップがブロックされました','warn');return;}
-  w.document.write(html);w.document.close();
+  printHtml(html);
 }
 
 // 日別詳細PDF（詳細画面から）
@@ -836,9 +842,7 @@ td{font-size:8.5px;padding:5px 7px;border:0.5px solid #ddd;vertical-align:middle
 </div>
 <script>window.onload=function(){window.print();}<\/script>
 </body></html>`;
-  const w=window.open('','_blank','width=900,height=1100');
-  if(!w){toast('ポップアップがブロックされました','warn');return;}
-  w.document.write(html);w.document.close();
+  printHtml(html);
 }
 
 function btabs(){
@@ -855,16 +859,17 @@ function btabs(){
     ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
   ];
   const tabs=isAdmin?adminTabs:inspectorTabs;
-  // Admin uses dark theme too
-  const isDark=true;
-  const activeColor=isAdmin?'#4F8EF7':'var(--insp-red)';
-  return`<div class="btabs" style="background:rgba(255,255,255,0.96);border-top-color:rgba(0,0,0,0.08);">
+  // Dark tab bar like image 6
+  const activeColor=isAdmin?'#4F8EF7':'#E24B4A';
+  const tabBg='rgba(22,22,24,0.97)';
+  const inactiveColor='rgba(255,255,255,0.38)';
+  return`<div class="btabs" style="background:${tabBg};border-top:0.5px solid rgba(255,255,255,0.08);">
   ${tabs.map(([v,l,ico])=>`
-    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')" style="color:${S.view===v?activeColor:'rgba(0,0,0,0.20)'};">
+    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')" style="color:${S.view===v?activeColor:inactiveColor};">
       <div style="position:relative;display:inline-flex;">
         ${ico}
-        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#4F8EF7;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #13151A;padding:0 2px;">${pa}</div>`:``}
-        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#F97316;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #13151A;padding:0 2px;">${oa}</div>`:``}
+        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#4F8EF7;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(22,22,24,0.97);padding:0 2px;">${pa}</div>`:``}
+        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#F97316;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(22,22,24,0.97);padding:0 2px;">${oa}</div>`:``}
       </div>
       <span>${l}</span>
     </button>`).join('')}</div>`;
@@ -1072,9 +1077,7 @@ function renderInspectorHome(){
           <div style="font-size:18px;font-weight:700;color:var(--insp-text);letter-spacing:-.3px;margin-bottom:4px;">${l.name}</div>
           <div style="font-size:12px;color:var(--insp-text2);font-weight:500;">${l.desc}・設備 ${st.total}台</div>
           <!-- Progress bar -->
-          <div style="margin-top:10px;height:3px;background:rgba(0,0,0,0.08);border-radius:2px;overflow:hidden;">
-            <div style="height:100%;width:${pct}%;background:${accentColor};border-radius:2px;transition:width .3s;"></div>
-          </div>
+          ${pct>0?`<div style="margin-top:10px;height:3px;background:rgba(0,0,0,0.08);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:${accentColor};border-radius:2px;transition:width .3s;"></div></div>`:''}
         </div>
         <!-- Status dot + arrow -->
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
@@ -1625,7 +1628,7 @@ function renderHistoryList(){
     <!-- Left column header spacer -->
     <div style="display:flex;flex-direction:column;flex-shrink:0;width:90px;border-right:1px solid var(--border);">
       <div class="cal-left-hdr" style="display:flex;align-items:center;padding:0 8px;"><span style="font-size:10px;color:var(--text3);font-weight:600;">設備</span></div>
-      <div id="cal-lb" style="flex:1;overflow-y:hidden;">${leftRows}</div>
+      <div id="cal-lb" style="flex:1;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;">${leftRows}</div>
     </div>
     <!-- Right scrollable -->
     <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
@@ -2407,9 +2410,7 @@ ${pages}
 <script>window.onload=function(){window.print();}<\/script>
 </body></html>`;
 
-  const w=window.open('','_blank','width=1400,height=900');
-  if(!w){toast('ポップアップがブロックされました','warn');return;}
-  w.document.write(html);w.document.close();
+  printHtml(html);
 }
 
 /* ═══════════ RENDER ═══════════ */
