@@ -175,14 +175,14 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 }
 
 /* ── Calendar Grid ── */
-.cal-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;min-height:0;}
+.cal-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;}
 .cal-month{font-size:17px;font-weight:700;letter-spacing:-.3px;}
 .cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;transition:background .12s;flex-shrink:0;}
 .cal-nav-btn:active{background:rgba(0,0,0,.15);}
 .cal-filter-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;}
 .cal-unreported{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:var(--red-lt);color:var(--red);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;}
-.cal-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+.cal-body{display:flex;flex:1;overflow:hidden;}
 .cal-left{flex-shrink:0;width:90px;display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;}
 .cal-right{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
 .cal-left-hdr{height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
@@ -930,12 +930,17 @@ function btabs(){
     ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
   ];
   const tabs=isAdmin?adminTabs:inspectorTabs;
-  const activeColor=isAdmin?'#1E3A8A':'#C8292A';
+  // Active color: blue for History tab, navy for admin, red for inspector home
+  const getActiveColor=(v)=>{
+    if(v==='HISTORY')return'#2563EB';
+    if(isAdmin)return'#1E3A8A';
+    return'#C8292A';
+  };
   const tabBg='rgba(255,255,255,0.96)';
   const inactiveColor='var(--text3)';
   return`<div class="btabs">
   ${tabs.map(([v,l,ico])=>`
-    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')" style="color:${S.view===v?activeColor:inactiveColor};transition:color .15s;">
+    <button class="tab ${S.view===v?'active':''}" onclick="${v==='HISTORY'?'S.histYear=null;S.histMonth=null;':''}nav('${v}')" style="color:${S.view===v?getActiveColor(v):inactiveColor};transition:color .15s;">
       <div style="position:relative;display:inline-flex;">
         ${ico}
         ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#1E3A8A;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.96);padding:0 2px;">${pa}</div>`:``}
@@ -1604,185 +1609,207 @@ function changeDate(offset){
 }
 
 function renderHistoryList(){
-  const base=new Date();base.setHours(0,0,0,0);
-  const offset=S.histWeekOffset||0;
-  const startOfWeek=new Date(base);
-  startOfWeek.setDate(startOfWeek.getDate()-startOfWeek.getDay()+(offset*7));
-  const days=Array.from({length:7},(_,i)=>{const d=new Date(startOfWeek);d.setDate(d.getDate()+i);return d;});
-  const toStr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const dayStrs=days.map(toStr);
-  const DW=['日','月','火','水','木','金','土'];
-  const mid=days[3];
-  const monthLbl=`${mid.getFullYear()}年 ${mid.getMonth()+1}月`;
-  const weekSm=dayStrs.map(ds=>getDateSummary(ds));
-  const doneC=weekSm.filter(s=>s.status==='完了').length;
-  const ngC=weekSm.filter(s=>s.status==='異常').length;
-  const partC=weekSm.filter(s=>s.status==='一部').length;
-  const weekRange=`${days[0].getMonth()+1}/${days[0].getDate()} — ${days[6].getMonth()+1}/${days[6].getDate()}`;
-
-  function getCellBadges(eid,ds){
-    const eq=getEq(eid);if(!eq)return[];
-    const dow=new Date(ds).getDay();const isWe=(dow===0||dow===6);
-    const keys=Object.keys(S.insps).filter(k=>k.startsWith(eid+':')&&S.insps[k].date===ds);
-    if(!keys.length)return[];
-    return keys.map(key=>{
-      const type=key.split(':')[1];
-      if(isWe&&(type==='10日点検'||type==='月次点検'))return null;
-      const items=typeItems(eq,type);const rs=S.insps[key].results;
-      const done=items.filter(i=>rs[i.id]).length;const ng=items.filter(i=>rs[i.id]?.r==='ng').length;
-      const total=items.length;
-      if(ng>0)return{cls:'ng',sym:'✗',lbl:type.replace('点検','')};
-      if(done===total)return{cls:'done',sym:'✓',lbl:type.replace('点検','')};
-      return{cls:'partial',sym:'△',lbl:type.replace('点検','')};
-    }).filter(Boolean);
+  const now=new Date();
+  S.histYear=S.histYear||now.getFullYear();
+  S.histMonth=S.histMonth||now.getMonth()+1;
+  // If stored year/month is in the future or more than 2 years old, reset to current
+  const nowY=now.getFullYear(),nowM=now.getMonth()+1;
+  if(S.histYear>nowY||(S.histYear===nowY&&S.histMonth>nowM)||nowY-S.histYear>2){
+    S.histYear=nowY;S.histMonth=nowM;
   }
-  function isWknd(ds){const d=new Date(ds).getDay();return d===0||d===6;}
+  const histYear=S.histYear, histMonth=S.histMonth;
+  const monthStr=`${histYear}-${String(histMonth).padStart(2,'0')}`;
+  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-  const ST_COLOR={done:'#10B981',ng:'#EF4444',partial:'#F59E0B'};
-  const ST_BG={done:'rgba(16,185,129,0.09)',ng:'rgba(239,68,68,0.10)',partial:'rgba(245,158,11,0.08)'};
+  // Pick an icon based on equipment name
+  function getMachineIcon(name,color='#2563EB'){
+    if(name.includes('コンベア')||name.includes('ベルト')){
+      return`<svg width="28" height="22" viewBox="0 0 28 22" fill="none">
+        <rect x="2" y="8" width="24" height="6" rx="3" stroke="${color}" stroke-width="1.7"/>
+        <circle cx="5" cy="11" r="3" stroke="${color}" stroke-width="1.5"/>
+        <circle cx="23" cy="11" r="3" stroke="${color}" stroke-width="1.5"/>
+        <path d="M8 11h12" stroke="${color}" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>`;
+    }
+    if(name.includes('ロボット')||name.includes('溶接')||name.includes('NC')||name.includes('マシニング')||name.includes('研削')||name.includes('旋盤')){
+      return`<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M14 22v-5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M8 22h12" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M14 17l-5-4" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M9 13l-3-3" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <circle cx="6" cy="10" r="2.2" stroke="${color}" stroke-width="1.5"/>
+        <circle cx="14" cy="17" r="2.5" stroke="${color}" stroke-width="1.5"/>
+        <path d="M14 17l5-5" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M19 12l3-4" stroke="${color}" stroke-width="1.7" stroke-linecap="round"/>
+        <circle cx="22" cy="7.5" r="2.2" stroke="${color}" stroke-width="1.5"/>
+      </svg>`;
+    }
+    if(name.includes('炉')||name.includes('乾燥')){
+      return`<svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <rect x="3" y="4" width="20" height="18" rx="2.5" stroke="${color}" stroke-width="1.7"/>
+        <rect x="7" y="8" width="12" height="9" rx="1.5" stroke="${color}" stroke-width="1.4"/>
+        <path d="M10 5V3M16 5V3" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="12.5" r="2" stroke="${color}" stroke-width="1.3"/>
+      </svg>`;
+    }
+    if(name.includes('塗装')||name.includes('ブース')){
+      return`<svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <rect x="3" y="5" width="16" height="16" rx="2.5" stroke="${color}" stroke-width="1.7"/>
+        <path d="M19 11h4M19 14h2.5" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="23" cy="11" r="1.2" fill="${color}"/>
+        <path d="M8 11h6M8 15h4" stroke="${color}" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>`;
+    }
+    if(name.includes('検査')){
+      return`<svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <circle cx="11" cy="11" r="7" stroke="${color}" stroke-width="1.7"/>
+        <path d="M16.5 16.5L22 22" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 11l2.5 2.5 4.5-4.5" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    }
+    // Default: oil/hydraulic machine
+    return`<svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <ellipse cx="13" cy="17" rx="7" ry="5" stroke="${color}" stroke-width="1.7"/>
+      <path d="M6 17V10a7 7 0 0114 0v7" stroke="${color}" stroke-width="1.7"/>
+      <path d="M10 10c0-1.7 1.3-3 3-3s3 1.3 3 3" stroke="${color}" stroke-width="1.4"/>
+      <path d="M13 5V3" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M13 3h4" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`;
+  }
 
-  const dayHdrs=days.map((d,i)=>{
-    const ds=toStr(d);const isToday=ds===TODAY;
-    const dow=d.getDay();const isSun=dow===0,isSat=dow===6;
-    const nc=isToday?'white':isSun?'#93C5FD':isSat?'#FCA5A5':'rgba(255,255,255,0.88)';
-    const wc=isToday?'rgba(255,255,255,0.75)':isSun?'rgba(147,197,253,.65)':isSat?'rgba(252,165,165,.65)':'rgba(255,255,255,0.38)';
-    const showM=(d.getDate()===1||i===0)?`<div style="font-size:7px;color:rgba(255,255,255,0.3);line-height:1;margin-bottom:1px;">${d.getMonth()+1}/</div>`:'';
-    return`<div style="min-width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;border-right:0.5px solid rgba(255,255,255,0.07);${isToday?'background:rgba(200,41,42,0.18);':''}">
-      ${showM}
-      ${isToday?`<div style="width:30px;height:30px;background:#C8292A;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 14px rgba(200,41,42,.55);"><span style="font-size:15px;font-weight:800;color:white;line-height:1;">${d.getDate()}</span></div>`:`<div style="font-size:19px;font-weight:800;color:${nc};line-height:1;">${d.getDate()}</div>`}
-      <div style="font-size:9px;font-weight:700;color:${wc};margin-top:3px;letter-spacing:.4px;">${DW[dow]}</div>
-    </div>`;
-  }).join('');
-
-  let leftRows='',rightRows='';
+  // Get status for each equipment in selected month
+  const allEquip=[];
   S.lines.forEach(line=>{
-    leftRows+=`<div style="height:28px;background:#111827;display:flex;align-items:center;padding:0 10px;border-bottom:1px solid rgba(255,255,255,0.07);overflow:hidden;flex-shrink:0;">
-      <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.42);letter-spacing:.7px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${line.name}</span>
-    </div>`;
-    rightRows+=`<div style="display:flex;height:28px;background:#0B1220;border-bottom:0.5px solid rgba(255,255,255,0.05);">
-      ${days.map((_,i)=>`<div style="min-width:80px;flex-shrink:0;border-right:0.5px solid rgba(255,255,255,0.05);${dayStrs[i]===TODAY?'background:rgba(200,41,42,0.1);':''}"></div>`).join('')}
-    </div>`;
     line.equip.forEach(eq=>{
-      const tSt=getEqStatusForDate(eq.id,TODAY);
-      const dotC={done:'#10B981',ng:'#EF4444',partial:'#F59E0B',pending:'#374151'}[tSt];
-      const glowC={done:'rgba(16,185,129,0.5)',ng:'rgba(239,68,68,0.5)',partial:'rgba(245,158,11,0.5)',pending:'transparent'}[tSt];
-      leftRows+=`<div style="min-height:52px;display:flex;align-items:center;padding:0 8px 0 10px;border-bottom:0.5px solid rgba(255,255,255,0.05);gap:7px;background:#141C2E;transition:background .12s;cursor:pointer;" onclick="S.histDate='${TODAY}';S.histView='detail';render();" onmousedown="this.style.background='#1E2D47'" onmouseup="this.style.background='#141C2E'">
-        <div style="width:6px;height:6px;border-radius:50%;background:${dotC};flex-shrink:0;box-shadow:0 0 8px ${glowC};"></div>
-        <span style="font-size:10.5px;font-weight:600;color:rgba(255,255,255,0.80);line-height:1.3;word-break:break-all;">${eq.name}</span>
-      </div>`;
-      const cells=dayStrs.map((ds)=>{
-        const isToday=ds===TODAY;const we=isWknd(ds);
-        const badges=getCellBadges(eq.id,ds);
-        let bg=isToday?'rgba(200,41,42,0.04)':we?'rgba(0,0,0,0.012)':'white';
-        let content='';
-        if(badges.length>0){
-          const b=badges[0];const bc=ST_COLOR[b.cls];const bb=ST_BG[b.cls];
-          bg=bb;
-          const extra=badges.length>1?`<span style="font-size:7.5px;color:${bc};opacity:.65;font-weight:700;">+${badges.length-1}</span>`:'';
-          content=`<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${bc};border-radius:0 2px 2px 0;"></div><div style="font-size:16px;font-weight:800;color:${bc};line-height:1;">${b.sym}</div><div style="font-size:8px;font-weight:700;color:${bc};opacity:.75;letter-spacing:.2px;">${b.lbl}</div>${extra}`;
-        } else if(we){
-          content=`<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,0.022) 4px,rgba(0,0,0,0.022) 8px);pointer-events:none;"></div>`;
-        }
-        return`<div style="min-width:80px;flex-shrink:0;border-right:0.5px solid #EAECF0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;position:relative;background:${bg};transition:filter .1s;" onclick="S.histDate='${ds}';S.histView='detail';render();" onmousedown="this.style.filter='brightness(.91)'" onmouseup="this.style.filter=''">${content}</div>`;
-      }).join('');
-      rightRows+=`<div style="display:flex;border-bottom:0.5px solid #EAECF0;">${cells}</div>`;
+      let latestDate=null,latestBy=S.currentName||'田中',status='pending';
+      Object.entries(S.insps).forEach(([key,insp])=>{
+        if(!key.startsWith(eq.id+':'))return;
+        if(!insp.date||!insp.date.startsWith(monthStr))return;
+        if(!latestDate||insp.date>latestDate){latestDate=insp.date;}
+        const type=key.split(':')[1];
+        const items=typeItems(eq,type);const rs=insp.results||{};
+        const ng=items.filter(i=>rs[i.id]?.r==='ng').length;
+        const done=items.filter(i=>rs[i.id]).length;
+        if(ng>0)status='ng';
+        else if(done===items.length&&items.length>0&&status!=='ng')status='done';
+        else if(done>0&&status==='pending')status='partial';
+      });
+      allEquip.push({eq,line,date:latestDate||`${monthStr}-15`,status,by:latestBy});
     });
   });
 
-  const syncScript=`
-    (function(){
-      function initSync(){
-        var lb=document.getElementById('cal-lb');var rb=document.getElementById('cal-rb');var rh=document.getElementById('cal-rh');
-        if(!lb||!rb)return;
-        var syncing=false;
-        rb.addEventListener('scroll',function(){if(syncing)return;syncing=true;requestAnimationFrame(function(){lb.scrollTop=rb.scrollTop;if(rh)rh.scrollLeft=rb.scrollLeft;syncing=false;});},{passive:true});
-        lb.addEventListener('scroll',function(){if(syncing)return;syncing=true;requestAnimationFrame(function(){rb.scrollTop=lb.scrollTop;syncing=false;});},{passive:true});
-        var tidx=${dayStrs.indexOf(TODAY)};if(tidx>=0)rb.scrollLeft=Math.max(0,(tidx-1)*80);
-      }
-      setTimeout(initSync,80);setTimeout(initSync,300);
-    })();
-  `;
-  const WH_BACK=`<svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M9 1L2 8.5L9 16" stroke="rgba(255,255,255,0.8)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  // Build month navigator pills (prev 3 months + current)
+  const monthPills=[];
+  for(let i=2;i>=0;i--){
+    let y=histYear,m=histMonth-i;
+    if(m<=0){m+=12;y--;}
+    const active=(y===histYear&&m===histMonth);
+    monthPills.push(`<button onclick="S.histYear=${y};S.histMonth=${m};render();" style="
+      flex:1;padding:7px 4px;border-radius:9px;font-size:11px;font-weight:600;cursor:pointer;border:none;
+      background:${active?'white':'transparent'};color:${active?'#111827':'#9CA3AF'};
+      box-shadow:${active?'0 1px 4px rgba(0,0,0,0.10)':'none'};
+      border:${active?'1px solid #E4E8EF':'1px solid transparent'};
+      font-family:inherit;touch-action:manipulation;transition:all .15s;">
+      ${y}年${MONTHS[m-1]}
+    </button>`);
+  }
 
-  return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;min-height:0;background:#F3F5F8;">
-  <div style="background:linear-gradient(160deg,#0B1324 0%,#1a2d52 55%,#16264A 100%);padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 18px;flex-shrink:0;position:relative;overflow:hidden;">
-    <div style="position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(200,41,42,0.09);pointer-events:none;"></div>
-    <div style="position:absolute;right:30px;bottom:-10px;width:80px;height:80px;border-radius:50%;background:rgba(59,130,246,0.06);pointer-events:none;"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative;z-index:1;">
-      <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .15s;" onmousedown="this.style.background='rgba(255,255,255,0.15)'" onmouseup="this.style.background='rgba(255,255,255,0.08)'">${WH_BACK}</button>
-      <div style="flex:1;"><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">入力状況</div><div style="font-size:21px;font-weight:800;color:white;letter-spacing:-.5px;">${monthLbl}</div></div>
-      ${S.currentRole==='admin'?`<button onclick="openEqPdfModal()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:7px 12px;color:rgba(255,255,255,0.85);font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">${PDF_ICO} PDF</button>`:''}
+  // Clipboard icon for header
+  const clipboardIcon=`<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <rect x="7" y="4" width="18" height="24" rx="3" stroke="#374151" stroke-width="1.8"/>
+    <path d="M12 4V6a2 2 0 002 2h4a2 2 0 002-2V4" stroke="#374151" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M11 14h10M11 18h8M11 22h6" stroke="#374151" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M24 2l2 2-2 2M26 4h-4" stroke="#374151" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+  // Calendar icon (small inline)
+  const calIco=`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="#9CA3AF" stroke-width="1.2"/><path d="M4 1v2M9 1v2" stroke="#9CA3AF" stroke-width="1.2" stroke-linecap="round"/><path d="M1 5h11" stroke="#9CA3AF" stroke-width="1.1"/></svg>`;
+  const clockIco=`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9CA3AF" stroke-width="1.2"/><path d="M6.5 4v3l2 1.5" stroke="#9CA3AF" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  const personIco=`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4.5" r="2.5" stroke="#9CA3AF" stroke-width="1.2"/><path d="M1.5 11.5c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5" stroke="#9CA3AF" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+
+  // Generate cards in 2-column grid
+  const cards=allEquip.map(({eq,line,date,status,by})=>{
+    const iconColor=status==='pending'?'#9CA3AF':'#2563EB';
+    const statusEl=status==='done'?
+      `<div style="width:34px;height:34px;background:#2563EB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`:
+      status==='ng'?
+      `<span style="background:#EF4444;color:white;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;flex-shrink:0;">NG</span>`:
+      status==='partial'?
+      `<span style="background:#F59E0B;color:white;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;flex-shrink:0;">一部</span>`:
+      `<span style="background:#2563EB;color:white;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;flex-shrink:0;">未実施</span>`;
+
+    const nameDisplay=S.currentName||by;
+
+    return`<div style="background:white;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border:1px solid #F1F3F8;overflow:hidden;display:flex;flex-direction:column;">
+      <div style="padding:12px 12px 6px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:${status==='pending'?'#F1F3F8':'#EFF6FF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            ${getMachineIcon(eq.name,iconColor)}
+          </div>
+          <div style="flex:1;min-width:0;overflow:hidden;">
+            <div style="font-size:13px;font-weight:700;color:${status==='pending'?'#9CA3AF':'#111827'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq.name}</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${status==='pending'?'未実施':line.name}</div>
+          </div>
+          ${statusEl}
+        </div>
+        <div style="text-align:right;">
+          <button onclick="S.histView='detail';S.histDate='${date}';render();" style="font-size:11px;color:#2563EB;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:500;padding:2px 0;touch-action:manipulation;">詳細</button>
+        </div>
+      </div>
+      <div style="background:#F8F9FC;border-top:1px solid #F1F3F8;padding:7px 10px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow:hidden;">
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#9CA3AF;white-space:nowrap;">${calIco}${date}</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#9CA3AF;white-space:nowrap;flex-shrink:0;">${clockIco}10:00</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#9CA3AF;white-space:nowrap;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;">${personIco}${nameDisplay.split(' ').pop()||nameDisplay}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#F8F9FC;">
+    <!-- Header -->
+    <div style="background:#F8F9FC;padding:calc(env(safe-area-inset-top,0px) + 24px) 20px 16px;text-align:center;flex-shrink:0;">
+      <div style="width:68px;height:68px;border:1.5px solid #E4E8EF;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+        ${clipboardIcon}
+      </div>
+      <div style="font-size:28px;font-weight:800;color:#111827;letter-spacing:-.5px;">点検履歴</div>
+      <div style="font-size:13px;color:#9CA3AF;margin-top:4px;font-weight:500;">${histYear}年 · ${histMonth}月</div>
     </div>
-    <div style="display:flex;gap:8px;position:relative;z-index:1;">
-      <div style="flex:1;background:rgba(16,185,129,0.14);border:1px solid rgba(16,185,129,0.28);border-radius:14px;padding:10px 8px;text-align:center;">
-        <div style="font-size:22px;font-weight:900;color:#34D399;line-height:1;letter-spacing:-1px;">${doneC}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:600;margin-top:3px;letter-spacing:.4px;">完了</div>
-      </div>
-      <div style="flex:1;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.28);border-radius:14px;padding:10px 8px;text-align:center;">
-        <div style="font-size:22px;font-weight:900;color:#F87171;line-height:1;letter-spacing:-1px;">${ngC}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:600;margin-top:3px;letter-spacing:.4px;">異常</div>
-      </div>
-      <div style="flex:1;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.28);border-radius:14px;padding:10px 8px;text-align:center;">
-        <div style="font-size:22px;font-weight:900;color:#FCD34D;line-height:1;letter-spacing:-1px;">${partC}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:600;margin-top:3px;letter-spacing:.4px;">一部</div>
+    <!-- Month selector pills -->
+    <div style="padding:0 16px 12px;flex-shrink:0;">
+      <div style="display:flex;gap:4px;background:white;border-radius:12px;padding:3px;border:1px solid #E4E8EF;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        ${monthPills.join('')}
       </div>
     </div>
-  </div>
-  <div style="background:white;border-bottom:1px solid #E8EDF4;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 6px rgba(0,0,0,0.05);">
-    <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="S.histWeekOffset=(S.histWeekOffset||0)-1;render();" style="width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M5 1L1 5 5 9" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <span style="font-size:12px;color:#475569;font-weight:600;min-width:110px;text-align:center;">${weekRange}</span>
-      <button onclick="S.histWeekOffset=(S.histWeekOffset||0)+1;render();" style="width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;opacity:${offset>=0?0.35:1};" ${offset>=0?'disabled':''}><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1l4 4-4 4" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
-    <button onclick="S.histWeekOffset=0;render();" style="font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px;border:none;background:${offset===0?'#C8292A':'#F1F5F9'};color:${offset===0?'white':'#64748B'};cursor:pointer;font-family:inherit;touch-action:manipulation;">今週</button>
-  </div>
-  <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
-    <div style="display:flex;flex-direction:column;flex-shrink:0;width:96px;overflow:hidden;min-height:0;background:#141C2E;border-right:1px solid rgba(255,255,255,0.07);">
-      <div style="height:52px;flex-shrink:0;background:#0D1320;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;padding:0 12px;">
-        <span style="font-size:9.5px;color:rgba(255,255,255,0.35);font-weight:700;letter-spacing:.8px;text-transform:uppercase;">設備</span>
-      </div>
-      <div id="cal-lb" style="flex:1;min-height:0;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">${leftRows}</div>
-    </div>
-    <div style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
-      <div id="cal-rh" style="overflow:hidden;flex-shrink:0;background:#0D1320;border-bottom:1px solid rgba(255,255,255,0.09);">
-        <div style="display:flex;min-width:${days.length*80}px;">${dayHdrs}</div>
-      </div>
-      <div id="cal-rb" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:white;">
-        <div style="min-width:${days.length*80}px;">${rightRows}</div>
+    <!-- Card grid -->
+    <div style="flex:1;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        ${cards}
       </div>
     </div>
-  </div>
-  <script>${syncScript}<\/script>
-  </div>${btabs()}`;
+    ${btabs()}
+  </div>`;
 }
 
 function renderHistoryDetail(date){
   const dates=getHistoryDates();
   const idx=dates.indexOf(date);
   const hasPrev=idx<dates.length-1,hasNext=idx>0;
-  const d=new Date(date);const DW=['日','月','火','水','木','金','土'];
-  const dl=`${d.getMonth()+1}月${d.getDate()}日（${DW[d.getDay()]}）`;
-  const isToday=date===TODAY;const dow=d.getDay();const isSun=dow===0,isSat=dow===6;
+  const d=new Date(date);const dw=['日','月','火','水','木','金','土'];
+  const dl=`${d.getMonth()+1}月${d.getDate()}日(${dw[d.getDay()]})`;
 
-  let totalEq=0,doneEq=0,ngEq=0,pendingEq=0;
-  S.lines.forEach(l=>l.equip.forEach(eq=>{totalEq++;const st=getEqStatusForDate(eq.id,date);if(st==='done')doneEq++;else if(st==='ng')ngEq++;else if(st==='pending')pendingEq++;}));
-  const partialEq=totalEq-doneEq-ngEq-pendingEq;
-
-  const stC={done:'#10B981',ng:'#EF4444',partial:'#F59E0B',pending:'#94A3B8'};
-  const stBg={done:'rgba(16,185,129,0.1)',ng:'rgba(239,68,68,0.1)',partial:'rgba(245,158,11,0.1)',pending:'rgba(0,0,0,0.04)'};
-  const stLbl={done:'完了',ng:'異常あり',partial:'一部完了',pending:'未実施'};
-  const stIco={
-    done:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(16,185,129,0.15)"/><path d="M6 10l3 3 5-5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    ng:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(239,68,68,0.15)"/><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>`,
-    partial:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(245,158,11,0.15)"/><path d="M10 6v5M10 13v.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg>`,
-    pending:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(0,0,0,0.05)"/><path d="M10 6v4l2.5 2.5" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/></svg>`,
-  };
+  /* status icon helpers */
+  const ico=(st)=>({
+    done:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--green)" stroke-width="1.8"/><path d="M6 10l3 3 5-5" stroke="var(--green)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    ng:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--red)" stroke-width="1.8"/><path d="M7 7l6 6M13 7l-6 6" stroke="var(--red)" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+    partial:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--orange)" stroke-width="1.8"/><path d="M10 6v5M10 13v1" stroke="var(--orange)" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+    pending:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--text3)" stroke-width="1.8"/><path d="M10 6v4l2.5 2.5" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  }[st]);
+  const stLbl={done:'完了',ng:'異常',partial:'一部',pending:'未実施'};
+  const stBg={done:'var(--green-lt)',ng:'var(--red-lt)',partial:'var(--orange-lt)',pending:'rgba(0,0,0,.05)'};
+  const stCol={done:'var(--green)',ng:'var(--red)',partial:'var(--orange)',pending:'var(--text3)'};
 
   const lineBlocks=S.lines.map(l=>{
-    const lineNg=l.equip.filter(eq=>getEqStatusForDate(eq.id,date)==='ng').length;
-    const lineDone=l.equip.filter(eq=>getEqStatusForDate(eq.id,date)==='done').length;
-    const lineAllPend=l.equip.every(eq=>getEqStatusForDate(eq.id,date)==='pending');
-    const lineColor=lineNg>0?'#EF4444':lineAllPend?'#CBD5E1':lineDone===l.equip.length?'#10B981':'#F59E0B';
     const eqRows=l.equip.map(eq=>{
       const st=getEqStatusForDate(eq.id,date);
       const ngItems=[];
@@ -1790,58 +1817,52 @@ function renderHistoryDetail(date){
         const type=key.split(':')[1];
         typeItems(eq,type).filter(i=>S.insps[key].results[i.id]?.r==='ng').forEach(i=>ngItems.push(i.n));
       });
-      return`<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:0.5px solid #F0F4F8;">
+      return`<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);">
         <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:#1E293B;margin-bottom:${ngItems.length?'4px':'0'};">${eq.name}</div>
-          ${ngItems.length?`<div style="font-size:11px;color:#EF4444;font-weight:500;line-height:1.4;display:flex;align-items:center;gap:4px;flex-wrap:wrap;"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><circle cx="4.5" cy="4.5" r="4" stroke="#EF4444" stroke-width="1.2"/><path d="M4.5 2.5v2M4.5 6v.3" stroke="#EF4444" stroke-width="1.3" stroke-linecap="round"/></svg>${ngItems.join(' · ')}</div>`:''}
+          <div style="font-size:14px;font-weight:600;">${eq.name}</div>
+          ${ngItems.length>0?`<div style="font-size:11px;color:var(--red);margin-top:2px;">${ngItems.join(' / ')}</div>`:''}
         </div>
-        <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
-          <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${stBg[st]};color:${stC[st]};letter-spacing:.1px;">${stLbl[st]}</span>
-          ${stIco[st]}
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${stBg[st]};color:${stCol[st]};">${stLbl[st]}</span>
+          ${ico(st)}
         </div>
       </div>`;
     }).join('');
-    return`<div style="background:white;border-radius:18px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.055);">
-      <div style="padding:13px 16px;border-bottom:1px solid #F0F4F8;display:flex;align-items:center;gap:10px;background:#FAFCFE;">
-        <div style="width:4px;height:36px;border-radius:2px;background:${lineColor};flex-shrink:0;"></div>
-        <div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:#111827;letter-spacing:-.2px;">${l.name}</div><div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${l.desc} · 設備 ${l.equip.length}台</div></div>
-        ${lineNg>0?`<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(239,68,68,0.1);color:#EF4444;">異常 ${lineNg}</span>`:''}
-        ${lineNg===0&&lineDone===l.equip.length?`<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,0.1);color:#10B981;">✓ 全完了</span>`:''}
+    return`<div class="card" style="margin-bottom:10px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding-bottom:8px;border-bottom:1.5px solid var(--border);">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2.5" stroke="var(--text2)" stroke-width="1.4"/><path d="M4 7h6M4 10h4" stroke="var(--text2)" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span style="font-size:12px;font-weight:700;color:var(--text2);">${l.name}</span>
+        <span style="font-size:11px;color:var(--text3);">${l.desc}</span>
       </div>
       ${eqRows}
     </div>`;
   }).join('');
 
-  const WH_BACK=`<svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M9 1L2 8.5L9 16" stroke="rgba(255,255,255,0.8)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  const dateColor=isToday?'#FCA5A5':isSun?'#93C5FD':isSat?'#FCA5A5':'white';
+  /* date nav buttons */
+  const navBtns=`<div style="display:flex;gap:6px;flex-shrink:0;">
+    <button onclick="changeDate(1)" style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,${hasPrev?.2:.07});color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;opacity:${hasPrev?1:.4};" ${hasPrev?'':'disabled'}>
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M6 1L1 7l5 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button onclick="changeDate(-1)" style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,${hasNext?.2:.07});color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;opacity:${hasNext?1:.4};" ${hasNext?'':'disabled'}>
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M2 1l5 6-5 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>`;
 
-  return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#F3F5F8;">
-  <div style="background:linear-gradient(160deg,#0B1324 0%,#1a2d52 55%,#16264A 100%);padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 20px;flex-shrink:0;position:relative;overflow:hidden;">
-    <div style="position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(200,41,42,0.09);pointer-events:none;"></div>
-    <div style="position:absolute;left:-20px;bottom:-20px;width:100px;height:100px;border-radius:50%;background:rgba(59,130,246,0.05);pointer-events:none;"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative;z-index:1;">
-      <button onclick="S.histView='list';render();" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .15s;" onmousedown="this.style.background='rgba(255,255,255,0.15)'" onmouseup="this.style.background='rgba(255,255,255,0.08)'">${WH_BACK}</button>
-      <div style="flex:1;min-width:0;"><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">点検記録</div><div style="font-size:22px;font-weight:800;color:${dateColor};letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${dl}</div></div>
-      <div style="display:flex;gap:5px;flex-shrink:0;">
-        ${S.currentRole==='admin'?`<button onclick="exportHistoryDayPDF('${date}')" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:18px;padding:7px 10px;color:rgba(255,255,255,.8);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;touch-action:manipulation;display:flex;align-items:center;gap:4px;">${PDF_ICO} 日報</button>`:''}
-        <button onclick="changeDate(1)" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;${hasPrev?'':'opacity:.3;'}" ${hasPrev?'':'disabled'}><svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M6 1L1 5.5 6 10" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button onclick="changeDate(-1)" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;${hasNext?'':'opacity:.3;'}" ${hasNext?'':'disabled'}><svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M1 1l5 4.5L1 10" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      </div>
+  /* custom header with back → list */
+  const hdr=`<div class="phdr">
+    <button class="hdr-back-btn" onclick="S.histView='list';render();">${BACK_ICO}</button>
+    <div class="hdr-center" style="display:flex;flex-direction:row;align-items:center;gap:8px;min-width:0;">
+      <div class="hdr-eyebrow" style="margin:0;white-space:nowrap;flex-shrink:0;">点検状況</div>
+      <div class="hdr-title" style="font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${dl}</div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;position:relative;z-index:1;">
-      <div style="background:rgba(16,185,129,0.14);border:1px solid rgba(16,185,129,0.26);border-radius:13px;padding:9px 6px;text-align:center;"><div style="font-size:20px;font-weight:900;color:#34D399;line-height:1;letter-spacing:-1px;">${doneEq}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;margin-top:3px;">完了</div></div>
-      <div style="background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.26);border-radius:13px;padding:9px 6px;text-align:center;"><div style="font-size:20px;font-weight:900;color:#F87171;line-height:1;letter-spacing:-1px;">${ngEq}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;margin-top:3px;">異常</div></div>
-      <div style="background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.26);border-radius:13px;padding:9px 6px;text-align:center;"><div style="font-size:20px;font-weight:900;color:#FCD34D;line-height:1;letter-spacing:-1px;">${partialEq}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.4);font-weight:600;margin-top:3px;">一部</div></div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:13px;padding:9px 6px;text-align:center;"><div style="font-size:20px;font-weight:900;color:rgba(255,255,255,0.38);line-height:1;letter-spacing:-1px;">${pendingEq}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.3);font-weight:600;margin-top:3px;">未実施</div></div>
+    <div style="display:flex;gap:6px;flex-shrink:0;">
+      ${S.currentRole==='admin'?`<button onclick="exportHistoryDayPDF('${date}')" class="hdr-action-btn" style="padding:8px 10px;">${PDF_ICO} 日報</button><button onclick="openEqPdfModal()" class="hdr-action-btn" style="padding:8px 10px;">${PDF_ICO} 月次</button>`:''}
+      ${navBtns}
     </div>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
-    ${lineBlocks}
-  </div>
-  </div>${btabs()}`;
+  </div>`;
+
+  return`${hdr}<div class="scroll">${lineBlocks}</div>${btabs()}`;
 }
-
-
 
 /* ═══════════ ANOMALY ═══════════ */
 function renderAnomaly(){
@@ -2643,7 +2664,10 @@ function inspBulkOkEq(eqId){
     }
   });
   toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
+  const scrollEl=document.getElementById('insp-run-scroll');
+  const scrollTop=scrollEl?scrollEl.scrollTop:0;
   render();
+  requestAnimationFrame(()=>{const el=document.getElementById('insp-run-scroll');if(el)el.scrollTop=scrollTop;});
 }
 
 function inspSetRes(eqId,itemId,result){
@@ -2733,6 +2757,7 @@ function inspFinish(){
 
 function render(){
   const sc=document.getElementById('screen');
+  const prevScroll=(S.view==='INSP_RUN')?document.getElementById('insp-run-scroll')?.scrollTop:null;
   let body='';
   switch(S.view){
     case'ROLE_SELECT':body=renderRoleSelect();break;
@@ -2751,6 +2776,7 @@ function render(){
     default:body=renderHome();
   }
   sc.innerHTML=body;
+  if(prevScroll!=null)requestAnimationFrame(()=>{const el=document.getElementById('insp-run-scroll');if(el)el.scrollTop=prevScroll;});
   if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
