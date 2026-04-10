@@ -175,14 +175,14 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 }
 
 /* ── Calendar Grid ── */
-.cal-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.cal-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;min-height:0;}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;}
 .cal-month{font-size:17px;font-weight:700;letter-spacing:-.3px;}
 .cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;transition:background .12s;flex-shrink:0;}
 .cal-nav-btn:active{background:rgba(0,0,0,.15);}
 .cal-filter-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;}
 .cal-unreported{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:var(--red-lt);color:var(--red);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;}
-.cal-body{display:flex;flex:1;overflow:hidden;}
+.cal-body{display:flex;flex:1;overflow:hidden;min-height:0;}
 .cal-left{flex-shrink:0;width:90px;display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;}
 .cal-right{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
 .cal-left-hdr{height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
@@ -1699,29 +1699,34 @@ function renderHistoryList(){
   // Sync vertical scroll between left body and right body
   const syncScript=`
     (function(){
-      setTimeout(function(){
+      function initSync(){
         var lb=document.getElementById('cal-lb');
         var rb=document.getElementById('cal-rb');
         var rh=document.getElementById('cal-rh');
         if(!lb||!rb)return;
         var syncing=false;
-        // Vertical sync: left body <-> right body
         rb.addEventListener('scroll',function(){
-          if(syncing)return;syncing=true;
-          lb.scrollTop=rb.scrollTop;
-          // Horizontal: sync header with body
-          if(rh)rh.scrollLeft=rb.scrollLeft;
-          syncing=false;
+          if(syncing)return;
+          syncing=true;
+          requestAnimationFrame(function(){
+            lb.scrollTop=rb.scrollTop;
+            if(rh)rh.scrollLeft=rb.scrollLeft;
+            syncing=false;
+          });
         },{passive:true});
         lb.addEventListener('scroll',function(){
-          if(syncing)return;syncing=true;
-          rb.scrollTop=lb.scrollTop;
-          syncing=false;
+          if(syncing)return;
+          syncing=true;
+          requestAnimationFrame(function(){
+            rb.scrollTop=lb.scrollTop;
+            syncing=false;
+          });
         },{passive:true});
-        // scroll right pane to show today column
         var todayIdx=${dayStrs.indexOf(TODAY)};
         if(todayIdx>=0)rb.scrollLeft=Math.max(0,(todayIdx-1)*80);
-      },50);
+      }
+      setTimeout(initSync,80);
+      setTimeout(initSync,300);
     })();
   `;
 
@@ -1752,12 +1757,12 @@ function renderHistoryList(){
   <!-- Calendar body -->
   <div class="cal-body">
     <!-- Left column header spacer -->
-    <div style="display:flex;flex-direction:column;flex-shrink:0;width:90px;border-right:1px solid var(--border);">
-      <div class="cal-left-hdr" style="display:flex;align-items:center;padding:0 8px;"><span style="font-size:10px;color:var(--text3);font-weight:600;">設備</span></div>
-      <div id="cal-lb" style="flex:1;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;">${leftRows}</div>
+    <div style="display:flex;flex-direction:column;flex-shrink:0;width:90px;border-right:1px solid var(--border);overflow:hidden;min-height:0;">
+      <div class="cal-left-hdr" style="display:flex;align-items:center;padding:0 8px;flex-shrink:0;"><span style="font-size:10px;color:var(--text3);font-weight:600;">設備</span></div>
+      <div id="cal-lb" style="flex:1;min-height:0;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">${leftRows}</div>
     </div>
     <!-- Right: header + body separated (fixes vertical scroll misalignment) -->
-    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
       <!-- Fixed header row (not inside the scroll container) -->
       <div id="cal-rh" style="overflow:hidden;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);">
         <div class="cal-right-hdr" style="min-width:${days.length*80}px;">${dayHdrs}</div>
