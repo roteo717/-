@@ -5,37 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>日常点検システム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --red:      #E24B4A;
-  --red-dk:   #C73A39;
-  --red-lt:   #FDECEA;
-  --green:    #2E7D32;
-  --green-lt: #E8F5E9;
-  --orange:   #E65100;
-  --orange-lt:#FFF3E0;
+  --red:      #C8292A;
+  --red-dk:   #A82020;
+  --red-lt:   #FFF1F1;
+  --green:    #16A34A;
+  --green-lt: #F0FDF4;
+  --orange:   #D97706;
+  --orange-lt:#FFFBEB;
   --bg:       #FFFFFF;
   --surface:  #FFFFFF;
-  --border:   rgba(0,0,0,0.07);
-  --text:     #111111;
-  --text2:    #666666;
-  --text3:    #AAAAAA;
+  --surface2: #F8F9FC;
+  --border:   #E4E8EF;
+  --text:     #111827;
+  --text2:    #6B7280;
+  --text3:    #9CA3AF;
+  --navy:     #1E3A8A;
   --r-sm:     10px;
   --r:        16px;
   --r-lg:     20px;
-  --shadow:   0 2px 12px rgba(0,0,0,0.07);
-  --shadow-md:0 4px 20px rgba(0,0,0,0.10);
+  --shadow:   0 1px 3px rgba(0,0,0,0.05), 0 4px 14px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 24px rgba(0,0,0,0.10);
   /* Inspector light theme */
-  --insp-bg:    #F7F7F9;
+  --insp-bg:    #F8F9FC;
   --insp-card:  #FFFFFF;
-  --insp-card2: #F3F4F7;
-  --insp-border:rgba(0,0,0,0.08);
-  --insp-text:  #111111;
-  --insp-text2: #666666;
-  --insp-red:   #E24B4A;
-  --insp-green: #2E7D32;
-  --insp-orange:#E65100;
+  --insp-card2: #F1F3F8;
+  --insp-border:#E4E8EF;
+  --insp-text:  #111827;
+  --insp-text2: #6B7280;
+  --insp-red:   #C8292A;
+  --insp-green: #16A34A;
+  --insp-orange:#D97706;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;color:var(--text);}
@@ -44,50 +46,48 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 
 /* ── Header ── */
 .phdr{
-  background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);
-  padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 22px;
+  background:#FFFFFF;
+  border-bottom:1px solid var(--border);
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 18px;
   display:flex;align-items:flex-end;gap:14px;
   flex-shrink:0;overflow:hidden;position:relative;z-index:10;
 }
-.phdr::before{content:'';position:absolute;top:-60px;right:-50px;width:220px;height:220px;background:rgba(0,0,0,0.07);border-radius:50%;pointer-events:none;}
+.phdr::before{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);pointer-events:none;}
 .hdr-back-btn{
-  width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
-  background:rgba(0,0,0,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  color:white;display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text2);display:flex;align-items:center;justify-content:center;
   flex-shrink:0;position:relative;z-index:1;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,0.15);
   transition:transform .12s,background .15s;touch-action:manipulation;
 }
-.hdr-back-btn:active{transform:scale(.90);background:rgba(255,255,255,0.28);}
+.hdr-back-btn:active{transform:scale(.90);background:var(--border);}
 .hdr-center{flex:1;position:relative;z-index:1;min-width:0;}
-.hdr-eyebrow{font-size:11px;color:rgba(255,255,255,0.72);font-weight:500;letter-spacing:.5px;margin-bottom:3px;}
-.hdr-title{font-size:22px;font-weight:700;color:white;letter-spacing:-.4px;line-height:1.1;}
+.hdr-eyebrow{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.5px;margin-bottom:3px;}
+.hdr-title{font-size:21px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.1;}
 .hdr-action-btn{
   display:flex;align-items:center;gap:6px;
-  background:rgba(0,0,0,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(0,0,0,0.15);border-radius:22px;
-  padding:8px 16px;height:38px;color:white;font-size:13px;font-weight:500;
+  background:var(--surface2);border:1px solid var(--border);border-radius:22px;
+  padding:8px 16px;height:36px;color:var(--text2);font-size:13px;font-weight:600;
   cursor:pointer;flex-shrink:0;white-space:nowrap;position:relative;z-index:1;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,0.12);
-  transition:transform .12s;touch-action:manipulation;font-family:inherit;
+  transition:transform .12s,background .15s,color .15s;touch-action:manipulation;font-family:inherit;
 }
-.hdr-action-btn:active{transform:scale(.94);}
+.hdr-action-btn:active{transform:scale(.94);background:var(--border);}
 .home-hero{
-  background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);
-  padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 28px;
+  background:#FFFFFF;
+  border-bottom:1px solid var(--border);
+  padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 24px;
   flex-shrink:0;position:relative;overflow:hidden;
 }
-.home-hero::before{content:'';position:absolute;top:-80px;right:-40px;width:260px;height:260px;background:rgba(0,0,0,0.07);border-radius:50%;pointer-events:none;}
-.home-hero::after{content:'';position:absolute;bottom:-100px;left:-30px;width:200px;height:200px;background:rgba(0,0,0,0.04);border-radius:50%;pointer-events:none;}
+.home-hero::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);}
 
 /* ── Scroll ── */
-.scroll{overflow-y:auto;flex:1;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;}
+.scroll{overflow-y:auto;flex:1;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
-.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:0.5px solid var(--border);}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:1px solid var(--border);}
 .card-tap{cursor:pointer;transition:transform .12s,opacity .12s;}
 .card-tap:active{transform:scale(.98);opacity:.85;}
-.section-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.4px;margin:18px 0 8px 2px;}
+.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin:18px 0 8px 2px;}
 .section-label:first-child{margin-top:0;}
 
 /* ── Inspection Cards ── */
@@ -96,87 +96,89 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .icard.rng{border-color:var(--red);background:var(--red-lt);}
 
 /* ── Judge Buttons ── */
-.jbtn{flex:1;height:52px;border-radius:14px;border:1.5px solid;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
+.jbtn{flex:1;height:52px;border-radius:14px;border:1.5px solid;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
 .jbtn:active{transform:scale(.94);}
 .jok{background:var(--green-lt);color:var(--green);border-color:var(--green);}
-.jok:active{background:var(--green);color:white;box-shadow:0 4px 16px rgba(46,125,50,0.3);}
+.jok:active{background:var(--green);color:white;box-shadow:0 4px 18px rgba(22,163,74,0.3);}
 .jng{background:var(--red-lt);color:var(--red);border-color:var(--red);}
-.jng:active{background:var(--red);color:white;box-shadow:0 4px 16px rgba(226,75,74,0.3);}
+.jng:active{background:var(--red);color:white;box-shadow:0 4px 18px rgba(200,41,42,0.3);}
 @media(min-width:769px){
   .jok:hover{background:var(--green);color:white;}
   .jng:hover{background:var(--red);color:white;}
 }
 
 /* ── Badges ── */
-.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;letter-spacing:.2px;}
 .bOk{background:var(--green-lt);color:var(--green);}
 .bNg{background:var(--red-lt);color:var(--red);}
 .bWarn{background:var(--orange-lt);color:var(--orange);}
-.bGray{background:rgba(0,0,0,.06);color:var(--text2);}
+.bGray{background:var(--surface2);color:var(--text3);}
 
 /* ── Bottom Tabs ── */
-.btabs{display:flex;border-top:0.5px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(255,255,255,0.93);}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;font-weight:500;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
+.btabs{display:flex;border-top:1px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
 .tab.active{color:var(--red);}
 
 /* ── Progress ── */
-.prog-wrap{background:rgba(0,0,0,.07);border-radius:6px;height:8px;overflow:hidden;}
+.prog-wrap{background:var(--surface2);border-radius:6px;height:6px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1);}
 
 /* ── Pill Selector ── */
-.pill-row{display:flex;gap:4px;background:rgba(0,0,0,.05);border-radius:12px;padding:3px;}
-.pill{flex:1;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;}
-.pill.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+.pill-row{display:flex;gap:4px;background:var(--surface2);border-radius:12px;padding:3px;border:1px solid var(--border);}
+.pill{flex:1;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;}
+.pill.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.10);border:1px solid var(--border);}
 /* ── Inspection-type pill row (home screen) ── */
 .itype-row{display:flex;gap:6px;padding:3px;}
-.itype-pill{flex:1;padding:10px 6px 9px;border-radius:12px;border:none;background:rgba(0,0,0,.04);cursor:pointer;touch-action:manipulation;font-family:inherit;text-align:center;transition:background .15s,transform .1s;}
+.itype-pill{flex:1;padding:10px 6px 9px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;touch-action:manipulation;font-family:inherit;text-align:center;transition:background .15s,border-color .15s,transform .1s;}
 .itype-pill:active{transform:scale(.96);}
 .itype-pill .itp-label{font-size:13px;font-weight:700;color:var(--text2);display:block;line-height:1;}
 .itype-pill .itp-sub{font-size:10px;font-weight:500;color:var(--text3);display:block;margin-top:4px;line-height:1.2;}
-.itype-pill.active{background:var(--red);box-shadow:0 3px 12px rgba(226,75,74,0.28);}
+.itype-pill.active{background:var(--red);border-color:var(--red);box-shadow:0 4px 16px rgba(200,41,42,0.24);}
 .itype-pill.active .itp-label{color:white;}
-.itype-pill.active .itp-sub{color:rgba(255,255,255,0.82);}
+.itype-pill.active .itp-sub{color:rgba(255,255,255,0.78);}
 
 /* ── Bulk Bar ── */
-.bulk-bar{background:linear-gradient(90deg,rgba(226,75,74,.07),transparent);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid rgba(226,75,74,.15);}
+.bulk-bar{background:linear-gradient(90deg,rgba(200,41,42,.05),transparent);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(200,41,42,.12);}
 
 /* ── Overlay / Sheet ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:50;display:flex;align-items:flex-end;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fadeIn .2s ease;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 24px);width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -8px 40px rgba(0,0,0,0.14);}
-.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.sheet{background:var(--surface);border-radius:28px 28px 0 0;padding:26px 20px calc(env(safe-area-inset-bottom,0px) + 26px);width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -12px 60px rgba(0,0,0,0.12),0 0 0 1px var(--border);}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 22px;}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ── Form ── */
-.finput{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
-.finput:focus{border-color:var(--red);}
+.finput{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.finput:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,0.08);}
 .flabel{font-size:13px;color:var(--text2);display:block;margin-bottom:6px;font-weight:500;}
 
 /* ── Toast ── */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:22px;font-size:13px;font-weight:500;color:white;z-index:99;white-space:nowrap;pointer-events:none;animation:fadeUp .25s ease;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;color:white;z-index:99;white-space:nowrap;pointer-events:none;animation:fadeUp .25s ease;font-family:inherit;box-shadow:0 8px 32px rgba(0,0,0,0.22);letter-spacing:.2px;}
 @keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 
 /* ── Utility ── */
 .icon-circle{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .empty-state{text-align:center;padding:48px 20px;color:var(--text2);}
-.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#E24B4A,#C73A39);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(194,42,42,0.3);transition:transform .12s;touch-action:manipulation;font-family:inherit;}
+.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(200,41,42,0.28);transition:transform .12s,box-shadow .12s;touch-action:manipulation;font-family:inherit;letter-spacing:.2px;}
 .btn-primary:active{transform:scale(.97);}
-.btn-ghost{width:100%;padding:13px;background:none;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;color:var(--text2);transition:transform .12s;touch-action:manipulation;font-family:inherit;}
+.btn-ghost{width:100%;padding:13px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;color:var(--text2);font-weight:500;transition:transform .12s,background .15s;touch-action:manipulation;font-family:inherit;}
 .btn-ghost:active{transform:scale(.97);}
 @keyframes cardIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card,.icard{animation:cardIn .2s ease both;}
 
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.10);border-radius:2px;}
 @media(min-width:769px){
   #app{max-width:900px;}
   .btabs{max-width:900px;}
-  .hdr-action-btn:hover{background:rgba(0,0,0,0.18);}
+  .hdr-action-btn:hover{background:var(--surface2);color:var(--text);}
 }
 
 /* ── Calendar Grid ── */
 .cal-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;gap:8px;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;}
 .cal-month{font-size:17px;font-weight:700;letter-spacing:-.3px;}
-.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.06);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;transition:background .12s;flex-shrink:0;}
+.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;transition:background .12s;flex-shrink:0;}
 .cal-nav-btn:active{background:rgba(0,0,0,.15);}
 .cal-filter-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;}
 .cal-unreported{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:var(--red-lt);color:var(--red);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;}
@@ -186,28 +188,28 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-left-hdr{height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
 .cal-right-hdr{display:flex;height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
 .cal-day-col{min-width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:0.5px solid var(--border);padding:4px 2px;}
-.cal-day-col.today{background:rgba(226,75,74,.06);}
+.cal-day-col.today{background:rgba(200,41,42,.06);}
 .cal-day-num{font-size:15px;font-weight:700;line-height:1;color:var(--text);}
 .cal-day-col.today .cal-day-num{color:var(--red);}
 .cal-day-wd{font-size:9px;font-weight:600;color:var(--text2);margin-top:2px;letter-spacing:.3px;}
 .cal-day-col.today .cal-day-wd{color:var(--red);}
-.cal-day-col.sun .cal-day-num,.cal-day-col.sun .cal-day-wd{color:#1565C0;}
+.cal-day-col.sun .cal-day-num,.cal-day-col.sun .cal-day-wd{color:#1D4ED8;}
 .cal-day-col.sat .cal-day-num,.cal-day-col.sat .cal-day-wd{color:#C62828;}
 .cal-scroll-body{display:flex;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .cal-left-body{width:90px;flex-shrink:0;overflow:hidden;border-right:1px solid var(--border);}
 .cal-right-body{flex:1;overflow:hidden;}
-.cal-group-hdr{display:flex;align-items:center;background:#4a4a4a;color:white;font-size:11px;font-weight:700;padding:5px 8px;letter-spacing:.2px;}
-.cal-group-hdr.line{background:rgba(0,0,0,.08);color:var(--text2);font-size:10px;font-weight:600;padding:4px 8px;}
+.cal-group-hdr{display:flex;align-items:center;background:#1E293B;color:white;font-size:11px;font-weight:700;padding:5px 8px;letter-spacing:.2px;}
+.cal-group-hdr.line{background:#F1F3F8;color:var(--text2);font-size:10px;font-weight:600;padding:4px 8px;}
 .cal-eq-left{display:flex;align-items:center;padding:0 6px 0 8px;border-bottom:0.5px solid var(--border);min-height:52px;}
 .cal-eq-right-row{display:flex;border-bottom:0.5px solid var(--border);min-height:52px;}
 .cal-eq-name-txt{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;word-break:break-all;}
 .cal-cell{min-width:80px;flex-shrink:0;border-right:0.5px solid var(--border);padding:4px;display:flex;flex-direction:column;gap:3px;justify-content:center;align-items:flex-start;}
-.cal-cell.today-col{background:rgba(226,75,74,.04);}
+.cal-cell.today-col{background:rgba(200,41,42,.04);}
 .cal-badge{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:600;padding:3px 7px;border-radius:20px;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;}
-.cal-badge.ok{background:#E3F2FD;color:#1565C0;}
+.cal-badge.ok{background:#EFF6FF;color:#1D4ED8;}
 .cal-badge.ng{background:var(--red-lt);color:var(--red);}
 .cal-badge.partial{background:var(--orange-lt);color:var(--orange);}
-.cal-badge.done-daily{background:#E8F5E9;color:#2E7D32;}
+.cal-badge.done-daily{background:#E8F5E9;color:#16A34A;}
 .cal-more{font-size:9px;font-weight:700;color:var(--text2);padding:2px 5px;background:rgba(0,0,0,.07);border-radius:10px;align-self:flex-start;}
 
 </style>
@@ -928,17 +930,16 @@ function btabs(){
     ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
   ];
   const tabs=isAdmin?adminTabs:inspectorTabs;
-  // Dark tab bar like image 6
-  const activeColor=isAdmin?'#4F8EF7':'#E24B4A';
-  const tabBg='rgba(22,22,24,0.97)';
-  const inactiveColor='rgba(255,255,255,0.38)';
-  return`<div class="btabs" style="background:${tabBg};border-top:0.5px solid rgba(255,255,255,0.08);">
+  const activeColor=isAdmin?'#1E3A8A':'#C8292A';
+  const tabBg='rgba(255,255,255,0.96)';
+  const inactiveColor='var(--text3)';
+  return`<div class="btabs">
   ${tabs.map(([v,l,ico])=>`
-    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')" style="color:${S.view===v?activeColor:inactiveColor};">
+    <button class="tab ${S.view===v?'active':''}" onclick="nav('${v}')" style="color:${S.view===v?activeColor:inactiveColor};transition:color .15s;">
       <div style="position:relative;display:inline-flex;">
         ${ico}
-        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#4F8EF7;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(22,22,24,0.97);padding:0 2px;">${pa}</div>`:``}
-        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#F97316;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(22,22,24,0.97);padding:0 2px;">${oa}</div>`:``}
+        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#1E3A8A;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.96);padding:0 2px;">${pa}</div>`:``}
+        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#F97316;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.96);padding:0 2px;">${oa}</div>`:``}
       </div>
       <span>${l}</span>
     </button>`).join('')}</div>`;
@@ -947,57 +948,72 @@ function btabs(){
 /* ═══════════ ROLE SELECT ═══════════ */
 function renderRoleSelect(){
   return`
-  <div style="display:flex;flex-direction:column;min-height:100vh;background:linear-gradient(160deg,#E24B4A 0%,#C73A39 45%,#B02E2D 100%);position:relative;overflow:hidden;">
+  <style>
+    @keyframes rs-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+    .rs-card{border-radius:20px;padding:22px 24px;display:flex;align-items:center;gap:18px;cursor:pointer;
+      touch-action:manipulation;font-family:inherit;text-align:left;border:none;width:100%;
+      transition:transform .14s,box-shadow .14s;}
+    .rs-card:active{transform:scale(.97);}
+  </style>
+  <div style="display:flex;flex-direction:column;min-height:100vh;background:#FFFFFF;position:relative;overflow:hidden;">
     <!-- 背景装飾 -->
-    <div style="position:absolute;top:-80px;right:-60px;width:300px;height:300px;background:rgba(0,0,0,0.07);border-radius:50%;pointer-events:none;"></div>
-    <div style="position:absolute;bottom:-120px;left:-60px;width:350px;height:350px;background:rgba(0,0,0,0.04);border-radius:50%;pointer-events:none;"></div>
-    <div style="position:absolute;top:40%;left:-100px;width:250px;height:250px;background:rgba(0,0,0,0.06);border-radius:50%;pointer-events:none;"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8292A,#A82020 50%,#1E3A8A);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-200px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,41,42,0.04) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;top:30%;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(30,58,138,0.04) 0%,transparent 70%);pointer-events:none;"></div>
 
     <!-- ロゴ & タイトル -->
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 24px;position:relative;z-index:1;">
-      <div style="width:72px;height:72px;background:rgba(0,0,0,0.08);backdrop-filter:blur(12px);border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.2),inset 0 1px 0 rgba(0,0,0,0.18);">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px 28px;animation:rs-in .5s ease both;">
+      <div style="width:76px;height:76px;background:linear-gradient(135deg,#C8292A,#A82020);border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 8px 32px rgba(200,41,42,0.28);">
         <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
           <rect x="5" y="5" width="28" height="28" rx="5" stroke="white" stroke-width="2.2"/>
           <path d="M11 19h16M11 13h16M11 25h10" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
           <circle cx="29" cy="25" r="5" fill="white"/>
-          <path d="M26.5 25l1.5 1.5 3-3" stroke="#E24B4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M26.5 25l1.5 1.5 3-3" stroke="#C8292A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.65);letter-spacing:2px;font-weight:600;margin-bottom:8px;">DAILY INSPECTION</div>
-      <div style="font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;margin-bottom:6px;">日常点検システム</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:400;">ご利用区分を選択してください</div>
+      <div style="font-size:10px;color:#9CA3AF;letter-spacing:3px;font-weight:700;margin-bottom:10px;text-transform:uppercase;">Daily Inspection</div>
+      <div style="font-size:30px;font-weight:800;color:#111827;letter-spacing:-1px;margin-bottom:8px;font-family:'Noto Serif JP',serif;">日常点検システム</div>
+      <div style="font-size:13px;color:#6B7280;font-weight:400;">ご利用区分を選択してください</div>
     </div>
 
     <!-- 選択カード -->
-    <div style="padding:0 20px calc(env(safe-area-inset-bottom,0px) + 48px);display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;">
+    <div style="padding:0 20px calc(env(safe-area-inset-bottom,0px) + 52px);display:flex;flex-direction:column;gap:12px;animation:rs-in .5s .1s ease both;">
       <!-- 点検者 -->
-      <button onclick="S.currentRole='inspector';S.currentName=null;nav('NAME_SELECT');" style="background:white;border:none;border-radius:20px;padding:22px 24px;display:flex;align-items:center;gap:18px;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,0.18);transition:transform .15s,box-shadow .15s;touch-action:manipulation;font-family:inherit;text-align:left;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.14)'" onmouseup="this.style.transform='';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.18)'">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,#E24B4A,#C73A39);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(194,42,42,0.35);">
+      <button class="rs-card" onclick="S.currentRole='inspector';S.currentName=null;nav('NAME_SELECT');"
+        style="background:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,0.06),0 8px 28px rgba(0,0,0,0.08);border:1px solid #E4E8EF;"
+        onmousedown="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.06)'" onmouseup="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06),0 8px 28px rgba(0,0,0,0.08)'">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,#C8292A,#A82020);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(200,41,42,0.28);">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
             <circle cx="14" cy="9" r="5" stroke="white" stroke-width="2"/>
             <path d="M4 23c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:3px;">点検者</div>
-          <div style="font-size:12px;color:#888;line-height:1.4;">設備の点検を実施する方</div>
+          <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:3px;">点検者</div>
+          <div style="font-size:12px;color:#6B7280;line-height:1.4;">設備の点検を実施する方</div>
         </div>
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#CCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="width:32px;height:32px;background:#F8F9FC;border-radius:50%;border:1px solid #E4E8EF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
       </button>
 
       <!-- 管理者 -->
-      <button onclick="S.currentRole='admin';S.currentName=null;nav('NAME_SELECT');" style="background:rgba(255,255,255,0.14);border:1.5px solid rgba(0,0,0,0.15);border-radius:20px;padding:22px 24px;display:flex;align-items:center;gap:18px;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.12);transition:transform .15s;touch-action:manipulation;font-family:inherit;text-align:left;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
-        <div style="width:56px;height:56px;background:rgba(0,0,0,0.12);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(0,0,0,0.18);">
+      <button class="rs-card" onclick="S.currentRole='admin';S.currentName=null;nav('NAME_SELECT');"
+        style="background:#111827;box-shadow:0 4px 24px rgba(17,24,39,0.3);"
+        onmousedown="this.style.opacity='0.9'" onmouseup="this.style.opacity='1'">
+        <div style="width:56px;height:56px;background:rgba(255,255,255,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,0.15);">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
             <circle cx="14" cy="14" r="4" stroke="white" stroke-width="2"/>
             <path d="M14 3v3M14 22v3M3 14h3M22 14h3M6.22 6.22l2.12 2.12M19.66 19.66l2.12 2.12M6.22 21.78l2.12-2.12M19.66 8.34l2.12-2.12" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:18px;font-weight:700;color:white;margin-bottom:3px;">管理者</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.4;">承認・設備管理を行う方</div>
+          <div style="font-size:18px;font-weight:700;color:#FFFFFF;margin-bottom:3px;">管理者</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.4;">承認・設備管理を行う方</div>
         </div>
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:50%;border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
       </button>
     </div>
   </div>`;
@@ -1029,24 +1045,24 @@ function renderNameSelect(){
   return`
   <div style="display:flex;flex-direction:column;min-height:100vh;background:var(--bg);">
     <!-- ヘッダー -->
-    <div style="background:linear-gradient(135deg,#E24B4A,#C73A39);padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 24px;position:relative;overflow:hidden;flex-shrink:0;">
-      <div style="position:absolute;top:-60px;right:-50px;width:200px;height:200px;background:rgba(0,0,0,0.07);border-radius:50%;pointer-events:none;"></div>
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 20px;position:relative;overflow:hidden;flex-shrink:0;">
+      <div style="position:absolute;left:0;bottom:0;right:0;height:2px;background:linear-gradient(90deg,#C8292A,#A82020 40%,transparent);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;position:relative;z-index:1;">
-        <button onclick="S.nameEditMode=false;nav('ROLE_SELECT');" style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:7px 14px;color:white;font-size:12px;font-weight:500;cursor:pointer;touch-action:manipulation;font-family:inherit;">
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <button onclick="S.nameEditMode=false;nav('ROLE_SELECT');" style="display:flex;align-items:center;gap:6px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:20px;padding:7px 14px;color:#6B7280;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           戻る
         </button>
-        <button onclick="S.nameEditMode=!S.nameEditMode;render();" style="display:flex;align-items:center;gap:6px;background:${editMode?'rgba(0,0,0,0.20)':'rgba(0,0,0,0.08)'};border:1px solid rgba(0,0,0,0.18);border-radius:20px;padding:7px 16px;color:white;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .15s;">
-          ${editMode?`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg> 完了`:`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 1.5L11.5 4 4.5 11H2v-2.5L9 1.5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg> 編集`}
+        <button onclick="S.nameEditMode=!S.nameEditMode;render();" style="display:flex;align-items:center;gap:6px;background:${editMode?'#111827':'#F8F9FC'};border:1px solid ${editMode?'#111827':'#E4E8EF'};border-radius:20px;padding:7px 16px;color:${editMode?'white':'#374151'};font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .15s;">
+          ${editMode?`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg> 完了`:`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 1.5L11.5 4 4.5 11H2v-2.5L9 1.5z" stroke="#374151" stroke-width="1.5" stroke-linejoin="round"/></svg> 編集`}
         </button>
       </div>
       <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
-        <div style="width:48px;height:48px;background:rgba(0,0,0,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(0,0,0,0.18);">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,#C8292A,#A82020);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(200,41,42,0.24);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/><path d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;margin-bottom:3px;">${roleLabel}としてログイン</div>
-          <div style="font-size:20px;font-weight:700;color:white;">${editMode?'担当者を編集':'名前を選択'}</div>
+          <div style="font-size:11px;color:#9CA3AF;font-weight:600;letter-spacing:.5px;margin-bottom:3px;">${roleLabel}としてログイン</div>
+          <div style="font-size:21px;font-weight:800;color:#111827;letter-spacing:-.4px;">${editMode?'担当者を編集':'名前を選択'}</div>
         </div>
       </div>
     </div>
@@ -1060,7 +1076,7 @@ function renderNameSelect(){
 
       <!-- 追加フォーム（編集モード時） -->
       ${editMode?`
-      <div style="background:var(--surface);border:1.5px dashed var(--red);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow);">
+      <div style="background:var(--surface2);border:1.5px dashed var(--red);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow);">
         <div style="font-size:12px;font-weight:600;color:var(--red);margin-bottom:10px;">＋ 新しい担当者を追加</div>
         <div style="display:flex;gap:8px;">
           <input id="new-name-input" class="finput" type="text" placeholder="名前を入力（例：田中 太郎）" style="flex:1;font-size:14px;" onkeydown="if(event.key==='Enter')addName();">
@@ -1074,8 +1090,8 @@ function renderNameSelect(){
           return names.map(name=>{
             const ini=name.replace(/\s/g,'').charAt(0);
             if(editMode) return(
-              '<div style="background:var(--surface);border:1.5px solid rgba(226,75,74,0.25);border-radius:var(--r);display:flex;align-items:center;box-shadow:var(--shadow);overflow:hidden;">'+
-              '<button onclick="delName(\'' +name+ '\');" style="width:56px;align-self:stretch;background:var(--red-lt);border:none;border-right:1px solid rgba(226,75,74,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;" onmousedown="this.style.background=\'var(--red)\'" onmouseup="this.style.background=\'var(--red-lt)\'" onmouseleave="this.style.background=\'var(--red-lt)\'">'+
+              '<div style="background:var(--surface);border:1.5px solid rgba(200,41,42,0.25);border-radius:var(--r);display:flex;align-items:center;box-shadow:var(--shadow);overflow:hidden;">'+
+              '<button onclick="delName(\'' +name+ '\');" style="width:56px;align-self:stretch;background:var(--red-lt);border:none;border-right:1px solid rgba(200,41,42,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;" onmousedown="this.style.background=\'var(--red)\'" onmouseup="this.style.background=\'var(--red-lt)\'" onmouseleave="this.style.background=\'var(--red-lt)\'">'+
               '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2.5A.5.5 0 015.5 2h5a.5.5 0 01.5.5V4M6 7v5M10 7v5M3 4l1 9.5A.5.5 0 004.5 14h7a.5.5 0 00.5-.5L13 4" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
               '</button>'+
               '<div style="flex:1;padding:16px 18px;display:flex;align-items:center;gap:14px;">'+
@@ -1163,61 +1179,61 @@ function renderInspectorHome(){
         </svg>
       </div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:17px;font-weight:700;color:#111111;margin-bottom:4px;">${l.name}</div>
-        <div style="font-size:12px;color:#666666;font-weight:500;margin-bottom:3px;">${l.desc}</div>
-        <div style="font-size:11px;color:#AAAAAA;font-weight:500;">設備 ${eqCnt} 台 ／ 点検項目 ${itCnt} 件</div>
+        <div style="font-size:17px;font-weight:700;color:#111827;margin-bottom:4px;">${l.name}</div>
+        <div style="font-size:12px;color:#6B7280;font-weight:500;margin-bottom:3px;">${l.desc}</div>
+        <div style="font-size:11px;color:#9CA3AF;font-weight:500;">設備 ${eqCnt} 台 ／ 点検項目 ${itCnt} 件</div>
       </div>
-      <div style="width:10px;height:10px;border-radius:50%;background:${on?'#E24B4A':'rgba(0,0,0,0.12)'};flex-shrink:0;transition:background .2s;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:${on?'#C8292A':'#E4E8EF'};flex-shrink:0;transition:background .2s;"></div>
     </div>`;
   }).join('');
 
   return`
   <style>
     /* ── Light Inspector Home ── */
-    .ilc{background:#FFFFFF;border:1.5px solid rgba(0,0,0,0.09);border-radius:18px;
+    .ilc{background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:18px;
       padding:18px 20px;display:flex;align-items:center;gap:16px;
       cursor:pointer;touch-action:manipulation;user-select:none;
       box-shadow:0 2px 10px rgba(0,0,0,0.05);
       transition:border-color .2s,background .2s,transform .1s;
       margin-bottom:10px;animation:ilcIn .25s ease both;}
     .ilc:active{transform:scale(0.98);}
-    .ilc.ilc-on{border-color:#E24B4A;background:linear-gradient(135deg,rgba(226,75,74,0.06),rgba(226,75,74,0.02));}
-    .ilc-check{width:30px;height:30px;border-radius:50%;border:2.5px solid #CCCCCC;flex-shrink:0;
+    .ilc.ilc-on{border-color:#C8292A;background:linear-gradient(135deg,rgba(200,41,42,0.05),rgba(200,41,42,0.02));}
+    .ilc-check{width:30px;height:30px;border-radius:50%;border:2.5px solid #D1D5DB;flex-shrink:0;
       display:flex;align-items:center;justify-content:center;
       transition:border-color .2s,background .2s,box-shadow .2s;}
-    .ilc.ilc-on .ilc-check{border-color:#E24B4A;background:#E24B4A;box-shadow:0 4px 18px rgba(226,75,74,0.42);}
+    .ilc.ilc-on .ilc-check{border-color:#C8292A;background:#C8292A;box-shadow:0 4px 18px rgba(200,41,42,0.32);}
     .ilc-check svg{opacity:0;transform:scale(0.5);transition:opacity .18s,transform .2s cubic-bezier(.34,1.4,.64,1);}
     .ilc.ilc-on .ilc-check svg{opacity:1;transform:scale(1);}
     @keyframes ilcIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
     .insp-start-btn{width:100%;padding:17px;
-      background:linear-gradient(135deg,#E24B4A,#C03534);color:white;
+      background:linear-gradient(135deg,#C8292A,#A82020);color:white;
       border:none;border-radius:18px;font-size:16px;font-weight:700;
       cursor:pointer;touch-action:manipulation;font-family:inherit;
-      box-shadow:0 6px 26px rgba(226,75,74,0.32);
+      box-shadow:0 6px 26px rgba(200,41,42,0.28);
       display:flex;align-items:center;justify-content:center;gap:10px;
       transition:transform .12s,opacity .15s,box-shadow .12s;}
-    .insp-start-btn:active{transform:scale(0.97);box-shadow:0 3px 12px rgba(226,75,74,0.22);}
+    .insp-start-btn:active{transform:scale(0.97);box-shadow:0 3px 12px rgba(200,41,42,0.18);}
     .insp-start-btn:disabled{opacity:.3;box-shadow:none;cursor:not-allowed;}
     .insp-pill{background:rgba(255,255,255,0.25);border-radius:10px;padding:3px 9px;font-size:12px;font-weight:600;}
-    .insp-quick{background:linear-gradient(135deg,rgba(226,75,74,0.09),rgba(194,42,42,0.05));
-      border:1.5px solid rgba(226,75,74,0.28);border-radius:18px;
+    .insp-quick{background:linear-gradient(135deg,rgba(200,41,42,0.06),rgba(168,32,32,0.03));
+      border:1.5px solid rgba(200,41,42,0.22);border-radius:18px;
       padding:15px 18px;display:flex;align-items:center;gap:14px;
       cursor:pointer;touch-action:manipulation;overflow:hidden;position:relative;
       transition:transform .12s;margin:14px 16px 0;}
     .insp-quick:active{transform:scale(0.98);}
     .insp-quick::after{content:'';position:absolute;inset:0;
-      background:linear-gradient(90deg,transparent,rgba(226,75,74,0.06),transparent);
+      background:linear-gradient(90deg,transparent,rgba(200,41,42,0.06),transparent);
       animation:iqShimmer 2.8s ease-in-out infinite;}
     @keyframes iqShimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
   </style>
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <!-- Header -->
-    <div style="padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);background:#FFFFFF;display:flex;align-items:center;justify-content:space-between;">
+    <div style="padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;border-bottom:1px solid #E4E8EF;background:#FFFFFF;display:flex;align-items:center;justify-content:space-between;">
       <div>
-        <div style="font-size:11px;color:#AAAAAA;font-weight:600;letter-spacing:.7px;margin-bottom:4px;">あなた</div>
-        <div style="font-size:20px;font-weight:800;color:#111111;letter-spacing:-.4px;">${displayName}</div>
+        <div style="font-size:11px;color:#9CA3AF;font-weight:600;letter-spacing:.7px;margin-bottom:4px;">あなた</div>
+        <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">${displayName}</div>
       </div>
-      <button onclick="inspChangeUser();" style="background:#F0F0F2;border:1.5px solid rgba(0,0,0,0.1);border-radius:20px;padding:8px 15px;font-size:12px;font-weight:600;color:#666666;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,border-color .15s;" onmousedown="this.style.color='#E24B4A';this.style.borderColor='#E24B4A'" onmouseup="this.style.color='';this.style.borderColor=''">変更</button>
+      <button onclick="inspChangeUser();" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 15px;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,border-color .15s;" onmousedown="this.style.color='#C8292A';this.style.borderColor='#C8292A'" onmouseup="this.style.color='';this.style.borderColor=''">変更</button>
     </div>
 
     <!-- Scroll area -->
@@ -1225,19 +1241,19 @@ function renderInspectorHome(){
 
       <!-- Quick-start banner -->
       ${hasLast?`<div class="insp-quick" onclick="inspQuickStart()">
-        <div style="width:44px;height:44px;border-radius:14px;background:#E24B4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 20px rgba(226,75,74,0.28);position:relative;z-index:1;">
+        <div style="width:44px;height:44px;border-radius:14px;background:#C8292A;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 20px rgba(200,41,42,0.24);position:relative;z-index:1;">
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11l5.5 5L17 6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div style="flex:1;min-width:0;position:relative;z-index:1;">
-          <div style="font-size:14px;font-weight:700;color:#111111;margin-bottom:3px;">前回と同じ内容で開始</div>
-          <div style="font-size:11px;color:#E24B4A;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastNames.join('・')}</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:3px;">前回と同じ内容で開始</div>
+          <div style="font-size:11px;color:#C8292A;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastNames.join('・')}</div>
         </div>
         <div style="position:relative;z-index:1;flex-shrink:0;">
-          <svg width="7" height="13" viewBox="0 0 7 13" fill="none"><path d="M1 1l5.5 5.5L1 12" stroke="#E24B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="7" height="13" viewBox="0 0 7 13" fill="none"><path d="M1 1l5.5 5.5L1 12" stroke="#C8292A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>`:''}
 
-      <div style="font-size:11px;font-weight:700;color:#AAAAAA;letter-spacing:1.2px;text-transform:uppercase;padding:20px 20px 10px;">点検するラインを選択（複数選択可）</div>
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;padding:20px 20px 10px;">点検するラインを選択（複数選択可）</div>
       <div style="padding:0 16px;" id="insp-line-list">
         ${lineCardsHtml}
       </div>
@@ -1245,7 +1261,7 @@ function renderInspectorHome(){
     </div>
 
     <!-- Bottom CTA -->
-    <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 72px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+    <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 72px);flex-shrink:0;border-top:1px solid #E4E8EF;background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
       <button class="insp-start-btn" id="insp-start-btn" onclick="inspDoStart();" ${S.inspSelectedLines.length===0?'disabled':''}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l10 5.5-10 5.5V2.5z" fill="white"/></svg>
         点検開始
@@ -1256,228 +1272,144 @@ function renderInspectorHome(){
   ${btabs()}`;
 }
 
-/* ─── Admin Home (Decision-focused dark UI) ─── */
+/* ─── Admin Home ─── */
 function renderAdminHome(){
-  const pa=pendApprovals().length,oa=openAnoms().length;
+  const pa=pendApprovals().length;
   const displayName=S.currentName||'管理者';
   const openA=S.anomalies.filter(a=>a.status==='open').length;
   const inProgA=S.anomalies.filter(a=>a.status==='in-progress').length;
   const totalAnomActive=openA+inProgA;
-
-  // Date display
   const now=new Date();
   const WDAYS=['日','月','火','水','木','金','土'];
   const dateStr=`${now.getMonth()+1}月${now.getDate()}日（${WDAYS[now.getDay()]}）`;
+  const alerts=getTodayScheduledTypes();
 
-  // Pending approval cards
-  const pendList=S.approvals.filter(a=>a.status==='pending').slice(0,4).map(a=>{
-    const eq=getEq(a.eid);const l=getLn(a.lid);
-    return`<div onclick="nav('APPROVAL')" style="background:#FFFFFF;border:1px solid rgba(79,142,247,0.2);border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;touch-action:manipulation;transition:transform .12s,border-color .15s;" onmousedown="this.style.transform='scale(.98)';this.style.borderColor='rgba(79,142,247,0.5)'" onmouseup="this.style.transform='';this.style.borderColor='rgba(79,142,247,0.2)'">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+  const actionItems=[
+    ...S.approvals.filter(a=>a.status==='pending').slice(0,3).map(a=>{
+      const eq=getEq(a.eid);const l=getLn(a.lid);
+      return`<div onclick="nav('APPROVAL')" class="adm-row" style="--row-dot:#6C9FFF;">
+        <div class="adm-dot" style="background:#6C9FFF;box-shadow:0 0 8px #6C9FFF66;"></div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:11px;color:rgba(79,142,247,0.8);font-weight:600;letter-spacing:.3px;margin-bottom:4px;">${a.type} · ${a.date}</div>
-          <div style="font-size:15px;font-weight:700;color:#111111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
-          <div style="font-size:12px;color:#777777;">${l?.name||'-'} · 申請: ${a.by}</div>
+          <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${l?.name||'-'} · ${a.type} · ${a.by}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <div style="background:rgba(79,142,247,0.15);color:#4F8EF7;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;">未承認</div>
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#4F8EF7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Open anomaly cards
-  const anomList=S.anomalies.filter(a=>a.status!=='resolved').slice(0,4).map(a=>{
-    const eq=getEq(a.eid);const l=getLn(a.lid);
-    const isOpen=a.status==='open';
-    return`<div onclick="nav('ANOMALY')" style="background:#FFFFFF;border:1px solid ${isOpen?'rgba(249,115,22,0.3)':'rgba(0,0,0,0.08)'};border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;touch-action:manipulation;transition:transform .12s,border-color .15s;" onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform=''">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="background:#EFF6FF;color:#1E3A8A;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;letter-spacing:.3px;border:1px solid rgba(30,58,138,0.2);">承認待ち</div>
+      </div>`;
+    }),
+    ...S.anomalies.filter(a=>a.status!=='resolved').slice(0,3).map(a=>{
+      const eq=getEq(a.eid);const l=getLn(a.lid);
+      const isOpen=a.status==='open';
+      const col=isOpen?'#C8292A':'#9CA3AF';
+      return`<div onclick="nav('ANOMALY')" class="adm-row">
+        <div class="adm-dot" style="background:${col};${isOpen?'box-shadow:0 0 8px '+col+'88;':''}"></div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:11px;color:${isOpen?'#F97316':'#9AA0AD'};font-weight:600;letter-spacing:.3px;margin-bottom:4px;">${a.date} · ${eq?.name||'-'}</div>
-          <div style="font-size:15px;font-weight:700;color:#111111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
-          <div style="font-size:12px;color:#777777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.comment}</div>
+          <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${eq?.name||'-'} · ${l?.name||'-'}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <div style="background:${isOpen?'rgba(249,115,22,0.18)':'rgba(0,0,0,0.07)'};color:${isOpen?'#F97316':'#9AA0AD'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;">${isOpen?'未対応':'対応中'}</div>
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="${isOpen?'#F97316':'#9AA0AD'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+        <div style="background:${isOpen?'#FFF1F1':'#F3F4F6'};color:${col};font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;letter-spacing:.3px;border:1px solid ${isOpen?'rgba(200,41,42,0.2)':'#E5E7EB'};">${isOpen?'未対応':'対応中'}</div>
+      </div>`;
+    })
+  ];
 
   return`
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+  <style>
+    @keyframes adm-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes adm-pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+    @keyframes adm-glow{0%,100%{box-shadow:0 0 20px rgba(255,138,80,0.15);}50%{box-shadow:0 0 32px rgba(255,138,80,0.3);}}
+    .adm-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #F3F4F6;cursor:pointer;touch-action:manipulation;transition:background .15s;}
+    .adm-row:last-child{border-bottom:none;}
+    .adm-row:active{background:#F8F9FC;}
+    .adm-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .adm-stat{background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:22px;padding:20px;cursor:pointer;touch-action:manipulation;transition:transform .14s,border-color .15s,box-shadow .15s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+    .adm-stat:active{transform:scale(.95);}
+    .adm-stat.blue{border-color:${pa>0?'rgba(30,58,138,0.4)':'#E4E8EF'};box-shadow:${pa>0?'0 4px 20px rgba(30,58,138,0.1)':'none'};}
+    .adm-stat.blue:active{background:#EFF6FF;}
+    .adm-stat.orange{border-color:${totalAnomActive>0?'rgba(200,41,42,0.4)':'#E4E8EF'};box-shadow:${totalAnomActive>0?'0 4px 20px rgba(200,41,42,0.1)':'none'};}
+    .adm-stat.orange:active{background:#FFF7ED;}
+  </style>
+
+  <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#FFFFFF;position:relative;">
+
+    <!-- 背景装飾 -->
+    <div style="position:absolute;inset:0;pointer-events:none;z-index:0;">
+      <div style="position:absolute;top:-120px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,58,138,0.04) 0%,transparent 70%);"></div>
+      <div style="position:absolute;bottom:-80px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(200,41,42,0.04) 0%,transparent 70%);"></div>
+    </div>
 
     <!-- ── Header ── -->
-    <div style="padding:calc(env(safe-area-inset-top,0px) + 22px) 20px 0;flex-shrink:0;">
+    <div style="position:relative;z-index:1;padding:calc(env(safe-area-inset-top,0px) + 24px) 22px 20px;flex-shrink:0;animation:adm-in .4s ease both;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
         <div>
-          <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">${dateStr}</div>
-          <div style="font-size:27px;font-weight:800;color:#111111;letter-spacing:-.6px;line-height:1.1;">管理ダッシュボード</div>
+          <div style="font-size:10px;color:#9CA3AF;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">${dateStr}</div>
+          <div style="font-size:26px;font-weight:800;color:#111827;letter-spacing:-.6px;line-height:1.1;font-family:'Noto Serif JP',serif;">管理<br>ダッシュボード</div>
         </div>
-        <button onclick="S.currentName=null;nav('NAME_SELECT');" style="display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:22px;padding:8px 14px 8px 10px;color:#555555;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;margin-left:12px;">
-          <div style="width:26px;height:26px;background:linear-gradient(135deg,#3B5BDB,#4F8EF7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;">${displayName.charAt(0)}</div>
-          <span style="max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${displayName}</span>
-        </button>
+        <button onclick="S.currentName=null;nav('NAME_SELECT');" style="width:42px;height:42px;border-radius:50%;border:1px solid #E4E8EF;background:#F8F9FC;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#111827;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;letter-spacing:0;">${displayName.charAt(0)}</button>
       </div>
     </div>
 
-    <!-- ── Hero Cards ── -->
-    <div style="padding:20px 20px 0;flex-shrink:0;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <!-- ── Scroll ── -->
+    <div style="position:relative;z-index:1;flex:1;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;">
 
-        <!-- 承認待ち card -->
-        <div onclick="nav('APPROVAL')" style="background:linear-gradient(145deg,#EEF3FF 0%,#E3ECFD 100%);border:1px solid rgba(79,142,247,0.25);border-radius:20px;padding:20px 16px;cursor:pointer;touch-action:manipulation;transition:transform .14s,box-shadow .14s;position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(79,142,247,0.08);" onmousedown="this.style.transform='scale(.96)';this.style.boxShadow='0 2px 12px rgba(79,142,247,0.06)'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(79,142,247,0.08)'">
-          <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:rgba(79,142,247,0.07);border-radius:50%;pointer-events:none;"></div>
-          <div style="width:38px;height:38px;background:rgba(79,142,247,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4F8EF7" stroke-width="1.8"/><path d="M6 10l3 3 5-5" stroke="#4F8EF7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="font-size:11px;color:rgba(79,142,247,0.75);font-weight:600;letter-spacing:.4px;margin-bottom:4px;">承認待ち</div>
-          <div style="font-size:36px;font-weight:800;color:#4F8EF7;line-height:1;letter-spacing:-1px;margin-bottom:2px;">${pa}<span style="font-size:15px;font-weight:600;opacity:.7;margin-left:3px;">件</span></div>
-          ${pa===0?`<div style="font-size:11px;color:#999999;margin-top:4px;">処理済み</div>`:`<div style="font-size:11px;color:rgba(79,142,247,0.6);margin-top:4px;">タップして確認 →</div>`}
+      <!-- 定期点検リマインダー -->
+      ${alerts.length?`
+      <div style="background:#FFFBEB;border:1px solid rgba(217,119,6,0.3);border-radius:16px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;animation:adm-in .4s .05s ease both;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><circle cx="8" cy="8" r="6.5" stroke="#FBB924" stroke-width="1.4"/><path d="M8 4.5v3.2l1.8 1.3" stroke="#FBB924" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="font-size:12px;font-weight:600;color:#92400E;letter-spacing:.2px;">本日の定期点検：${alerts.join('・')}</div>
+      </div>`:''}
+
+      <!-- ── Stat Cards ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;animation:adm-in .4s .08s ease both;">
+
+        <div class="adm-stat blue" onclick="nav('APPROVAL')">
+          <div style="font-size:10px;font-weight:700;color:${pa>0?'#1E3A8A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">承認待ち</div>
+          <div style="font-size:40px;font-weight:800;color:${pa>0?'#111827':'#E5E7EB'};line-height:1;letter-spacing:-2px;">${pa}<span style="font-size:14px;font-weight:500;letter-spacing:0;margin-left:3px;opacity:.6;">件</span></div>
+          <div style="margin-top:10px;font-size:11px;color:${pa>0?'#1E3A8A':'#D1D5DB'};">${pa>0?'要対応 →':'処理済み'}</div>
         </div>
 
-        <!-- 異常対応 card -->
-        <div onclick="nav('ANOMALY')" style="background:${totalAnomActive>0?'linear-gradient(145deg,#FFF4EA 0%,#FEEBD8 100%)':'linear-gradient(145deg,#F7F8FB 0%,#EDEEF3 100%)'};border:1px solid ${totalAnomActive>0?'rgba(249,115,22,0.35)':'rgba(0,0,0,0.07)'};border-radius:20px;padding:20px 16px;cursor:pointer;touch-action:manipulation;transition:transform .14s,box-shadow .14s;position:relative;overflow:hidden;box-shadow:${totalAnomActive>0?'0 4px 24px rgba(249,115,22,0.1)':'none'};" onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">
-          <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:${totalAnomActive>0?'rgba(249,115,22,0.07)':'rgba(255,255,255,0.02)'};border-radius:50%;pointer-events:none;"></div>
-          ${totalAnomActive>0?`<div style="position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:#F97316;box-shadow:0 0 10px #F9731680;animation:pulse-dot 1.8s ease-in-out infinite;"></div>`:''}
-          <div style="width:38px;height:38px;background:${totalAnomActive>0?'rgba(249,115,22,0.18)':'rgba(0,0,0,0.07)'};border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L1.5 17.5h17L10 2z" stroke="${totalAnomActive>0?'#F97316':'#5A6070'}" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 8v4M10 14v.5" stroke="${totalAnomActive>0?'#F97316':'#5A6070'}" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div style="font-size:11px;color:${totalAnomActive>0?'rgba(249,115,22,0.75)':'#3A4060'};font-weight:600;letter-spacing:.4px;margin-bottom:4px;">異常対応</div>
-          <div style="font-size:36px;font-weight:800;color:${totalAnomActive>0?'#F97316':'#3A4060'};line-height:1;letter-spacing:-1px;margin-bottom:2px;">${totalAnomActive}<span style="font-size:15px;font-weight:600;opacity:.7;margin-left:3px;">件</span></div>
-          ${totalAnomActive===0?`<div style="font-size:11px;color:#AAAAAA;margin-top:4px;">異常なし</div>`:`<div style="font-size:11px;color:rgba(249,115,22,0.6);margin-top:4px;">タップして対応 →</div>`}
+        <div class="adm-stat orange" onclick="nav('ANOMALY')">
+          ${totalAnomActive>0?`<div style="position:absolute;top:16px;right:16px;width:6px;height:6px;border-radius:50%;background:#FF8A50;animation:adm-pulse 1.6s ease-in-out infinite;"></div>`:''}
+          <div style="font-size:10px;font-weight:700;color:${totalAnomActive>0?'#C8292A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">異常対応</div>
+          <div style="font-size:40px;font-weight:800;color:${totalAnomActive>0?'#111827':'#E5E7EB'};line-height:1;letter-spacing:-2px;">${totalAnomActive}<span style="font-size:14px;font-weight:500;letter-spacing:0;margin-left:3px;opacity:.6;">件</span></div>
+          <div style="margin-top:10px;font-size:11px;color:${totalAnomActive>0?'#C8292A':'#D1D5DB'};">${totalAnomActive>0?'要対応 →':'異常なし'}</div>
         </div>
 
       </div>
-    </div>
 
-    <!-- ── Scroll area ── -->
-    <div style="flex:1;overflow-y:auto;padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
-
-      <!-- 定期点検リマインダー（管理者向け） -->
-      ${(()=>{const alerts=getTodayScheduledTypes();if(!alerts.length)return'';
-        return`<div style="background:linear-gradient(135deg,#FFF8E1,#FFF3CD);border:1.5px solid #FFC107;border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;">
-          <div style="width:36px;height:36px;background:rgba(255,193,7,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="#F57F17" stroke-width="1.8"/><path d="M10 6v4.5l3 1.5" stroke="#F57F17" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:5px;">📋 本日は定期点検の実施日です</div>
-            ${alerts.map(t=>{
-              const next=getNextScheduleLabel(t);
-              return`<div style="font-size:13px;font-weight:700;color:#BF360C;display:flex;align-items:center;gap:5px;margin-bottom:2px;">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#BF360C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                ${t}
-              </div>`;
-            }).join('')}
-            <div style="font-size:10px;color:#E65100;opacity:.8;margin-top:4px;">点検者が実施後、承認をお願いします</div>
-          </div>
-        </div>`;})()}
-
-      <!-- 承認リスト -->
-      ${pa>0?`
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-size:11px;font-weight:700;color:#4F8EF7;letter-spacing:.8px;text-transform:uppercase;">承認待ち</div>
-        ${pa>4?`<button onclick="nav('APPROVAL')" style="font-size:11px;color:#4F8EF7;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;touch-action:manipulation;">すべて見る (${pa})</button>`:''}
-      </div>
-      ${pendList}
-      `:''}
-
-      <!-- 異常リスト -->
-      ${totalAnomActive>0?`
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:${pa>0?'16px':'0'};">
-        <div style="font-size:11px;font-weight:700;color:#F97316;letter-spacing:.8px;text-transform:uppercase;">異常対応</div>
-        ${totalAnomActive>4?`<button onclick="nav('ANOMALY')" style="font-size:11px;color:#F97316;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;touch-action:manipulation;">すべて見る</button>`:''}
-      </div>
-      ${anomList}
-      `:''}
-
-      <!-- All clear state -->
-      ${pa===0&&totalAnomActive===0?`
-      <div style="text-align:center;padding:40px 20px;">
-        <div style="width:64px;height:64px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="12" stroke="#34C759" stroke-width="2"/><path d="M9 15l4.5 4.5 7.5-7.5" stroke="#34C759" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <!-- ── アクションリスト ── -->
+      <div style="animation:adm-in .4s .14s ease both;margin-bottom:12px;">
+      ${actionItems.length?`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;">対応項目</div>
+          <div style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;border:1px solid rgba(200,41,42,0.2);padding:2px 9px;border-radius:10px;letter-spacing:.5px;">${actionItems.length} 件</div>
         </div>
-        <div style="font-size:17px;font-weight:700;color:#111111;margin-bottom:6px;">対応項目はありません</div>
-        <div style="font-size:13px;color:#999999;">承認待ちも異常も現在ありません</div>
-      </div>
-      `:''}
-
-      <!-- 点検種別セレクター -->
-      <div style="margin-top:${pa===0&&totalAnomActive===0?'0':'20px'};">
-        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">点検種別</div>
-        <div class="itype-row">
-          ${[
-            {type:'毎日点検', sub:'毎日実施'},
-            {type:'10日点検', sub: getTodayScheduledTypes().includes('10日点検') ? '▶ 本日実施' : '次回 '+getNextScheduleLabel('10日点検')},
-            {type:'月次点検', sub: getTodayScheduledTypes().includes('月次点検') ? '▶ 本日実施' : '次回 '+getNextScheduleLabel('月次点検')}
-          ].map(({type,sub})=>`
-            <button class="itype-pill ${S.inspType===type?'active':''}" onclick="S.inspType='${type}';render();">
-              <span class="itp-label">${type.replace('点検','')}<br>点検</span>
-              <span class="itp-sub">${sub}</span>
-            </button>`).join('')}
+        <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+          ${actionItems.join('')}
         </div>
-      </div>
-
-      <!-- ライン一覧 -->
-      <div style="margin-top:16px;">
-        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">ライン一覧</div>
-        ${S.lines.map(l=>{
-          const st=lineStats(l.id);
-          const allDone=st.done===st.total&&st.ng===0;
-          const hasNg=st.ng>0;
-          return`<div onclick="nav('LINE_DETAIL',{selectedLine:'${l.id}'})" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:transform .12s,border-color .15s;" onmousedown="this.style.transform='scale(.98)';this.style.borderColor='rgba(226,75,74,0.3)'" onmouseup="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'" onmouseleave="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'">
-            <div style="width:40px;height:40px;background:${allDone?'rgba(52,199,89,0.12)':hasNg?'rgba(226,75,74,0.10)':'rgba(0,0,0,0.06)'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2.5" stroke="${allDone?'#34C759':hasNg?'#E24B4A':'#5A6070'}" stroke-width="1.7"/><path d="M6 9.5l2.5 2.5 5-5" stroke="${allDone?'#34C759':hasNg?'#E24B4A':'#5A6070'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:15px;font-weight:700;color:#111111;margin-bottom:2px;">${l.name}</div>
-              <div style="font-size:12px;color:#888888;">${l.desc}・設備 ${st.total}台</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-              <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:${allDone?'rgba(52,199,89,0.12)':hasNg?'rgba(226,75,74,0.10)':'rgba(0,0,0,0.06)'};color:${allDone?'#34C759':hasNg?'#E24B4A':'#888888'};">${allDone?'完了':hasNg?`異常 ${st.ng}件`:'未実施'}</span>
-              <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-
-      <!-- その他 -->
-      <div style="margin-top:16px;">
-        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">その他</div>
-        <div onclick="nav('HISTORY')" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;transition:transform .12s;" onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform=''">
-          <div style="width:36px;height:36px;background:rgba(0,0,0,0.06);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2.5" y="2.5" width="13" height="13" rx="2.5" stroke="#5A6070" stroke-width="1.5"/><path d="M5.5 6.5h7M5.5 9h5M5.5 11.5h3.5" stroke="#5A6070" stroke-width="1.4" stroke-linecap="round"/></svg>
+      `:`
+        <div style="background:#F8F9FC;border:1px solid #E4E8EF;border-radius:20px;padding:36px 20px;text-align:center;">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="#34D399" stroke-width="1.6"/><path d="M7.5 11l2.5 2.5 4.5-4.5" stroke="#34D399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:600;color:#555555;">点検履歴</div>
-            <div style="font-size:12px;color:#999999;margin-top:1px;">過去の点検記録を確認</div>
-          </div>
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#3A4060" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:4px;">対応項目なし</div>
+          <div style="font-size:12px;color:#9CA3AF;">すべて処理済みです</div>
         </div>
+      `}
       </div>
 
-      <!-- その他 / 設定 -->
-      <div style="margin-top:20px;margin-bottom:8px;">
-        <div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;">その他 / 設定</div>
-        <div onclick="nav('LINE_EQ_MGMT')" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;transition:transform .12s,border-color .15s;" onmousedown="this.style.transform='scale(.98)';this.style.borderColor='rgba(226,75,74,0.3)'" onmouseup="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'" onmouseleave="this.style.transform='';this.style.borderColor='rgba(0,0,0,0.07)'">
-          <div style="width:36px;height:36px;background:rgba(226,75,74,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="3" rx="1.5" stroke="#E24B4A" stroke-width="1.4"/><rect x="2" y="10" width="14" height="3" rx="1.5" stroke="#E24B4A" stroke-width="1.4"/><circle cx="6" cy="6.5" r="1.5" fill="#E24B4A"/><circle cx="12" cy="11.5" r="1.5" fill="#E24B4A"/></svg>
-          </div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:600;color:#555555;">ライン・設備管理</div>
-            <div style="font-size:12px;color:#999999;margin-top:1px;">ライン・設備の追加・編集・削除</div>
-          </div>
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#3A4060" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <!-- ── ライン・設備管理 ── -->
+      <div onclick="nav('LINE_EQ_MGMT')" style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:20px;padding:16px 20px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;transition:background .15s,box-shadow .15s;animation:adm-in .4s .2s ease both;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmousedown="this.style.background='#F8F9FC'" onmouseup="this.style.background='#FFFFFF'" onmouseleave="this.style.background='#FFFFFF'">
+        <div style="width:38px;height:38px;background:rgba(200,41,42,0.12);border:1px solid rgba(200,41,42,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5.5" width="14" height="2.5" rx="1.2" stroke="#C8292A" stroke-width="1.3"/><rect x="2" y="10" width="14" height="2.5" rx="1.2" stroke="#C8292A" stroke-width="1.3"/><circle cx="5.5" cy="6.75" r="1.3" fill="#C8292A"/><circle cx="12.5" cy="11.25" r="1.3" fill="#C8292A"/></svg>
         </div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;color:#111827;letter-spacing:.1px;">ライン・設備管理</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">追加・編集・削除</div>
+        </div>
+        <svg width="6" height="11" viewBox="0 0 6 11" fill="none"><path d="M1 1l4 4.5-4 4.5" stroke="#D1D5DB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
 
     </div>
   </div>
-  <style>
-    @keyframes pulse-dot{0%,100%{box-shadow:0 0 10px #F9731680;}50%{box-shadow:0 0 18px #F97316CC;}}
-  </style>
   ${btabs()}`;
 }
 
@@ -1540,7 +1472,7 @@ function renderInspection(){
         <div style="flex:1;">
           <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:4px;">No.${idx+1} · ${it.t}点検</div>
           <div style="font-size:16px;font-weight:600;line-height:1.3;">${it.n}</div>
-          ${r?.comment?`<div style="font-size:12px;color:var(--red);margin-top:8px;padding:8px 10px;background:rgba(226,75,74,.08);border-radius:8px;"><span style="color:var(--red);vertical-align:middle;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 4.5h7M3.5 7h5M3.5 9.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${r.comment}</div>`:''}
+          ${r?.comment?`<div style="font-size:12px;color:var(--red);margin-top:8px;padding:8px 10px;background:rgba(200,41,42,.08);border-radius:8px;"><span style="color:var(--red);vertical-align:middle;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 4.5h7M3.5 7h5M3.5 9.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${r.comment}</div>`:''}
           ${r?.photos>0?`<div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:500;"><span style="display:inline-flex;align-items:center;gap:4px;vertical-align:middle;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 3.5l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span> 写真 ${r.photos}枚</div>`:''}
         </div>
         ${isOk?`<div style="width:34px;height:34px;background:var(--green-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8l4 4 7-7" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`:``}
@@ -1554,12 +1486,12 @@ function renderInspection(){
       <span style="font-size:13px;font-weight:500;color:var(--text2);">${done} / ${items.length} 完了</span>
       <span style="font-size:22px;font-weight:700;color:${pct===100?'var(--green)':'var(--red)'};">${pct}<span style="font-size:12px;font-weight:500;color:var(--text2);">%</span></span>
     </div>
-    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'linear-gradient(90deg,#E24B4A,#C73A39)'};"></div></div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'linear-gradient(90deg,#C8292A,#A82020)'};"></div></div>
   </div>
   <div class="scroll" style="padding-top:14px;">
     ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:13px;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;touch-action:manipulation;font-family:inherit;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力</button>`:''}
     ${icards}
-    <button onclick="submitInsp()" style="width:100%;padding:15px;background:${pend>0?'var(--surface)':'linear-gradient(135deg,#E24B4A,#C73A39)'};color:${pend>0?'var(--text2)':'white'};border:${pend>0?'1.5px solid var(--border)':'none'};border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;touch-action:manipulation;box-shadow:${pend>0?'none':'0 4px 16px rgba(194,42,42,0.28)'};font-family:inherit;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+    <button onclick="submitInsp()" style="width:100%;padding:15px;background:${pend>0?'var(--surface)':'linear-gradient(135deg,#C8292A,#A82020)'};color:${pend>0?'var(--text2)':'white'};border:${pend>0?'1.5px solid var(--border)':'none'};border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;touch-action:manipulation;box-shadow:${pend>0?'none':'0 4px 16px rgba(200,41,42,0.28)'};font-family:inherit;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
       ${pend>0?`点検提出（未入力 ${pend}件あり）`:'`<svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` 点検完了 · 提出する'}
     </button>
   </div>`;
@@ -1577,23 +1509,23 @@ function renderApproval(){
           <div style="font-weight:700;font-size:16px;color:#111111;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
           <div style="font-size:12px;color:#777777;">${l?.name||'-'} · ${a.date} · 申請: ${a.by}</div>
         </div>
-        ${!editable?`<div style="background:${a.status==='approved'?'rgba(52,199,89,0.15)':'rgba(226,75,74,0.15)'};color:${a.status==='approved'?'#34C759':'#E24B4A'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;">${a.status==='approved'?'承認済':'差戻'}</div>`:''}
+        ${!editable?`<div style="background:${a.status==='approved'?'rgba(52,199,89,0.15)':'rgba(200,41,42,0.15)'};color:${a.status==='approved'?'#34C759':'#C8292A'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;">${a.status==='approved'?'承認済':'差戻'}</div>`:''}
       </div>
       ${editable?`<div style="display:flex;gap:8px;">
         <button onclick="approve('${a.id}')" style="flex:1;padding:12px;background:rgba(52,199,89,0.15);border:1.5px solid rgba(52,199,89,0.35);border-radius:12px;color:#34C759;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(52,199,89,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(52,199,89,0.15)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>承認</button>
-        <button onclick="reject('${a.id}')" style="flex:1;padding:12px;background:rgba(226,75,74,0.12);border:1.5px solid rgba(226,75,74,0.3);border-radius:12px;color:#E24B4A;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(226,75,74,0.25)'" onmouseup="this.style.transform='';this.style.background='rgba(226,75,74,0.12)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 2l9 9M11 2L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>差し戻し</button>
+        <button onclick="reject('${a.id}')" style="flex:1;padding:12px;background:rgba(200,41,42,0.12);border:1.5px solid rgba(200,41,42,0.3);border-radius:12px;color:#C8292A;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(200,41,42,0.25)'" onmouseup="this.style.transform='';this.style.background='rgba(200,41,42,0.12)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 2l9 9M11 2L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>差し戻し</button>
       </div>`:''}
     </div>`;
   };
   const isAdmin=S.currentRole==='admin';
   const hdrStyle=isAdmin?`background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 18px;flex-shrink:0;`:``;
-  return`<div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+  return`<div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <div style="background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 18px;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:12px;">
         <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
         <div style="flex:1;">
           <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:.8px;margin-bottom:2px;">承認管理</div>
-          <div style="font-size:20px;font-weight:800;color:#111111;letter-spacing:-.4px;">承認待ち <span style="color:#4F8EF7;">${pend.length}</span>件</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">承認待ち <span style="color:#4F8EF7;">${pend.length}</span>件</div>
         </div>
       </div>
     </div>
@@ -1736,7 +1668,7 @@ function renderHistoryList(){
       <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${line.name}</span>
     </div>`;
     rightRows+=`<div style="display:flex;background:rgba(0,0,0,.03);height:${lineHdrHt};border-bottom:0.5px solid var(--border);">
-      ${days.map((_,i)=>`<div style="min-width:80px;flex-shrink:0;border-right:0.5px solid var(--border);${dayStrs[i]===TODAY?'background:rgba(226,75,74,.04);':''}"></div>`).join('')}
+      ${days.map((_,i)=>`<div style="min-width:80px;flex-shrink:0;border-right:0.5px solid var(--border);${dayStrs[i]===TODAY?'background:rgba(200,41,42,.04);':''}"></div>`).join('')}
     </div>`;
 
     line.equip.forEach(eq=>{
@@ -1795,7 +1727,7 @@ function renderHistoryList(){
 
   return`<div class="cal-screen">
   <!-- Top nav bar -->
-  <div style="background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 14px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+  <div style="background:linear-gradient(135deg,#C8292A 0%,#A82020 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 14px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
     <button class="hdr-back-btn" onclick="nav('HOME')">${BACK_ICO}</button>
     <div style="flex:1;color:white;">
       <div style="font-size:10px;opacity:.75;font-weight:500;letter-spacing:.4px;">入力状況</div>
@@ -1935,13 +1867,13 @@ function renderAnomaly(){
     </div>`;
   };
   const totalActive=open.length+ip.length;
-  return`<div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+  return`<div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <div style="background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 18px;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:12px;">
         <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
         <div style="flex:1;">
           <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:.8px;margin-bottom:2px;">異常管理</div>
-          <div style="font-size:20px;font-weight:800;color:#111111;letter-spacing:-.4px;">未対応 <span style="color:#F97316;">${totalActive}</span>件</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">未対応 <span style="color:#F97316;">${totalActive}</span>件</div>
         </div>
       </div>
     </div>
@@ -2066,7 +1998,7 @@ function renderLineEqMgmt(){
               編集
             </button>
             <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 10px;"></div>
-            <button onclick="S.leMenu=null;leDelEq('${eq.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#E24B4A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(226,75,74,0.08)'" onmouseup="this.style.background=''">
+            <button onclick="S.leMenu=null;leDelEq('${eq.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#C8292A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(200,41,42,0.08)'" onmouseup="this.style.background=''">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M4.5 3.5V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V3.5M5.5 6v4M8.5 6v4M2.5 3.5l.8 8.5a.5.5 0 00.5.5h6.4a.5.5 0 00.5-.5l.8-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               削除
             </button>
@@ -2107,7 +2039,7 @@ function renderLineEqMgmt(){
               編集
             </button>
             <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 10px;"></div>
-            <button onclick="S.leMenu=null;leDelLine('${l.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#E24B4A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(226,75,74,0.08)'" onmouseup="this.style.background=''">
+            <button onclick="S.leMenu=null;leDelLine('${l.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#C8292A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(200,41,42,0.08)'" onmouseup="this.style.background=''">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M4.5 3.5V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V3.5M5.5 6v4M8.5 6v4M2.5 3.5l.8 8.5a.5.5 0 00.5.5h6.4a.5.5 0 00.5-.5l.8-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               削除
             </button>
@@ -2138,14 +2070,14 @@ function renderLineEqMgmt(){
         <button onclick="nav('HOME')" style="width:38px;height:38px;border-radius:50%;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .12s;" onmousedown="this.style.background='rgba(0,0,0,0.10)'" onmouseup="this.style.background='#1A1D24'">${BACK_ICO}</button>
         <div style="flex:1;">
           <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:.8px;margin-bottom:2px;">管理者専用</div>
-          <div style="font-size:20px;font-weight:800;color:#111111;letter-spacing:-.4px;">ライン・設備管理</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">ライン・設備管理</div>
         </div>
       </div>
     </div>
 
     <!-- Add Line Button -->
     <div style="padding:14px 16px 0;flex-shrink:0;">
-      <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:14px;background:linear-gradient(135deg,#E24B4A 0%,#C73A39 100%);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(226,75,74,0.3);transition:transform .12s,box-shadow .12s;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 2px 10px rgba(226,75,74,0.2)'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(226,75,74,0.3)'">
+      <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:14px;background:linear-gradient(135deg,#C8292A 0%,#A82020 100%);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 2px 10px rgba(200,41,42,0.2)'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(200,41,42,0.3)'">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
         ラインを追加
       </button>
@@ -2630,8 +2562,8 @@ function renderInspRun(){
         return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);" id="ir-${key}">
           <div style="flex:1;font-size:13px;color:#444444;font-weight:500;line-height:1.4;">${item.n}</div>
           <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#30D158;color:white;border-color:#30D158;box-shadow:0 4px 16px rgba(48,209,88,0.35);':'background:white;color:#30D158;border-color:rgba(48,209,88,0.5);'}" id="ibtn-ok-${key}">○</button>
-            <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#E24B4A;color:white;border-color:#E24B4A;box-shadow:0 4px 16px rgba(226,75,74,0.35);':'background:white;color:#E24B4A;border-color:rgba(226,75,74,0.5);'}" id="ibtn-ng-${key}">✕</button>
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);':'background:white;color:#22C55E;border-color:rgba(34,197,94,0.5);'}" id="ibtn-ok-${key}">○</button>
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.35);':'background:white;color:#C8292A;border-color:rgba(200,41,42,0.5);'}" id="ibtn-ng-${key}">✕</button>
           </div>
         </div>`;
       }).join('');
@@ -2640,19 +2572,19 @@ function renderInspRun(){
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         未入力 ${pend}件 をすべて正常に一括入力
       </button>`:'';
-      return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(48,209,88,0.35)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
+      return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(34,197,94,0.35)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
         <div style="font-size:14px;font-weight:700;color:#111111;display:flex;align-items:center;gap:8px;margin-bottom:${items.length?'12px':'0'};">
           ${eq.name}
-          <span id="ep-${eq.id}" style="font-size:${allDone?'10':'11'}px;font-weight:700;padding:${allDone?'3px 9px':'0'};border-radius:8px;margin-left:auto;${allDone?'background:rgba(48,209,88,0.12);color:#2E7D32;':'color:#AAAAAA;'}">${allDone?'完了':`${done}/${items.length}`}</span>
+          <span id="ep-${eq.id}" style="font-size:${allDone?'10':'11'}px;font-weight:700;padding:${allDone?'3px 9px':'0'};border-radius:8px;margin-left:auto;${allDone?'background:rgba(34,197,94,0.12);color:#16A34A;':'color:#AAAAAA;'}">${allDone?'完了':`${done}/${items.length}`}</span>
         </div>
         ${itemsHtml}${bulkBtn}
       </div>`;
     }).join('');
     return`<div style="margin:14px 16px 0;">
       <div style="background:#F7F7F9;border:1.5px solid rgba(0,0,0,0.08);border-radius:18px 18px 0 0;border-bottom:none;padding:12px 16px;display:flex;align-items:center;gap:10px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#E24B4A;flex-shrink:0;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#C8292A;flex-shrink:0;"></div>
         <div style="font-size:14px;font-weight:700;color:#111111;flex:1;">${line.name}</div>
-        <div style="font-size:11px;color:#AAAAAA;font-weight:500;">${line.desc}</div>
+        <div style="font-size:11px;color:#9CA3AF;font-weight:500;">${line.desc}</div>
       </div>
       ${eqHtml}
       <div style="border:1.5px solid rgba(0,0,0,0.08);border-top:none;border-radius:0 0 18px 18px;height:6px;background:#F7F7F9;"></div>
@@ -2662,7 +2594,7 @@ function renderInspRun(){
   const pct=totalItems>0?Math.round(doneItems/totalItems*100):0;
 
   return`
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;">
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <!-- Header -->
     <div style="padding:calc(env(safe-area-inset-top,0px) + 12px) 20px 12px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);background:#FFFFFF;">
       <button onclick="nav('HOME')" style="width:38px;height:38px;border-radius:12px;background:#F0F0F2;border:1.5px solid rgba(0,0,0,0.09);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
@@ -2680,7 +2612,7 @@ function renderInspRun(){
         <div style="font-size:14px;font-weight:700;color:#111111;">${doneItems} / ${totalItems}</div>
       </div>
       <div style="height:6px;background:#E8E8EC;border-radius:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#E24B4A,#FF7070);border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#C8292A,#FF7070);border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
       </div>
     </div>
     <!-- Content -->
@@ -2690,7 +2622,7 @@ function renderInspRun(){
     </div>
     <!-- Footer -->
     <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
-      <button onclick="inspFinish()" style="width:100%;padding:16px;background:#30D158;color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(48,209,88,0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+      <button onclick="inspFinish()" style="width:100%;padding:16px;background:#22C55E;color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(34,197,94,0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 9l5 5 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         点検を完了する
       </button>
@@ -2724,12 +2656,12 @@ function inspSetRes(eqId,itemId,result){
   const okBtn=document.getElementById('ibtn-ok-'+key);
   const ngBtn=document.getElementById('ibtn-ng-'+key);
   if(okBtn){
-    if(result==='ok'){okBtn.style.cssText+='background:#30D158;color:white;border-color:#30D158;box-shadow:0 4px 16px rgba(48,209,88,0.35);';}
-    else{okBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:white;color:#30D158;border-color:rgba(48,209,88,0.5);';}
+    if(result==='ok'){okBtn.style.cssText+='background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);';}
+    else{okBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#22C55E;border-color:rgba(34,197,94,0.5);';}
   }
   if(ngBtn){
-    if(result==='ng'){ngBtn.style.cssText+='background:#E24B4A;color:white;border-color:#E24B4A;box-shadow:0 4px 16px rgba(226,75,74,0.35);';}
-    else{ngBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:white;color:#E24B4A;border-color:rgba(226,75,74,0.5);';}
+    if(result==='ng'){ngBtn.style.cssText+='background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.32);';}
+    else{ngBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#C8292A;border-color:rgba(200,41,42,0.5);';}
   }
   // Update eq card header
   const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
@@ -2741,10 +2673,10 @@ function inspSetRes(eqId,itemId,result){
       const allDone=done===items.length&&items.length>0;
       const card=document.getElementById('ec-'+eqId);
       const ep=document.getElementById('ep-'+eqId);
-      if(card)card.style.borderColor=allDone?'rgba(48,209,88,0.35)':'rgba(0,0,0,0.07)';
+      if(card)card.style.borderColor=allDone?'rgba(34,197,94,0.35)':'#E4E8EF';
       if(ep){
-        if(allDone){ep.textContent='完了';ep.style.cssText='font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:auto;background:rgba(48,209,88,0.12);color:#2E7D32;';}
-        else{ep.textContent=done+'/'+items.length;ep.style.cssText='font-size:11px;font-weight:700;margin-left:auto;color:#AAAAAA;';}
+        if(allDone){ep.textContent='完了';ep.style.cssText='font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:auto;background:rgba(34,197,94,0.12);color:#16A34A;';}
+        else{ep.textContent=done+'/'+items.length;ep.style.cssText='font-size:11px;font-weight:600;margin-left:auto;color:#9CA3AF;';}
       }
       break;
     }
@@ -2761,7 +2693,7 @@ function inspSetRes(eqId,itemId,result){
   // Update the progress bar directly
   const progBars=document.querySelectorAll('[style*="width:'+Math.max(0,pct-1)+'%"]');
   // Simpler: find via parent traversal
-  const progFill=document.evaluate('//div[contains(@style,"linear-gradient(90deg,#E24B4A")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+  const progFill=document.evaluate('//div[contains(@style,"linear-gradient(90deg,#C8292A")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
   if(progFill)progFill.style.width=pct+'%';
   const progNums=document.evaluate('//div[contains(text()," / ")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
   if(progNums)progNums.textContent=doneAll+' / '+total;
