@@ -210,7 +210,21 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-badge.ng{background:var(--red-lt);color:var(--red);}
 .cal-badge.partial{background:var(--orange-lt);color:var(--orange);}
 .cal-badge.done-daily{background:#E8F5E9;color:#16A34A;}
-.cal-more{font-size:9px;font-weight:700;color:var(--text2);padding:2px 5px;background:rgba(0,0,0,.07);border-radius:10px;align-self:flex-start;}
+/* ── Equipment Tabs ── */
+.equip-tabs-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -18px;padding:0 18px 12px;}
+.equip-tabs-wrap::-webkit-scrollbar{display:none;}
+.equip-tabs{display:flex;gap:8px;min-width:max-content;}
+.equip-tab{flex-shrink:0;padding:9px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;}
+.equip-tab:active{transform:scale(.96);}
+.equip-tab.inactive{background:#F1F3F8;color:#374151;border-color:#E4E8EF;}
+.equip-tab.active{background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 3px 12px rgba(200,41,42,0.28);}
+.equip-tab .tab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+/* Cal cell improvements */
+.cal-cell-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-cell-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;border-radius:10px;min-height:42px;transition:opacity .1s,transform .08s;}
+.cal-cell-item:active{transform:scale(.92);}
+.cal-missing-dot{width:7px;height:7px;border-radius:50%;background:#C8292A;margin-top:3px;animation:dotPulse 2s ease-in-out infinite;}
+@keyframes dotPulse{0%,100%{opacity:.7}50%{opacity:1}}
 
 </style>
 </head>
@@ -221,6 +235,7 @@ const TODAY=(()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMon
 const S={
   view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,
   inspSelectedLines:[],inspLastLines:[],
+  selectedEquipmentId:null,
   selectedLine:null,selectedEq:null,inspType:'毎日点検',histView:'list',histDate:null,histWeekOffset:0,
   bulkActive:false,bulkLineId:null,bulkIdx:0,
   modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},
@@ -293,6 +308,8 @@ function getLn(id){return S.lines.find(l=>l.id===id);}
   });
 })();
 function getEq(id){for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}return null;}
+// Initialize selectedEquipmentId to first equipment
+S.selectedEquipmentId=S.lines[0]?.equip[0]?.id||null;
 function getInsps(eid,type){type=type||S.inspType;return S.insps[eid+':'+type];}
 function typeItems(eq,type){
   const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};const t=m[type]||'毎日';
@@ -388,6 +405,32 @@ function addEqConfirm(lid){
   if(!n){toast('設備名を入力してください','warn');return;}
   getLn(lid).equip.push({id:'E'+Date.now(),name:n,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
   S.modal=null;toast(`${n}を追加しました`);render();
+}
+
+// 選択式設備追加
+const EQ_PRESETS=[
+  {cat:'加工',items:['NC旋盤','汎用旋盤','マシニングセンタ','5軸加工機','研削盤','フライス盤']},
+  {cat:'溶接',items:['溶接ロボット','TIG溶接機','MIG溶接機','スポット溶接機']},
+  {cat:'搬送',items:['コンベア','フォークリフト','クレーン','パレタイザー']},
+  {cat:'検査',items:['三次元測定機','超音波探傷器','X線検査機','目視検査台']},
+  {cat:'塗装・処理',items:['塗装ブース','乾燥炉','表面処理装置','洗浄機']},
+  {cat:'成形・プレス',items:['プレス機','射出成形機','ダイカスト機','鍛造プレス']},
+];
+function addEqSelectConfirm(lid){
+  const sel=S.modal.selectedPreset;
+  if(!sel){toast('設備を選択してください','warn');return;}
+  const newId='E'+Date.now();
+  getLn(lid).equip.push({id:newId,name:sel,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  S.selectedEquipmentId=newId;
+  S.modal=null;toast(`「${sel}」を追加しました`);render();
+}
+function addEqSelectCustomConfirm(lid){
+  const n=document.getElementById('meq-custom')?.value?.trim();
+  if(!n){toast('設備名を入力してください','warn');return;}
+  const newId='E'+Date.now();
+  getLn(lid).equip.push({id:newId,name:n,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  S.selectedEquipmentId=newId;
+  S.modal=null;toast(`「${n}」を追加しました`);render();
 }
 function addLineConfirm(){
   const n=document.getElementById('mln-n')?.value?.trim();const d=document.getElementById('mln-d')?.value?.trim()||'';const r=document.getElementById('mln-r')?.value?.trim()||'';
@@ -1634,197 +1677,221 @@ function renderHistoryList(){
   S.histYear=S.histYear||now.getFullYear();
   S.histMonth=S.histMonth||now.getMonth()+1;
   if(!S.histFilter)S.histFilter='all';
-  if(S.histSearch===undefined)S.histSearch='';
-  if(S.histExpandedEq===undefined)S.histExpandedEq=null;
   const nowY=now.getFullYear(),nowM=now.getMonth()+1;
   if(S.histYear>nowY||(S.histYear===nowY&&S.histMonth>nowM)||nowY-S.histYear>2){S.histYear=nowY;S.histMonth=nowM;}
   const histYear=S.histYear,histMonth=S.histMonth;
   const monthStr=`${histYear}-${String(histMonth).padStart(2,'0')}`;
   const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  const WDAYS=['日','月','火','水','木','金','土'];
-
-
   const daysInMonth=new Date(histYear,histMonth,0).getDate();
+
   const visibleLines=(S.currentRole==='inspector'&&S.inspSelectedLines&&S.inspSelectedLines.length>0)
     ?S.lines.filter(l=>S.inspSelectedLines.includes(l.id)):S.lines;
 
-  // Per-equipment month data
-  const allEqData=[];
-  visibleLines.forEach(line=>{
-    line.equip.forEach(eq=>{
-      const dailyItems=eq.items.filter(i=>i.t==='毎日');
-      const cells={};
-      let totalExpected=0,totalDone=0,totalNg=0,missedDays=0;
-      for(let d=1;d<=daysInMonth;d++){
-        const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
-        const dow=new Date(ds).getDay();
-        const isFuture=new Date(ds)>now;
-        const isWknd=dow===0||dow===6;
-        if(!isWknd&&!isFuture)totalExpected++;
-        const key=eq.id+':毎日点検';
-        const insp=S.insps[key];
-        if(insp&&insp.date===ds){
-          const rs=insp.results||{};
-          const done=dailyItems.filter(i=>rs[i.id]).length;
-          const hasNg=dailyItems.some(i=>rs[i.id]?.r==='ng');
-          cells[ds]={done,total:dailyItems.length,hasNg,filled:done===dailyItems.length&&dailyItems.length>0};
-          if(!isWknd){totalDone++;if(hasNg)totalNg++;}
-        } else {
-          cells[ds]={done:0,total:dailyItems.length,hasNg:false,filled:false,missing:!isFuture&&!isWknd};
-          if(!isFuture&&!isWknd)missedDays++;
-        }
-      }
-      Object.keys(S.insps).filter(k=>k.startsWith(eq.id+':')&&S.insps[k].date&&S.insps[k].date.startsWith(monthStr)).forEach(k=>{
-        const ds=S.insps[k].date;
-        if(!cells[ds]){const rs=S.insps[k].results||{};const done=dailyItems.filter(i=>rs[i.id]).length;const hasNg=dailyItems.some(i=>rs[i.id]?.r==='ng');cells[ds]={done,total:dailyItems.length,hasNg,filled:done===dailyItems.length&&dailyItems.length>0};}
-      });
-      const rate=totalExpected>0?Math.round(totalDone/totalExpected*100):0;
-      allEqData.push({eq,line,cells,rate,totalExpected,totalDone,totalNg,missedDays,dailyItems});
-    });
-  });
+  // Collect all equipment in order
+  const allEquip=[];
+  visibleLines.forEach(l=>l.equip.forEach(eq=>allEquip.push({eq,line:l})));
 
-  const sumOk=allEqData.filter(e=>e.totalNg===0&&e.missedDays===0&&e.totalDone>0).length;
-  const sumNg=allEqData.filter(e=>e.totalNg>0).length;
-  const sumMissed=allEqData.filter(e=>e.missedDays>0).length;
+  // Ensure selectedEquipmentId is valid
+  if(!S.selectedEquipmentId||!allEquip.find(e=>e.eq.id===S.selectedEquipmentId)){
+    S.selectedEquipmentId=allEquip[0]?.eq.id||null;
+  }
+  const eid=S.selectedEquipmentId;
+  const eqEntry=allEquip.find(e=>e.eq.id===eid);
+  if(!eqEntry)return`<div class="empty-state">設備がありません</div>`;
+  const {eq,line}=eqEntry;
 
   let prevY=histYear,prevM=histMonth-1;if(prevM<=0){prevM=12;prevY--;}
   let nextY=histYear,nextM=histMonth+1;if(nextM>12){nextM=1;nextY++;}
   const isLatest=(histYear===nowY&&histMonth===nowM);
 
-  let filtered=allEqData;
-  if(S.histFilter==='missing')filtered=filtered.filter(e=>e.missedDays>0||e.totalNg>0);
-  if(S.histSearch)filtered=filtered.filter(e=>e.eq.name.includes(S.histSearch)||e.line.name.includes(S.histSearch));
-
-  function calendarRow(eqData){
-    const {eq,cells}=eqData;
-    const firstDow=new Date(`${monthStr}-01`).getDay(); // 0=Sun
-    // Build grid cells: blank starters + day cells
-    const gridCells=[];
-    // blank cells for days before month starts (Mon-based: shift so Mon=0)
-    const startOffset=(firstDow+6)%7; // Mon=0,...,Sun=6
-    for(let i=0;i<startOffset;i++) gridCells.push({blank:true});
+  // Per-tab dot status (for all equipment tabs)
+  function eqMonthStatus(e){
+    const dailyKey=e.id+':毎日点検';
+    let hasNg=false,hasMissed=false;
     for(let d=1;d<=daysInMonth;d++){
       const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
       const dow=new Date(ds).getDay();
-      const c=cells[ds];
-      const isToday=ds===TODAY;
       const isFuture=new Date(ds)>now;
-      const isWknd=dow===0||dow===6;
-      let sym='',bg='transparent',color='#D1D5DB',border='transparent',textColor='#C0C8D8';
-      if(isFuture){sym='';bg='transparent';color='#E5E7EB';}
-      else if(isWknd&&!c?.filled){sym='—';color='#D1D5DB';}
-      else if(c?.hasNg){sym='×';bg='#FFF1F1';color='#C8292A';border='rgba(200,41,42,0.3)';}
-      else if(c?.filled){sym='○';bg='#F0FDF4';color='#16A34A';border='rgba(22,163,74,0.2)';}
-      else if(c?.done>0){sym='△';bg='#FFFBEB';color='#D97706';border='rgba(217,119,6,0.2)';}
-      else if(c?.missing){sym='×';bg='#FFF1F1';color='#C8292A';border='rgba(200,41,42,0.2)';}
-      const clickable=(!isFuture&&(c?.filled||c?.done>0));
-      gridCells.push({d,ds,sym,bg,color,border,isToday,isWknd,isFuture,clickable,dow});
+      if(!isFuture&&dow!==0&&dow!==6){
+        const insp=getInspectionByDate(e.id,ds,'毎日点検');
+        if(!insp)hasMissed=true;
+        else if(Object.values(insp.results||{}).some(r=>r.r==='ng'))hasNg=true;
+      }
     }
-    // pad to complete last row
-    while(gridCells.length%7!==0) gridCells.push({blank:true});
-
-    const WDAYS=['月','火','水','木','金','土','日'];
-    const wdayHdr=WDAYS.map((w,i)=>`<div style="text-align:center;font-size:9px;font-weight:700;color:${i===5?'#2563EB':i===6?'#C8292A':'#9CA3AF'};padding-bottom:4px;">${w}</div>`).join('');
-
-    const rows=[];
-    for(let i=0;i<gridCells.length;i+=7){
-      const week=gridCells.slice(i,i+7);
-      const cells7=week.map(c=>{
-        if(c.blank) return`<div></div>`;
-        const isSat=c.dow===6,isSun=c.dow===0;
-        const dayCol=c.isToday?'#2563EB':isSat?'#2563EB':isSun?'#C8292A':'#6B7280';
-        return`<div ${c.clickable?`onclick="S.histView='detail';S.histDate='${c.ds}';S.histEqId='${eq.id}';render();"`:''} style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;border-radius:7px;background:${c.bg};border:1px solid ${c.border};cursor:${c.clickable?'pointer':'default'};${c.isToday?'box-shadow:0 0 0 2px #2563EB;':''}min-height:34px;" ${c.clickable?`onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"`:''}>
-          <div style="font-size:9px;font-weight:600;color:${c.isFuture?'#D1D5DB':dayCol};line-height:1;">${c.d}</div>
-          <div style="font-size:11px;font-weight:700;color:${c.color};line-height:1.2;">${c.sym}</div>
-        </div>`;
-      }).join('');
-      rows.push(`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;width:100%;">${cells7}</div>`);
-    }
-
-    return`<div style="padding:10px 12px 14px;background:#FAFAFA;border-top:1px solid #F1F3F8;width:100%;box-sizing:border-box;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <span style="font-size:10px;font-weight:600;color:#9CA3AF;">日別：</span>
-        <span style="font-size:10px;color:#16A34A;font-weight:700;">○ 正常</span>
-        <span style="font-size:10px;color:#D97706;font-weight:700;">△ 一部</span>
-        <span style="font-size:10px;color:#C8292A;font-weight:700;">× NG/未実施</span>
-      </div>
-      <div style="width:100%;box-sizing:border-box;">
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;width:100%;">${wdayHdr}</div>
-        <div style="display:flex;flex-direction:column;gap:3px;width:100%;">${rows.join('')}</div>
-      </div>
-    </div>`;
+    return hasNg?'ng':hasMissed?'miss':'ok';
   }
 
-  const eqCards=filtered.length>0?filtered.map(eqData=>{
-    const {eq,line,rate,totalExpected,totalDone,missedDays,totalNg}=eqData;
-    const isExpanded=S.histExpandedEq===eq.id;
-    const hasIssue=missedDays>0||totalNg>0;
-    const allGood=rate===100&&totalNg===0&&totalExpected>0;
-    const barColor=totalNg>0?'#C8292A':rate<50?'#D97706':'#16A34A';
-    return`<div style="background:white;border-radius:18px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 12px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};overflow:hidden;min-width:0;max-width:100%;box-sizing:border-box;">
-      <div onclick="S.histExpandedEq=${isExpanded?'null':`'${eq.id}'`};render();" style="padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;" onmousedown="this.parentElement.style.background='#FAFAFA'" onmouseup="this.parentElement.style.background='white'" onmouseleave="this.parentElement.style.background='white'">
-        <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${totalNg>0?'#C8292A':hasIssue?'#D97706':'#16A34A'};box-shadow:0 0 0 3px ${totalNg>0?'rgba(200,41,42,0.15)':hasIssue?'rgba(217,119,6,0.15)':'rgba(22,163,74,0.15)'};"></div>
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:7px;">
-            <div style="font-size:15px;font-weight:700;color:#111827;">${eq.name}</div>
-            <div style="font-size:11px;color:#9CA3AF;">${line.name}</div>
-          </div>
-          <div style="background:#F1F3F8;border-radius:4px;height:5px;overflow:hidden;margin-bottom:6px;">
-            <div style="height:100%;width:${rate}%;background:${barColor};border-radius:4px;"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:12px;font-weight:700;color:${barColor};">${rate}%</span>
-            <span style="font-size:11px;color:#9CA3AF;">${totalDone}/${totalExpected}日実施</span>
-            ${missedDays>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 8px;border-radius:10px;">未入力 ${missedDays}日</span>`:''}
-            ${totalNg>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 8px;border-radius:10px;">NG ${totalNg}日</span>`:''}
-            ${allGood?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:2px 8px;border-radius:10px;">✓ 完了</span>`:''}
-          </div>
-        </div>
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" style="flex-shrink:0;transform:rotate(${isExpanded?90:0}deg);transition:transform .2s;"><path d="M1.5 1.5l5 5.5-5 5.5" stroke="#D1D5DB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      ${isExpanded?calendarRow(eqData):''}
-    </div>`;
-  }).join(''):
-  `<div style="text-align:center;padding:60px 20px;">
-    <div style="width:56px;height:56px;background:#F1F3F8;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="3" width="20" height="20" rx="4" stroke="#9CA3AF" stroke-width="1.8"/><path d="M8 13h10M8 17h7" stroke="#9CA3AF" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </div>
-    <div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">該当する設備はありません</div>
-    <div style="font-size:12px;color:#9CA3AF;">フィルターや検索条件を確認してください</div>
-  </div>`;
+  // Build equipment tabs HTML (grouped by line, with add button per group)
+  const tabsHtml=visibleLines.map(l=>{
+    const lineTag2=`<div style="display:flex;align-items:center;flex-shrink:0;"><span style="font-size:9px;font-weight:700;color:#B0B8C8;letter-spacing:.4px;white-space:nowrap;padding-right:6px;">${l.name}</span></div>`;
+    const addBtn2=`<button class="equip-tab" onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="background:transparent;color:#C8292A;border-color:rgba(200,41,42,0.3);border-style:dashed;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#C8292A" stroke-width="2" stroke-linecap="round"/></svg>追加</button>`;
+    const eqBtns=l.equip.map(e=>{
+      const isActive=e.id===eid;
+      const st=eqMonthStatus(e);
+      const dotColor=st==='ng'?'#C8292A':st==='miss'?'#D97706':'#16A34A';
+      const activeDot='rgba(255,255,255,0.75)';
+      return`<button class="equip-tab ${isActive?'active':'inactive'}" onclick="changeEquipment('${e.id}')"><span class="tab-dot" style="background:${isActive?activeDot:dotColor};${st==='miss'&&!isActive?'animation:dotPulse 2s ease-in-out infinite;':''}"></span>${e.name}${st==='ng'&&!isActive?`<span style="font-size:9px;font-weight:700;background:#FFF1F1;color:#C8292A;padding:1px 5px;border-radius:8px;">NG</span>`:''}</button>`;
+    }).join('');
+    return lineTag2+eqBtns+addBtn2;
+  }).join('<div style="width:1.5px;background:#E4E8EF;flex-shrink:0;margin:0 6px;"></div>');
+
+  // Line group label for active equipment
+  const lineLabel=line.name;
+
+  // Build calendar data for selected equipment
+  const dailyItems=eq.items.filter(i=>i.t==='毎日');
+  const cells={};
+  let totalExpected=0,totalDone=0,totalNg=0,missedDays=0;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
+    const dow=new Date(ds).getDay();
+    const isFuture=new Date(ds)>now;
+    const isWknd=dow===0||dow===6;
+    if(!isWknd&&!isFuture)totalExpected++;
+    const insp=getInspectionByDate(eid,ds,'毎日点検');
+    if(insp){
+      const rs=insp.results||{};
+      const done=dailyItems.filter(i=>rs[i.id]).length;
+      const hasNg=dailyItems.some(i=>rs[i.id]?.r==='ng');
+      cells[ds]={done,total:dailyItems.length,hasNg,filled:done===dailyItems.length&&dailyItems.length>0};
+      if(!isWknd){totalDone++;if(hasNg)totalNg++;}
+    } else {
+      cells[ds]={done:0,total:dailyItems.length,hasNg:false,filled:false,missing:!isFuture&&!isWknd};
+      if(!isFuture&&!isWknd)missedDays++;
+    }
+  }
+  const rate=totalExpected>0?Math.round(totalDone/totalExpected*100):0;
+  const barColor=totalNg>0?'#C8292A':rate<50?'#D97706':'#16A34A';
+  const hasIssue=missedDays>0||totalNg>0;
+  const allGood=rate===100&&totalNg===0&&totalExpected>0;
+
+  // Filter check for tabs
+  if(S.histFilter==='missing'&&!hasIssue){
+    // The selected eq has no issues — show a note but don't force-switch
+  }
+
+  // Build calendar grid
+  const firstDow=new Date(`${monthStr}-01`).getDay();
+  const gridCells=[];
+  const startOffset=(firstDow+6)%7;
+  for(let i=0;i<startOffset;i++) gridCells.push({blank:true});
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
+    const dow=new Date(ds).getDay();
+    const c=cells[ds];
+    const isToday=ds===TODAY;
+    const isFuture=new Date(ds)>now;
+    const isWknd=dow===0||dow===6;
+    let sym='',bg='transparent',color='#D1D5DB',border='transparent',isMissing=false;
+    if(isFuture){sym='';bg='transparent';color='#E5E7EB';}
+    else if(isWknd&&!c?.filled){sym='—';color='rgba(0,0,0,0.15)';}
+    else if(c?.hasNg){sym='×';bg='#FFF1F1';color='#C8292A';border='rgba(200,41,42,0.35)';}
+    else if(c?.filled){sym='○';bg='#F0FDF4';color='#16A34A';border='rgba(22,163,74,0.25)';}
+    else if(c?.done>0){sym='△';bg='#FFFBEB';color='#D97706';border='rgba(217,119,6,0.25)';}
+    else if(c?.missing){isMissing=true;}
+    const clickable=(!isFuture&&(c?.filled||c?.done>0));
+    gridCells.push({d,ds,sym,bg,color,border,isToday,isWknd,isFuture,clickable,dow,isMissing});
+  }
+  while(gridCells.length%7!==0) gridCells.push({blank:true});
+
+  const WDAY_HDR=['月','火','水','木','金','土','日'];
+  const wdayHdr=WDAY_HDR.map((w,i)=>`<div style="text-align:center;font-size:10px;font-weight:700;color:${i===5?'#2563EB':i===6?'#C8292A':'#9CA3AF'};padding:3px 0 5px;">${w}</div>`).join('');
+
+  const calRows=[];
+  for(let i=0;i<gridCells.length;i+=7){
+    const week=gridCells.slice(i,i+7);
+    const rowCells=week.map(c=>{
+      if(c.blank) return`<div></div>`;
+      const isSat=c.dow===6,isSun=c.dow===0;
+      const dayNumColor=c.isFuture?'#D1D5DB':c.isToday?'#2563EB':isSat?'#2563EB':isSun?'#C8292A':'#6B7280';
+      const todayStyle=c.isToday?`border:2px solid #2563EB;`:`border:1.5px solid ${c.border};`;
+      const todayBgExtra=c.isToday&&c.bg==='transparent'?'background:rgba(37,99,235,0.05);':'';
+      return`<div class="cal-cell-item" ${c.clickable?`onclick="S.histView='detail';S.histDate='${c.ds}';S.histEqId='${eid}';render();"`:''} style="${todayStyle}background:${c.bg};${todayBgExtra}cursor:${c.clickable?'pointer':'default'};" ${c.clickable?`onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"`:''}>
+          <div style="font-size:10px;font-weight:700;color:${dayNumColor};line-height:1;">${c.d}</div>
+          ${c.isMissing?`<div class="cal-missing-dot"></div>`:c.sym?`<div style="font-size:14px;font-weight:800;color:${c.color};line-height:1.2;margin-top:2px;">${c.sym}</div>`:`<div style="height:14px;margin-top:2px;"></div>`}
+        </div>`;
+    }).join('');
+    calRows.push(`<div class="cal-cell-grid">${rowCells}</div>`);
+  }
+
+  // Tabs filter summary
+  const missCount=allEquip.filter(({eq:e})=>eqMonthStatus(e)==='miss').length;
+  const ngCount=allEquip.filter(({eq:e})=>eqMonthStatus(e)==='ng').length;
 
   return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#F8F9FC;">
-    <div style="background:white;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 0;flex-shrink:0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+
+    <!-- ── Fixed header area ── -->
+    <div style="background:white;border-bottom:1px solid #E4E8EF;flex-shrink:0;">
+      <!-- Title row + month nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px;">
         <div>
           <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.2px;margin-bottom:2px;">MONTHLY REPORT</div>
           <div style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-.5px;">点検履歴</div>
         </div>
         <div style="display:flex;align-items:center;background:#F8F9FC;border-radius:12px;border:1px solid #E4E8EF;overflow:hidden;">
-          <button onclick="S.histYear=${prevY};S.histMonth=${prevM};S.histExpandedEq=null;render();" style="width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='#E4E8EF'" onmouseup="this.style.background='transparent'" onmouseleave="this.style.background='transparent'">
+          <button onclick="S.histYear=${prevY};S.histMonth=${prevM};render();" style="width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='#E4E8EF'" onmouseup="this.style.background='transparent'" onmouseleave="this.style.background='transparent'">
             <svg width="6" height="11" viewBox="0 0 6 11" fill="none"><path d="M5 1L1 5.5 5 10" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div style="padding:0 12px;font-size:13px;font-weight:700;color:#111827;border-left:1px solid #E4E8EF;border-right:1px solid #E4E8EF;height:36px;display:flex;align-items:center;white-space:nowrap;">${histYear}年${MONTHS[histMonth-1]}</div>
-          <button onclick="if(!${isLatest}){S.histYear=${nextY};S.histMonth=${nextM};S.histExpandedEq=null;render();}" style="width:36px;height:36px;border:none;background:transparent;cursor:${isLatest?'default':'pointer'};display:flex;align-items:center;justify-content:center;touch-action:manipulation;opacity:${isLatest?.3:1};font-family:inherit;" onmousedown="if(!${isLatest})this.style.background='#E4E8EF'" onmouseup="this.style.background='transparent'" onmouseleave="this.style.background='transparent'">
+          <button onclick="if(!${isLatest}){S.histYear=${nextY};S.histMonth=${nextM};render();}" style="width:36px;height:36px;border:none;background:transparent;cursor:${isLatest?'default':'pointer'};display:flex;align-items:center;justify-content:center;touch-action:manipulation;opacity:${isLatest?.3:1};font-family:inherit;" onmousedown="if(!${isLatest})this.style.background='#E4E8EF'" onmouseup="this.style.background='transparent'" onmouseleave="this.style.background='transparent'">
             <svg width="6" height="11" viewBox="0 0 6 11" fill="none"><path d="M1 1l4 4.5L1 10" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;display:flex;align-items:center;gap:8px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:10px;padding:0 12px;">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M10 10l2.5 2.5" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <input type="text" placeholder="設備名・ライン名で検索" value="${S.histSearch||''}" oninput="S.histSearch=this.value;const _cv=this.value;const _cs=this.selectionStart;render();requestAnimationFrame(()=>{const el=document.getElementById('hist-search-input');if(el){el.focus();try{el.setSelectionRange(_cs,_cs);}catch(e){}}});" id="hist-search-input" style="border:none;background:transparent;font-size:13px;color:#111827;outline:none;width:100%;font-family:inherit;padding:9px 0;">
+      <!-- Status bar (summary) -->
+      ${ngCount>0||missCount>0?`<div style="display:flex;gap:6px;padding:0 18px 8px;align-items:center;">
+        ${ngCount>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,41,42,0.2);">⚠ NG ${ngCount}設備</span>`:''}
+        ${missCount>0?`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:3px 10px;border-radius:20px;border:1px solid rgba(217,119,6,0.2);">● 未入力 ${missCount}設備</span>`:''}
+        <button onclick="S.histFilter=(S.histFilter==='missing'?'all':'missing');render();" style="margin-left:auto;padding:3px 12px;height:26px;border-radius:20px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'transparent'};color:${S.histFilter==='missing'?'#C8292A':'#9CA3AF'};font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">未入力のみ</button>
+      </div>`:''}
+
+      <!-- Equipment tabs (horizontal scroll) -->
+      <div class="equip-tabs-wrap" style="padding-bottom:0;">
+        <div class="equip-tabs" style="padding:0 18px 12px;">
+          ${tabsHtml}
         </div>
-        <button onclick="S.histFilter=(S.histFilter==='missing'?'all':'missing');render();" style="padding:0 14px;height:38px;border-radius:10px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'white'};color:${S.histFilter==='missing'?'#C8292A':'#6B7280'};font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;touch-action:manipulation;font-family:inherit;">未入力のみ</button>
       </div>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px;">
-      <div style="display:flex;align-items:center;gap:10px;padding:0 2px 2px;">
-        <span style="font-size:10px;color:#9CA3AF;font-weight:600;">全 ${allEqData.length} 設備</span>
-        ${S.histFilter==='missing'||S.histSearch?`<span style="font-size:10px;color:#C8292A;font-weight:600;">絞込中: ${filtered.length}件</span>`:''}
+
+    <!-- ── Scrollable calendar body ── -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 90px);">
+
+      <!-- Equipment status card -->
+      <div style="background:white;border-radius:16px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 14px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};padding:14px 18px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:${barColor};box-shadow:0 0 0 3px ${totalNg>0?'rgba(200,41,42,0.15)':hasIssue?'rgba(217,119,6,0.15)':'rgba(22,163,74,0.15)'};"></div>
+          <div style="font-size:16px;font-weight:700;color:#111827;">${eq.name}</div>
+          <div style="font-size:11px;color:#9CA3AF;">${lineLabel}</div>
+          <div style="margin-left:auto;font-size:18px;font-weight:800;color:${barColor};">${rate}<span style="font-size:11px;font-weight:600;">%</span></div>
+        </div>
+        <div style="background:#F1F3F8;border-radius:6px;height:7px;overflow:hidden;margin-bottom:10px;">
+          <div style="height:100%;width:${rate}%;background:linear-gradient(90deg,${barColor},${barColor==='#C8292A'?'#A82020':barColor==='#D97706'?'#B45309':'#15803D'});border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:#9CA3AF;">${totalDone}/${totalExpected}日実施</span>
+          ${missedDays>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">● 未入力 ${missedDays}日</span>`:''}
+          ${totalNg>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">✕ NG ${totalNg}日</span>`:''}
+          ${allGood?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:3px 10px;border-radius:20px;">✓ 今月完了</span>`:''}
+        </div>
       </div>
-      ${eqCards}
+
+      <!-- Calendar card -->
+      <div style="background:white;border-radius:16px;border:1px solid #F1F3F8;box-shadow:0 1px 6px rgba(0,0,0,0.04);padding:16px;margin-bottom:10px;">
+        <!-- Legend -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:700;color:#374151;">日別ステータス</span>
+          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#16A34A;font-weight:700;"><span style="font-size:12px;">○</span>正常</span>
+          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#D97706;font-weight:700;"><span style="font-size:12px;">△</span>一部</span>
+          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="font-size:12px;">×</span>NG</span>
+          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="width:7px;height:7px;border-radius:50%;background:#C8292A;display:inline-block;"></span>未入力</span>
+        </div>
+        <!-- Day-of-week header -->
+        <div class="cal-cell-grid" style="margin-bottom:5px;">${wdayHdr}</div>
+        <!-- Calendar rows -->
+        <div style="display:flex;flex-direction:column;gap:5px;">${calRows.join('')}</div>
+      </div>
+
     </div>
     ${btabs()}
   </div>`;
@@ -2223,14 +2290,46 @@ function renderNgSheet(){
 /* ═══════════ MODAL SHEET ═══════════ */
 function renderModalSheet(){
   const m=S.modal;let inner='';
-  if(m.type==='addEq'){inner=`
+  if(m.type==='addEq'){
+    const sel=m.selectedPreset||null;
+    const presetsHtml=EQ_PRESETS.map(cat=>`
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:7px;">${cat.cat}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          ${cat.items.map(name=>{
+            const isActive=sel===name;
+            return`<button onclick="S.modal.selectedPreset='${name}';render();" style="padding:9px 14px;border-radius:22px;border:1.5px solid ${isActive?'#C8292A':'#E4E8EF'};background:${isActive?'#FFF1F1':'white'};color:${isActive?'#C8292A':'#374151'};font-size:13px;font-weight:${isActive?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .12s;display:flex;align-items:center;gap:6px;" onmousedown="if('${name}'!=='${sel}')this.style.background='#F8F9FC'" onmouseup="this.style.background='${isActive?'#FFF1F1':'white'}'">
+              ${isActive?`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#C8292A"/><path d="M3 6l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+              ${name}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`).join('');
+    inner=`
     <div class="sheet-handle"></div>
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">新しい設備の名前を入力してください</div>
-    <div style="margin-bottom:20px;"><label class="flabel">設備名</label><input id="meq-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を選択して追加</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">種類を選ぶか、下部でカスタム入力できます</div>
+    <div style="max-height:52vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px;padding-right:2px;">
+      ${presetsHtml}
+    </div>
+    ${sel?`<div style="background:#FFF1F1;border:1.5px solid rgba(200,41,42,0.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#C8292A"/><path d="M4 7l2.5 2.5L10 4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="font-size:13px;font-weight:700;color:#C8292A;">選択中：${sel}</span>
+      <button onclick="S.modal.selectedPreset=null;render();" style="margin-left:auto;background:none;border:none;color:#9CA3AF;cursor:pointer;font-size:18px;line-height:1;touch-action:manipulation;">×</button>
+    </div>`:''}
+    <details style="margin-bottom:16px;">
+      <summary style="font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:10px 14px;background:#F8F9FC;border-radius:10px;border:1px solid #E4E8EF;">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round"/></svg>
+        カスタム名で追加
+      </summary>
+      <div style="padding:12px 0 0;">
+        <input id="meq-custom" class="finput" type="text" placeholder="例: 専用研磨機A" style="margin-bottom:10px;">
+        <button onclick="addEqSelectCustomConfirm('${m.lid}')" class="btn-primary" style="padding:12px;">この名前で追加する</button>
+      </div>
+    </details>
     <div style="display:flex;gap:10px;">
       <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
-      <button onclick="addEqConfirm('${m.lid}')" class="btn-primary" style="flex:2;width:auto;padding:13px;">追加する</button>
+      <button onclick="addEqSelectConfirm('${m.lid}')" class="btn-primary" style="flex:2;width:auto;padding:13px;${!sel?'opacity:.45;pointer-events:none;':''}">追加する</button>
     </div>`;}
   else if(m.type==='addLine'){inner=`
     <div class="sheet-handle"></div>
@@ -2796,6 +2895,18 @@ function inspFinish(){
   setTimeout(()=>nav('HOME'),1600);
 }
 
+
+function changeEquipment(eid){
+  S.selectedEquipmentId=eid;
+  render();
+}
+
+function getInspectionByDate(eid,date,type){
+  const key=eid+':'+type;
+  const data=S.insps[key];
+  if(!data||data.date!==date)return null;
+  return data;
+}
 
 function render(){
   const sc=document.getElementById('screen');
