@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム</title>
+<title>日常点検システム v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -264,6 +264,8 @@ const S={
   ],
   insps:{},
   _demoLoaded:false,
+  // ═══ [ADDED] ① 担当設備紐づけデータ ═══
+  assignments:[],
   approvals:[
     {id:'A1',lid:'L1',eid:'E1',type:'10日点検',date:'2026-04-08',status:'pending',by:'山田太郎',approver:null},
     {id:'A2',lid:'L2',eid:'E6',type:'月次点検',date:'2026-04-05',status:'pending',by:'佐藤花子',approver:null},
@@ -273,9 +275,132 @@ const S={
     {id:'AN1',lid:'L1',eid:'E2',iid:'i22',iname:'回転数確認',comment:'異常振動あり。要確認',status:'open',date:'2026-04-09',by:'山田太郎'},
     {id:'AN2',lid:'L2',eid:'E6',iid:'i63',iname:'刃具摩耗確認',comment:'摩耗が著しい。交換が必要',status:'in-progress',date:'2026-04-08',by:'佐藤花子'},
   ],
+  // [ADDED v5] ① 設備マスターリスト（ラインとは独立）
+  equipments: [],
 };
 
+// ════════════════════════════════════════════════════════════
+// [ADDED v5] 設備マスター初期化
+// 既存ラインの equip をマスターにコピーし、ラインに equipmentIds を付与
+// ════════════════════════════════════════════════════════════
+(function initEquipMaster(){
+  S.lines.forEach(l=>{
+    l.equip.forEach(eq=>{
+      if(!S.equipments.find(e=>e.id===eq.id)){
+        S.equipments.push(Object.assign({},eq,{items:[...eq.items]}));
+      }
+    });
+    // [ADDED v5] ② ラインは equipmentIds で設備を参照する
+    if(!l.equipmentIds) l.equipmentIds = l.equip.map(e=>e.id);
+  });
+})();
+
 function getLn(id){return S.lines.find(l=>l.id===id);}
+
+// ═══════════ [ADDED v4] isTargetDay — 周期に基づく表示判定 ═══════════
+// 仕様: daily=毎日表示 / 10day=10日・20日・月末 / monthly=1日のみ
+// データの t フィールド: '毎日' | '10日' | '月次'
+function isTargetDay(item){
+  const day = new Date().getDate();
+  const t = item.t || item.cycle;
+  if(t === 'daily'  || t === '毎日') return true;
+  if(t === '10day'  || t === '10日') return day % 10 === 0;
+  if(t === 'monthly'|| t === '月次') return day === 1;
+  return true; // 不明な場合は表示
+}
+
+// 今日の点検対象種別ラベルを返す（バナー表示用）
+function getTodayInspTypes(){
+  const day = new Date().getDate();
+  const types = ['毎日'];
+  if(day % 10 === 0) types.push('10日毎');
+  if(day === 1)      types.push('月次');
+  return types;
+}
+// ════════════════════════════════════════════════════════════
+
+// ═══════════ [v6 MODIFIED] 担当設備紐づけ ヘルパー関数 ═══════════
+// ① 担当者の紐づけデータを取得
+function getUserAssignment(name){
+  return S.assignments.find(a => a.name === name);
+}
+// [v6 MODIFIED] ② 担当者のラインを返す
+// lineIds 依存を廃止 → 担当設備が含まれるラインを自動導出
+function getVisibleLines(){
+  const a = getUserAssignment(S.currentName);
+  if(!a || !a.equipmentIds || !a.equipmentIds.length) return S.lines;
+  // 担当設備が1台以上属するラインのみ表示
+  return S.lines.filter(l => l.equip.some(e => a.equipmentIds.includes(e.id)));
+}
+// ③ 担当者の設備のみ返す（未設定なら全設備）
+// equipmentIds ベースのため変更なし
+function getVisibleEquip(line){
+  const a = getUserAssignment(S.currentName);
+  if(!a) return line.equip;
+  return line.equip.filter(e => a.equipmentIds.includes(e.id));
+}
+// [v6 MODIFIED] ④ 保存処理 — lineIds を廃止し equipmentIds のみ保存
+function saveAssignment(name, equipmentIds){
+  if(!name){toast('担当者を選択してください','warn');return;}
+  const idx = S.assignments.findIndex(a => a.name === name);
+  // [v6] {name, equipmentIds} のみ。lineIds は不要
+  const data = { name, equipmentIds };
+  if(idx >= 0){ S.assignments[idx] = data; }
+  else { S.assignments.push(data); }
+  toast('紐づけを保存しました');
+  render();
+}
+// 担当設備管理画面へのナビゲーション用
+function navAssignment(){nav('ASSIGNMENT_MGMT');}
+
+// ════════════════════════════════════════════════════════════
+// [ADDED v5] 設備マスター操作ヘルパー
+// ════════════════════════════════════════════════════════════
+
+// [v5] ラインの equip を equipmentIds から再構築（他画面への後方互換維持）
+function syncLineEquip(lid){
+  const l=getLn(lid);if(!l)return;
+  const ids=l.equipmentIds||[];
+  l.equip=S.equipments.filter(e=>ids.includes(e.id));
+}
+
+// [v5] ライン内の設備トグル（チェックON/OFF）
+function leToggleEqInLine(lid,eid){
+  const l=getLn(lid);if(!l)return;
+  if(!l.equipmentIds)l.equipmentIds=[];
+  const idx=l.equipmentIds.indexOf(eid);
+  if(idx>=0)l.equipmentIds.splice(idx,1);
+  else l.equipmentIds.push(eid);
+  syncLineEquip(lid);render();
+}
+
+// [v5] マスターに設備を追加（ライン紐づけなし）
+function addEqMasterConfirm(){
+  const n=document.getElementById('meqf-n')?.value?.trim();
+  if(!n){toast('設備名を入力してください','warn');return;}
+  const k=document.getElementById('meqf-k')?.value?.trim()||'';
+  const customId=document.getElementById('meqf-id')?.value?.trim();
+  const newId=customId||'E'+Date.now();
+  S.equipments.push({id:newId,name:n,kind:k,items:[
+    {id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},
+    {id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}
+  ]});
+  S.modal=null;toast(`「${n}」を設備マスターに追加しました`);render();
+}
+
+// [v5] マスターから設備削除（全ラインからも除去）
+function leDelEqMaster(eid){
+  const eq=S.equipments.find(e=>e.id===eid);
+  if(!eq)return;
+  if(!confirm(`「${eq.name}」を削除しますか？\n紐づいているラインからも除外されます。`))return;
+  S.equipments=S.equipments.filter(e=>e.id!==eid);
+  S.lines.forEach(l=>{
+    if(l.equipmentIds)l.equipmentIds=l.equipmentIds.filter(id=>id!==eid);
+    syncLineEquip(l.id);
+  });
+  toast('設備を削除しました');render();
+}
+// ════════════════════════════════════════════════════════════
 // ── Demo data seed ──
 (function seedDemo(){
   const d=new Date();
@@ -307,7 +432,12 @@ function getLn(id){return S.lines.find(l=>l.id===id);}
     });
   });
 })();
-function getEq(id){for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}return null;}
+// [v5 MODIFIED] getEq — まずラインから検索、次にマスターから検索（後方互換）
+function getEq(id){
+  for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}
+  // [v5] マスターにしかない設備も取得できるよう拡張
+  return S.equipments.find(e=>e.id===id)||null;
+}
 // Initialize selectedEquipmentId to first equipment
 S.selectedEquipmentId=S.lines[0]?.equip[0]?.id||null;
 function getInsps(eid,type){type=type||S.inspType;return S.insps[eid+':'+type];}
@@ -959,38 +1089,63 @@ td{font-size:8.5px;padding:5px 7px;border:0.5px solid #ddd;vertical-align:middle
   printHtml(html);
 }
 
+// [CHANGED ①] 下部ナビ変更
+// 変更前: ホーム / 承認 / 異常 / 履歴
+// 変更後: ホーム / 履歴 / 設定
+// 「承認」「異常」タブを削除し、「設定」タブ（LINE_EQ_MGMT）を追加。タブ数を4→3に削減してシンプル化。
 function btabs(){
-  const pa=pendApprovals().length,oa=openAnoms().length;
   const isAdmin=S.currentRole==='admin';
+
+  // [CHANGED ①] 管理者タブ：承認・異常を削除、設定を追加（3タブ）
   const adminTabs=[
     ['HOME','ホーム',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 20v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`],
-    ['APPROVAL','承認',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M7 11l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`],
-    ['ANOMALY','異常',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L2 19h18L11 3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M11 9v4M11 15.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`],
     ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
+    ['LINE_EQ_MGMT','設定',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M11 2v2M11 18v2M2 11h2M18 11h2M4.93 4.93l1.41 1.41M15.66 15.66l1.41 1.41M4.93 17.07l1.41-1.41M15.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`],
   ];
+
   const inspectorTabs=[
     ['HOME','ホーム',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 20v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`],
     ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
   ];
+
   const tabs=isAdmin?adminTabs:inspectorTabs;
-  // Active color: blue for History tab, navy for admin, red for inspector home
   const getActiveColor=(v)=>{
     if(v==='HISTORY')return'#2563EB';
+    if(v==='LINE_EQ_MGMT')return'#374151';
     if(isAdmin)return'#1E3A8A';
     return'#C8292A';
   };
-  const tabBg='rgba(255,255,255,0.96)';
   const inactiveColor='var(--text3)';
+
+  // [CHANGED ①] タブのアクティブ判定: LINE_EQ_MGMT系画面はまとめて「設定」アクティブ
+  const SETTINGS_VIEWS=['LINE_EQ_MGMT','EQUIPMENT_MGMT','LINE_MGMT','ITEM_MGMT','ASSIGNMENT_MGMT'];
+  const isActive=(v)=> v==='LINE_EQ_MGMT' ? SETTINGS_VIEWS.includes(S.view) : S.view===v;
+
   return`<div class="btabs">
   ${tabs.map(([v,l,ico])=>`
-    <button class="tab ${S.view===v?'active':''}" onclick="${v==='HISTORY'?'S.histYear=null;S.histMonth=null;':''}nav('${v}')" style="color:${S.view===v?getActiveColor(v):inactiveColor};transition:color .15s;">
+    <button class="tab ${isActive(v)?'active':''}" onclick="${v==='HISTORY'?'S.histYear=null;S.histMonth=null;':''}nav('${v}')" style="color:${isActive(v)?getActiveColor(v):inactiveColor};transition:color .15s;">
       <div style="position:relative;display:inline-flex;">
         ${ico}
-        ${v==='APPROVAL'&&pa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#1E3A8A;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.96);padding:0 2px;">${pa}</div>`:``}
-        ${v==='ANOMALY'&&oa>0?`<div style="position:absolute;top:-4px;right:-9px;background:#F97316;color:white;border-radius:50%;min-width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.96);padding:0 2px;">${oa}</div>`:``}
       </div>
       <span>${l}</span>
     </button>`).join('')}</div>`;
+}
+
+// [ADDED ④] ホーム画面から直接「対応開始」できるヘルパー関数
+function anomStart(aid){
+  const a=S.anomalies.find(x=>x.id===aid);
+  if(!a)return;
+  a.status='in-progress';
+  toast('対応を開始しました');
+  render();
+}
+// [ADDED ④] ホーム画面から直接「完了」できるヘルパー関数
+function anomResolve(aid){
+  const a=S.anomalies.find(x=>x.id===aid);
+  if(!a)return;
+  a.status='resolved';
+  toast('異常を解決済みにしました');
+  render();
 }
 
 /* ═══════════ ROLE SELECT ═══════════ */
@@ -1066,6 +1221,29 @@ function renderRoleSelect(){
     </div>
   </div>`;
 }
+
+// ═══════════ [ADDED] ⑤⑨⑩⑪ 名前選択時の処理 ═══════════
+function selectName(name){
+  // ⑨ currentName をセット
+  S.currentName = name;
+  if(S.currentRole === 'inspector'){
+    localStorage.setItem('dk_insp_name', name);
+    // ⑪ 未設定ユーザー対策
+    if(!getUserAssignment(name)){
+      // 担当設備未設定の場合は全ライン表示（warningのみ）
+      setTimeout(()=>toast('担当設備が設定されていません','warn'),300);
+    }
+    // ⑩ 初期設備の自動選択
+    const lines = getVisibleLines();
+    if(lines.length){
+      const eqs = getVisibleEquip(lines[0]);
+      if(eqs.length){ S.selectedEquipmentId = eqs[0].id; }
+    }
+    S.inspSelectedLines = S.inspLastLines.length ? [...S.inspLastLines] : [];
+  }
+  nav('HOME');
+}
+// ════════════════════════════════════════════════════════════
 
 /* ═══════════ NAME SELECT ═══════════ */
 function addName(){
@@ -1148,7 +1326,7 @@ function renderNameSelect(){
               '</div></div>'
             );
             return(
-              '<div onclick="S.currentName=\'' +name+ '\';if(S.currentRole===\'inspector\'){localStorage.setItem(\'dk_insp_name\',\'' +name+ '\');S.inspSelectedLines=S.inspLastLines.length?[...S.inspLastLines]:[];}nav(\'HOME\');" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);touch-action:manipulation;transition:border-color .15s;" onmousedown="this.style.borderColor=\'var(--red)\'" onmouseup="this.style.borderColor=\'var(--border)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">'+
+              '<div onclick="selectName(\'' +name+ '\');" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);touch-action:manipulation;transition:border-color .15s;" onmousedown="this.style.borderColor=\'var(--red)\'" onmouseup="this.style.borderColor=\'var(--border)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">'+
               '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:var(--red);">'+ini+'</div>'+
               '<div style="flex:1;"><div style="font-size:16px;font-weight:600;color:var(--text);">'+name+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">'+roleLabel+'</div></div>'+
               '<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
@@ -1214,10 +1392,26 @@ function renderInspectorHome(){
   const hasLast=S.inspLastLines.length>0;
   const lastNames=S.inspLastLines.map(id=>{const l=getLn(id);return l?l.name:'';}).filter(Boolean);
 
-  const lineCardsHtml=S.lines.map((l,i)=>{
+  // [v4] 担当ライン取得（割り当てあり → 自動全選択）
+  const visibleLines = getVisibleLines();
+  const userAssign = getUserAssignment(S.currentName);
+
+  // [v4] 担当設定済みの場合、初回表示で全ライン自動選択
+  if(userAssign && S.inspSelectedLines.length === 0 && !hasLast){
+    S.inspSelectedLines = visibleLines.map(l=>l.id);
+  }
+
+  // [v4] 今日の点検種別バッジ
+  const todayTypes = getTodayInspTypes();
+
+  // [v4] ライン別「本日の点検件数」カード生成
+  const lineCardsHtml=visibleLines.map((l,i)=>{
     const on=S.inspSelectedLines.includes(l.id);
-    const eqCnt=l.equip.length;
-    const itCnt=l.equip.reduce((s,e)=>s+e.items.length,0);
+    const visEqs = getVisibleEquip(l);
+    const eqCnt=visEqs.length;
+    // 本日対象の点検項目数を計算
+    const todayItemCnt = visEqs.reduce((s,e)=>s+e.items.filter(isTargetDay).length,0);
+    const totalItemCnt = visEqs.reduce((s,e)=>s+e.items.length,0);
     return`<div id="ilc-${l.id}" class="ilc${on?' ilc-on':''}"
       style="animation-delay:${i*0.05}s;"
       onclick="inspToggleLine('${l.id}')">
@@ -1228,8 +1422,11 @@ function renderInspectorHome(){
       </div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:17px;font-weight:700;color:#111827;margin-bottom:4px;">${l.name}</div>
-        <div style="font-size:12px;color:#6B7280;font-weight:500;margin-bottom:3px;">${l.desc}</div>
-        <div style="font-size:11px;color:#9CA3AF;font-weight:500;">設備 ${eqCnt} 台 ／ 点検項目 ${itCnt} 件</div>
+        <div style="font-size:12px;color:#6B7280;font-weight:500;margin-bottom:5px;">${l.desc}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;color:#C8292A;background:rgba(200,41,42,0.08);padding:2px 9px;border-radius:8px;">本日 ${todayItemCnt}件</span>
+          <span style="font-size:11px;color:#9CA3AF;font-weight:400;">設備 ${eqCnt}台 / 全${totalItemCnt}件</span>
+        </div>
       </div>
       <div style="width:10px;height:10px;border-radius:50%;background:${on?'#C8292A':'#E4E8EF'};flex-shrink:0;transition:background .2s;"></div>
     </div>`;
@@ -1284,6 +1481,13 @@ function renderInspectorHome(){
       <button onclick="inspChangeUser();" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 15px;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,border-color .15s;" onmousedown="this.style.color='#C8292A';this.style.borderColor='#C8292A'" onmouseup="this.style.color='';this.style.borderColor=''">変更</button>
     </div>
 
+    <!-- [v4 NEW] 本日の点検種別バナー -->
+    <div style="padding:10px 16px;background:#FFFBEB;border-bottom:1px solid rgba(217,119,6,0.2);display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;"><circle cx="7" cy="7" r="6" stroke="#D97706" stroke-width="1.4"/><path d="M7 4v3.5M7 9v.5" stroke="#D97706" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span style="font-size:12px;font-weight:600;color:#92400E;">本日の点検種別：${todayTypes.join(' ＋ ')}</span>
+      ${!userAssign?`<span style="margin-left:auto;font-size:11px;font-weight:600;color:#D97706;background:#FEF3C7;padding:3px 9px;border-radius:8px;">全設備表示中</span>`:''}
+    </div>
+
     <!-- Scroll area -->
     <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-home-scroll">
 
@@ -1332,32 +1536,61 @@ function renderAdminHome(){
   const dateStr=`${now.getMonth()+1}月${now.getDate()}日（${WDAYS[now.getDay()]}）`;
   const alerts=getTodayScheduledTypes();
 
-  const actionItems=[
-    ...S.approvals.filter(a=>a.status==='pending').slice(0,3).map(a=>{
-      const eq=getEq(a.eid);const l=getLn(a.lid);
-      return`<div onclick="nav('APPROVAL')" class="adm-row" style="--row-dot:#6C9FFF;">
-        <div class="adm-dot" style="background:#6C9FFF;box-shadow:0 0 8px #6C9FFF66;"></div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${l?.name||'-'} · ${a.type} · ${a.by}</div>
+  // [CHANGED ③] 対応リストの優先度変更: ① 未対応（最優先） ② 承認待ち ③ 対応中
+  // [CHANGED ④] 各リスト項目にアクションボタンを追加（承認→「承認する」、異常→「対応開始」「完了」）
+  // [CHANGED ⑤] 未対応は強調背景＋赤ドット、承認待ちは青ドット、対応中はグレードット
+  // [CHANGED ⑥] 「要対応→」ボタンでAPPROVAL/ANOMALYへ遷移
+
+  // ① 未対応（最優先）: openAnomaly
+  const openAnomalyItems=S.anomalies.filter(a=>a.status==='open').slice(0,3).map(a=>{
+    const eq=getEq(a.eid);const l=getLn(a.lid);
+    return`<div class="adm-row" style="background:rgba(200,41,42,0.03);border-left:3px solid #C8292A;">
+      <div class="adm-dot" style="background:#C8292A;box-shadow:0 0 8px #C8292A88;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+          <span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 7px;border-radius:8px;letter-spacing:.3px;">未対応</span>
         </div>
-        <div style="background:#EFF6FF;color:#1E3A8A;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;letter-spacing:.3px;border:1px solid rgba(30,58,138,0.2);">承認待ち</div>
-      </div>`;
-    }),
-    ...S.anomalies.filter(a=>a.status!=='resolved').slice(0,3).map(a=>{
-      const eq=getEq(a.eid);const l=getLn(a.lid);
-      const isOpen=a.status==='open';
-      const col=isOpen?'#C8292A':'#9CA3AF';
-      return`<div onclick="nav('ANOMALY')" class="adm-row">
-        <div class="adm-dot" style="background:${col};${isOpen?'box-shadow:0 0 8px '+col+'88;':''}"></div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${eq?.name||'-'} · ${l?.name||'-'}</div>
+        <div style="font-size:14px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${eq?.name||'-'} · ${l?.name||'-'}</div>
+      </div>
+      <button onclick="event.stopPropagation();anomStart('${a.id}')" style="padding:7px 12px;background:#C8292A;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:transform .1s,opacity .1s;" onmousedown="this.style.transform='scale(.94)'" onmouseup="this.style.transform=''">対応開始</button>
+    </div>`;
+  });
+
+  // ② 承認待ち
+  const pendingApprovalItems=S.approvals.filter(a=>a.status==='pending').slice(0,3).map(a=>{
+    const eq=getEq(a.eid);const l=getLn(a.lid);
+    return`<div class="adm-row">
+      <div class="adm-dot" style="background:#1E3A8A;box-shadow:0 0 8px rgba(30,58,138,0.4);"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+          <span style="font-size:10px;font-weight:700;color:#1E3A8A;background:#EFF6FF;padding:2px 7px;border-radius:8px;letter-spacing:.3px;">承認待ち</span>
         </div>
-        <div style="background:${isOpen?'#FFF1F1':'#F3F4F6'};color:${col};font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;letter-spacing:.3px;border:1px solid ${isOpen?'rgba(200,41,42,0.2)':'#E5E7EB'};">${isOpen?'未対応':'対応中'}</div>
-      </div>`;
-    })
-  ];
+        <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${l?.name||'-'} · ${a.type} · ${a.by}</div>
+      </div>
+      <button onclick="event.stopPropagation();approve('${a.id}')" style="padding:7px 12px;background:#1E3A8A;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:transform .1s;" onmousedown="this.style.transform='scale(.94)'" onmouseup="this.style.transform=''">承認する</button>
+    </div>`;
+  });
+
+  // ③ 対応中
+  const inProgressItems=S.anomalies.filter(a=>a.status==='in-progress').slice(0,2).map(a=>{
+    const eq=getEq(a.eid);const l=getLn(a.lid);
+    return`<div class="adm-row">
+      <div class="adm-dot" style="background:#D97706;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+          <span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 7px;border-radius:8px;letter-spacing:.3px;">対応中</span>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">${eq?.name||'-'} · ${l?.name||'-'}</div>
+      </div>
+      <button onclick="event.stopPropagation();anomResolve('${a.id}')" style="padding:7px 12px;background:#16A34A;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:transform .1s;" onmousedown="this.style.transform='scale(.94)'" onmouseup="this.style.transform=''">完了</button>
+    </div>`;
+  });
+
+  // [CHANGED ③] 優先度順: 未対応 → 承認待ち → 対応中
+  const actionItems=[...openAnomalyItems,...pendingApprovalItems,...inProgressItems];
 
   return`
   <style>
@@ -1406,17 +1639,26 @@ function renderAdminHome(){
       </div>`:''}
 
       <!-- ── Stat Cards ── -->
+      <!-- [CHANGED ⑤] 承認→青バッジ、異常→赤バッジで件数を強調表示 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;animation:adm-in .4s .08s ease both;">
 
+        <!-- [CHANGED ②] 承認カード：青バッジ付き、タップで承認一覧へ遷移 -->
         <div class="adm-stat blue" onclick="nav('APPROVAL')">
-          <div style="font-size:10px;font-weight:700;color:${pa>0?'#1E3A8A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">承認待ち</div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:700;color:${pa>0?'#1E3A8A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;">承認待ち</div>
+            ${pa>0?`<div style="background:#1E3A8A;color:white;font-size:10px;font-weight:800;min-width:22px;height:22px;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 8px rgba(30,58,138,0.35);">${pa}</div>`:''}
+          </div>
           <div style="font-size:40px;font-weight:800;color:${pa>0?'#111827':'#E5E7EB'};line-height:1;letter-spacing:-2px;">${pa}<span style="font-size:14px;font-weight:500;letter-spacing:0;margin-left:3px;opacity:.6;">件</span></div>
           <div style="margin-top:10px;font-size:11px;color:${pa>0?'#1E3A8A':'#D1D5DB'};">${pa>0?'要対応 →':'処理済み'}</div>
         </div>
 
+        <!-- [CHANGED ②] 異常カード：赤バッジ付き、タップで異常一覧へ遷移 -->
         <div class="adm-stat orange" onclick="nav('ANOMALY')">
           ${totalAnomActive>0?`<div style="position:absolute;top:16px;right:16px;width:6px;height:6px;border-radius:50%;background:#FF8A50;animation:adm-pulse 1.6s ease-in-out infinite;"></div>`:''}
-          <div style="font-size:10px;font-weight:700;color:${totalAnomActive>0?'#C8292A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">異常対応</div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:700;color:${totalAnomActive>0?'#C8292A':'#D1D5DB'};letter-spacing:1.5px;text-transform:uppercase;">異常対応</div>
+            ${totalAnomActive>0?`<div style="background:#C8292A;color:white;font-size:10px;font-weight:800;min-width:22px;height:22px;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 8px rgba(200,41,42,0.35);">${totalAnomActive}</div>`:''}
+          </div>
           <div style="font-size:40px;font-weight:800;color:${totalAnomActive>0?'#111827':'#E5E7EB'};line-height:1;letter-spacing:-2px;">${totalAnomActive}<span style="font-size:14px;font-weight:500;letter-spacing:0;margin-left:3px;opacity:.6;">件</span></div>
           <div style="margin-top:10px;font-size:11px;color:${totalAnomActive>0?'#C8292A':'#D1D5DB'};">${totalAnomActive>0?'要対応 →':'異常なし'}</div>
         </div>
@@ -1424,14 +1666,22 @@ function renderAdminHome(){
       </div>
 
       <!-- ── アクションリスト ── -->
+      <!-- [CHANGED ③⑥] 優先度順表示: 未対応→承認待ち→対応中、タップで詳細一覧へ遷移 -->
       <div style="animation:adm-in .4s .14s ease both;margin-bottom:12px;">
       ${actionItems.length?`
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
-          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;">対応項目</div>
-          <div style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;border:1px solid rgba(200,41,42,0.2);padding:2px 9px;border-radius:10px;letter-spacing:.5px;">${actionItems.length} 件</div>
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;">優先対応項目</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;border:1px solid rgba(200,41,42,0.2);padding:2px 9px;border-radius:10px;letter-spacing:.5px;">${actionItems.length} 件</div>
+          </div>
         </div>
         <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:20px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
           ${actionItems.join('')}
+          <!-- [CHANGED ⑥] 「全件を見る」ボタン：タップで詳細一覧へ -->
+          <div style="border-top:1px solid #F3F4F6;display:flex;">
+            <button onclick="nav('ANOMALY')" style="flex:1;padding:12px 10px;background:none;border:none;border-right:1px solid #F3F4F6;color:#9CA3AF;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,background .15s;" onmousedown="this.style.color='#C8292A';this.style.background='#FFF8F8'" onmouseup="this.style.color='#9CA3AF';this.style.background='none'">🔴 異常一覧 →</button>
+            <button onclick="nav('APPROVAL')" style="flex:1;padding:12px 10px;background:none;border:none;color:#9CA3AF;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,background .15s;" onmousedown="this.style.color='#1E3A8A';this.style.background='#EFF6FF'" onmouseup="this.style.color='#9CA3AF';this.style.background='none'">🔵 承認一覧 →</button>
+          </div>
         </div>
       `:`
         <div style="background:#F8F9FC;border:1px solid #E4E8EF;border-radius:20px;padding:36px 20px;text-align:center;">
@@ -1444,20 +1694,10 @@ function renderAdminHome(){
       `}
       </div>
 
-      <!-- ── ライン・設備管理 ── -->
-      <div onclick="nav('LINE_EQ_MGMT')" style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:20px;padding:16px 20px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;gap:14px;transition:background .15s,box-shadow .15s;animation:adm-in .4s .2s ease both;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmousedown="this.style.background='#F8F9FC'" onmouseup="this.style.background='#FFFFFF'" onmouseleave="this.style.background='#FFFFFF'">
-        <div style="width:38px;height:38px;background:rgba(200,41,42,0.12);border:1px solid rgba(200,41,42,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5.5" width="14" height="2.5" rx="1.2" stroke="#C8292A" stroke-width="1.3"/><rect x="2" y="10" width="14" height="2.5" rx="1.2" stroke="#C8292A" stroke-width="1.3"/><circle cx="5.5" cy="6.75" r="1.3" fill="#C8292A"/><circle cx="12.5" cy="11.25" r="1.3" fill="#C8292A"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:600;color:#111827;letter-spacing:.1px;">ライン・設備管理</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.2px;">追加・編集・削除</div>
-        </div>
-        <svg width="6" height="11" viewBox="0 0 6 11" fill="none"><path d="M1 1l4 4.5-4 4.5" stroke="#D1D5DB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
+      <!-- 管理設定セクションは設定タブ（renderLineEqMgmt）に移動済み -->
 
-    </div>
-  </div>
+    </div><!-- /scroll -->
+  </div><!-- /screen -->
   ${btabs()}`;
 }
 
@@ -2087,164 +2327,538 @@ function renderLineMgmt(){
   </div>${btabs()}`;
 }
 
-/* ═══════════ LINE · EQ MGMT (New unified screen) ═══════════ */
+/* ═══════════ LINE · EQ MGMT (Redesigned v3 — 2025) ═══════════ */
+// [REDESIGN v3] 設定画面を完全再設計
+// ① 担当者設備紐づけ → インラインで完結（別画面廃止）
+// ② 設備管理        → 点検項目をインライン展開（別画面廃止）
+// ③ ライン管理      → 追加・名前変更・削除のみのシンプルリスト
 function renderLineEqMgmt(){
-  // Expanded line IDs stored on state
+
   if(!S.leExpanded)S.leExpanded=new Set();
-  if(!S.leMenu)S.leMenu=null; // {type:'line'|'eq', id:string, x, y}
+  if(!S.leMenu)S.leMenu=null;
+  // [NEW v3] 点検項目インライン展開状態（設備IDのSet）
+  if(!S.leItemExpanded)S.leItemExpanded=new Set();
 
-  const lineCards=S.lines.map(l=>{
-    const expanded=S.leExpanded.has(l.id);
-    const menuOpen=S.leMenu&&S.leMenu.type==='line'&&S.leMenu.id===l.id;
 
-    const eqItems=expanded?l.equip.map(eq=>{
-      const eqMenuOpen=S.leMenu&&S.leMenu.type==='eq'&&S.leMenu.id===eq.id;
-      const eqKind=eq.kind||'';
-      const eqEid=eq.eid||eq.id;
-      return`
-      <!-- Equipment row -->
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px 12px 20px;border-top:1px solid rgba(0,0,0,0.06);position:relative;">
-        <!-- indent line -->
-        <div style="position:absolute;left:16px;top:0;bottom:0;width:2px;background:rgba(0,0,0,0.07);border-radius:1px;"></div>
-        <!-- icon -->
-        <div style="width:36px;height:36px;background:rgba(0,0,0,0.06);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="6" width="14" height="9" rx="2" stroke="#5A7090" stroke-width="1.4"/><path d="M5 6V4.5a3 3 0 016 0V6" stroke="#5A7090" stroke-width="1.4" stroke-linecap="round"/><circle cx="9" cy="11" r="1.5" fill="#5A7090"/></svg>
+
+  // ═══════════════════════════════════════════════════════════
+  // [v6 MODIFIED] ① 担当者設備紐づけ — フラットチェックリスト
+  // lineIds依存廃止・S.equipmentsマスターから表示
+  // ラインはフィルターとして補助使用
+  // ═══════════════════════════════════════════════════════════
+  const asgnSt = asgnState();
+  const allAsgnNames = [...S.names.inspector, ...S.names.admin];
+  const selName = asgnSt.selName;
+  const existAssign = getUserAssignment(selName);
+  const totalSel = Object.values(asgnSt.counts).reduce((a,b)=>a+b,0);
+  const assignedCount = S.assignments ? S.assignments.length : 0;
+  const totalInspectors = S.names?.inspector?.length || 0;
+  const unassigned = totalInspectors - assignedCount;
+  const filterLine = asgnSt.filterLine || null; // [v6] ラインフィルター
+
+  // 担当者ピル（青背景カード内）
+  const asgnNamePills = allAsgnNames.map(n => {
+    const on = n === selName;
+    const saved = !!getUserAssignment(n);
+    return `<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
+      style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 13px 7px 9px;border-radius:22px;
+        border:2px solid ${on?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.22)'};
+        background:${on?'rgba(255,255,255,0.20)':'rgba(255,255,255,0.06)'};
+        color:${on?'#FFFFFF':'rgba(255,255,255,0.60)'};
+        font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;">
+      <span style="width:22px;height:22px;border-radius:50%;
+        background:${on?'rgba(255,255,255,0.28)':'rgba(255,255,255,0.10)'};
+        display:inline-flex;align-items:center;justify-content:center;
+        font-size:10px;font-weight:800;color:#FFFFFF;flex-shrink:0;">${n.charAt(0)}</span>
+      ${n}
+      ${saved?`<svg width="6" height="6" viewBox="0 0 6 6" fill="none"><circle cx="3" cy="3" r="3" fill="${on?'#86EFAC':'rgba(134,239,172,0.75)'}" /></svg>`:''}
+    </button>`;
+  }).join('');
+
+  // [v6] ラインフィルターピル（補助UI）
+  const asgnFilterPills = [
+    `<button onclick="asgnSetFilter(null)"
+      style="flex-shrink:0;padding:6px 13px;border-radius:18px;border:1.5px solid ${!filterLine?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)'};background:${!filterLine?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.07)'};color:${!filterLine?'#FFFFFF':'rgba(255,255,255,0.55)'};font-size:11px;font-weight:${!filterLine?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+      すべて
+    </button>`,
+    ...S.lines.map(l=>{
+      const on = filterLine===l.id;
+      const cnt = S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)&&asgnSt.checked.includes(e.id)).length;
+      return`<button onclick="asgnSetFilter('${l.id}')"
+        style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:18px;border:1.5px solid ${on?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)'};background:${on?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.07)'};color:${on?'#FFFFFF':'rgba(255,255,255,0.55)'};font-size:11px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+        ${l.name}
+        ${cnt>0?`<span style="background:rgba(255,255,255,0.25);color:#FFFFFF;font-size:10px;font-weight:700;padding:1px 6px;border-radius:7px;">${cnt}</span>`:''}
+      </button>`;
+    })
+  ].join('');
+
+  // [v6] 設備フラットリスト（マスターから・フィルター適用）
+  const asgnVisibleEqs = filterLine
+    ? S.equipments.filter(e=>{ const l=getLn(filterLine); return l&&(l.equipmentIds||[]).includes(e.id); })
+    : S.equipments;
+
+  // ライン単位一括ボタン（フィルター中のみ）
+  const asgnBulkBtn = filterLine ? (()=>{
+    const ids = asgnVisibleEqs.map(e=>e.id);
+    const allOn = ids.length>0&&ids.every(id=>asgnSt.checked.includes(id));
+    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 6px;">
+      <span style="font-size:11px;font-weight:700;color:#6B7280;">${getLn(filterLine)?.name} · ${asgnVisibleEqs.length}台</span>
+      <button onclick="asgnToggleLine('${filterLine}')"
+        style="padding:4px 12px;border-radius:14px;border:1.5px solid ${allOn?'rgba(200,41,42,0.3)':'#BFDBFE'};background:${allOn?'rgba(200,41,42,0.06)':'#EFF6FF'};color:${allOn?'#C8292A':'#1E3A8A'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;">
+        ${allOn?'☑ すべて解除':'☐ すべて選択'}
+      </button>
+    </div>`;
+  })() : '';
+
+  const asgnLineBlocks = `
+    <!-- [v6 ①] ラインフィルター（補助UI） -->
+    <div style="margin-bottom:10px;overflow:hidden;">
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:.8px;margin-bottom:7px;">ラインで絞り込み</div>
+      <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
+        ${asgnFilterPills}
+      </div>
+    </div>
+    `;
+
+  // ═══════════════════════════════════════════════════════════
+  // [v5 MODIFIED] ② 設備管理 — 設備をマスターとして独立管理
+  // ラインへの紐づけは ③ ライン管理 のチェックボックスで行う
+  // ＋設備追加 ボタンをライン内から削除し、マスター追加に統一
+  // ═══════════════════════════════════════════════════════════
+  const FREQ_LABELS_V3 = {'毎日':'毎日','10日':'10日毎','月次':'月次'};
+  const freqColor = t => t==='毎日'?'#16A34A':t==='10日'?'#D97706':'#6B7280';
+  const freqBg    = t => t==='毎日'?'#DCFCE7':t==='10日'?'#FEF3C7':'#F3F4F6';
+
+  // [v5] マスターリスト（S.equipments）をフラット表示
+  const eqSectionHtml = (S.equipments.length > 0 ? S.equipments.map(eq => {
+    const itemExpanded = S.leItemExpanded.has(eq.id);
+    const eqMenuOpen = S.leMenu && S.leMenu.type==='eq' && S.leMenu.id===eq.id;
+    const dailyCnt = eq.items.filter(i=>i.t==='毎日').length;
+    const tenCnt   = eq.items.filter(i=>i.t==='10日').length;
+    const monCnt   = eq.items.filter(i=>i.t==='月次').length;
+    // [v5] この設備がどのラインに紐づいているか表示
+    const linkedLines = S.lines.filter(l=>(l.equipmentIds||[]).includes(eq.id));
+    return `
+    <!-- [v5 ②] 設備マスターカード: ラインから独立 -->
+    <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;margin-bottom:7px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;">
+        <!-- 設備アイコン -->
+        <div style="width:34px;height:34px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="5" width="11" height="7" rx="1.5" stroke="#6B7280" stroke-width="1.2"/><path d="M5 5V3.5a2.5 2.5 0 015 0V5" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><circle cx="7.5" cy="8.8" r="1.1" fill="#6B7280"/></svg>
         </div>
+        <!-- 設備名と点検項目数バッジ -->
         <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:700;color:#333333;line-height:1.2;">${eq.name}</div>
-          ${eqKind?`<div style="font-size:11px;color:#888888;margin-top:1px;">${eqKind}</div>`:''}
-          <div style="font-size:10px;color:#999999;margin-top:2px;font-family:monospace;letter-spacing:.3px;">ID: ${eqEid}</div>
+          <div style="font-size:13px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq.name}</div>
+          <div style="display:flex;gap:5px;margin-top:3px;flex-wrap:wrap;align-items:center;">
+            ${dailyCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('毎日')};background:${freqBg('毎日')};padding:1px 7px;border-radius:6px;">毎日 ${dailyCnt}</span>`:''}
+            ${tenCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('10日')};background:${freqBg('10日')};padding:1px 7px;border-radius:6px;">10日 ${tenCnt}</span>`:''}
+            ${monCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('月次')};background:${freqBg('月次')};padding:1px 7px;border-radius:6px;">月次 ${monCnt}</span>`:''}
+            ${!dailyCnt&&!tenCnt&&!monCnt?`<span style="font-size:10px;color:#9CA3AF;">点検項目なし</span>`:''}
+            <!-- [v5] ライン紐づけ状況バッジ -->
+            ${linkedLines.length>0
+              ?`<span style="font-size:10px;font-weight:600;color:#1E3A8A;background:#DBEAFE;padding:1px 7px;border-radius:6px;margin-left:2px;">${linkedLines.map(l=>l.name).join('・')}</span>`
+              :`<span style="font-size:10px;color:#F97316;background:#FFF7ED;padding:1px 7px;border-radius:6px;margin-left:2px;">未紐づけ</span>`
+            }
+          </div>
         </div>
-        <!-- ⋯ menu button -->
-        <div style="position:relative;">
-          <button onclick="event.stopPropagation();S.leMenu=(S.leMenu&&S.leMenu.type==='eq'&&S.leMenu.id==='${eq.id}')?null:{type:'eq',id:'${eq.id}',lid:'${l.id}'};render();" style="width:32px;height:32px;border-radius:8px;background:${eqMenuOpen?'rgba(0,0,0,0.10)':'transparent'};border:none;color:#777777;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;flex-shrink:0;transition:background .12s;">
-            <svg width="16" height="4" viewBox="0 0 16 4" fill="none"><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="8" cy="2" r="1.5" fill="currentColor"/><circle cx="14" cy="2" r="1.5" fill="currentColor"/></svg>
-          </button>
-          ${eqMenuOpen?`<div style="position:absolute;right:0;top:36px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.10);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:100;min-width:130px;overflow:hidden;" onclick="event.stopPropagation()">
-            <button onclick="S.leMenu=null;S.modal={type:'editEq',eid:'${eq.id}'};render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#333333;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(0,0,0,0.07)'" onmouseup="this.style.background=''">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5V9l7-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-              編集
-            </button>
-            <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 10px;"></div>
-            <button onclick="S.leMenu=null;leDelEq('${eq.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#C8292A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(200,41,42,0.08)'" onmouseup="this.style.background=''">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M4.5 3.5V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V3.5M5.5 6v4M8.5 6v4M2.5 3.5l.8 8.5a.5.5 0 00.5.5h6.4a.5.5 0 00.5-.5l.8-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              削除
-            </button>
-          </div>`:''}
-        </div>
-      </div>`;
-    }).join(''):'';
-
-    const addEqBtn=expanded?`
-      <div style="padding:10px 16px 14px 44px;">
-        <button onclick="S.modal={type:'addEqFull',lid:'${l.id}'};render();" style="width:100%;padding:11px;background:rgba(0,0,0,0.04);border:1.5px dashed rgba(0,0,0,0.10);border-radius:10px;color:#5A7090;font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,border-color .15s;" onmousedown="this.style.background='rgba(0,0,0,0.07)'" onmouseup="this.style.background='rgba(0,0,0,0.04)'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          設備を追加
+        <!-- 点検項目展開トグル -->
+        <button onclick="event.stopPropagation();S.leItemExpanded.has('${eq.id}')?S.leItemExpanded.delete('${eq.id}'):S.leItemExpanded.add('${eq.id}');render();"
+          style="padding:5px 10px;background:${itemExpanded?'#FFF1F1':'#F1F3F8'};border:1px solid ${itemExpanded?'rgba(200,41,42,0.3)':'#E4E8EF'};border-radius:8px;color:${itemExpanded?'#C8292A':'#374151'};font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .15s;">
+          ${itemExpanded?'▲ 項目':'▼ 項目'}
         </button>
-      </div>`:''
-
-    return`
-    <div style="background:#FFFFFF;border:1px solid ${expanded?'rgba(0,0,0,0.10)':'rgba(0,0,0,0.07)'};border-radius:16px;margin-bottom:10px;overflow:visible;transition:border-color .2s;">
-
-      <!-- Line header row -->
-      <div onclick="if(S.leMenu){S.leMenu=null;render();return;}S.leExpanded.has('${l.id}')?S.leExpanded.delete('${l.id}'):S.leExpanded.add('${l.id}');render();" style="display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer;touch-action:manipulation;user-select:none;">
-        <!-- expand arrow -->
-        <div style="width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s;transform:${expanded?'rotate(90deg)':'rotate(0)'};pointer-events:none;">
-          <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="#5A6070" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:16px;font-weight:700;color:#111111;letter-spacing:-.2px;">${l.name}</div>
-          <div style="font-size:12px;color:#888888;margin-top:2px;">${l.desc}・設備 ${l.equip.length}台</div>
-        </div>
-        <!-- ⋯ line menu -->
-        <div style="position:relative;" onclick="event.stopPropagation()">
-          <button onclick="S.leMenu=(S.leMenu&&S.leMenu.type==='line'&&S.leMenu.id==='${l.id}')?null:{type:'line',id:'${l.id}'};render();" style="width:34px;height:34px;border-radius:9px;background:${menuOpen?'rgba(0,0,0,0.10)':'rgba(0,0,0,0.04)'};border:none;color:#777777;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:background .12s;" onmousedown="this.style.background='rgba(0,0,0,0.10)'" onmouseup="this.style.background='rgba(0,0,0,0.04)'">
-            <svg width="16" height="4" viewBox="0 0 16 4" fill="none"><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="8" cy="2" r="1.5" fill="currentColor"/><circle cx="14" cy="2" r="1.5" fill="currentColor"/></svg>
+        <!-- ⋯ メニュー（設備編集・削除） -->
+        <div style="position:relative;">
+          <button onclick="event.stopPropagation();S.leMenu=(S.leMenu&&S.leMenu.type==='eq'&&S.leMenu.id==='${eq.id}')?null:{type:'eq',id:'${eq.id}'};render();"
+            style="width:28px;height:28px;border-radius:7px;background:${eqMenuOpen?'#F1F3F8':'transparent'};border:none;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">
+            <svg width="13" height="3" viewBox="0 0 13 3" fill="none"><circle cx="1.5" cy="1.5" r="1.5" fill="currentColor"/><circle cx="6.5" cy="1.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="1.5" r="1.5" fill="currentColor"/></svg>
           </button>
-          ${menuOpen?`<div style="position:absolute;right:0;top:38px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.10);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:100;min-width:130px;overflow:hidden;" onclick="event.stopPropagation()">
-            <button onclick="S.leMenu=null;S.modal={type:'editLine',lid:'${l.id}'};render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#333333;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(0,0,0,0.07)'" onmouseup="this.style.background=''">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5V9l7-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-              編集
+          ${eqMenuOpen ? `
+          <div style="position:absolute;right:0;top:32px;background:#FFFFFF;border:1px solid #E4E8EF;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:110px;overflow:hidden;" onclick="event.stopPropagation()">
+            <button onclick="S.leMenu=null;S.modal={type:'editEq',eid:'${eq.id}'};render();" style="width:100%;padding:10px 14px;background:none;border:none;color:#374151;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 1.5l2.5 2.5-6.5 6.5H1.5V8L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              名前変更
             </button>
-            <div style="height:1px;background:rgba(0,0,0,0.07);margin:0 10px;"></div>
-            <button onclick="S.leMenu=null;leDelLine('${l.id}');render();" style="width:100%;padding:12px 16px;background:none;border:none;color:#C8292A;font-size:13px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;touch-action:manipulation;font-family:inherit;transition:background .1s;" onmousedown="this.style.background='rgba(200,41,42,0.08)'" onmouseup="this.style.background=''">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M4.5 3.5V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V3.5M5.5 6v4M8.5 6v4M2.5 3.5l.8 8.5a.5.5 0 00.5.5h6.4a.5.5 0 00.5-.5l.8-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="height:1px;background:#F3F4F6;margin:0 9px;"></div>
+            <button onclick="S.leMenu=null;leDelEqMaster('${eq.id}');" style="width:100%;padding:10px 14px;background:none;border:none;color:#C8292A;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M3.5 3V2A.5.5 0 014 1.5h4a.5.5 0 01.5.5V3M4.5 5.5v4M7.5 5.5v4M2 3l.75 7.5a.5.5 0 00.5.5h5.5a.5.5 0 00.5-.5L10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               削除
             </button>
-          </div>`:''}
+          </div>` : ''}
         </div>
       </div>
 
-      <!-- Equipment list (expanded) -->
-      ${eqItems}
-      ${addEqBtn}
+      <!-- [v5] 点検項目インライン展開エリア -->
+      ${itemExpanded ? `
+      <div style="border-top:1px dashed #E4E8EF;background:#FAFBFD;padding:10px 12px 12px;">
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:8px;">点検項目一覧 （${eq.items.length}件）</div>
+        ${eq.items.length > 0 ? eq.items.map((it,idx) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#FFFFFF;border:1px solid #E4E8EF;border-radius:9px;margin-bottom:5px;">
+          <span style="width:20px;height:20px;background:#F1F3F8;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#9CA3AF;flex-shrink:0;">${idx+1}</span>
+          <span style="flex:1;font-size:12px;font-weight:500;color:#111827;line-height:1.3;">${it.n}</span>
+          <span style="font-size:10px;font-weight:600;color:${freqColor(it.t)};background:${freqBg(it.t)};padding:2px 8px;border-radius:6px;white-space:nowrap;">${FREQ_LABELS_V3[it.t]||it.t}</span>
+          <button onclick="S.modal={type:'editItem',eid:'${eq.id}',iid:'${it.id}',freq:'${it.t}'};render();" style="padding:4px 8px;border:1px solid #E4E8EF;border-radius:6px;background:none;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">編集</button>
+          <button onclick="delItem('${eq.id}','${it.id}')" style="padding:4px 8px;border:1px solid rgba(200,41,42,0.25);border-radius:6px;background:rgba(200,41,42,0.07);color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
+        </div>`).join('') : `<div style="text-align:center;padding:12px;color:#9CA3AF;font-size:12px;">点検項目がありません</div>`}
+        <button onclick="S.modal={type:'addItem',eid:'${eq.id}',freq:'毎日'};render();"
+          style="width:100%;padding:10px;border:1.5px dashed #D1D5DB;background:transparent;border-radius:9px;color:#C8292A;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          点検項目を追加
+        </button>
+      </div>` : ''}
+    </div>`;
+  }).join('') : `
+    <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;padding:28px 16px;text-align:center;margin-bottom:8px;">
+      <div style="font-size:13px;color:#9CA3AF;margin-bottom:5px;">設備がありません</div>
+      <div style="font-size:12px;color:#C9D0DB;">下の「＋ 設備を追加」ボタンから追加してください</div>
+    </div>`)
+  // [v5] ＋設備を追加ボタン（ライン内ではなくマスターへの追加）
+  + `
+    <button onclick="S.modal={type:'addEqFull',lid:null};render();"
+      style="width:100%;padding:12px;border:1.5px dashed rgba(200,41,42,0.4);background:rgba(200,41,42,0.03);border-radius:12px;color:#C8292A;cursor:pointer;font-size:13px;font-weight:700;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      設備を追加（マスターに登録）
+    </button>`;
+
+  // ═══════════════════════════════════════════════════════════
+  // [v5 MODIFIED] ③ ライン管理 — 設備をチェックリストで紐づけ
+  // 「＋設備追加」ボタンを削除し、チェックボックスで設備を選択
+  // ═══════════════════════════════════════════════════════════
+  if(!S.leLineExpanded)S.leLineExpanded=new Set();
+
+  const lineSectionHtml = S.lines.map((l, idx) => {
+    const lineOpen = S.leLineExpanded.has(l.id);
+    const selCnt   = (l.equipmentIds||[]).length;
+    return `
+    <!-- [v5 ③] ライン行：設備チェックリスト付き -->
+    <div style="${idx<S.lines.length-1?'border-bottom:1px solid #F3F4F6;':''}">
+      <!-- ライン情報行 -->
+      <div style="display:flex;align-items:center;gap:8px;padding:11px 14px;">
+        <!-- 展開トグル -->
+        <button onclick="S.leLineExpanded.has('${l.id}')?S.leLineExpanded.delete('${l.id}'):S.leLineExpanded.add('${l.id}');render();"
+          style="width:26px;height:26px;background:${lineOpen?'#F1F3F8':'transparent'};border:none;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="transform:${lineOpen?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;">
+            <path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:#374151;">${l.name}</div>
+          <div style="font-size:11px;color:#9CA3AF;">${l.desc||''} · <span style="color:${selCnt>0?'#1E3A8A':'#9CA3AF'};font-weight:${selCnt>0?700:400};">設備 ${selCnt}台選択中</span></div>
+        </div>
+        <button onclick="S.modal={type:'editLine',lid:'${l.id}'};render();"
+          style="padding:5px 11px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:7px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
+          編集
+        </button>
+        <button onclick="delLine('${l.id}')"
+          style="padding:5px 11px;background:rgba(200,41,42,0.06);border:1px solid rgba(200,41,42,0.2);border-radius:7px;color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
+          削除
+        </button>
+      </div>
+      <!-- [v5] 設備チェックリスト（展開時） -->
+      ${lineOpen ? `
+      <div style="background:#F8F9FC;border-top:1px solid #F0F1F6;padding:10px 14px 12px;">
+        <div style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:.8px;margin-bottom:8px;">このラインに含める設備を選択</div>
+        ${S.equipments.length > 0 ? S.equipments.map(eq => {
+          const checked = (l.equipmentIds||[]).includes(eq.id);
+          const dailyCnt = eq.items.filter(i=>i.t==='毎日').length;
+          return `
+          <!-- [v5 ③] 設備チェック行 -->
+          <div onclick="leToggleEqInLine('${l.id}','${eq.id}')"
+            style="display:flex;align-items:center;gap:10px;padding:9px 10px;background:${checked?'#EFF6FF':'#FFFFFF'};border:1.5px solid ${checked?'#93C5FD':'#E4E8EF'};border-radius:10px;margin-bottom:5px;cursor:pointer;touch-action:manipulation;transition:all .12s;">
+            <!-- チェックボックス -->
+            <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${checked?'#1E3A8A':'#D1D5DB'};background:${checked?'#1E3A8A':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+              ${checked?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:${checked?600:400};color:${checked?'#1E3A8A':'#4B5563'};">${eq.name}</div>
+              ${dailyCnt?`<div style="font-size:10px;color:#9CA3AF;margin-top:1px;">毎日 ${dailyCnt}件 他</div>`:''}
+            </div>
+            ${checked?`<span style="font-size:10px;font-weight:700;color:#1D4ED8;background:#DBEAFE;padding:2px 9px;border-radius:8px;flex-shrink:0;">✓ 対象</span>`:''}
+          </div>`;
+        }).join('') : `<div style="text-align:center;padding:12px;color:#9CA3AF;font-size:12px;">設備マスターに設備がありません<br><span style="font-size:11px;">② 設備管理でマスターに追加してください</span></div>`}
+      </div>` : ''}
     </div>`;
   }).join('');
 
-  const emptyState=S.lines.length===0?`
-    <div style="text-align:center;padding:60px 20px;">
-      <div style="width:64px;height:64px;background:rgba(0,0,0,0.04);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="3" y="8" width="24" height="15" rx="3" stroke="#3A4060" stroke-width="2"/><path d="M8 8V6a4 4 0 018 0v2" stroke="#3A4060" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <div style="font-size:16px;font-weight:700;color:#999999;margin-bottom:6px;">ラインがありません</div>
-      <div style="font-size:13px;color:#AAAAAA;">上のボタンからラインを追加してください</div>
-    </div>`:'';
-
+  // ═══════════════════════════════════════════════════════════
+  // [v3] HTML 組み立て
+  // ═══════════════════════════════════════════════════════════
   return`
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F7F7F9;overflow:hidden;" onclick="if(S.leMenu){S.leMenu=null;render();}">
-    <!-- Header -->
-    <div style="background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.06);">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button onclick="nav('HOME')" style="width:38px;height:38px;border-radius:50%;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .12s;" onmousedown="this.style.background='rgba(0,0,0,0.10)'" onmouseup="this.style.background='#1A1D24'">${BACK_ICO}</button>
+  <!-- ======================================================
+       [REDESIGNED v3] 管理者設定画面
+       ① 担当者設備紐づけ（インライン・最上部・保存ボタン付き）
+       ② 設備管理（点検項目インライン展開・別画面なし）
+       ③ ライン管理（追加・名前変更・削除のみ）
+       ====================================================== -->
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F4F5F9;overflow:hidden;" onclick="if(S.leMenu){S.leMenu=null;render();}">
+
+    <!-- ヘッダー -->
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;bottom:0;right:0;height:2.5px;background:linear-gradient(90deg,#1E3A8A 0%,#4F46E5 40%,#C8292A 80%,transparent);pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
+        <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
         <div style="flex:1;">
-          <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:.8px;margin-bottom:2px;">管理者専用</div>
-          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">ライン・設備管理</div>
+          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">管理者設定</div>
+          <div style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-.5px;">設定</div>
+        </div>
+        <!-- [REDESIGN v4] ヘッダー右：選択カウンター -->
+        <div style="background:${totalSel>0?'linear-gradient(135deg,#1E3A8A,#3B5FC9)':'#F1F3F8'};color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:11px;font-weight:700;padding:6px 13px;border-radius:20px;white-space:nowrap;transition:all .2s;box-shadow:${totalSel>0?'0 3px 12px rgba(30,58,138,0.3)':'none'};">
+          ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '担当未選択'}
         </div>
       </div>
     </div>
 
-    <!-- Add Line Button -->
-    <div style="padding:14px 16px 0;flex-shrink:0;">
-      <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:14px;background:linear-gradient(135deg,#C8292A 0%,#A82020 100%);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 2px 10px rgba(200,41,42,0.2)'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(200,41,42,0.3)'">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
-        ラインを追加
-      </button>
-    </div>
+    <!-- スクロールエリア -->
+    <div id="leq-scroll" style="flex:1;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + 120px);-webkit-overflow-scrolling:touch;">
 
-    <!-- Line list -->
-    <div style="flex:1;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 24px);-webkit-overflow-scrolling:touch;">
-      ${lineCards}
-      ${emptyState}
+      <!-- ══════════════════════════════════════════════════════
+           ① 担当者設備紐づけ
+           [REDESIGN v4] 担当者選択=青、ライン・設備=白 に分離
+           ══════════════════════════════════════════════════════ -->
+      <div style="font-size:10px;font-weight:700;color:#1E3A8A;letter-spacing:1.5px;text-transform:uppercase;margin:0 2px 8px;">① 担当者 × 設備の紐づけ</div>
+
+      <!-- [REDESIGN v4] ① 上部：担当者選択エリア（青背景のみ） -->
+      <div style="background:linear-gradient(145deg,#1E3A8A 0%,#2D4F9E 55%,#4338CA 100%);border-radius:16px 16px 0 0;padding:16px 16px 18px;box-shadow:0 4px 20px rgba(30,58,138,0.22);position:relative;overflow:hidden;">
+        <!-- 背景装飾 -->
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+
+        <!-- タイトル行＋サマリー数値 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:relative;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.2);flex-shrink:0;">
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="6.5" cy="5" r="2.8" stroke="white" stroke-width="1.5"/><path d="M1.5 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M12.5 7.5h3.5M14.25 5.75v3.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#FFFFFF;letter-spacing:-.2px;">担当設備の割り当て</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px;">誰がどの設備を担当するか設定</div>
+            </div>
+          </div>
+          <!-- [③ 選択数表示] -->
+          <div style="display:flex;gap:5px;flex-shrink:0;">
+            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
+              <div style="font-size:15px;font-weight:800;color:#FFFFFF;line-height:1;">${assignedCount}</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">設定済</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
+              <div style="font-size:15px;font-weight:800;color:${unassigned>0?'#FCD34D':'#FFFFFF'};line-height:1;">${unassigned}</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">未設定</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 担当者ピル（横スクロール） -->
+        <div style="margin-bottom:12px;position:relative;">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:.8px;margin-bottom:7px;">担当者を選択</div>
+          <div style="display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
+            ${asgnNamePills}
+          </div>
+        </div>
+
+        <!-- [⑤ REDESIGN v4] 設定状態インジケーター：未設定をより明確に -->
+        ${existAssign
+          ?`<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:rgba(34,197,94,0.18);border:1.5px solid rgba(134,239,172,0.45);border-radius:10px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="#22C55E"/><path d="M4 7l2.5 2.5 3.5-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font-size:12px;font-weight:700;color:#86EFAC;">設定済み — 設備 ${existAssign.equipmentIds.length}台</span>
+            </div>`
+          :`<div style="padding:10px 12px;background:rgba(251,191,36,0.14);border:1.5px solid rgba(251,191,36,0.38);border-radius:10px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" stroke="#FBBF24" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 5.5v3M7 9.8v.2" stroke="#FBBF24" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#FDE68A;">担当設備が未設定です</span>
+              </div>
+              <div style="font-size:11px;color:rgba(253,230,138,0.75);margin-left:21px;">→ このままだと全設備が表示されます</div>
+            </div>`
+        }
+      </div>
+
+      <!-- [v7] 下部：設備フラットチェックリスト（白背景カード） -->
+      <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-top:none;border-radius:0 0 16px 16px;margin-bottom:20px;overflow:hidden;box-shadow:0 4px 16px rgba(30,58,138,0.08);">
+
+        <!-- ラインフィルターピル（白カード内・上部） -->
+        <div style="padding:10px 12px 0;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.7px;margin-bottom:7px;display:flex;align-items:center;gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path d="M1 2.5h9M2.5 5.5h6M4 8.5h3" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            ラインで絞り込み
+          </div>
+          <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:10px;">
+            <!-- すべて -->
+            <button onclick="asgnSetFilter(null)"
+              style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:6px 13px;border-radius:18px;
+                     border:1.5px solid ${!filterLine?'#4F46E5':'#E4E8EF'};
+                     background:${!filterLine?'#4F46E5':'#FFFFFF'};
+                     color:${!filterLine?'#FFFFFF':'#6B7280'};
+                     font-size:11px;font-weight:${!filterLine?700:500};
+                     cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+              すべて
+              <span style="background:${!filterLine?'rgba(255,255,255,0.25)':'#F1F3F8'};color:${!filterLine?'#FFFFFF':'#9CA3AF'};font-size:10px;font-weight:700;padding:0px 6px;border-radius:8px;">
+                ${S.equipments.length}
+              </span>
+            </button>
+            <!-- ラインピル -->
+            ${S.lines.map(l=>{
+              const on = filterLine===l.id;
+              const lineSel = S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)&&asgnSt.checked.includes(e.id)).length;
+              const lineTotal = (l.equipmentIds||[]).length;
+              return`<button onclick="asgnSetFilter('${l.id}')"
+                style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:18px;
+                       border:1.5px solid ${on?'#4F46E5':'#E4E8EF'};
+                       background:${on?'#4F46E5':'#FFFFFF'};
+                       color:${on?'#FFFFFF':'#6B7280'};
+                       font-size:11px;font-weight:${on?700:500};
+                       cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+                ${l.name}
+                <span style="background:${on?'rgba(255,255,255,0.25)':'lineSel>0?\"#EEF2FF\":\"#F1F3F8\"'};
+                             color:${on?'#FFFFFF':lineSel>0?'#4F46E5':'#9CA3AF'};
+                             font-size:10px;font-weight:700;padding:0px 6px;border-radius:8px;">
+                  ${lineSel>0?`${lineSel}/`:''}${lineTotal}
+                </span>
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- エリアヘッダー（件数 ＋ 一括ボタン） -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">
+          <span style="font-size:11px;font-weight:700;color:#374151;">
+            ${filterLine
+              ? `<span style="display:inline-flex;align-items:center;gap:5px;">
+                   ${getLn(filterLine)?.name}の設備
+                   <button onclick="asgnSetFilter(null)"
+                     style="padding:2px 8px;border-radius:10px;border:1px solid #C7D2FE;background:#EEF2FF;
+                            color:#4F46E5;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;">
+                     ✕ 解除
+                   </button>
+                 </span>`
+              : `全設備 (${asgnVisibleEqs.length}台)`
+            }
+          </span>
+          ${asgnBulkBtn}
+        </div>
+
+        <!-- [v7] 設備チェックリスト（マスターからフラット表示） -->
+        <div style="padding:8px 10px;">
+          ${asgnVisibleEqs.length > 0 ? asgnVisibleEqs.map(e=>{
+            const on = asgnSt.checked.includes(e.id);
+            const lines = S.lines.filter(l=>(l.equipmentIds||[]).includes(e.id));
+            const lineLabel = lines.map(l=>l.name).join('・') || '未ライン';
+            return `
+            <div onclick="asgnToggleEq('${e.id}')"
+              style="display:flex;align-items:center;gap:12px;padding:10px 10px;background:${on?'#EEF2FF':'#FFFFFF'};border:1.5px solid ${on?'#818CF8':'#F0F1F6'};border-radius:10px;margin-bottom:5px;cursor:pointer;touch-action:manipulation;transition:all .12s;">
+              <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${on?'#4F46E5':'#D1D5DB'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+                ${on?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+              </div>
+              <div style="flex:1;min-width:0;">
+                <span style="font-size:13px;font-weight:${on?600:400};color:${on?'#312E81':'#4B5563'};">${e.name}</span>
+                <span style="font-size:12px;font-weight:400;color:${on?'#6366F1':'#9CA3AF'};">（${lineLabel}）</span>
+              </div>
+              ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:2px 9px;border-radius:8px;border:1px solid #C7D2FE;flex-shrink:0;">担当</span>`:''}
+            </div>`;
+          }).join('') : `<div style="padding:18px;text-align:center;color:#9CA3AF;font-size:12px;">設備がありません</div>`}
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════
+           [v5 MODIFIED] ② 設備管理
+           設備をマスターとして独立管理（ライン内から切り離し）
+           ▼ 項目 で設備ごとの点検項目を展開・編集
+           ＋設備追加はマスターへの追加のみ（ライン内ボタン削除）
+           ══════════════════════════════════════════════════════ -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;">
+        <div style="font-size:10px;font-weight:700;color:#C8292A;letter-spacing:1.5px;text-transform:uppercase;">② 設備管理（マスター）</div>
+        <span style="font-size:11px;color:#9CA3AF;">▼ 項目 で点検項目を展開</span>
+      </div>
+      ${S.lines.length > 0 ? eqSectionHtml : `
+        <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:28px 16px;text-align:center;margin-bottom:20px;">
+          <div style="font-size:13px;color:#9CA3AF;margin-bottom:5px;">ラインがありません</div>
+          <div style="font-size:12px;color:#C9D0DB;">③ ライン管理でラインを追加してください</div>
+        </div>`}
+
+      <!-- ══════════════════════════════════════════════════════
+           [v5 MODIFIED] ③ ライン管理
+           各ラインに紐づける設備をチェックリストで選択
+           ▶ を展開して設備の紐づけを変更できる
+           ══════════════════════════════════════════════════════ -->
+      <div style="margin-top:22px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;">③ ライン管理</div>
+          <button onclick="S.modal={type:'addLine'};render();"
+            style="display:flex;align-items:center;gap:4px;padding:5px 11px;background:#F4F5F9;border:1px solid #E4E8EF;border-radius:18px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s;"
+            onmousedown="this.style.background='#E4E8EF'" onmouseup="this.style.background='#F4F5F9'">
+            <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M4.5 1v7M1 4.5h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            ライン追加
+          </button>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:14px;overflow:hidden;">
+          ${S.lines.length > 0 ? lineSectionHtml : `
+            <div style="padding:20px 14px;text-align:center;">
+              <div style="font-size:12px;color:#9CA3AF;">ラインがありません</div>
+            </div>`}
+        </div>
+      </div>
+
     </div>
-  </div>`;
+  </div>
+
+  <!-- [REDESIGN v4 ④] 固定保存ボタン（btabsの上・常に操作可能）
+       選択中は青グラデーション、未選択時はグレーで非活性表示 -->
+  <div style="position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 58px);left:50%;transform:translateX(-50%);width:100%;max-width:520px;padding:8px 14px;z-index:19;pointer-events:none;">
+    <button onclick="asgnSave()"
+      style="pointer-events:auto;width:100%;padding:14px;
+        background:${totalSel>0?'linear-gradient(135deg,#1E3A8A,#3B5FC9)':'#E5E7EB'};
+        color:${totalSel>0?'#FFFFFF':'#9CA3AF'};
+        border:none;border-radius:14px;font-size:14px;font-weight:800;
+        cursor:${totalSel>0?'pointer':'default'};
+        touch-action:manipulation;font-family:inherit;
+        display:flex;align-items:center;justify-content:center;gap:9px;
+        box-shadow:${totalSel>0?'0 4px 20px rgba(30,58,138,0.35)':'none'};
+        transition:all .2s;"
+      onmousedown="if(${totalSel}>0){this.style.transform='scale(.97)';this.style.opacity='.9';}"
+      onmouseup="this.style.transform='';this.style.opacity='1';">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7l3.5 4L12 2.5" stroke="${totalSel>0?'white':'#9CA3AF'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      ${totalSel > 0 ? `${totalSel}台を保存する` : '設備を選択してください'}
+      ${totalSel>0?`<span style="background:rgba(255,255,255,0.22);border-radius:9px;padding:2px 10px;font-size:11px;font-weight:700;">✓ ${totalSel}台</span>`:''}
+    </button>
+  </div>
+
+  ${btabs()}`;
 }
 
-/* ── LINE_EQ_MGMT action helpers ── */
+/* ── LINE_EQ_MGMT action helpers (v3) ── */
 function leDelLine(lid){
-  const l=getLn(lid);
-  if(!confirm(`このラインを削除すると設備も全て削除されます。\n「${l.name}」を削除しますか？`))return;
-  S.lines.splice(S.lines.indexOf(l),1);
-  toast('ラインを削除しました');
+  // [v3] 削除を有効化（仕様通り）
+  delLine(lid);
 }
 function leDelEq(eid){
   const eq=getEq(eid);
   if(!confirm(`「${eq.name}」を削除しますか？`))return;
   for(const l of S.lines){const i=l.equip.findIndex(e=>e.id===eid);if(i!==-1){l.equip.splice(i,1);break;}}
-  toast('設備を削除しました');
+  toast('設備を削除しました');render();
 }
+// [v5 MODIFIED] addEqFullConfirm — ラインに追加せずマスターへ登録
 function addEqFullConfirm(lid){
   const n=document.getElementById('meqf-n')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
   const k=document.getElementById('meqf-k')?.value?.trim()||'';
   const customId=document.getElementById('meqf-id')?.value?.trim();
   const newId=customId||'E'+Date.now();
-  getLn(lid).equip.push({id:newId,name:n,kind:k,eid:newId,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
-  S.modal=null;toast(`「${n}」を追加しました`);render();
+  // [v5] ラインには追加せず設備マスターに追加する
+  S.equipments.push({id:newId,name:n,kind:k,items:[
+    {id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},
+    {id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}
+  ]});
+  S.modal=null;toast(`「${n}」を設備マスターに追加しました\n③ ライン管理でラインに紐づけてください`);render();
 }
+// [v5 MODIFIED] editEqConfirm — マスターを更新して全ライン同期
 function editEqConfirm(eid){
   const n=document.getElementById('meqe-n')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
   const k=document.getElementById('meqe-k')?.value?.trim()||'';
+  // [v5] マスターを更新
+  const masterEq=S.equipments.find(e=>e.id===eid);
+  if(masterEq){masterEq.name=n;masterEq.kind=k;}
+  // [v5] 既存ラインの equip も同期（後方互換）
   const eq=getEq(eid);
   if(eq){eq.name=n;eq.kind=k;}
   S.modal=null;toast('設備を更新しました');render();
@@ -2357,8 +2971,8 @@ function renderModalSheet(){
     </div>`;}
   else if(m.type==='addEqFull'){inner=`
     <div class="sheet-handle"></div>
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">ラインに設備を登録します（ライン自動紐付け）</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加（マスター登録）</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">登録後、③ ライン管理 でラインに紐づけてください</div>
     <div style="margin-bottom:12px;"><label class="flabel">設備名 <span style="color:var(--red);">*</span></label><input id="meqf-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
     <div style="margin-bottom:12px;"><label class="flabel">種類（任意）</label><input id="meqf-k" class="finput" type="text" placeholder="例: 旋盤 / 溶接機"></div>
     <div style="margin-bottom:20px;"><label class="flabel">設備ID（任意・空欄で自動生成）</label><input id="meqf-id" class="finput" type="text" placeholder="例: EQ-2024-003"></div>
@@ -2704,49 +3318,72 @@ ${pages}
 /* ═══════════ INSP RUN (multi-line inspection) ═══════════ */
 function renderInspRun(){
   const inspName=S.currentName||'点検者';
-  // Gather all items across selected lines (only 毎日点検 items)
-  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  // [v4] 担当ラインのみ対象（getVisibleLines との交差）
+  const selLines=getVisibleLines().filter(l=>S.inspSelectedLines.includes(l.id));
   const results=S.inspRunResults||{};
   let totalItems=0,doneItems=0;
 
+  // [v4] 今日の点検種別バナー用
+  const todayTypes = getTodayInspTypes();
+
   const lineGroupsHtml=selLines.map(line=>{
-    const eqHtml=line.equip.map(eq=>{
-      const items=eq.items.filter(i=>i.t==='毎日');
+    // [v4] getVisibleEquip で担当設備のみ
+    const eqHtml=getVisibleEquip(line).map(eq=>{
+      // [v4 KEY] isTargetDay で今日対象の項目のみフィルタリング
+      const allItems = eq.items.filter(isTargetDay);
+
+      // 未完了を先頭、完了済みを後ろに並べる（最重要UX改善）
+      const pendingItems = allItems.filter(i=>!results[eq.id+'_'+i.id]);
+      const doneItemsArr = allItems.filter(i=>results[eq.id+'_'+i.id]);
+      const items = [...pendingItems, ...doneItemsArr];
+
       totalItems+=items.length;
       const done=items.filter(i=>results[eq.id+'_'+i.id]).length;
       doneItems+=done;
       const allDone=done===items.length&&items.length>0;
+
+      if(!items.length) return ''; // 今日の点検項目なし → 非表示
+
       const itemsHtml=items.map(item=>{
         const key=eq.id+'_'+item.id;
         const ok=results[key]==='ok',ng=results[key]==='ng';
-        return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);" id="ir-${key}">
-          <div style="flex:1;font-size:13px;color:#444444;font-weight:500;line-height:1.4;">${item.n}</div>
+        // [v4] 周期ラベルバッジ
+        const cycleBg = item.t==='10日'?'rgba(217,119,6,0.12)':item.t==='月次'?'rgba(107,114,128,0.12)':'transparent';
+        const cycleColor = item.t==='10日'?'#D97706':item.t==='月次'?'#6B7280':'transparent';
+        const cycleLbl = item.t!=='毎日'?`<span style="font-size:10px;font-weight:600;color:${cycleColor};background:${cycleBg};padding:2px 7px;border-radius:6px;flex-shrink:0;">${item.t==='10日'?'10日毎':'月次'}</span>`:'';
+        return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);${ok?'opacity:0.65;':''}" id="ir-${key}">
+          <div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0;">
+            <div style="flex:1;font-size:13px;color:${ok?'#6B7280':ng?'#C8292A':'#333'};font-weight:${ok||ng?400:500};line-height:1.4;${ok?'text-decoration:line-through;':''}">${item.n}</div>
+            ${cycleLbl}
+          </div>
           <div style="display:flex;gap:8px;flex-shrink:0;">
             <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);':'background:white;color:#22C55E;border-color:rgba(34,197,94,0.5);'}" id="ibtn-ok-${key}">○</button>
             <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.35);':'background:white;color:#C8292A;border-color:rgba(200,41,42,0.5);'}" id="ibtn-ng-${key}">✕</button>
           </div>
         </div>`;
       }).join('');
-      const pend=items.filter(i=>!results[eq.id+'_'+i.id]).length;
-      const bulkBtn=(!allDone&&pend>0)?`<button onclick="inspBulkOkEq('${eq.id}')" style="width:100%;padding:10px;background:var(--green-lt);border:1px solid var(--green);border-radius:10px;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+      const pend=pendingItems.length;
+      const bulkBtn=(pend>0)?`<button onclick="inspBulkOkEq('${eq.id}')" style="width:100%;padding:10px;background:var(--green-lt);border:1px solid var(--green);border-radius:10px;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         未入力 ${pend}件 をすべて正常に一括入力
       </button>`:'';
-      return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(34,197,94,0.35)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
+      return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(34,197,94,0.35)':pend>0?'rgba(0,0,0,0.07)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
         <div style="font-size:14px;font-weight:700;color:#111111;display:flex;align-items:center;gap:8px;margin-bottom:${items.length?'12px':'0'};">
           ${eq.name}
-          <span id="ep-${eq.id}" style="font-size:${allDone?'10':'11'}px;font-weight:700;padding:${allDone?'3px 9px':'0'};border-radius:8px;margin-left:auto;${allDone?'background:rgba(34,197,94,0.12);color:#16A34A;':'color:#AAAAAA;'}">${allDone?'完了':`${done}/${items.length}`}</span>
+          ${allDone
+            ?`<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:auto;background:rgba(34,197,94,0.12);color:#16A34A;">完了</span>`
+            :`<span style="font-size:11px;font-weight:600;color:${pend>0?'#C8292A':'#9CA3AF'};margin-left:auto;">${done}/${items.length} 完了</span>`}
         </div>
         ${itemsHtml}${bulkBtn}
       </div>`;
-    }).join('');
+    }).filter(Boolean).join(''); // filter(Boolean) で項目ゼロ設備を除外
     return`<div style="margin:14px 16px 0;">
       <div style="background:#F7F7F9;border:1.5px solid rgba(0,0,0,0.08);border-radius:18px 18px 0 0;border-bottom:none;padding:12px 16px;display:flex;align-items:center;gap:10px;">
         <div style="width:8px;height:8px;border-radius:50%;background:#C8292A;flex-shrink:0;"></div>
         <div style="font-size:14px;font-weight:700;color:#111111;flex:1;">${line.name}</div>
         <div style="font-size:11px;color:#9CA3AF;font-weight:500;">${line.desc}</div>
       </div>
-      ${eqHtml}
+      ${eqHtml||`<div style="background:#FFF;border:1.5px solid rgba(0,0,0,0.07);border-top:none;padding:18px;text-align:center;color:#9CA3AF;font-size:13px;">本日の点検項目はありません</div>`}
       <div style="border:1.5px solid rgba(0,0,0,0.08);border-top:none;border-radius:0 0 18px 18px;height:6px;background:#F7F7F9;"></div>
     </div>`;
   }).join('');
@@ -2764,15 +3401,19 @@ function renderInspRun(){
         <div style="font-size:11px;color:#AAAAAA;font-weight:600;margin-bottom:3px;">点検中</div>
         <div style="font-size:16px;font-weight:700;color:#111111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${inspName}</div>
       </div>
+      <!-- [v4] 今日の種別タグ -->
+      <div style="display:flex;gap:4px;flex-shrink:0;">
+        ${todayTypes.map((t,i)=>`<span style="font-size:10px;font-weight:700;color:${i===0?'#C8292A':i===1?'#D97706':'#6B7280'};background:${i===0?'rgba(200,41,42,0.08)':i===1?'rgba(217,119,6,0.1)':'rgba(107,114,128,0.1)'};padding:3px 9px;border-radius:8px;">${t}</span>`).join('')}
+      </div>
     </div>
     <!-- Progress -->
     <div style="padding:14px 20px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.07);">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-size:12px;color:#AAAAAA;font-weight:600;">進捗</div>
-        <div style="font-size:14px;font-weight:700;color:#111111;">${doneItems} / ${totalItems}</div>
+        <div style="font-size:14px;font-weight:700;color:#111111;">${doneItems} / ${totalItems} <span style="font-size:11px;font-weight:400;color:#AAAAAA;">（本日対象）</span></div>
       </div>
       <div style="height:6px;background:#E8E8EC;border-radius:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#C8292A,#FF7070);border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
+        <div style="height:100%;width:${pct}%;background:${pct===100?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF7070)'};border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
       </div>
     </div>
     <!-- Content -->
@@ -2782,9 +3423,9 @@ function renderInspRun(){
     </div>
     <!-- Footer -->
     <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
-      <button onclick="inspFinish()" style="width:100%;padding:16px;background:#22C55E;color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(34,197,94,0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+      <button onclick="inspFinish()" style="width:100%;padding:16px;background:${pct===100?'#22C55E':'#C8292A'};color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(${pct===100?'34,197,94':'200,41,42'},0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,background .3s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 9l5 5 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        点検を完了する
+        ${pct===100?'点検完了 — 提出する':`点検を完了する（未入力 ${totalItems-doneItems}件）`}
       </button>
     </div>
   </div>`;
@@ -2792,11 +3433,12 @@ function renderInspRun(){
 
 function inspBulkOkEq(eqId){
   if(!S.inspRunResults)S.inspRunResults={};
-  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  const selLines=getVisibleLines().filter(l=>S.inspSelectedLines.includes(l.id));
   let eq=null;
-  for(const line of selLines){eq=line.equip.find(e=>e.id===eqId);if(eq)break;}
+  for(const line of selLines){eq=getVisibleEquip(line).find(e=>e.id===eqId);if(eq)break;}
   if(!eq)return;
-  const items=eq.items.filter(i=>i.t==='毎日');
+  // [v4] isTargetDay でフィルタリング
+  const items=eq.items.filter(isTargetDay);
   let cnt=0;
   items.forEach(it=>{
     if(!S.inspRunResults[eqId+'_'+it.id]){
@@ -2845,8 +3487,9 @@ function inspSetRes(eqId,itemId,result){
     }
   }
   // Update progress bar
+  // [FIXED] getVisibleEquip() で担当設備のみカウント（全設備を数えると未入力判定がずれる）
   let total=0,doneAll=0;
-  selLines.forEach(line=>line.equip.forEach(eq=>{
+  selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
     const items=eq.items.filter(i=>i.t==='毎日');
     total+=items.length;
     doneAll+=items.filter(i=>S.inspRunResults[eq.id+'_'+i.id]).length;
@@ -2864,10 +3507,12 @@ function inspSetRes(eqId,itemId,result){
 
 function inspFinish(){
   if(!S.inspRunResults)S.inspRunResults={};
-  const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
+  // [v4] getVisibleLines との交差で担当ライン判定
+  const selLines=getVisibleLines().filter(l=>S.inspSelectedLines.includes(l.id));
   let total=0,done=0,ng=0;
-  selLines.forEach(line=>line.equip.forEach(eq=>{
-    const items=eq.items.filter(i=>i.t==='毎日');
+  selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
+    // [v4] isTargetDay で今日対象の項目のみカウント
+    const items=eq.items.filter(isTargetDay);
     total+=items.length;
     items.forEach(it=>{
       const r=S.inspRunResults[eq.id+'_'+it.id];
@@ -2876,9 +3521,9 @@ function inspFinish(){
     });
   }));
   if(done<total){toast(`未入力が ${total-done} 件あります`,'warn');return;}
-  // Also store to S.insps for history
-  selLines.forEach(line=>line.equip.forEach(eq=>{
-    const items=eq.items.filter(i=>i.t==='毎日');
+  // 履歴保存（毎日点検 キーで統一）
+  selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
+    const items=eq.items.filter(isTargetDay);
     const key=eq.id+':毎日点検';
     S.insps[key]={date:TODAY,results:{},by:S.currentName||'点検者',lines:S.inspSelectedLines.slice()};
     items.forEach(it=>{
@@ -2908,9 +3553,481 @@ function getInspectionByDate(eid,date,type){
   return data;
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// [v8] 担当設備紐づけ管理 — 同一設備の複数台選択に対応
+// State: { selName, counts:{eid:n}, filterLine }
+// counts の値は台数(0=未選択, 1以上=選択済み)
+// equipmentIds は台数ぶん繰り返す配列で保存: ['E1','E1','E2'] = E1×2, E2×1
+// ═══════════════════════════════════════════════════════════════════
+
+// ステート初期化
+function asgnInit(name){
+  const cur = getUserAssignment(name) || {equipmentIds:[]};
+  const ids = cur.equipmentIds || [];
+  // equipmentIds の重複回数をカウントしてcountsに変換
+  const counts = {};
+  ids.forEach(id=>{ counts[id] = (counts[id]||0) + 1; });
+  S._asgn = {
+    selName   : name,
+    counts    : counts,
+    filterLine: S._asgn?.selName===name ? S._asgn.filterLine : null
+  };
+}
+
+// ステート取得（未初期化なら自動初期化）
+function asgnState(){
+  const allNames=[...S.names.inspector,...S.names.admin];
+  if(!S._assignSelName) S._assignSelName=allNames[0]||'';
+  if(!S._asgn||S._asgn.selName!==S._assignSelName) asgnInit(S._assignSelName);
+  return S._asgn;
+}
+
+// 担当者切り替え
+function asgnSetName(name){
+  S._assignSelName=name;
+  asgnInit(name);
+  render();
+}
+
+// [v7] ラインフィルター切り替え
+function asgnSetFilter(lid){
+  const st=asgnState();
+  if(lid===null){ st.filterLine=null; }
+  else { st.filterLine = (st.filterLine===lid) ? null : lid; }
+  render();
+}
+
+// [v8] 台数変更（delta=+1 or -1）
+function asgnSetCount(eid, delta){
+  const st=asgnState();
+  const cur = st.counts[eid]||0;
+  const next = Math.max(0, cur + delta);
+  if(next===0) delete st.counts[eid];
+  else st.counts[eid] = next;
+  render();
+}
+
+// [v8] ライン一括 — 全0なら各1台、それ以外は全解除
+function asgnToggleLine(lid){
+  const st=asgnState();
+  const line=getLn(lid); if(!line)return;
+  const eqIds = S.equipments
+    .filter(e => (line.equipmentIds||[]).includes(e.id))
+    .map(e=>e.id);
+  const anyOn = eqIds.some(id=>(st.counts[id]||0)>0);
+  if(anyOn){
+    eqIds.forEach(id=>delete st.counts[id]);
+  } else {
+    eqIds.forEach(id=>{ st.counts[id] = 1; });
+  }
+  render();
+}
+
+// [v6] 後方互換のため残す
+function asgnToggleOpen(lid){ render(); }
+function asgnToggleEq(eid){ asgnSetCount(eid,1); render(); }
+
+// [v8] 保存 — counts を equipmentIds 配列（重複あり）に展開して保存
+function asgnSave(){
+  const st=asgnState();
+  const name=st.selName;
+  if(!name){toast('担当者を選択してください','warn');return;}
+  // {E1:2, E2:1} → ['E1','E1','E2']
+  const equipmentIds=[];
+  Object.entries(st.counts).forEach(([id,n])=>{
+    for(let i=0;i<n;i++) equipmentIds.push(id);
+  });
+  const idx=S.assignments.findIndex(a=>a.name===name);
+  const data={name,equipmentIds};
+  if(idx>=0) S.assignments[idx]=data; else S.assignments.push(data);
+  toast('紐づけを保存しました');
+  asgnInit(name);
+  render();
+}
+
+// ── [v8] 担当設備紐づけ管理画面 — 複数台選択対応
+function renderAssignmentMgmt(){
+  const allNames=[...S.names.inspector,...S.names.admin];
+  const st=asgnState();
+  const selName=st.selName;
+  const existAssign=getUserAssignment(selName);
+  const totalSel=Object.values(st.counts).reduce((a,b)=>a+b,0);
+  const filterLine=st.filterLine;
+
+  // ── 担当者ピル
+  const namePills=allNames.map(n=>{
+    const on=n===selName;
+    const saved=!!getUserAssignment(n);
+    return`<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
+      style="flex-shrink:0;display:inline-flex;align-items:center;gap:7px;padding:8px 16px 8px 10px;border-radius:22px;
+             border:2px solid ${on?'#4F46E5':'#E4E8EF'};
+             background:${on?'linear-gradient(135deg,#4F46E5,#6366F1)':'#FFFFFF'};
+             color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};
+             cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;
+             box-shadow:${on?'0 3px 10px rgba(79,70,229,0.25)':'none'};transition:all .15s;">
+      <span style="width:26px;height:26px;border-radius:50%;
+                   background:${on?'rgba(255,255,255,0.22)':'#F1F3F8'};
+                   display:inline-flex;align-items:center;justify-content:center;
+                   font-size:12px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">
+        ${n.charAt(0)}
+      </span>
+      ${n.split(' ')[0]}
+      ${saved?`<span style="width:7px;height:7px;border-radius:50%;background:${on?'rgba(255,255,255,0.9)':'#22C55E'};flex-shrink:0;" title="設定済み"></span>`:''}
+    </button>`;
+  }).join('');
+
+  // ── [v7] ラインフィルター ピル（選択ではなく絞り込み専用）
+  const totalEqCount=S.equipments.length;
+  const filterPills=`
+    <button onclick="asgnSetFilter(null)"
+      style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;
+             padding:7px 14px;border-radius:20px;
+             border:1.5px solid ${!filterLine?'#4F46E5':'#E4E8EF'};
+             background:${!filterLine?'#4F46E5':'#F8F9FC'};
+             color:${!filterLine?'#FFFFFF':'#6B7280'};
+             font-size:12px;font-weight:${!filterLine?700:500};
+             cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="opacity:${!filterLine?1:.5}">
+        <rect x="1" y="1" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M3 5.5h5M3 3.5h5M5 7.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      すべて
+      <span style="background:${!filterLine?'rgba(255,255,255,0.25)':'#E4E8EF'};color:${!filterLine?'#FFFFFF':'#6B7280'};font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;">${totalEqCount}</span>
+    </button>
+    ${S.lines.map(l=>{
+      const on=filterLine===l.id;
+      const lineEqCnt=(l.equipmentIds||[]).length;
+      // このラインに含まれる選択済み台数合計
+      const lineSel=S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)).reduce((s,e)=>s+(st.counts[e.id]||0),0);
+      return`<button onclick="asgnSetFilter('${l.id}')"
+        style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;
+               padding:7px 13px;border-radius:20px;
+               border:1.5px solid ${on?'#4F46E5':'#E4E8EF'};
+               background:${on?'#4F46E5':'#F8F9FC'};
+               color:${on?'#FFFFFF':'#6B7280'};
+               font-size:12px;font-weight:${on?700:500};
+               cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+        ${l.name}
+        <span style="background:${on?'rgba(255,255,255,0.25)':'lineSel>0?\"#DBEAFE\":\"#E4E8EF\"'};
+                     color:${on?'#FFFFFF':lineSel>0?'#1E40AF':'#9CA3AF'};
+                     font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;">
+          ${lineSel>0?`${lineSel}/`:''}${lineEqCnt}
+        </span>
+      </button>`;
+    }).join('')}`;
+
+  // ── [v7] 設備チェックリスト（フラット表示・絞り込み対応）
+  const visibleEqs = filterLine
+    ? S.equipments.filter(e=>{
+        const l=getLn(filterLine);
+        return l && (l.equipmentIds||[]).includes(e.id);
+      })
+    : S.equipments;
+
+  // アクティブフィルター帯
+  const filterBanner = filterLine ? (()=>{
+    const ln=getLn(filterLine);
+    const lineEqIds=visibleEqs.map(e=>e.id);
+    const anyOn=lineEqIds.some(id=>(st.counts[id]||0)>0);
+    return`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;
+                background:linear-gradient(90deg,#EEF2FF,#F5F3FF);
+                border:1px solid #C7D2FE;border-radius:12px;margin-bottom:10px;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
+        <path d="M2 3h10M4 7h6M6 11h2" stroke="#4F46E5" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span style="font-size:12px;font-weight:600;color:#3730A3;flex:1;">${ln?.name} で絞り込み中 — ${visibleEqs.length}台</span>
+      <button onclick="asgnToggleLine('${filterLine}')"
+        style="padding:5px 12px;border-radius:16px;border:1.5px solid ${anyOn?'#FCA5A5':'#A5B4FC'};
+               background:${anyOn?'#FEF2F2':'#EEF2FF'};color:${anyOn?'#DC2626':'#4F46E5'};
+               font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+        ${anyOn?'✕ 全解除':'✓ 全選択'}
+      </button>
+      <button onclick="asgnSetFilter(null)"
+        style="width:26px;height:26px;border-radius:50%;border:1px solid #C7D2FE;background:#FFFFFF;
+               color:#6366F1;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;
+               display:flex;align-items:center;justify-content:center;font-family:inherit;flex-shrink:0;">✕</button>
+    </div>`;
+  })() : '';
+
+  // 全設備表示時の一括操作
+  const globalBulkBtn = !filterLine&&visibleEqs.length>0 ? (()=>{
+    const anyOn=visibleEqs.some(e=>(st.counts[e.id]||0)>0);
+    return`<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <button onclick="(function(){const st=asgnState();const ids=${JSON.stringify(visibleEqs.map(e=>e.id))};
+        const anyOn=ids.some(id=>(st.counts[id]||0)>0);
+        if(anyOn)ids.forEach(id=>delete st.counts[id]);
+        else ids.forEach(id=>{st.counts[id]=1;});render();})()"
+        style="padding:5px 13px;border-radius:18px;
+               border:1.5px solid ${anyOn?'rgba(200,41,42,0.3)':'#E4E8EF'};
+               background:${anyOn?'rgba(200,41,42,0.06)':'#F8F9FC'};
+               color:${anyOn?'#C8292A':'#6B7280'};
+               font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
+        ${anyOn?'✕ 全解除':'全選択'}
+      </button>
+    </div>`;
+  })() : '';
+
+  // [v8] 設備行 — +/− ボタンで複数台選択
+  const eqCheckRows = visibleEqs.length>0 ? visibleEqs.map(eq=>{
+    const cnt = st.counts[eq.id]||0;
+    const on  = cnt > 0;
+    const lines = S.lines.filter(l=>(l.equipmentIds||[]).includes(eq.id));
+    const lineLabel = lines.map(l=>l.name).join('・') || '未ライン';
+    return`
+    <div style="display:flex;align-items:center;gap:10px;
+               padding:11px 12px;
+               background:${on?'#EEF2FF':'#FFFFFF'};
+               border:1.5px solid ${on?'#818CF8':'#E8EAF0'};
+               border-radius:12px;margin-bottom:6px;
+               transition:background .12s,border-color .12s;
+               box-shadow:${on?'0 2px 8px rgba(79,70,229,0.10)':'0 1px 2px rgba(0,0,0,0.04)'};">
+      <div style="flex:1;min-width:0;cursor:pointer;" onclick="asgnSetCount('${eq.id}',${on?-cnt:1})">
+        <span style="font-size:14px;font-weight:${on?600:400};color:${on?'#312E81':'#374151'};">${eq.name}</span>
+        <span style="font-size:13px;color:${on?'#6366F1':'#9CA3AF'};">（${lineLabel}）</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;flex-shrink:0;border-radius:10px;overflow:hidden;border:1.5px solid ${on?'#818CF8':'#E4E8EF'};">
+        <button onclick="asgnSetCount('${eq.id}',-1)" ${cnt===0?'disabled':''}
+          style="width:32px;height:32px;border:none;background:${cnt>0?'#EEF2FF':'#F8F9FC'};
+                 color:${cnt>0?'#4F46E5':'#CBD5E1'};font-size:18px;font-weight:700;
+                 cursor:${cnt>0?'pointer':'default'};touch-action:manipulation;font-family:inherit;
+                 display:flex;align-items:center;justify-content:center;">−</button>
+        <div style="min-width:38px;height:32px;background:${on?'#4F46E5':'#F1F3F8'};
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:13px;font-weight:700;color:${on?'#FFFFFF':'#9CA3AF'};
+                    transition:background .15s,color .15s;">
+          ${cnt > 0 ? cnt+'台' : '0'}
+        </div>
+        <button onclick="asgnSetCount('${eq.id}',+1)"
+          style="width:32px;height:32px;border:none;background:#EEF2FF;
+                 color:#4F46E5;font-size:18px;font-weight:700;
+                 cursor:pointer;touch-action:manipulation;font-family:inherit;
+                 display:flex;align-items:center;justify-content:center;">＋</button>
+      </div>
+    </div>`;
+  }).join('') : `
+    <div style="padding:32px 20px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:10px;">🔍</div>
+      <div style="font-size:13px;font-weight:600;color:#6B7280;margin-bottom:4px;">このラインに設備がありません</div>
+      <button onclick="asgnSetFilter(null)"
+        style="margin-top:8px;padding:7px 18px;border-radius:20px;border:1.5px solid #E4E8EF;
+               background:#FFFFFF;color:#4F46E5;font-size:12px;font-weight:600;
+               cursor:pointer;font-family:inherit;">フィルター解除</button>
+    </div>`;
+
+  // ── 紐づけ済み一覧
+  const assignList=S.assignments.length
+    ?S.assignments.map(a=>{
+      const editing=a.name===selName;
+      // [v8] 重複IDを集約して「設備名×台数」表示
+      const eqMap={};
+      (a.equipmentIds||[]).forEach(id=>{ eqMap[id]=(eqMap[id]||0)+1; });
+      const eqSummary=Object.entries(eqMap).map(([id,n])=>{
+        const nm=getEq(id)?.name||id;
+        return n>1?`${nm}×${n}`:nm;
+      }).join('・')||'設備なし';
+      const totalUnits=(a.equipmentIds||[]).length;
+      return`
+      <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;
+                  background:${editing?'#EEF2FF':'#FFFFFF'};
+                  border:2px solid ${editing?'#818CF8':'#E4E8EF'};
+                  border-radius:14px;margin-bottom:8px;transition:all .15s;">
+        <div style="width:38px;height:38px;border-radius:11px;
+                    background:${editing?'linear-gradient(135deg,#4F46E5,#6366F1)':'#F1F3F8'};
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:15px;font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;">
+          ${a.name.charAt(0)}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:14px;font-weight:600;color:#111827;">${a.name}</span>
+            <span style="font-size:10px;font-weight:700;color:#16A34A;background:#DCFCE7;padding:2px 8px;border-radius:8px;">設定済み</span>
+          </div>
+          <div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            計${totalUnits}台 — ${eqSummary}
+          </div>
+        </div>
+        ${editing
+          ?`<span style="font-size:11px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:5px 11px;border-radius:9px;border:1.5px solid #C7D2FE;flex-shrink:0;">編集中</span>`
+          :`<button onclick="asgnSetName('${a.name.replace(/'/g,"\\'")}')"
+               style="padding:7px 13px;background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:10px;
+                      color:#374151;font-size:12px;font-weight:600;cursor:pointer;
+                      touch-action:manipulation;font-family:inherit;flex-shrink:0;">編集</button>`
+        }
+      </div>`;
+    }).join('')
+    :`<div style="padding:28px 20px;text-align:center;color:#9CA3AF;font-size:13px;">
+        <div style="font-size:32px;margin-bottom:10px;">📋</div>
+        <div style="font-weight:600;margin-bottom:3px;">まだ紐づけがありません</div>
+        <div style="font-size:12px;">上のリストで設備を選んで保存してください</div>
+      </div>`;
+
+  // ── HTML組み立て
+  return`
+  <style>
+    #asgn-pills::-webkit-scrollbar{display:none;}
+    #asgn-filter::-webkit-scrollbar{display:none;}
+    .asgn-eq-row{transition:background .12s,border-color .12s;}
+    .asgn-eq-row:active{transform:scale(.985);opacity:.88;}
+  </style>
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F4F5F9;overflow:hidden;">
+
+    <!-- ヘッダー -->
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;
+                padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 16px;
+                flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;bottom:0;right:0;height:2.5px;
+                  background:linear-gradient(90deg,#4F46E5,#818CF8 60%,transparent);
+                  pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
+        <button onclick="S._assignSelName=null;S._asgn=null;nav('HOME');"
+          style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;
+                 border:1.5px solid #E4E8EF;display:flex;align-items:center;
+                 justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
+          ${BACK_ICO}
+        </button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.8px;margin-bottom:3px;">管理者設定</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">担当設備紐づけ</div>
+        </div>
+        <!-- 選択カウンター バッジ -->
+        <div style="background:${totalSel>0?'linear-gradient(135deg,#4F46E5,#6366F1)':'#F1F3F8'};
+                    color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:12px;font-weight:700;
+                    padding:7px 14px;border-radius:22px;white-space:nowrap;transition:all .2s;
+                    box-shadow:${totalSel>0?'0 3px 12px rgba(79,70,229,0.28)':'none'};">
+          ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '0台選択中'}
+        </div>
+      </div>
+    </div>
+
+    <!-- スクロール本体 -->
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+                padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px);">
+
+      <!-- ① 担当者選択 -->
+      <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:14px 16px 14px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="4" r="2.5" stroke="#9CA3AF" stroke-width="1.4"/>
+            <path d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;">担当者を選択</span>
+        </div>
+        <div id="asgn-pills" style="display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;
+                                     scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px;">
+          ${namePills}
+        </div>
+        <!-- 設定状態インジケーター -->
+        <div style="margin-top:12px;">
+          ${existAssign
+            ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;
+                          background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="6" fill="#16A34A"/>
+                  <path d="M4 7l2.5 2.5 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span style="font-size:12px;font-weight:700;color:#15803D;">
+                  紐づけ済み — 設備 ${(existAssign.equipmentIds||[]).length}台
+                </span>
+              </div>`
+            :`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;
+                          background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="6" fill="#CA8A04"/>
+                  <path d="M7 4v3.5M7 9.5v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span style="font-size:12px;font-weight:700;color:#854D0E;">未設定 — 現在は全設備が表示されます</span>
+              </div>`
+          }
+        </div>
+      </div>
+
+      <!-- ② ラインフィルター（絞り込み専用・選択対象ではない） -->
+      <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:10px 16px 12px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M1 2.5h10M3 6h6M5 9.5h2" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;">ラインで絞り込み</span>
+          <span style="font-size:10px;color:#C7D2FE;font-weight:500;background:#EEF2FF;padding:1px 7px;border-radius:8px;">
+            フィルター
+          </span>
+        </div>
+        <div id="asgn-filter" style="display:flex;gap:6px;overflow-x:auto;
+                                      scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
+          ${filterPills}
+        </div>
+      </div>
+
+      <!-- ③ 設備チェックリスト -->
+      <div style="padding:12px 14px 6px;">
+
+        <!-- アクティブフィルターバナー / カウント行 -->
+        ${filterLine
+          ? filterBanner
+          : `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+               <span style="font-size:11px;font-weight:700;color:#374151;">
+                 全設備 <span style="color:#6366F1;">${visibleEqs.length}</span> 台
+               </span>
+               ${globalBulkBtn}
+             </div>`
+        }
+
+        ${eqCheckRows}
+      </div>
+
+      <!-- 紐づけ済み一覧 -->
+      ${S.assignments.length>0?`
+      <div style="padding:6px 14px 14px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <rect x="1" y="1" width="10" height="10" rx="2.5" stroke="#6B7280" stroke-width="1.3"/>
+            <path d="M4 6l2 2 3-3" stroke="#16A34A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;">現在の紐づけ一覧</span>
+        </div>
+        ${assignList}
+      </div>`:''}
+
+    </div>
+
+    <!-- 保存ボタン（固定フッター） -->
+    <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
+                padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);
+                background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);
+                -webkit-backdrop-filter:blur(20px);border-top:1px solid #E4E8EF;z-index:20;">
+      <button onclick="asgnSave()"
+        style="width:100%;padding:15px;
+               background:${totalSel>0?'linear-gradient(135deg,#4F46E5,#6366F1)':'#9CA3AF'};
+               color:white;border:none;border-radius:16px;font-size:15px;font-weight:700;
+               cursor:pointer;touch-action:manipulation;font-family:inherit;
+               box-shadow:${totalSel>0?'0 4px 20px rgba(79,70,229,0.3)':'none'};
+               display:flex;align-items:center;justify-content:center;gap:10px;
+               letter-spacing:.2px;transition:all .15s;"
+        onmousedown="if(${totalSel}>0){this.style.transform='scale(.97)';this.style.boxShadow='0 2px 8px rgba(79,70,229,0.2)'}"
+        onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(79,70,229,0.3)'">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M2 7.5l4.5 4.5L13 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        紐づけを保存する
+        <span style="background:rgba(255,255,255,0.22);border-radius:10px;padding:3px 11px;font-size:12px;font-weight:700;">
+          ${totalSel}台
+        </span>
+      </button>
+    </div>
+  </div>`;
+}
+
+// 互換性のため旧関数名を残す（空関数）
+function assignSaveClick(){asgnSave();}
+function assignChangeName(n){asgnSetName(n);}
+function assignUpdateEquipSection(){}
+// ════════════════════════════════════════════════════════════
+
 function render(){
   const sc=document.getElementById('screen');
   const prevScroll=(S.view==='INSP_RUN')?document.getElementById('insp-run-scroll')?.scrollTop:null;
+  const prevLeqScroll=(S.view==='LINE_EQ_MGMT')?document.getElementById('leq-scroll')?.scrollTop:null;
   let body='';
   switch(S.view){
     case'ROLE_SELECT':body=renderRoleSelect();break;
@@ -2926,10 +4043,13 @@ function render(){
     case'LINE_MGMT':body=renderLineMgmt();break;
     case'ITEM_MGMT':body=renderItemMgmt();break;
     case'LINE_EQ_MGMT':body=renderLineEqMgmt();break;
+    // [ADDED] ⑦ 担当設備紐づけ管理画面
+    case'ASSIGNMENT_MGMT':body=renderAssignmentMgmt();break;
     default:body=renderHome();
   }
   sc.innerHTML=body;
   if(prevScroll!=null)requestAnimationFrame(()=>{const el=document.getElementById('insp-run-scroll');if(el)el.scrollTop=prevScroll;});
+  if(prevLeqScroll!=null)requestAnimationFrame(()=>{const el=document.getElementById('leq-scroll');if(el)el.scrollTop=prevLeqScroll;});
   if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
