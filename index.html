@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム v4</title>
+<title>日常点検システム v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -168,10 +168,76 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 
 ::-webkit-scrollbar{width:3px;height:3px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.10);border-radius:2px;}
+
+/* ── Responsive visibility ── */
+.pc-only{display:none;}
+
+/* ── PC Layout (769px+) ── */
 @media(min-width:769px){
-  #app{max-width:900px;}
-  .btabs{max-width:900px;}
+  #app{max-width:1120px;}
+  .btabs{max-width:1120px;}
   .hdr-action-btn:hover{background:var(--surface2);color:var(--text);}
+  .jok:hover{background:var(--green);color:white;}
+  .jng:hover{background:var(--red);color:white;}
+  .mobile-only{display:none !important;}
+  .pc-only{display:flex;}
+
+  /* History 2-col */
+  .hist-pc-body{flex-direction:row !important;overflow:hidden;}
+  .hist-sidebar{
+    display:flex !important;flex-direction:column;
+    width:280px;flex-shrink:0;
+    border-right:1.5px solid #E4E8EF;
+    background:#FAFBFC;overflow:hidden;
+  }
+  .hist-sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
+  .hist-sidebar-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;-webkit-overflow-scrolling:touch;}
+  .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
+  .hist-main-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px calc(env(safe-area-inset-bottom,0px)+90px);}
+
+  /* Equipment list cards in sidebar */
+  .hist-eq-card{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;border-radius:12px;cursor:pointer;
+    border:1.5px solid transparent;margin-bottom:6px;
+    transition:background .12s,border-color .15s,transform .1s;
+    position:relative;
+  }
+  .hist-eq-card:hover{background:#F0F2F8;border-color:#C7CDE8;transform:translateX(2px);}
+  .hist-eq-card.hist-eq-active{background:#EEF2FF;border-color:#6366F1;}
+  .hist-eq-card:hover .hist-eq-hover-tip{opacity:1;}
+
+  /* Equipment sidebar hover badge */
+  .hist-eq-hover-tip{
+    position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);
+    background:#1E293B;color:white;font-size:11px;padding:7px 12px;
+    border-radius:9px;white-space:nowrap;z-index:40;
+    opacity:0;pointer-events:none;
+    transition:opacity .15s;box-shadow:0 4px 16px rgba(0,0,0,0.22);
+  }
+  .hist-eq-hover-tip::before{
+    content:'';position:absolute;right:100%;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:#1E293B;
+  }
+
+  /* Larger calendar cells on PC */
+  .cal-cell-item{min-height:62px !important;padding:6px 4px !important;position:relative !important;}
+  .cal-cell-item:hover .cal-day-tip{display:block;}
+  .cal-cell-item > div:first-child{font-size:12px !important;}
+
+  /* Calendar hover tooltip */
+  .cal-day-tip{
+    display:none;position:absolute;
+    bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+    background:#1E293B;color:white;font-size:11px;
+    padding:7px 12px;border-radius:8px;white-space:nowrap;
+    z-index:30;pointer-events:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.22);text-align:center;line-height:1.6;
+  }
+  .cal-day-tip::after{
+    content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:#1E293B;
+  }
 }
 
 /* ── Calendar Grid ── */
@@ -211,10 +277,10 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-badge.partial{background:var(--orange-lt);color:var(--orange);}
 .cal-badge.done-daily{background:#E8F5E9;color:#16A34A;}
 /* ── Equipment Tabs ── */
-.equip-tabs-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -18px;padding:0 18px 12px;}
+.equip-tabs-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 12px;scroll-snap-type:x mandatory;}
 .equip-tabs-wrap::-webkit-scrollbar{display:none;}
 .equip-tabs{display:flex;gap:8px;min-width:max-content;}
-.equip-tab{flex-shrink:0;padding:9px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;}
+.equip-tab{flex:0 0 auto;padding:9px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;scroll-snap-align:start;}
 .equip-tab:active{transform:scale(.96);}
 .equip-tab.inactive{background:#F1F3F8;color:#374151;border-color:#E4E8EF;}
 .equip-tab.active{background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 3px 12px rgba(200,41,42,0.28);}
@@ -244,28 +310,31 @@ const S={
     inspector:['山田 太郎','佐藤 花子','田中 一郎','鈴木 次郎','高橋 三郎','渡辺 四郎'],
     admin:['鈴木 部長','伊藤 課長','渡辺 係長','中村 主任'],
   },
+  // [v5 NEW] ① 設備マスター — ラインに依存しない独立した設備定義
+  equipments:[
+    {id:'E1', name:'組立機A',    items:[{id:'i11',n:'油圧ゲージ確認',t:'毎日'},{id:'i12',n:'潤滑油レベル',t:'毎日'},{id:'i13',n:'異音・異臭確認',t:'毎日'},{id:'i14',n:'ベルト張力確認',t:'10日'},{id:'i15',n:'フィルター清掃',t:'月次'}]},
+    {id:'E2', name:'組立機B',    items:[{id:'i21',n:'油圧ゲージ確認',t:'毎日'},{id:'i22',n:'回転数確認',t:'毎日'},{id:'i23',n:'温度確認',t:'毎日'},{id:'i24',n:'カップリング点検',t:'10日'}]},
+    {id:'E3', name:'コンベア1',  items:[{id:'i31',n:'ベルト状態確認',t:'毎日'},{id:'i32',n:'駆動部潤滑',t:'毎日'},{id:'i33',n:'テンション調整',t:'10日'}]},
+    {id:'E4', name:'溶接ロボット',items:[{id:'i41',n:'アーム動作確認',t:'毎日'},{id:'i42',n:'ワイヤー残量',t:'毎日'},{id:'i43',n:'冷却水確認',t:'毎日'},{id:'i44',n:'キャリブレーション',t:'月次'}]},
+    {id:'E5', name:'検査装置',   items:[{id:'i51',n:'センサー動作確認',t:'毎日'},{id:'i52',n:'精度チェック',t:'10日'}]},
+    {id:'E6', name:'NC旋盤1',    items:[{id:'i61',n:'主軸回転確認',t:'毎日'},{id:'i62',n:'クーラント確認',t:'毎日'},{id:'i63',n:'刃具摩耗確認',t:'毎日'},{id:'i64',n:'精度測定',t:'10日'}]},
+    {id:'E7', name:'マシニングセンタ',items:[{id:'i71',n:'ATC動作確認',t:'毎日'},{id:'i72',n:'切削油確認',t:'毎日'},{id:'i73',n:'主軸温度確認',t:'毎日'},{id:'i74',n:'スピンドル点検',t:'月次'}]},
+    {id:'E8', name:'研削盤',     items:[{id:'i81',n:'砥石状態確認',t:'毎日'},{id:'i82',n:'冷却液確認',t:'毎日'},{id:'i83',n:'バランス調整',t:'10日'}]},
+    {id:'E9', name:'塗装ブース1',items:[{id:'i91',n:'排気ファン確認',t:'毎日'},{id:'i92',n:'フィルター状態',t:'毎日'},{id:'i93',n:'塗料粘度確認',t:'毎日'}]},
+    {id:'E10',name:'乾燥炉',     items:[{id:'i101',n:'温度プロファイル確認',t:'毎日'},{id:'i102',n:'バーナー状態確認',t:'毎日'},{id:'i103',n:'チェーン潤滑',t:'10日'}]},
+  ],
+  // [v5 NEW] ② ラインは設備IDを参照するだけ（設備をコピーしない）
   lines:[
-    {id:'L1',name:'組立ライン',desc:'A棟1F',equip:[
-      {id:'E1',name:'組立機A',lid:'L1',items:[{id:'i11',n:'油圧ゲージ確認',t:'毎日'},{id:'i12',n:'潤滑油レベル',t:'毎日'},{id:'i13',n:'異音・異臭確認',t:'毎日'},{id:'i14',n:'ベルト張力確認',t:'10日'},{id:'i15',n:'フィルター清掃',t:'月次'}]},
-      {id:'E2',name:'組立機B',lid:'L1',items:[{id:'i21',n:'油圧ゲージ確認',t:'毎日'},{id:'i22',n:'回転数確認',t:'毎日'},{id:'i23',n:'温度確認',t:'毎日'},{id:'i24',n:'カップリング点検',t:'10日'}]},
-      {id:'E3',name:'コンベア1',lid:'L1',items:[{id:'i31',n:'ベルト状態確認',t:'毎日'},{id:'i32',n:'駆動部潤滑',t:'毎日'},{id:'i33',n:'テンション調整',t:'10日'}]},
-      {id:'E4',name:'溶接ロボット',lid:'L1',items:[{id:'i41',n:'アーム動作確認',t:'毎日'},{id:'i42',n:'ワイヤー残量',t:'毎日'},{id:'i43',n:'冷却水確認',t:'毎日'},{id:'i44',n:'キャリブレーション',t:'月次'}]},
-      {id:'E5',name:'検査装置',lid:'L1',items:[{id:'i51',n:'センサー動作確認',t:'毎日'},{id:'i52',n:'精度チェック',t:'10日'}]},
-    ]},
-    {id:'L2',name:'加工ライン',desc:'A棟2F',equip:[
-      {id:'E6',name:'NC旋盤1',lid:'L2',items:[{id:'i61',n:'主軸回転確認',t:'毎日'},{id:'i62',n:'クーラント確認',t:'毎日'},{id:'i63',n:'刃具摩耗確認',t:'毎日'},{id:'i64',n:'精度測定',t:'10日'}]},
-      {id:'E7',name:'マシニングセンタ',lid:'L2',items:[{id:'i71',n:'ATC動作確認',t:'毎日'},{id:'i72',n:'切削油確認',t:'毎日'},{id:'i73',n:'主軸温度確認',t:'毎日'},{id:'i74',n:'スピンドル点検',t:'月次'}]},
-      {id:'E8',name:'研削盤',lid:'L2',items:[{id:'i81',n:'砥石状態確認',t:'毎日'},{id:'i82',n:'冷却液確認',t:'毎日'},{id:'i83',n:'バランス調整',t:'10日'}]},
-    ]},
-    {id:'L3',name:'塗装ライン',desc:'B棟1F',equip:[
-      {id:'E9',name:'塗装ブース1',lid:'L3',items:[{id:'i91',n:'排気ファン確認',t:'毎日'},{id:'i92',n:'フィルター状態',t:'毎日'},{id:'i93',n:'塗料粘度確認',t:'毎日'}]},
-      {id:'E10',name:'乾燥炉',lid:'L3',items:[{id:'i101',n:'温度プロファイル確認',t:'毎日'},{id:'i102',n:'バーナー状態確認',t:'毎日'},{id:'i103',n:'チェーン潤滑',t:'10日'}]},
-    ]},
+    {id:'L1', name:'組立ライン', desc:'A棟1F', equipmentIds:['E1','E2','E3','E4','E5']},
+    {id:'L2', name:'加工ライン', desc:'A棟2F', equipmentIds:['E6','E7','E8']},
+    {id:'L3', name:'塗装ライン', desc:'B棟1F', equipmentIds:['E9','E10']},
   ],
   insps:{},
   _demoLoaded:false,
   // ═══ [ADDED] ① 担当設備紐づけデータ ═══
   assignments:[],
+  // [v6] 新履歴コレクション（1設備×1日×種別 = 1レコード）
+  inspections:[],
   approvals:[
     {id:'A1',lid:'L1',eid:'E1',type:'10日点検',date:'2026-04-08',status:'pending',by:'山田太郎',approver:null},
     {id:'A2',lid:'L2',eid:'E6',type:'月次点検',date:'2026-04-05',status:'pending',by:'佐藤花子',approver:null},
@@ -275,41 +344,28 @@ const S={
     {id:'AN1',lid:'L1',eid:'E2',iid:'i22',iname:'回転数確認',comment:'異常振動あり。要確認',status:'open',date:'2026-04-09',by:'山田太郎'},
     {id:'AN2',lid:'L2',eid:'E6',iid:'i63',iname:'刃具摩耗確認',comment:'摩耗が著しい。交換が必要',status:'in-progress',date:'2026-04-08',by:'佐藤花子'},
   ],
-  // [ADDED v5] ① 設備マスターリスト（ラインとは独立）
-  equipments: [],
 };
-
-// ════════════════════════════════════════════════════════════
-// [ADDED v5] 設備マスター初期化
-// 既存ラインの equip をマスターにコピーし、ラインに equipmentIds を付与
-// ════════════════════════════════════════════════════════════
-(function initEquipMaster(){
-  S.lines.forEach(l=>{
-    l.equip.forEach(eq=>{
-      if(!S.equipments.find(e=>e.id===eq.id)){
-        S.equipments.push(Object.assign({},eq,{items:[...eq.items]}));
-      }
-    });
-    // [ADDED v5] ② ラインは equipmentIds で設備を参照する
-    if(!l.equipmentIds) l.equipmentIds = l.equip.map(e=>e.id);
-  });
-})();
 
 function getLn(id){return S.lines.find(l=>l.id===id);}
 
-// ═══════════ [ADDED v4] isTargetDay — 周期に基づく表示判定 ═══════════
-// 仕様: daily=毎日表示 / 10day=10日・20日・月末 / monthly=1日のみ
-// データの t フィールド: '毎日' | '10日' | '月次'
+// [v5] ③ 設備マスターから取得（ライン横断で検索不要）
+function getEq(id){ return S.equipments.find(e=>e.id===id)||null; }
+
+// [v5] ④ ライン→設備オブジェクト配列（マスター参照）
+function getLineEquip(line){
+  if(!line) return [];
+  return (line.equipmentIds||[]).map(id=>getEq(id)).filter(Boolean);
+}
+
+// [v5 NEW] isTargetDay — 周期に基づく表示判定
 function isTargetDay(item){
   const day = new Date().getDate();
   const t = item.t || item.cycle;
   if(t === 'daily'  || t === '毎日') return true;
   if(t === '10day'  || t === '10日') return day % 10 === 0;
   if(t === 'monthly'|| t === '月次') return day === 1;
-  return true; // 不明な場合は表示
+  return true;
 }
-
-// 今日の点検対象種別ラベルを返す（バナー表示用）
 function getTodayInspTypes(){
   const day = new Date().getDate();
   const types = ['毎日'];
@@ -317,34 +373,35 @@ function getTodayInspTypes(){
   if(day === 1)      types.push('月次');
   return types;
 }
-// ════════════════════════════════════════════════════════════
 
-// ═══════════ [v6 MODIFIED] 担当設備紐づけ ヘルパー関数 ═══════════
-// ① 担当者の紐づけデータを取得
+// [v5] ⑤ 担当者の紐づけデータを取得
 function getUserAssignment(name){
   return S.assignments.find(a => a.name === name);
 }
-// [v6 MODIFIED] ② 担当者のラインを返す
-// lineIds 依存を廃止 → 担当設備が含まれるラインを自動導出
+// [v5] ⑥ 担当者のラインのみ返す（未設定なら全ライン）
 function getVisibleLines(){
   const a = getUserAssignment(S.currentName);
-  if(!a || !a.equipmentIds || !a.equipmentIds.length) return S.lines;
-  // 担当設備が1台以上属するラインのみ表示
-  return S.lines.filter(l => l.equip.some(e => a.equipmentIds.includes(e.id)));
+  if(!a) return S.lines;
+  return S.lines.filter(l => a.lineIds.includes(l.id));
 }
-// ③ 担当者の設備のみ返す（未設定なら全設備）
-// equipmentIds ベースのため変更なし
+// [v5/v6] ⑦ 担当者の設備のみ返す（マスターから参照 + 担当フィルタ）
 function getVisibleEquip(line){
+  const eqs = getLineEquip(line);
   const a = getUserAssignment(S.currentName);
-  if(!a) return line.equip;
-  return line.equip.filter(e => a.equipmentIds.includes(e.id));
+  if(!a || !a.equipmentIds || a.equipmentIds.length === 0) return eqs;
+  return eqs.filter(e => a.equipmentIds.includes(e.id));
 }
-// [v6 MODIFIED] ④ 保存処理 — lineIds を廃止し equipmentIds のみ保存
-function saveAssignment(name, equipmentIds){
+// [v6] 担当者の全設備（ライン横断）
+function getAllAssignedEquip(){
+  const a = getUserAssignment(S.currentName);
+  if(!a || !a.equipmentIds || a.equipmentIds.length === 0) return null; // null = 未設定 = 全設備
+  return a.equipmentIds.map(id=>getEq(id)).filter(Boolean);
+}
+// ⑧ 紐づけ保存処理
+function saveAssignment(name, lineIds, equipmentIds){
   if(!name){toast('担当者を選択してください','warn');return;}
   const idx = S.assignments.findIndex(a => a.name === name);
-  // [v6] {name, equipmentIds} のみ。lineIds は不要
-  const data = { name, equipmentIds };
+  const data = { name, lineIds, equipmentIds };
   if(idx >= 0){ S.assignments[idx] = data; }
   else { S.assignments.push(data); }
   toast('紐づけを保存しました');
@@ -352,94 +409,72 @@ function saveAssignment(name, equipmentIds){
 }
 // 担当設備管理画面へのナビゲーション用
 function navAssignment(){nav('ASSIGNMENT_MGMT');}
-
-// ════════════════════════════════════════════════════════════
-// [ADDED v5] 設備マスター操作ヘルパー
-// ════════════════════════════════════════════════════════════
-
-// [v5] ラインの equip を equipmentIds から再構築（他画面への後方互換維持）
-function syncLineEquip(lid){
-  const l=getLn(lid);if(!l)return;
-  const ids=l.equipmentIds||[];
-  l.equip=S.equipments.filter(e=>ids.includes(e.id));
-}
-
-// [v5] ライン内の設備トグル（チェックON/OFF）
-function leToggleEqInLine(lid,eid){
-  const l=getLn(lid);if(!l)return;
-  if(!l.equipmentIds)l.equipmentIds=[];
-  const idx=l.equipmentIds.indexOf(eid);
-  if(idx>=0)l.equipmentIds.splice(idx,1);
-  else l.equipmentIds.push(eid);
-  syncLineEquip(lid);render();
-}
-
-// [v5] マスターに設備を追加（ライン紐づけなし）
-function addEqMasterConfirm(){
-  const n=document.getElementById('meqf-n')?.value?.trim();
-  if(!n){toast('設備名を入力してください','warn');return;}
-  const k=document.getElementById('meqf-k')?.value?.trim()||'';
-  const customId=document.getElementById('meqf-id')?.value?.trim();
-  const newId=customId||'E'+Date.now();
-  S.equipments.push({id:newId,name:n,kind:k,items:[
-    {id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},
-    {id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}
-  ]});
-  S.modal=null;toast(`「${n}」を設備マスターに追加しました`);render();
-}
-
-// [v5] マスターから設備削除（全ラインからも除去）
-function leDelEqMaster(eid){
-  const eq=S.equipments.find(e=>e.id===eid);
-  if(!eq)return;
-  if(!confirm(`「${eq.name}」を削除しますか？\n紐づいているラインからも除外されます。`))return;
-  S.equipments=S.equipments.filter(e=>e.id!==eid);
-  S.lines.forEach(l=>{
-    if(l.equipmentIds)l.equipmentIds=l.equipmentIds.filter(id=>id!==eid);
-    syncLineEquip(l.id);
-  });
-  toast('設備を削除しました');render();
-}
 // ════════════════════════════════════════════════════════════
 // ── Demo data seed ──
 (function seedDemo(){
   const d=new Date();
   function ds(offset){const x=new Date(d);x.setDate(x.getDate()+offset);return`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}
-  const ok=(items)=>{const r={};items.forEach(i=>{r[i.id]={r:'ok',comment:'',photos:0};});return r;};
-  const ng=(items,ngId)=>{const r=ok(items);r[ngId]={r:'ng',comment:'異常あり',photos:1};return r;};
-  // Today and past few days
+  const okR=(items)=>{const r={};items.forEach(i=>{r[i.id]={r:'ok',comment:'',photos:0};});return r;};
+  const ngR=(items,ngId)=>{const r=okR(items);r[ngId]={r:'ng',comment:'異常あり',photos:1};return r;};
+
+  function mkInspRecord(eq,date,type,results){
+    const items = eq.items.filter(i=>i.t===(type==='毎日点検'?'毎日':type==='10日点検'?'10日':'月次'));
+    const lineId = (eq.lineIds&&eq.lineIds[0]) || S.lines.find(l=>(l.equipmentIds||[]).includes(eq.id))?.id || '';
+    const lineName = getLn(lineId)?.name||'';
+    const itemsArr = items.map(it=>({
+      itemId:it.id, itemName:it.n,
+      result: results[it.id]?.r==='ng'?'✕':'〇',
+      comment: results[it.id]?.comment||''
+    }));
+    const okCnt=itemsArr.filter(i=>i.result==='〇').length;
+    const ngCnt=itemsArr.filter(i=>i.result==='✕').length;
+    const status=ngCnt>0?'ng':okCnt<itemsArr.length?'incomplete':'completed';
+    const ym=date.slice(0,7);
+    return{
+      id:eq.id+'_'+date+'_'+type.replace(/点検/,''),
+      userId:'', userName:'デモ',
+      equipmentId:eq.id, equipmentName:eq.equipmentName||eq.name, equipmentNumber:eq.equipmentNumber||'',
+      lineId, lineName,
+      date, yearMonth:ym,
+      type:type==='毎日点検'?'daily':type==='10日点検'?'tenDay':'monthly',
+      status, items:itemsArr,
+      summary:{totalCount:itemsArr.length,okCount:okCnt,ngCount:ngCnt},
+      createdAt:date+'T09:00:00'
+    };
+  }
+
+  // [v5] S.equipments マスターからデモデータ生成
   [0,-1,-2,-3,-4,-5].forEach(offset=>{
     const date=ds(offset);
-    const dateObj=new Date(date);const dw=dateObj.getDay();
-    S.lines.forEach(line=>{
-      line.equip.forEach((eq,ei)=>{
-        // Stagger: not all equip on all days
-        if((ei+Math.abs(offset))%3===2)return;
-        const items=eq.items.filter(i=>i.t==='毎日');
-        if(!items.length)return;
-        const hasNg=(offset===-1&&ei===1)||(offset===-3&&ei===0);
-        const key=eq.id+':毎日点検';
-        S.insps[key]={date,results:hasNg?ng(items,items[0].id):ok(items)};
-        // 10日点検 on weekdays only
-        if(offset===0&&ei===0){
-          const d10=new Date(date);const dw10=d10.getDay();
-          if(dw10!==0&&dw10!==6){
-            const items10=eq.items.filter(i=>i.t==='10日');
-            if(items10.length){S.insps[eq.id+':10日点検']={date,results:ok(items10)};}
+    S.equipments.forEach((eq,ei)=>{
+      if((ei+Math.abs(offset))%3===2)return;
+      const items=eq.items.filter(i=>i.t==='毎日');
+      if(!items.length)return;
+      const hasNg=(offset===-1&&ei===1)||(offset===-3&&ei===0);
+      const results=hasNg?ngR(items,items[0].id):okR(items);
+      const key=eq.id+':毎日点検';
+      S.insps[key]={date,results};
+      // [v6] 新構造にも保存
+      S.inspections.push(mkInspRecord(eq,date,'毎日点検',results));
+      if(offset===0&&ei===0){
+        const d10=new Date(date);const dw10=d10.getDay();
+        if(dw10!==0&&dw10!==6){
+          const items10=eq.items.filter(i=>i.t==='10日');
+          if(items10.length){
+            const r10=okR(items10);
+            S.insps[eq.id+':10日点検']={date,results:r10};
+            S.inspections.push(mkInspRecord(eq,date,'10日点検',r10));
           }
         }
-      });
+      }
     });
   });
 })();
-// [v5 MODIFIED] getEq — まずラインから検索、次にマスターから検索（後方互換）
-function getEq(id){
-  for(const l of S.lines){const e=l.equip.find(e=>e.id===id);if(e)return e;}
-  // [v5] マスターにしかない設備も取得できるよう拡張
-  return S.equipments.find(e=>e.id===id)||null;
-}
+// [v5] getEq はマスターから（旧：line.equip を横断検索していた）
+function getEq(id){ return S.equipments.find(e=>e.id===id)||null; }
 // Initialize selectedEquipmentId to first equipment
-S.selectedEquipmentId=S.lines[0]?.equip[0]?.id||null;
+// [v5] 初期選択設備：マスターの先頭
+S.selectedEquipmentId=S.equipments[0]?.id||null;
 function getInsps(eid,type){type=type||S.inspType;return S.insps[eid+':'+type];}
 function typeItems(eq,type){
   const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};const t=m[type]||'毎日';
@@ -448,9 +483,10 @@ function typeItems(eq,type){
   return eq.items;
 }
 function lineStats(lid){
-  const l=getLn(lid);let done=0,ng=0,pend=0;
-  for(const eq of l.equip){const st=eqStatus(eq.id);if(st==='done')done++;else if(st==='ng')ng++;else pend++;}
-  return{total:l.equip.length,done,ng,pend};
+  // [v5] getLineEquip() でマスター参照
+  const l=getLn(lid);const eqs=getLineEquip(l);let done=0,ng=0,pend=0;
+  for(const eq of eqs){const st=eqStatus(eq.id);if(st==='done')done++;else if(st==='ng')ng++;else pend++;}
+  return{total:eqs.length,done,ng,pend};
 }
 function eqStatus(eid){
   const eq=getEq(eid);const insp=getInsps(eid,S.inspType);const items=typeItems(eq,S.inspType);
@@ -488,11 +524,13 @@ function submitInsp(){
   const eid=S.selectedEq;const eq=getEq(eid);const items=typeItems(eq,S.inspType);
   const _sk=eid+':'+S.inspType;const rs=S.insps[_sk]?.results||{};const pend=items.filter(i=>!rs[i.id]).length;
   if(pend>0){toast(`未入力が${pend}件あります`,'warn');return;}
-  if(S.inspType!=='毎日点検'){S.approvals.push({id:'A'+Date.now(),lid:eq.lid,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});toast('点検完了。承認申請しました');}
+  // [v6] 新構造に保存（旧S.inspsと並行）
+  saveInspRecord(eq, TODAY, S.inspType, rs);
+  if(S.inspType!=='毎日点検'){S.approvals.push({id:'A'+Date.now(),lid:getEq(eid)?S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||null:null,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});toast('点検完了。承認申請しました');}
   else toast('点検完了しました');
   if(S.bulkActive){
-    const l=getLn(S.bulkLineId);const ni=S.bulkIdx+1;
-    if(ni<l.equip.length){S.bulkIdx=ni;S.selectedEq=l.equip[ni].id;render();}
+    const l=getLn(S.bulkLineId);const eqs=getLineEquip(l);const ni=S.bulkIdx+1;
+    if(ni<eqs.length){S.bulkIdx=ni;S.selectedEq=eqs[ni].id;render();}
     else{S.bulkActive=false;toast('ライン点検完了！');nav('LINE_DETAIL',{selectedLine:S.bulkLineId});}
   }else nav('LINE_DETAIL');
 }
@@ -531,9 +569,12 @@ function editItemConfirm(){
   S.modal=null;render();toast('点検項目を更新しました');
 }
 function addEqConfirm(lid){
+  // [v5] マスターに追加 → ラインにIDを登録
   const n=document.getElementById('meq-n')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
-  getLn(lid).equip.push({id:'E'+Date.now(),name:n,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  const newId='E'+Date.now();
+  S.equipments.push({id:newId,name:n,items:[{id:'I'+newId+'a',n:'外観確認',t:'毎日'},{id:'I'+newId+'b',n:'動作確認',t:'毎日'}]});
+  if(lid){const l=getLn(lid);if(l){l.equipmentIds=l.equipmentIds||[];l.equipmentIds.push(newId);}}
   S.modal=null;toast(`${n}を追加しました`);render();
 }
 
@@ -547,34 +588,43 @@ const EQ_PRESETS=[
   {cat:'成形・プレス',items:['プレス機','射出成形機','ダイカスト機','鍛造プレス']},
 ];
 function addEqSelectConfirm(lid){
+  // [v5] プリセット設備をマスターに追加
   const sel=S.modal.selectedPreset;
   if(!sel){toast('設備を選択してください','warn');return;}
   const newId='E'+Date.now();
-  getLn(lid).equip.push({id:newId,name:sel,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  S.equipments.push({id:newId,name:sel,items:[{id:'I'+newId+'a',n:'外観確認',t:'毎日'},{id:'I'+newId+'b',n:'動作確認',t:'毎日'}]});
+  if(lid){const l=getLn(lid);if(l){l.equipmentIds=l.equipmentIds||[];l.equipmentIds.push(newId);}}
   S.selectedEquipmentId=newId;
   S.modal=null;toast(`「${sel}」を追加しました`);render();
 }
 function addEqSelectCustomConfirm(lid){
+  // [v5] カスタム設備をマスターに追加
   const n=document.getElementById('meq-custom')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
   const newId='E'+Date.now();
-  getLn(lid).equip.push({id:newId,name:n,lid,items:[{id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},{id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}]});
+  S.equipments.push({id:newId,name:n,items:[{id:'I'+newId+'a',n:'外観確認',t:'毎日'},{id:'I'+newId+'b',n:'動作確認',t:'毎日'}]});
+  if(lid){const l=getLn(lid);if(l){l.equipmentIds=l.equipmentIds||[];l.equipmentIds.push(newId);}}
   S.selectedEquipmentId=newId;
   S.modal=null;toast(`「${n}」を追加しました`);render();
 }
 function addLineConfirm(){
   const n=document.getElementById('mln-n')?.value?.trim();const d=document.getElementById('mln-d')?.value?.trim()||'';const r=document.getElementById('mln-r')?.value?.trim()||'';
   if(!n){toast('ライン名を入力してください','warn');return;}
-  S.lines.push({id:'L'+Date.now(),name:n,desc:d,note:r,equip:[]});S.modal=null;toast(`${n}を追加しました`);render();
+  // [v5] 新ライン: equipmentIds:[] で初期化
+  S.lines.push({id:'L'+Date.now(),name:n,desc:d,note:r,equipmentIds:[]});S.modal=null;toast(`${n}を追加しました`);render();
 }
 function delEq(eid){
-  const eq=getEq(eid);if(!confirm(`${eq.name}を削除しますか？`))return;
-  for(const l of S.lines){const i=l.equip.findIndex(e=>e.id===eid);if(i!==-1){l.equip.splice(i,1);break;}}
+  const eq=getEq(eid);if(!eq)return;
+  if(!confirm(`「${eq.name}」を設備マスターから削除しますか？\n※ 全ラインから外れます`))return;
+  // [v5] マスターから削除 + 全ラインのequipmentIdsからも除去
+  S.equipments=S.equipments.filter(e=>e.id!==eid);
+  S.lines.forEach(l=>{l.equipmentIds=(l.equipmentIds||[]).filter(id=>id!==eid);});
   toast('設備を削除しました');render();
 }
 function delItem(eid,iid){
-  const eq=getEq(eid);const it=eq.items.find(i=>i.id===iid);
-  if(!confirm(`「${it.n}」を削除しますか？`))return;
+  // [v5] マスターから検索
+  const eq=getEq(eid);const it=eq?.items.find(i=>i.id===iid);
+  if(!it||!confirm(`「${it.n}」を削除しますか？`))return;
   eq.items=eq.items.filter(i=>i.id!==iid);toast('点検項目を削除しました');render();
 }
 function delLine(lid){
@@ -667,7 +717,7 @@ function generatePrintSheet(){
   const days=Array.from({length:daysInMonth},(_,i)=>i+1);
   const sigCols=[5,10,15,20,25,daysInMonth];
   const dailyItems=[],tenDayItems=[],monthlyItems=[];
-  line.equip.forEach(eq=>{
+  getLineEquip(line).forEach(eq=>{
     eq.items.forEach(it=>{
       const e={eq:eq.name,item:it.n,id:it.id,eid:eq.id};
       if(it.t==='毎日')dailyItems.push(e);
@@ -741,7 +791,7 @@ function generatePrintSheet(){
   function sigName(fromDay,toDay,inspType){
     for(let d=fromDay;d<=toDay;d++){
       const ds=`${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      for(const eq of line.equip){
+      for(const eq of getLineEquip(line)){
         const key=eq.id+':'+inspType;
         if(S.insps[key]?.date===ds && Object.keys(S.insps[key].results||{}).length>0) return pdfName;
       }
@@ -778,7 +828,7 @@ th,td{border:0.5px solid #555;padding:1px 2px;text-align:center;vertical-align:m
   <span>ライン：${line.name}（${line.desc}）</span>
   <div class="meta-right">
     <span>${year}年　${month}月</span>
-    <span>設備数：${line.equip.length}台</span>
+    <span>設備数：${getLineEquip(line).length}台</span>
     <span>点検者：<strong>${pdfName}</strong>　（${pdfRole}）</span>
   </div>
 </div>
@@ -837,7 +887,7 @@ function exportHistoryWeekPDF(){
   // Collect all inspection data for this week
   const rows=[];
   S.lines.forEach(line=>{
-    line.equip.forEach(eq=>{
+    getLineEquip(line).forEach(eq=>{
       dayStrs.forEach(ds=>{
         const dayDow=new Date(ds).getDay();
         const keys=Object.keys(S.insps).filter(k=>k.startsWith(eq.id+':')&&S.insps[k].date===ds);
@@ -974,7 +1024,7 @@ function exportHistoryDayPDF(date){
 
   const rows=[];
   S.lines.forEach(line=>{
-    line.equip.forEach(eq=>{
+    getLineEquip(line).forEach(eq=>{
       const keys=Object.keys(S.insps).filter(k=>k.startsWith(eq.id+':')&&S.insps[k].date===date);
       if(!keys.length){
         rows.push({line:line.name,desc:line.desc,eq:eq.name,type:'－',status:'未実施',statusCls:'pending',items:[]});
@@ -1481,11 +1531,14 @@ function renderInspectorHome(){
       <button onclick="inspChangeUser();" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 15px;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:color .15s,border-color .15s;" onmousedown="this.style.color='#C8292A';this.style.borderColor='#C8292A'" onmouseup="this.style.color='';this.style.borderColor=''">変更</button>
     </div>
 
-    <!-- [v4 NEW] 本日の点検種別バナー -->
+    <!-- [v6] 本日の点検種別 + 担当設備表示 -->
     <div style="padding:10px 16px;background:#FFFBEB;border-bottom:1px solid rgba(217,119,6,0.2);display:flex;align-items:center;gap:10px;flex-shrink:0;">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;"><circle cx="7" cy="7" r="6" stroke="#D97706" stroke-width="1.4"/><path d="M7 4v3.5M7 9v.5" stroke="#D97706" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <span style="font-size:12px;font-weight:600;color:#92400E;">本日の点検種別：${todayTypes.join(' ＋ ')}</span>
-      ${!userAssign?`<span style="margin-left:auto;font-size:11px;font-weight:600;color:#D97706;background:#FEF3C7;padding:3px 9px;border-radius:8px;">全設備表示中</span>`:''}
+      <span style="font-size:12px;font-weight:600;color:#92400E;">本日の点検：${todayTypes.join(' ＋ ')}</span>
+      ${userAssign
+        ?`<span style="margin-left:auto;font-size:11px;font-weight:600;color:#16A34A;background:#DCFCE7;padding:3px 9px;border-radius:8px;border:1px solid rgba(22,163,74,0.2);white-space:nowrap;">担当 ${userAssign.equipmentIds.length}台</span>`
+        :`<span style="margin-left:auto;font-size:11px;font-weight:600;color:#D97706;background:#FEF3C7;padding:3px 9px;border-radius:8px;border:1px solid rgba(217,119,6,0.2);white-space:nowrap;">⚠ 全設備表示中</span>`
+      }
     </div>
 
     <!-- Scroll area -->
@@ -1704,8 +1757,8 @@ function renderAdminHome(){
 /* ═══════════ LINE DETAIL ═══════════ */
 function renderLineDetail(){
   const l=getLn(S.selectedLine);if(!l)return renderHome();
-  const bulkBtn=`<button class="hdr-action-btn" onclick="S.bulkActive=true;S.bulkLineId='${l.id}';S.bulkIdx=0;nav('INSPECTION',{selectedEq:'${l.equip[0].id}'})">${PLAY_ICO} 一括</button>`;
-  const rows=l.equip.map(eq=>{
+  const bulkBtn=`<button class="hdr-action-btn" onclick="S.bulkActive=true;S.bulkLineId='${l.id}';S.bulkIdx=0;nav('INSPECTION',{selectedEq:'${getLineEquip(l)[0]?.id}'})">${PLAY_ICO} 一括</button>`;
+  const rows=getLineEquip(l).map(eq=>{
     const st=eqStatus(eq.id);
     const items=typeItems(eq,S.inspType);
     const insp=getInsps(eq.id,S.inspType);
@@ -1738,7 +1791,7 @@ function renderLineDetail(){
   return`${phdr(l.name,'HOME',S.inspType,bulkBtn)}
   <div class="scroll">
     ${rows}
-    <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="width:100%;padding:14px;border:1.5px dashed var(--border);background:none;border-radius:var(--r);color:var(--text2);cursor:pointer;font-size:14px;margin-top:4px;touch-action:manipulation;font-family:inherit;">＋ 設備を追加</button>
+    <!-- [v5] ラインに設備を追加するボタンを削除 → 設定タブの「設備管理」から行う -->
   </div>${btabs()}`;
 }
 
@@ -1749,7 +1802,7 @@ function renderInspection(){
   const done=items.filter(i=>rs[i.id]).length;const pend=items.length-done;const pct=Math.round(done/items.length*100);
   const bulkBar=S.bulkActive?`<div class="bulk-bar">
     <div><div style="font-size:11px;color:var(--red);font-weight:700;margin-bottom:1px;">ライン一括点検</div><div style="font-size:12px;color:var(--text2);">${getLn(S.bulkLineId).name}</div></div>
-    <div style="font-size:22px;font-weight:700;color:var(--red);">${S.bulkIdx+1} <span style="font-size:13px;font-weight:500;color:var(--text2);">/ ${getLn(S.bulkLineId).equip.length}</span></div>
+    <div style="font-size:22px;font-weight:700;color:var(--red);">${S.bulkIdx+1} <span style="font-size:13px;font-weight:500;color:var(--text2);">/ ${getLineEquip(getLn(S.bulkLineId)).length}</span></div>
   </div>`:'';
   const backDest=S.bulkActive?null:'LINE_DETAIL';
   const icards=items.map((it,idx)=>{
@@ -1769,10 +1822,19 @@ function renderInspection(){
           <span style="font-size:12px;font-weight:500;color:${isOk?'var(--green)':'var(--red)'};">${isOk?'`<svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` 正常確認済':'`<svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 2l9 9M11 2L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>` 異常記録済'}</span>
           <button onclick="resetResult('${it.id}')" style="padding:5px 14px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text2);font-size:12px;cursor:pointer;touch-action:manipulation;font-family:inherit;">やり直し</button>
         </div>`;
+    // [v6] 前回値チェック
+    const prevKey=eid+':'+S.inspType;
+    const prevInsp=Object.entries(S.insps).find(([k,v])=>k===prevKey&&v.date!==TODAY)?.[1];
+    const prevResult=prevInsp?.results?.[it.id];
+    const prevSymbol=prevResult?.r==='ok'?'○':prevResult?.r==='ng'?'✕':null;
     return`<div class="icard ${isOk?'rok':isNg?'rng':''}" data-iid="${it.id}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
         <div style="flex:1;">
-          <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:4px;">No.${idx+1} · ${it.t}点検</div>
+          <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+            No.${idx+1} · ${it.t}点検
+            ${prevSymbol?`<span style="font-size:10px;color:var(--text3);background:var(--surface2);padding:1px 6px;border-radius:5px;border:1px solid var(--border);">前回: ${prevSymbol}</span>`:''}
+            ${!r&&!prevSymbol?`<span style="font-size:10px;color:var(--orange);font-weight:700;">未入力</span>`:''}
+          </div>
           <div style="font-size:16px;font-weight:600;line-height:1.3;">${it.n}</div>
           ${r?.comment?`<div style="font-size:12px;color:var(--red);margin-top:8px;padding:8px 10px;background:rgba(200,41,42,.08);border-radius:8px;"><span style="color:var(--red);vertical-align:middle;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 4.5h7M3.5 7h5M3.5 9.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${r.comment}</div>`:''}
           ${r?.photos>0?`<div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:500;"><span style="display:inline-flex;align-items:center;gap:4px;vertical-align:middle;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 3.5l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span> 写真 ${r.photos}枚</div>`:''}
@@ -1782,13 +1844,29 @@ function renderInspection(){
       </div>${btns}
     </div>`;
   }).join('');
-  return`${phdr(eq.name,backDest,S.inspType)}${bulkBar}
+  // [v6] 設備番号を含むヘッダー表示
+  const eqHeaderTitle = (eq.equipmentName&&eq.equipmentNumber) ? `${eq.equipmentName} <small style="font-size:14px;font-weight:600;color:var(--text2);margin-left:4px;">${eq.equipmentNumber}</small>` : eq.name;
+  return`${phdr(eqHeaderTitle,backDest,S.inspType)}${bulkBar}
   <div style="padding:14px 16px 10px;flex-shrink:0;background:var(--surface);border-bottom:0.5px solid var(--border);">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
       <span style="font-size:13px;font-weight:500;color:var(--text2);">${done} / ${items.length} 完了</span>
       <span style="font-size:22px;font-weight:700;color:${pct===100?'var(--green)':'var(--red)'};">${pct}<span style="font-size:12px;font-weight:500;color:var(--text2);">%</span></span>
     </div>
     <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'linear-gradient(90deg,#C8292A,#A82020)'};"></div></div>
+  </div>
+  <!-- [v6] 点検種別クイックセレクタ -->
+  <div style="padding:10px 16px;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;">
+    <div class="pill-row">
+      <button class="pill ${S.inspType==='毎日点検'?'active':''}" onclick="S.inspType='毎日点検';render();">
+        毎日点検
+      </button>
+      <button class="pill ${S.inspType==='10日点検'?'active':''}" onclick="S.inspType='10日点検';render();">
+        10日点検
+      </button>
+      <button class="pill ${S.inspType==='月次点検'?'active':''}" onclick="S.inspType='月次点検';render();">
+        月次点検
+      </button>
+    </div>
   </div>
   <div class="scroll" style="padding-top:14px;">
     ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:13px;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;touch-action:manipulation;font-family:inherit;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力</button>`:''}
@@ -1865,19 +1943,32 @@ function getHistoryDates(){
 }
 
 function getDateSummary(date){
+  // [v6] 新構造優先でサマリー集計
+  const v6recs=S.inspections.filter(function(r){return r.date===date;});
   const eqMap={};
-  Object.entries(S.insps).forEach(([key,insp])=>{
-    if(insp.date!==date)return;
-    const [eid,type]=key.split(':');
-    const eq=getEq(eid);if(!eq)return;
-    const items=typeItems(eq,type);const rs=insp.results;
-    if(!eqMap[eid])eqMap[eid]={ok:0,ng:0,filled:0,total:0};
-    eqMap[eid].ok+=items.filter(i=>rs[i.id]?.r==='ok').length;
-    eqMap[eid].ng+=items.filter(i=>rs[i.id]?.r==='ng').length;
-    eqMap[eid].filled+=items.filter(i=>rs[i.id]).length;
-    eqMap[eid].total+=items.length;
-  });
-  const totalEq=S.lines.reduce((s,l)=>s+l.equip.length,0);
+  if(v6recs.length>0){
+    v6recs.forEach(function(r){
+      if(!eqMap[r.equipmentId])eqMap[r.equipmentId]={ok:0,ng:0,filled:0,total:0};
+      eqMap[r.equipmentId].ok+=(r.summary?.okCount||0);
+      eqMap[r.equipmentId].ng+=(r.summary?.ngCount||0);
+      eqMap[r.equipmentId].filled+=(r.summary?.okCount||0)+(r.summary?.ngCount||0);
+      eqMap[r.equipmentId].total+=(r.summary?.totalCount||0);
+    });
+  } else {
+    // 旧フォールバック
+    Object.entries(S.insps).forEach(([key,insp])=>{
+      if(insp.date!==date)return;
+      const [eid,type]=key.split(':');
+      const eq=getEq(eid);if(!eq)return;
+      const items=typeItems(eq,type);const rs=insp.results;
+      if(!eqMap[eid])eqMap[eid]={ok:0,ng:0,filled:0,total:0};
+      eqMap[eid].ok+=items.filter(i=>rs[i.id]?.r==='ok').length;
+      eqMap[eid].ng+=items.filter(i=>rs[i.id]?.r==='ng').length;
+      eqMap[eid].filled+=items.filter(i=>rs[i.id]).length;
+      eqMap[eid].total+=items.length;
+    });
+  }
+  const totalEq=S.lines.reduce((s,l)=>s+getLineEquip(l).length,0);
   const inspected=Object.keys(eqMap).length;
   const ngEq=Object.values(eqMap).filter(e=>e.ng>0).length;
   const doneEq=Object.values(eqMap).filter(e=>e.ng===0&&e.filled===e.total&&e.total>0).length;
@@ -1891,6 +1982,18 @@ function getDateSummary(date){
 }
 
 function getEqStatusForDate(eid,date){
+  // [v6] 新構造優先チェック（複数種別すべてを対象に）
+  const v6recs=S.inspections.filter(function(r){return r.equipmentId===eid&&r.date===date;});
+  if(v6recs.length>0){
+    const hasNg=v6recs.some(function(r){return r.status==='ng';});
+    const allComplete=v6recs.every(function(r){return r.status==='completed';});
+    const anyFilled=v6recs.some(function(r){return r.summary&&r.summary.okCount>0;});
+    if(hasNg)return'ng';
+    if(allComplete)return'done';
+    if(anyFilled)return'partial';
+    return'partial';
+  }
+  // 旧 S.insps フォールバック
   const keys=Object.keys(S.insps).filter(k=>k.startsWith(eid+':')&&S.insps[k].date===date);
   if(!keys.length)return'pending';
   let hasNg=false,filled=0,total=0;
@@ -1929,7 +2032,7 @@ function renderHistoryList(){
 
   // Collect all equipment in order
   const allEquip=[];
-  visibleLines.forEach(l=>l.equip.forEach(eq=>allEquip.push({eq,line:l})));
+  visibleLines.forEach(l=>getLineEquip(l).forEach(eq=>allEquip.push({eq,line:l})));
 
   // Ensure selectedEquipmentId is valid
   if(!S.selectedEquipmentId||!allEquip.find(e=>e.eq.id===S.selectedEquipmentId)){
@@ -1944,18 +2047,23 @@ function renderHistoryList(){
   let nextY=histYear,nextM=histMonth+1;if(nextM>12){nextM=1;nextY++;}
   const isLatest=(histYear===nowY&&histMonth===nowM);
 
-  // Per-tab dot status (for all equipment tabs)
+  // [v6] Per-tab dot status（新構造優先、旧構造フォールバック）
   function eqMonthStatus(e){
-    const dailyKey=e.id+':毎日点検';
+    const v6Map=getEqMonthSummary(e.id,monthStr);
     let hasNg=false,hasMissed=false;
     for(let d=1;d<=daysInMonth;d++){
       const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
       const dow=new Date(ds).getDay();
       const isFuture=new Date(ds)>now;
       if(!isFuture&&dow!==0&&dow!==6){
-        const insp=getInspectionByDate(e.id,ds,'毎日点検');
-        if(!insp)hasMissed=true;
-        else if(Object.values(insp.results||{}).some(r=>r.r==='ng'))hasNg=true;
+        const v6rec=v6Map[ds];
+        if(v6rec){
+          if(v6rec.status==='ng')hasNg=true;
+        } else {
+          const insp=getInspectionByDate(e.id,ds,'毎日点検');
+          if(!insp)hasMissed=true;
+          else if(Object.values(insp.results||{}).some(r=>r.r==='ng'))hasNg=true;
+        }
       }
     }
     return hasNg?'ng':hasMissed?'miss':'ok';
@@ -1965,7 +2073,7 @@ function renderHistoryList(){
   const tabsHtml=visibleLines.map(l=>{
     const lineTag2=`<div style="display:flex;align-items:center;flex-shrink:0;"><span style="font-size:9px;font-weight:700;color:#B0B8C8;letter-spacing:.4px;white-space:nowrap;padding-right:6px;">${l.name}</span></div>`;
     const addBtn2=`<button class="equip-tab" onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="background:transparent;color:#C8292A;border-color:rgba(200,41,42,0.3);border-style:dashed;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#C8292A" stroke-width="2" stroke-linecap="round"/></svg>追加</button>`;
-    const eqBtns=l.equip.map(e=>{
+    const eqBtns=getLineEquip(l).map(e=>{
       const isActive=e.id===eid;
       const st=eqMonthStatus(e);
       const dotColor=st==='ng'?'#C8292A':st==='miss'?'#D97706':'#16A34A';
@@ -1978,8 +2086,9 @@ function renderHistoryList(){
   // Line group label for active equipment
   const lineLabel=line.name;
 
-  // Build calendar data for selected equipment
+  // [v6] Build calendar data using new inspections structure (with fallback)
   const dailyItems=eq.items.filter(i=>i.t==='毎日');
+  const v6Map=getEqMonthSummary(eid,monthStr); // 新構造から月データ取得
   const cells={};
   let totalExpected=0,totalDone=0,totalNg=0,missedDays=0;
   for(let d=1;d<=daysInMonth;d++){
@@ -1988,18 +2097,31 @@ function renderHistoryList(){
     const isFuture=new Date(ds)>now;
     const isWknd=dow===0||dow===6;
     if(!isWknd&&!isFuture)totalExpected++;
-    const insp=getInspectionByDate(eid,ds,'毎日点検');
-    if(insp){
-      const rs=insp.results||{};
-      const done=dailyItems.filter(i=>rs[i.id]).length;
-      const hasNg=dailyItems.some(i=>rs[i.id]?.r==='ng');
-      cells[ds]={done,total:dailyItems.length,hasNg,filled:done===dailyItems.length&&dailyItems.length>0};
+    // ① 新構造優先
+    const v6rec=v6Map[ds];
+    if(v6rec){
+      const hasNg=v6rec.status==='ng';
+      const isComplete=v6rec.status==='completed';
+      const okCnt=v6rec.summary?.okCount||0;
+      const tot=v6rec.summary?.totalCount||1;
+      cells[ds]={done:okCnt,total:tot,hasNg,filled:isComplete,missing:false};
       if(!isWknd){totalDone++;if(hasNg)totalNg++;}
     } else {
-      cells[ds]={done:0,total:dailyItems.length,hasNg:false,filled:false,missing:!isFuture&&!isWknd};
-      if(!isFuture&&!isWknd)missedDays++;
+      // ② 旧 S.insps フォールバック
+      const insp=getInspectionByDate(eid,ds,'毎日点検');
+      if(insp){
+        const rs=insp.results||{};
+        const done=dailyItems.filter(i=>rs[i.id]).length;
+        const hasNg=dailyItems.some(i=>rs[i.id]?.r==='ng');
+        cells[ds]={done,total:dailyItems.length,hasNg,filled:done===dailyItems.length&&dailyItems.length>0};
+        if(!isWknd){totalDone++;if(hasNg)totalNg++;}
+      } else {
+        cells[ds]={done:0,total:dailyItems.length,hasNg:false,filled:false,missing:!isFuture&&!isWknd};
+        if(!isFuture&&!isWknd)missedDays++;
+      }
     }
   }
+  // 進捗率 = 完了日数 ÷ 対象日数
   const rate=totalExpected>0?Math.round(totalDone/totalExpected*100):0;
   const barColor=totalNg>0?'#C8292A':rate<50?'#D97706':'#16A34A';
   const hasIssue=missedDays>0||totalNg>0;
@@ -2058,6 +2180,95 @@ function renderHistoryList(){
   const missCount=allEquip.filter(({eq:e})=>eqMonthStatus(e)==='miss').length;
   const ngCount=allEquip.filter(({eq:e})=>eqMonthStatus(e)==='ng').length;
 
+  // ── PC Sidebar: equipment list cards ──
+  const sidebarEqHtml=visibleLines.map(l=>{
+    const lineEqs=getLineEquip(l);
+    if(!lineEqs.length)return'';
+    const cards=lineEqs.map(e=>{
+      const isActive=e.id===eid;
+      const st=eqMonthStatus(e);
+      const dotColor=st==='ng'?'#C8292A':st==='miss'?'#D97706':'#16A34A';
+      const dotShadow=st==='ng'?'rgba(200,41,42,0.25)':st==='miss'?'rgba(217,119,6,0.2)':'rgba(22,163,74,0.2)';
+      const v6m=getEqMonthSummary(e.id,monthStr);
+      const doneD=Object.values(v6m).filter(r=>r.status==='completed'||r.status==='ng').length;
+      const ngD=Object.values(v6m).filter(r=>r.status==='ng').length;
+      const tipText=st==='ng'?`NG ${ngD}日あり`:st==='miss'?`未入力あり`:`${doneD}日完了`;
+      return`<div class="hist-eq-card ${isActive?'hist-eq-active':''}" onclick="changeEquipment('${e.id}')">
+        <div style="width:8px;height:8px;border-radius:50%;background:${dotColor};flex-shrink:0;box-shadow:0 0 0 3px ${dotShadow};"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:${isActive?700:600};color:${isActive?'#3730A3':'#111827'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
+          <div style="font-size:10px;color:#9CA3AF;margin-top:1px;">${doneD}日 · ${st==='ng'?`<span style="color:#C8292A;font-weight:700;">NG${ngD}日</span>`:st==='miss'?`<span style="color:#D97706;">未入力あり</span>`:'全日完了'}</div>
+        </div>
+        ${st==='ng'?`<span style="font-size:9px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 7px;border-radius:8px;flex-shrink:0;">NG</span>`:st==='miss'?`<span style="font-size:9px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 7px;border-radius:8px;flex-shrink:0;">未</span>`:''}
+        <div class="hist-eq-hover-tip">${e.name}<br><span style="opacity:.75;">${tipText}</span></div>
+      </div>`;
+    }).join('');
+    return`<div style="margin-bottom:4px;">
+      <div style="font-size:9px;font-weight:700;color:#B0B8C8;letter-spacing:.8px;padding:6px 4px 4px;text-transform:uppercase;">${l.name}</div>
+      ${cards}
+    </div>`;
+  }).join('');
+
+  // ── Calendar rows: PC版にツールチップを追加 ──
+  const calRowsPC=[];
+  for(let i=0;i<gridCells.length;i+=7){
+    const week=gridCells.slice(i,i+7);
+    const rowCells=week.map(c=>{
+      if(c.blank)return`<div></div>`;
+      const isSat=c.dow===6,isSun=c.dow===0;
+      const dayNumColor=c.isFuture?'#D1D5DB':c.isToday?'#2563EB':isSat?'#2563EB':isSun?'#C8292A':'#6B7280';
+      const todayStyle=c.isToday?`border:2px solid #2563EB;`:`border:1.5px solid ${c.border};`;
+      const todayBgExtra=c.isToday&&c.bg==='transparent'?'background:rgba(37,99,235,0.05);':'';
+      const WDAY_FULL=['月','火','水','木','金','土','日'];
+      const wdLabel=WDAY_FULL[(c.dow+6)%7];
+      const cellData=cells[c.ds];
+      const tipStatus=c.isMissing?'未入力':c.sym==='×'?'NG':c.sym==='○'?'正常':c.sym==='△'?'一部完了':c.isFuture?'未来':c.sym==='—'?'休日':'—';
+      const tipDetail=cellData&&cellData.total>0?`${cellData.done}/${cellData.total}件`:'';
+      const tipHtml=!c.isFuture?`<div class="cal-day-tip">${histMonth}/${c.d}(${wdLabel})<br><span style="font-size:13px;font-weight:700;color:${c.isMissing?'#FCA5A5':c.sym==='×'?'#FCA5A5':c.sym==='○'?'#6EE7B7':'#FCD34D'};">${tipStatus}</span>${tipDetail?`<br><span style="opacity:.7;">${tipDetail}</span>`:''}
+        </div>`:'';
+      return`<div class="cal-cell-item" ${c.clickable?`onclick="S.histView='detail';S.histDate='${c.ds}';S.histEqId='${eid}';render();"`:''} style="${todayStyle}background:${c.bg};${todayBgExtra}cursor:${c.clickable?'pointer':'default'};" ${c.clickable?`onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"`:''}>
+          <div style="font-size:10px;font-weight:700;color:${dayNumColor};line-height:1;">${c.d}</div>
+          ${c.isMissing?`<div class="cal-missing-dot"></div>`:c.sym?`<div style="font-size:14px;font-weight:800;color:${c.color};line-height:1.2;margin-top:2px;">${c.sym}</div>`:`<div style="height:14px;margin-top:2px;"></div>`}
+          ${tipHtml}
+        </div>`;
+    }).join('');
+    calRowsPC.push(`<div class="cal-cell-grid">${rowCells}</div>`);
+  }
+
+  // ── 共通パーツ：ステータスカード ──
+  const statusCardHtml=`
+    <div style="background:white;border-radius:16px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 14px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};padding:14px 18px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:${barColor};box-shadow:0 0 0 3px ${totalNg>0?'rgba(200,41,42,0.15)':hasIssue?'rgba(217,119,6,0.15)':'rgba(22,163,74,0.15)'};"></div>
+        <div style="font-size:16px;font-weight:700;color:#111827;">${eq.name}</div>
+        <div style="font-size:11px;color:#9CA3AF;">${lineLabel}</div>
+        <div style="margin-left:auto;font-size:18px;font-weight:800;color:${barColor};">${rate}<span style="font-size:11px;font-weight:600;">%</span></div>
+      </div>
+      <div style="background:#F1F3F8;border-radius:6px;height:7px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;width:${rate}%;background:linear-gradient(90deg,${barColor},${barColor==='#C8292A'?'#A82020':barColor==='#D97706'?'#B45309':'#15803D'});border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#9CA3AF;">${totalDone}/${totalExpected}日実施</span>
+        ${missedDays>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">● 未入力 ${missedDays}日</span>`:''}
+        ${totalNg>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">✕ NG ${totalNg}日</span>`:''}
+        ${allGood?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:3px 10px;border-radius:20px;">✓ 今月完了</span>`:''}
+      </div>
+    </div>`;
+
+  // ── 共通パーツ：カレンダーカード ──
+  const calCardHtml=`
+    <div style="background:white;border-radius:16px;border:1px solid #F1F3F8;box-shadow:0 1px 6px rgba(0,0,0,0.04);padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:700;color:#374151;">日別ステータス</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#16A34A;font-weight:700;"><span style="font-size:12px;">○</span>正常</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#D97706;font-weight:700;"><span style="font-size:12px;">△</span>一部</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="font-size:12px;">×</span>NG</span>
+        <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="width:7px;height:7px;border-radius:50%;background:#C8292A;display:inline-block;"></span>未入力</span>
+      </div>
+      <div class="cal-cell-grid" style="margin-bottom:5px;">${wdayHdr}</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">${calRowsPC.join('')}</div>
+    </div>`;
+
   return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#F8F9FC;">
 
     <!-- ── Fixed header area ── -->
@@ -2079,57 +2290,42 @@ function renderHistoryList(){
         </div>
       </div>
 
-      <!-- Status bar (summary) -->
+      <!-- Status bar -->
       ${ngCount>0||missCount>0?`<div style="display:flex;gap:6px;padding:0 18px 8px;align-items:center;">
         ${ngCount>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,41,42,0.2);">⚠ NG ${ngCount}設備</span>`:''}
         ${missCount>0?`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:3px 10px;border-radius:20px;border:1px solid rgba(217,119,6,0.2);">● 未入力 ${missCount}設備</span>`:''}
         <button onclick="S.histFilter=(S.histFilter==='missing'?'all':'missing');render();" style="margin-left:auto;padding:3px 12px;height:26px;border-radius:20px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'transparent'};color:${S.histFilter==='missing'?'#C8292A':'#9CA3AF'};font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">未入力のみ</button>
       </div>`:''}
 
-      <!-- Equipment tabs (horizontal scroll) -->
-      <div class="equip-tabs-wrap" style="padding-bottom:0;">
-        <div class="equip-tabs" style="padding:0 18px 12px;">
+      <!-- Equipment tabs — スマホのみ表示 -->
+      <div class="equip-tabs-wrap mobile-only">
+        <div class="equip-tabs">
           ${tabsHtml}
         </div>
       </div>
     </div>
 
-    <!-- ── Scrollable calendar body ── -->
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 90px);">
+    <!-- ── Body：スマホ=縦並び / PC=横2カラム ── -->
+    <div class="hist-pc-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
 
-      <!-- Equipment status card -->
-      <div style="background:white;border-radius:16px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 14px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};padding:14px 18px;margin-bottom:12px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <div style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:${barColor};box-shadow:0 0 0 3px ${totalNg>0?'rgba(200,41,42,0.15)':hasIssue?'rgba(217,119,6,0.15)':'rgba(22,163,74,0.15)'};"></div>
-          <div style="font-size:16px;font-weight:700;color:#111827;">${eq.name}</div>
-          <div style="font-size:11px;color:#9CA3AF;">${lineLabel}</div>
-          <div style="margin-left:auto;font-size:18px;font-weight:800;color:${barColor};">${rate}<span style="font-size:11px;font-weight:600;">%</span></div>
+      <!-- PC サイドバー（設備一覧） -->
+      <div class="hist-sidebar" style="display:none;">
+        <div class="hist-sidebar-hdr">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin-bottom:4px;">設備一覧</div>
+          <div style="font-size:13px;font-weight:700;color:#374151;">${allEquip.length}台
+            ${ngCount>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:1px 8px;border-radius:8px;margin-left:4px;">NG ${ngCount}</span>`:''}
+            ${missCount>0?`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:1px 8px;border-radius:8px;margin-left:4px;">未 ${missCount}</span>`:''}
+          </div>
         </div>
-        <div style="background:#F1F3F8;border-radius:6px;height:7px;overflow:hidden;margin-bottom:10px;">
-          <div style="height:100%;width:${rate}%;background:linear-gradient(90deg,${barColor},${barColor==='#C8292A'?'#A82020':barColor==='#D97706'?'#B45309':'#15803D'});border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:11px;color:#9CA3AF;">${totalDone}/${totalExpected}日実施</span>
-          ${missedDays>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">● 未入力 ${missedDays}日</span>`:''}
-          ${totalNg>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">✕ NG ${totalNg}日</span>`:''}
-          ${allGood?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:3px 10px;border-radius:20px;">✓ 今月完了</span>`:''}
+        <div class="hist-sidebar-scroll">
+          ${sidebarEqHtml}
         </div>
       </div>
 
-      <!-- Calendar card -->
-      <div style="background:white;border-radius:16px;border:1px solid #F1F3F8;box-shadow:0 1px 6px rgba(0,0,0,0.04);padding:16px;margin-bottom:10px;">
-        <!-- Legend -->
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-          <span style="font-size:11px;font-weight:700;color:#374151;">日別ステータス</span>
-          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#16A34A;font-weight:700;"><span style="font-size:12px;">○</span>正常</span>
-          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#D97706;font-weight:700;"><span style="font-size:12px;">△</span>一部</span>
-          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="font-size:12px;">×</span>NG</span>
-          <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="width:7px;height:7px;border-radius:50%;background:#C8292A;display:inline-block;"></span>未入力</span>
-        </div>
-        <!-- Day-of-week header -->
-        <div class="cal-cell-grid" style="margin-bottom:5px;">${wdayHdr}</div>
-        <!-- Calendar rows -->
-        <div style="display:flex;flex-direction:column;gap:5px;">${calRows.join('')}</div>
+      <!-- メインエリア：スマホ=通常スクロール / PC=.hist-main-area -->
+      <div class="hist-main-area" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom,0px)+90px);">
+        ${statusCardHtml}
+        ${calCardHtml}
       </div>
 
     </div>
@@ -2156,7 +2352,7 @@ function renderHistoryDetail(date){
   const stCol={done:'var(--green)',ng:'var(--red)',partial:'var(--orange)',pending:'var(--text3)'};
 
   const lineBlocks=S.lines.map(l=>{
-    const eqList=S.histEqId?l.equip.filter(eq=>eq.id===S.histEqId):l.equip;
+    const eqList=S.histEqId?getLineEquip(l).filter(eq=>eq.id===S.histEqId):getLineEquip(l);
     if(!eqList.length)return'';
     const eqRows=eqList.map(eq=>{
       const st=getEqStatusForDate(eq.id,date);
@@ -2197,7 +2393,7 @@ function renderHistoryDetail(date){
   </div>`;
 
   /* custom header with back → list */
-  const histEq=S.histEqId?S.lines.flatMap(l=>l.equip).find(e=>e.id===S.histEqId):null;
+  const histEq=S.histEqId?S.lines.flatMap(l=>getLineEquip(l)).find(e=>e.id===S.histEqId):null;
   const hdr=`<div class="phdr">
     <button class="hdr-back-btn" onclick="S.histView='list';S.histEqId=null;render();">${BACK_ICO}</button>
     <div class="hdr-center" style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;">
@@ -2262,8 +2458,12 @@ function renderEqMgmt(){
       <div style="display:flex;align-items:center;justify-content:space-between;margin:18px 2px 8px;"><span class="section-label" style="margin:0;">${l.name}</span>
         <button onclick="S.modal={type:'addEq',lid:'${l.id}'};render();" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;touch-action:manipulation;font-family:inherit;font-weight:600;">＋ 追加</button>
       </div>
-      ${l.equip.map(eq=>`<div class="card card-tap" onclick="nav('ITEM_MGMT',{selectedEq:'${eq.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${eq.name}</div><div style="font-size:12px;color:var(--text2);">点検項目 ${eq.items.length}件　<span style="color:var(--red);">タップして編集</span></div></div>
+      ${getLineEquip(l).map(eq=>`<div class="card card-tap" onclick="nav('ITEM_MGMT',{selectedEq:'${eq.id}'})" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:2px;">
+            <span style="font-weight:600;font-size:15px;">${eq.equipmentName||eq.name}</span>
+            ${eq.equipmentNumber?`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:1px 6px;border-radius:5px;">${eq.equipmentNumber}</span>`:''}
+          </div><div style="font-size:12px;color:var(--text2);">点検項目 ${eq.items.length}件　<span style="color:var(--red);">タップして編集</span></div></div>
         <div style="display:flex;align-items:center;gap:8px;">
           <button onclick="event.stopPropagation();delEq('${eq.id}')" style="padding:7px 14px;border:1px solid var(--red-lt);border-radius:20px;background:var(--red-lt);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
           ${CHEVR}
@@ -2320,7 +2520,7 @@ function renderLineMgmt(){
   return`${phdr('ライン管理','HOME',`全 ${S.lines.length} ライン`)}
   <div class="scroll">
     ${S.lines.map(l=>`<div class="card" style="display:flex;align-items:center;justify-content:space-between;">
-      <div><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${l.name}</div><div style="font-size:12px;color:var(--text2);">${l.desc} · 設備 ${l.equip.length}台</div></div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${l.name}</div><div style="font-size:12px;color:var(--text2);">${l.desc} · 設備 ${getLineEquip(l).length}台</div></div>
       <button onclick="delLine('${l.id}')" style="padding:7px 14px;border:1px solid var(--red-lt);border-radius:20px;background:var(--red-lt);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
     </div>`).join('')}
     <button onclick="S.modal={type:'addLine'};render();" style="width:100%;padding:14px;border:1.5px dashed var(--border);background:none;border-radius:var(--r);color:var(--text2);cursor:pointer;font-size:14px;margin-top:4px;touch-action:manipulation;font-family:inherit;">＋ ラインを追加</button>
@@ -2328,176 +2528,107 @@ function renderLineMgmt(){
 }
 
 /* ═══════════ LINE · EQ MGMT (Redesigned v3 — 2025) ═══════════ */
-// [REDESIGN v3] 設定画面を完全再設計
-// ① 担当者設備紐づけ → インラインで完結（別画面廃止）
-// ② 設備管理        → 点検項目をインライン展開（別画面廃止）
-// ③ ライン管理      → 追加・名前変更・削除のみのシンプルリスト
+// [v6] 管理者設定画面 — 3タブ構成
+// Tab A: 設備マスター（追加・複製・点検項目管理）
+// Tab B: ライン管理（設備チェック紐づけ）
+// Tab C: 担当者紐づけ（担当者×設備）
 function renderLineEqMgmt(){
 
-  if(!S.leExpanded)S.leExpanded=new Set();
-  if(!S.leMenu)S.leMenu=null;
-  // [NEW v3] 点検項目インライン展開状態（設備IDのSet）
-  if(!S.leItemExpanded)S.leItemExpanded=new Set();
+  if(!S.leExpanded)    S.leExpanded    = new Set();
+  if(!S.leItemExpanded)S.leItemExpanded = new Set();
+  if(!S.leMenu)        S.leMenu        = null;
+  if(!S.leLineSel)     S.leLineSel     = null;
+  if(!S.leTab)         S.leTab         = 'equip'; // 'equip' | 'line' | 'assign'
 
+  const curTab = S.leTab;
 
-
-  // ═══════════════════════════════════════════════════════════
-  // [v6 MODIFIED] ① 担当者設備紐づけ — フラットチェックリスト
-  // lineIds依存廃止・S.equipmentsマスターから表示
-  // ラインはフィルターとして補助使用
-  // ═══════════════════════════════════════════════════════════
-  const asgnSt = asgnState();
-  const allAsgnNames = [...S.names.inspector, ...S.names.admin];
-  const selName = asgnSt.selName;
-  const existAssign = getUserAssignment(selName);
-  const totalSel = Object.values(asgnSt.counts).reduce((a,b)=>a+b,0);
-  const assignedCount = S.assignments ? S.assignments.length : 0;
-  const totalInspectors = S.names?.inspector?.length || 0;
-  const unassigned = totalInspectors - assignedCount;
-  const filterLine = asgnSt.filterLine || null; // [v6] ラインフィルター
-
-  // 担当者ピル（青背景カード内）
-  const asgnNamePills = allAsgnNames.map(n => {
-    const on = n === selName;
-    const saved = !!getUserAssignment(n);
-    return `<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
-      style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 13px 7px 9px;border-radius:22px;
-        border:2px solid ${on?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.22)'};
-        background:${on?'rgba(255,255,255,0.20)':'rgba(255,255,255,0.06)'};
-        color:${on?'#FFFFFF':'rgba(255,255,255,0.60)'};
-        font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;">
-      <span style="width:22px;height:22px;border-radius:50%;
-        background:${on?'rgba(255,255,255,0.28)':'rgba(255,255,255,0.10)'};
-        display:inline-flex;align-items:center;justify-content:center;
-        font-size:10px;font-weight:800;color:#FFFFFF;flex-shrink:0;">${n.charAt(0)}</span>
-      ${n}
-      ${saved?`<svg width="6" height="6" viewBox="0 0 6 6" fill="none"><circle cx="3" cy="3" r="3" fill="${on?'#86EFAC':'rgba(134,239,172,0.75)'}" /></svg>`:''}
-    </button>`;
-  }).join('');
-
-  // [v6] ラインフィルターピル（補助UI）
-  const asgnFilterPills = [
-    `<button onclick="asgnSetFilter(null)"
-      style="flex-shrink:0;padding:6px 13px;border-radius:18px;border:1.5px solid ${!filterLine?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)'};background:${!filterLine?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.07)'};color:${!filterLine?'#FFFFFF':'rgba(255,255,255,0.55)'};font-size:11px;font-weight:${!filterLine?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-      すべて
-    </button>`,
-    ...S.lines.map(l=>{
-      const on = filterLine===l.id;
-      const cnt = S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)&&asgnSt.checked.includes(e.id)).length;
-      return`<button onclick="asgnSetFilter('${l.id}')"
-        style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:18px;border:1.5px solid ${on?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)'};background:${on?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.07)'};color:${on?'#FFFFFF':'rgba(255,255,255,0.55)'};font-size:11px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-        ${l.name}
-        ${cnt>0?`<span style="background:rgba(255,255,255,0.25);color:#FFFFFF;font-size:10px;font-weight:700;padding:1px 6px;border-radius:7px;">${cnt}</span>`:''}
-      </button>`;
-    })
-  ].join('');
-
-  // [v6] 設備フラットリスト（マスターから・フィルター適用）
-  const asgnVisibleEqs = filterLine
-    ? S.equipments.filter(e=>{ const l=getLn(filterLine); return l&&(l.equipmentIds||[]).includes(e.id); })
-    : S.equipments;
-
-  // ライン単位一括ボタン（フィルター中のみ）
-  const asgnBulkBtn = filterLine ? (()=>{
-    const ids = asgnVisibleEqs.map(e=>e.id);
-    const allOn = ids.length>0&&ids.every(id=>asgnSt.checked.includes(id));
-    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 6px;">
-      <span style="font-size:11px;font-weight:700;color:#6B7280;">${getLn(filterLine)?.name} · ${asgnVisibleEqs.length}台</span>
-      <button onclick="asgnToggleLine('${filterLine}')"
-        style="padding:4px 12px;border-radius:14px;border:1.5px solid ${allOn?'rgba(200,41,42,0.3)':'#BFDBFE'};background:${allOn?'rgba(200,41,42,0.06)':'#EFF6FF'};color:${allOn?'#C8292A':'#1E3A8A'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;">
-        ${allOn?'☑ すべて解除':'☐ すべて選択'}
-      </button>
-    </div>`;
-  })() : '';
-
-  const asgnLineBlocks = `
-    <!-- [v6 ①] ラインフィルター（補助UI） -->
-    <div style="margin-bottom:10px;overflow:hidden;">
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:.8px;margin-bottom:7px;">ラインで絞り込み</div>
-      <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
-        ${asgnFilterPills}
-      </div>
-    </div>
-    `;
-
-  // ═══════════════════════════════════════════════════════════
-  // [v5 MODIFIED] ② 設備管理 — 設備をマスターとして独立管理
-  // ラインへの紐づけは ③ ライン管理 のチェックボックスで行う
-  // ＋設備追加 ボタンをライン内から削除し、マスター追加に統一
-  // ═══════════════════════════════════════════════════════════
-  const FREQ_LABELS_V3 = {'毎日':'毎日','10日':'10日毎','月次':'月次'};
+  // ─────────────────────────────────────────────
+  // TAB A: 設備マスター
+  // ─────────────────────────────────────────────
+  const FREQ_LABELS = {'毎日':'毎日','10日':'10日毎','月次':'月次'};
   const freqColor = t => t==='毎日'?'#16A34A':t==='10日'?'#D97706':'#6B7280';
   const freqBg    = t => t==='毎日'?'#DCFCE7':t==='10日'?'#FEF3C7':'#F3F4F6';
 
-  // [v5] マスターリスト（S.equipments）をフラット表示
-  const eqSectionHtml = (S.equipments.length > 0 ? S.equipments.map(eq => {
-    const itemExpanded = S.leItemExpanded.has(eq.id);
-    const eqMenuOpen = S.leMenu && S.leMenu.type==='eq' && S.leMenu.id===eq.id;
-    const dailyCnt = eq.items.filter(i=>i.t==='毎日').length;
-    const tenCnt   = eq.items.filter(i=>i.t==='10日').length;
-    const monCnt   = eq.items.filter(i=>i.t==='月次').length;
-    // [v5] この設備がどのラインに紐づいているか表示
-    const linkedLines = S.lines.filter(l=>(l.equipmentIds||[]).includes(eq.id));
+  const eqTabHtml = [...S.equipments].sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja')).map(eq => {
+    const expanded  = S.leItemExpanded.has(eq.id);
+    const menuOpen  = S.leMenu && S.leMenu.type==='eq' && S.leMenu.id===eq.id;
+    const dailyCnt  = getDailyItems(eq).length;
+    const tenCnt    = getTenDayItems(eq).length;
+    const monCnt    = getMonthlyItems(eq).length;
+    const lineNames = eqLineNames(eq);
+    const eqNum     = eq.equipmentNumber||'';
+    const eqBaseName= eq.equipmentName||eq.name;
+
     return `
-    <!-- [v5 ②] 設備マスターカード: ラインから独立 -->
-    <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;margin-bottom:7px;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;">
-        <!-- 設備アイコン -->
-        <div style="width:34px;height:34px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="5" width="11" height="7" rx="1.5" stroke="#6B7280" stroke-width="1.2"/><path d="M5 5V3.5a2.5 2.5 0 015 0V5" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><circle cx="7.5" cy="8.8" r="1.1" fill="#6B7280"/></svg>
+    <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;">
+        <!-- アイコン -->
+        <div style="width:38px;height:38px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">
+          <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="2" y="5" width="13" height="9" rx="2" stroke="#6B7280" stroke-width="1.3"/><path d="M5.5 5V4a3 3 0 016 0v1" stroke="#6B7280" stroke-width="1.3" stroke-linecap="round"/><circle cx="8.5" cy="9.5" r="1.3" fill="#6B7280"/></svg>
         </div>
-        <!-- 設備名と点検項目数バッジ -->
+        <!-- 設備名・番号・使用ライン -->
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq.name}</div>
-          <div style="display:flex;gap:5px;margin-top:3px;flex-wrap:wrap;align-items:center;">
-            ${dailyCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('毎日')};background:${freqBg('毎日')};padding:1px 7px;border-radius:6px;">毎日 ${dailyCnt}</span>`:''}
-            ${tenCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('10日')};background:${freqBg('10日')};padding:1px 7px;border-radius:6px;">10日 ${tenCnt}</span>`:''}
-            ${monCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('月次')};background:${freqBg('月次')};padding:1px 7px;border-radius:6px;">月次 ${monCnt}</span>`:''}
-            ${!dailyCnt&&!tenCnt&&!monCnt?`<span style="font-size:10px;color:#9CA3AF;">点検項目なし</span>`:''}
-            <!-- [v5] ライン紐づけ状況バッジ -->
-            ${linkedLines.length>0
-              ?`<span style="font-size:10px;font-weight:600;color:#1E3A8A;background:#DBEAFE;padding:1px 7px;border-radius:6px;margin-left:2px;">${linkedLines.map(l=>l.name).join('・')}</span>`
-              :`<span style="font-size:10px;color:#F97316;background:#FFF7ED;padding:1px 7px;border-radius:6px;margin-left:2px;">未紐づけ</span>`
-            }
+          <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:14px;font-weight:700;color:#111827;">${eqBaseName}</span>
+            ${eqNum?`<span style="font-size:12px;font-weight:600;color:#C8292A;background:#FFF1F1;padding:1px 7px;border-radius:6px;">${eqNum}</span>`:''}
           </div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin-top:3px;">
+            ${dailyCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('毎日')};background:${freqBg('毎日')};padding:1px 6px;border-radius:5px;">毎日${dailyCnt}</span>`:''}
+            ${tenCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('10日')};background:${freqBg('10日')};padding:1px 6px;border-radius:5px;">10日${tenCnt}</span>`:''}
+            ${monCnt?`<span style="font-size:10px;font-weight:600;color:${freqColor('月次')};background:${freqBg('月次')};padding:1px 6px;border-radius:5px;">月次${monCnt}</span>`:''}
+            ${!dailyCnt&&!tenCnt&&!monCnt?`<span style="font-size:10px;color:#9CA3AF;">点検項目なし</span>`:''}
+          </div>
+          ${lineNames.length>0
+            ?`<div style="font-size:10px;color:#6B7280;margin-top:2px;display:flex;align-items:center;gap:4px;">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1.5" stroke="#9CA3AF" stroke-width="1.1"/><path d="M3 3.5h4M3 5h3M3 6.5h2" stroke="#9CA3AF" stroke-width="1" stroke-linecap="round"/></svg>
+                ${lineNames.join(' · ')}
+              </div>`
+            :`<div style="font-size:10px;color:#EF4444;margin-top:2px;">⚠ ライン未登録</div>`}
         </div>
-        <!-- 点検項目展開トグル -->
-        <button onclick="event.stopPropagation();S.leItemExpanded.has('${eq.id}')?S.leItemExpanded.delete('${eq.id}'):S.leItemExpanded.add('${eq.id}');render();"
-          style="padding:5px 10px;background:${itemExpanded?'#FFF1F1':'#F1F3F8'};border:1px solid ${itemExpanded?'rgba(200,41,42,0.3)':'#E4E8EF'};border-radius:8px;color:${itemExpanded?'#C8292A':'#374151'};font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .15s;">
-          ${itemExpanded?'▲ 項目':'▼ 項目'}
+        <!-- 複製ボタン -->
+        <button onclick="event.stopPropagation();copyEquipment('${eq.id}');"
+          title="この設備を複製"
+          style="padding:5px 9px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;color:#4F46E5;font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .15s;display:flex;align-items:center;gap:4px;"
+          onmousedown="this.style.background='#C7D2FE'" onmouseup="this.style.background='#EEF2FF'">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="4" y="4" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.3"/><path d="M7 4V2.5A.5.5 0 006.5 2H2A.5.5 0 001.5 2.5v4.5a.5.5 0 00.5.5H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          複製
         </button>
-        <!-- ⋯ メニュー（設備編集・削除） -->
+        <!-- 点検項目展開 -->
+        <button onclick="event.stopPropagation();S.leItemExpanded.has('${eq.id}')?S.leItemExpanded.delete('${eq.id}'):S.leItemExpanded.add('${eq.id}');render();"
+          style="padding:5px 9px;background:${expanded?'#FFF1F1':'#F1F3F8'};border:1px solid ${expanded?'rgba(200,41,42,0.3)':'#E4E8EF'};border-radius:8px;color:${expanded?'#C8292A':'#374151'};font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .15s;">
+          ${expanded?'▲ 項目':'▼ 項目'}
+        </button>
+        <!-- ⋯ メニュー -->
         <div style="position:relative;">
           <button onclick="event.stopPropagation();S.leMenu=(S.leMenu&&S.leMenu.type==='eq'&&S.leMenu.id==='${eq.id}')?null:{type:'eq',id:'${eq.id}'};render();"
-            style="width:28px;height:28px;border-radius:7px;background:${eqMenuOpen?'#F1F3F8':'transparent'};border:none;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">
+            style="width:28px;height:28px;border-radius:7px;background:${menuOpen?'#F1F3F8':'transparent'};border:none;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">
             <svg width="13" height="3" viewBox="0 0 13 3" fill="none"><circle cx="1.5" cy="1.5" r="1.5" fill="currentColor"/><circle cx="6.5" cy="1.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="1.5" r="1.5" fill="currentColor"/></svg>
           </button>
-          ${eqMenuOpen ? `
+          ${menuOpen ? `
           <div style="position:absolute;right:0;top:32px;background:#FFFFFF;border:1px solid #E4E8EF;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:110px;overflow:hidden;" onclick="event.stopPropagation()">
-            <button onclick="S.leMenu=null;S.modal={type:'editEq',eid:'${eq.id}'};render();" style="width:100%;padding:10px 14px;background:none;border:none;color:#374151;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;">
+            <button onclick="S.leMenu=null;S.modal={type:'editEq',eid:'${eq.id}'};render();" style="width:100%;padding:10px 14px;background:none;border:none;color:#374151;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='#F8F9FC'" onmouseup="this.style.background=''">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 1.5l2.5 2.5-6.5 6.5H1.5V8L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
               名前変更
             </button>
             <div style="height:1px;background:#F3F4F6;margin:0 9px;"></div>
-            <button onclick="S.leMenu=null;leDelEqMaster('${eq.id}');" style="width:100%;padding:10px 14px;background:none;border:none;color:#C8292A;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;">
+            <button onclick="S.leMenu=null;leDelEq('${eq.id}');" style="width:100%;padding:10px 14px;background:none;border:none;color:#C8292A;font-size:12px;font-weight:500;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='rgba(200,41,42,0.06)'" onmouseup="this.style.background=''">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 3h9M3.5 3V2A.5.5 0 014 1.5h4a.5.5 0 01.5.5V3M4.5 5.5v4M7.5 5.5v4M2 3l.75 7.5a.5.5 0 00.5.5h5.5a.5.5 0 00.5-.5L10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               削除
             </button>
           </div>` : ''}
         </div>
       </div>
-
-      <!-- [v5] 点検項目インライン展開エリア -->
-      ${itemExpanded ? `
+      <!-- 点検項目インライン展開 -->
+      ${expanded ? `
       <div style="border-top:1px dashed #E4E8EF;background:#FAFBFD;padding:10px 12px 12px;">
-        <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:8px;">点検項目一覧 （${eq.items.length}件）</div>
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:8px;">点検項目（${eq.items.length}件）</div>
         ${eq.items.length > 0 ? eq.items.map((it,idx) => `
-        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#FFFFFF;border:1px solid #E4E8EF;border-radius:9px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#FFFFFF;border:1px solid #E4E8EF;border-radius:9px;margin-bottom:4px;">
           <span style="width:20px;height:20px;background:#F1F3F8;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#9CA3AF;flex-shrink:0;">${idx+1}</span>
           <span style="flex:1;font-size:12px;font-weight:500;color:#111827;line-height:1.3;">${it.n}</span>
-          <span style="font-size:10px;font-weight:600;color:${freqColor(it.t)};background:${freqBg(it.t)};padding:2px 8px;border-radius:6px;white-space:nowrap;">${FREQ_LABELS_V3[it.t]||it.t}</span>
-          <button onclick="S.modal={type:'editItem',eid:'${eq.id}',iid:'${it.id}',freq:'${it.t}'};render();" style="padding:4px 8px;border:1px solid #E4E8EF;border-radius:6px;background:none;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">編集</button>
-          <button onclick="delItem('${eq.id}','${it.id}')" style="padding:4px 8px;border:1px solid rgba(200,41,42,0.25);border-radius:6px;background:rgba(200,41,42,0.07);color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
+          <span style="font-size:10px;font-weight:600;color:${freqColor(it.t)};background:${freqBg(it.t)};padding:2px 8px;border-radius:6px;white-space:nowrap;">${FREQ_LABELS[it.t]||it.t}</span>
+          <button onclick="S.modal={type:'editItem',eid:'${eq.id}',iid:'${it.id}',freq:'${it.t}'};render();" style="padding:4px 8px;border:1px solid #E4E8EF;border-radius:6px;background:none;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='#F1F3F8'" onmouseup="this.style.background=''">編集</button>
+          <button onclick="delItem('${eq.id}','${it.id}')" style="padding:4px 8px;border:1px solid rgba(200,41,42,0.25);border-radius:6px;background:rgba(200,41,42,0.07);color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;" onmousedown="this.style.background='rgba(200,41,42,0.15)'" onmouseup="this.style.background='rgba(200,41,42,0.07)'">削除</button>
         </div>`).join('') : `<div style="text-align:center;padding:12px;color:#9CA3AF;font-size:12px;">点検項目がありません</div>`}
         <button onclick="S.modal={type:'addItem',eid:'${eq.id}',freq:'毎日'};render();"
           style="width:100%;padding:10px;border:1.5px dashed #D1D5DB;background:transparent;border-radius:9px;color:#C8292A;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
@@ -2506,361 +2637,380 @@ function renderLineEqMgmt(){
         </button>
       </div>` : ''}
     </div>`;
-  }).join('') : `
-    <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;padding:28px 16px;text-align:center;margin-bottom:8px;">
-      <div style="font-size:13px;color:#9CA3AF;margin-bottom:5px;">設備がありません</div>
-      <div style="font-size:12px;color:#C9D0DB;">下の「＋ 設備を追加」ボタンから追加してください</div>
-    </div>`)
-  // [v5] ＋設備を追加ボタン（ライン内ではなくマスターへの追加）
-  + `
-    <button onclick="S.modal={type:'addEqFull',lid:null};render();"
-      style="width:100%;padding:12px;border:1.5px dashed rgba(200,41,42,0.4);background:rgba(200,41,42,0.03);border-radius:12px;color:#C8292A;cursor:pointer;font-size:13px;font-weight:700;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      設備を追加（マスターに登録）
-    </button>`;
+  }).join('');
 
-  // ═══════════════════════════════════════════════════════════
-  // [v5 MODIFIED] ③ ライン管理 — 設備をチェックリストで紐づけ
-  // 「＋設備追加」ボタンを削除し、チェックボックスで設備を選択
-  // ═══════════════════════════════════════════════════════════
-  if(!S.leLineExpanded)S.leLineExpanded=new Set();
-
-  const lineSectionHtml = S.lines.map((l, idx) => {
-    const lineOpen = S.leLineExpanded.has(l.id);
-    const selCnt   = (l.equipmentIds||[]).length;
+  // ─────────────────────────────────────────────
+  // TAB B: ライン管理
+  // ─────────────────────────────────────────────
+  const lineMgmtHtml = S.lines.map((l, idx) => {
+    const isFocus = S.leLineSel === l.id;
+    const lineEqs = getLineEquip(l);
     return `
-    <!-- [v5 ③] ライン行：設備チェックリスト付き -->
-    <div style="${idx<S.lines.length-1?'border-bottom:1px solid #F3F4F6;':''}">
-      <!-- ライン情報行 -->
-      <div style="display:flex;align-items:center;gap:8px;padding:11px 14px;">
-        <!-- 展開トグル -->
-        <button onclick="S.leLineExpanded.has('${l.id}')?S.leLineExpanded.delete('${l.id}'):S.leLineExpanded.add('${l.id}');render();"
-          style="width:26px;height:26px;background:${lineOpen?'#F1F3F8':'transparent'};border:none;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="transform:${lineOpen?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;">
-            <path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+    <div style="background:#FFFFFF;border:1.5px solid ${isFocus?'#C8292A':'#E4E8EF'};border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;">
+      <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;cursor:pointer;" onclick="S.leLineSel=(S.leLineSel==='${l.id}'?null:'${l.id}');render();">
+        <div style="width:8px;height:8px;border-radius:50%;background:${isFocus?'#C8292A':'#9CA3AF'};flex-shrink:0;transition:background .2s;"></div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:#374151;">${l.name}</div>
-          <div style="font-size:11px;color:#9CA3AF;">${l.desc||''} · <span style="color:${selCnt>0?'#1E3A8A':'#9CA3AF'};font-weight:${selCnt>0?700:400};">設備 ${selCnt}台選択中</span></div>
+          <div style="font-size:14px;font-weight:700;color:#111827;">${l.name}</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${l.desc||l.location||''} · 設備 ${lineEqs.length}台</div>
         </div>
-        <button onclick="S.modal={type:'editLine',lid:'${l.id}'};render();"
-          style="padding:5px 11px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:7px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
-          編集
-        </button>
-        <button onclick="delLine('${l.id}')"
-          style="padding:5px 11px;background:rgba(200,41,42,0.06);border:1px solid rgba(200,41,42,0.2);border-radius:7px;color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
-          削除
-        </button>
+        <div style="display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:160px;">
+          ${lineEqs.slice(0,3).map(e=>`<span style="font-size:10px;font-weight:600;color:#374151;background:#F1F3F8;padding:2px 7px;border-radius:6px;white-space:nowrap;">${eqDisplayName(e)}</span>`).join('')}
+          ${lineEqs.length>3?`<span style="font-size:10px;color:#9CA3AF;">+${lineEqs.length-3}</span>`:''}
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0;">
+          <button onclick="event.stopPropagation();S.modal={type:'editLine',lid:'${l.id}'};render();"
+            style="padding:5px 9px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:7px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">編集</button>
+          <button onclick="event.stopPropagation();delLine('${l.id}')"
+            style="padding:5px 9px;background:rgba(200,41,42,0.06);border:1px solid rgba(200,41,42,0.2);border-radius:7px;color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
+        </div>
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="transform:${isFocus?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;flex-shrink:0;"><path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <!-- [v5] 設備チェックリスト（展開時） -->
-      ${lineOpen ? `
-      <div style="background:#F8F9FC;border-top:1px solid #F0F1F6;padding:10px 14px 12px;">
-        <div style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:.8px;margin-bottom:8px;">このラインに含める設備を選択</div>
-        ${S.equipments.length > 0 ? S.equipments.map(eq => {
+      ${isFocus ? `
+      <div style="border-top:1px solid #F0F1F6;padding:10px 14px;">
+        <div style="font-size:10px;font-weight:700;color:#374151;letter-spacing:.8px;margin-bottom:8px;">このラインに含める設備（${S.equipments.length}台から選択）</div>
+        ${S.equipments.length > 0 ? [...S.equipments].sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja')).map(eq => {
           const checked = (l.equipmentIds||[]).includes(eq.id);
-          const dailyCnt = eq.items.filter(i=>i.t==='毎日').length;
-          return `
-          <!-- [v5 ③] 設備チェック行 -->
-          <div onclick="leToggleEqInLine('${l.id}','${eq.id}')"
-            style="display:flex;align-items:center;gap:10px;padding:9px 10px;background:${checked?'#EFF6FF':'#FFFFFF'};border:1.5px solid ${checked?'#93C5FD':'#E4E8EF'};border-radius:10px;margin-bottom:5px;cursor:pointer;touch-action:manipulation;transition:all .12s;">
-            <!-- チェックボックス -->
-            <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${checked?'#1E3A8A':'#D1D5DB'};background:${checked?'#1E3A8A':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
-              ${checked?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+          return `<div onclick="v5ToggleLineEq('${l.id}','${eq.id}')"
+            style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;background:${checked?'#FFF5F5':'transparent'};margin-bottom:4px;border:1px solid ${checked?'rgba(200,41,42,0.2)':'transparent'};transition:all .15s;">
+            <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${checked?'#C8292A':'#CBD5E1'};background:${checked?'#C8292A':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+              ${checked?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:${checked?600:400};color:${checked?'#1E3A8A':'#4B5563'};">${eq.name}</div>
-              ${dailyCnt?`<div style="font-size:10px;color:#9CA3AF;margin-top:1px;">毎日 ${dailyCnt}件 他</div>`:''}
+              <div style="font-size:13px;font-weight:${checked?700:400};color:${checked?'#C8292A':'#374151'};">${eqDisplayName(eq)}</div>
+              <div style="font-size:10px;color:#9CA3AF;margin-top:1px;">${eq.items.length}件の点検項目</div>
             </div>
-            ${checked?`<span style="font-size:10px;font-weight:700;color:#1D4ED8;background:#DBEAFE;padding:2px 9px;border-radius:8px;flex-shrink:0;">✓ 対象</span>`:''}
+            ${checked?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 8px;border-radius:7px;flex-shrink:0;">✓ 登録済</span>`:''}
           </div>`;
-        }).join('') : `<div style="text-align:center;padding:12px;color:#9CA3AF;font-size:12px;">設備マスターに設備がありません<br><span style="font-size:11px;">② 設備管理でマスターに追加してください</span></div>`}
+        }).join('') : `<div style="padding:14px;text-align:center;color:#9CA3AF;font-size:12px;">設備マスターが空です。先に設備を追加してください。</div>`}
       </div>` : ''}
     </div>`;
   }).join('');
 
-  // ═══════════════════════════════════════════════════════════
-  // [v3] HTML 組み立て
-  // ═══════════════════════════════════════════════════════════
-  return`
-  <!-- ======================================================
-       [REDESIGNED v3] 管理者設定画面
-       ① 担当者設備紐づけ（インライン・最上部・保存ボタン付き）
-       ② 設備管理（点検項目インライン展開・別画面なし）
-       ③ ライン管理（追加・名前変更・削除のみ）
-       ====================================================== -->
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F4F5F9;overflow:hidden;" onclick="if(S.leMenu){S.leMenu=null;render();}">
+  // ─────────────────────────────────────────────
+  // TAB C: 担当者紐づけ
+  // ─────────────────────────────────────────────
+  const asgnSt       = asgnState();
+  const allAsgnNames = [...S.names.inspector, ...S.names.admin];
+  const selName      = asgnSt.selName;
+  const existAssign  = getUserAssignment(selName);
+  const totalSel     = asgnSt.checked.length;
+  const assignedCount = S.assignments ? S.assignments.length : 0;
+  const totalInspectors = S.names?.inspector?.length || 0;
+  const unassigned   = totalInspectors - assignedCount;
 
-    <!-- ヘッダー -->
-    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;position:relative;">
-      <div style="position:absolute;left:0;bottom:0;right:0;height:2.5px;background:linear-gradient(90deg,#1E3A8A 0%,#4F46E5 40%,#C8292A 80%,transparent);pointer-events:none;"></div>
-      <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
-        <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
-        <div style="flex:1;">
-          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">管理者設定</div>
-          <div style="font-size:22px;font-weight:800;color:#111827;letter-spacing:-.5px;">設定</div>
+  const asgnNamePills = allAsgnNames.map(n => {
+    const on = n === selName, saved = !!getUserAssignment(n);
+    return `<button onclick="asgnSetName('${n.replace(/'/g,"\'")}');"
+      style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 11px 6px 8px;border-radius:20px;border:2px solid ${on?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.22)'};background:${on?'rgba(255,255,255,0.20)':'rgba(255,255,255,0.06)'};color:${on?'#FFFFFF':'rgba(255,255,255,0.60)'};font-size:12px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;letter-spacing:-.2px;">
+      <span style="width:20px;height:20px;border-radius:50%;background:${on?'rgba(255,255,255,0.28)':'rgba(255,255,255,0.10)'};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#FFFFFF;flex-shrink:0;">${n.charAt(0)}</span>
+      ${n}${saved?`<svg width="5" height="5" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="${on?'#86EFAC':'rgba(134,239,172,0.75)'}" /></svg>`:''}
+    </button>`;
+  }).join('');
+
+  // ライン×設備ツリー for assignment
+  const asgnLineBlocks = S.lines.map((line) => {
+    const open    = asgnSt.openLines.includes(line.id);
+    const eqIds   = getLineEquip(line).map(e => e.id);
+    const selCnt  = eqIds.filter(id => asgnSt.checked.includes(id)).length;
+    const allOn   = selCnt === eqIds.length && eqIds.length > 0;
+    const someOn  = selCnt > 0 && !allOn;
+    const hBg     = allOn?'#EEF2FF':someOn?'#F5F7FF':'#F8F9FC';
+    const hBdr    = allOn?'#6366F1':someOn?'#A5B4FC':'#E4E8EF';
+    const hClr    = allOn?'#3730A3':someOn?'#4338CA':'#374151';
+    const eqRows  = getLineEquip(line).map(e=>{
+      const on=asgnSt.checked.includes(e.id);
+      return `<div onclick="asgnToggleEq('${e.id}')" style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid #F0F1F6;cursor:pointer;background:${on?'#EEF2FF':'#FFFFFF'};transition:background .1s;">
+        <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${on?'#4F46E5':'#CBD5E1'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+          ${on?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
         </div>
-        <!-- [REDESIGN v4] ヘッダー右：選択カウンター -->
-        <div style="background:${totalSel>0?'linear-gradient(135deg,#1E3A8A,#3B5FC9)':'#F1F3F8'};color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:11px;font-weight:700;padding:6px 13px;border-radius:20px;white-space:nowrap;transition:all .2s;box-shadow:${totalSel>0?'0 3px 12px rgba(30,58,138,0.3)':'none'};">
-          ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '担当未選択'}
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:${on?600:400};color:${on?'#1E1B4B':'#4B5563'};">${eqDisplayName(e)}</div>
+          ${(e.equipmentNumber)?`<div style="font-size:10px;color:#9CA3AF;margin-top:1px;">${eqLineNames(e).join('・')}</div>`:''}
         </div>
-      </div>
-    </div>
-
-    <!-- スクロールエリア -->
-    <div id="leq-scroll" style="flex:1;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + 120px);-webkit-overflow-scrolling:touch;">
-
-      <!-- ══════════════════════════════════════════════════════
-           ① 担当者設備紐づけ
-           [REDESIGN v4] 担当者選択=青、ライン・設備=白 に分離
-           ══════════════════════════════════════════════════════ -->
-      <div style="font-size:10px;font-weight:700;color:#1E3A8A;letter-spacing:1.5px;text-transform:uppercase;margin:0 2px 8px;">① 担当者 × 設備の紐づけ</div>
-
-      <!-- [REDESIGN v4] ① 上部：担当者選択エリア（青背景のみ） -->
-      <div style="background:linear-gradient(145deg,#1E3A8A 0%,#2D4F9E 55%,#4338CA 100%);border-radius:16px 16px 0 0;padding:16px 16px 18px;box-shadow:0 4px 20px rgba(30,58,138,0.22);position:relative;overflow:hidden;">
-        <!-- 背景装飾 -->
-        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
-
-        <!-- タイトル行＋サマリー数値 -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:relative;">
-          <div style="display:flex;align-items:center;gap:9px;">
-            <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.2);flex-shrink:0;">
-              <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="6.5" cy="5" r="2.8" stroke="white" stroke-width="1.5"/><path d="M1.5 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M12.5 7.5h3.5M14.25 5.75v3.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div style="font-size:14px;font-weight:800;color:#FFFFFF;letter-spacing:-.2px;">担当設備の割り当て</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px;">誰がどの設備を担当するか設定</div>
-            </div>
+        ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:3px 9px;border-radius:8px;border:1px solid #C7D2FE;">担当</span>`:''}
+      </div>`;
+    }).join('');
+    return `<div style="border:2px solid ${hBdr};border-radius:16px;margin-bottom:10px;overflow:hidden;background:#FFFFFF;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:border-color .2s;">
+      <div style="background:${hBg};display:flex;align-items:center;transition:background .2s;">
+        <button onclick="asgnToggleOpen('${line.id}')" style="padding:15px 4px 15px 14px;background:none;border:none;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;">
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none" style="transform:${open?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;flex-shrink:0;">
+            <path d="M2 2l5 5L2 12" stroke="${hClr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div onclick="asgnToggleLine('${line.id}')" style="flex:1;display:flex;align-items:center;gap:12px;padding:15px 14px 15px 8px;cursor:pointer;">
+          <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${allOn?'#4F46E5':someOn?'#818CF8':'#CBD5E1'};background:${allOn?'#4F46E5':someOn?'#EEF2FF':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+            ${allOn?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:someOn?`<div style="width:8px;height:3px;background:#4F46E5;border-radius:2px;"></div>`:''}
           </div>
-          <!-- [③ 選択数表示] -->
-          <div style="display:flex;gap:5px;flex-shrink:0;">
-            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
-              <div style="font-size:15px;font-weight:800;color:#FFFFFF;line-height:1;">${assignedCount}</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">設定済</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
-              <div style="font-size:15px;font-weight:800;color:${unassigned>0?'#FCD34D':'#FFFFFF'};line-height:1;">${unassigned}</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">未設定</div>
-            </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;color:${hClr};">${line.name}</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${line.desc||''}</div>
           </div>
-        </div>
-
-        <!-- 担当者ピル（横スクロール） -->
-        <div style="margin-bottom:12px;position:relative;">
-          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:.8px;margin-bottom:7px;">担当者を選択</div>
-          <div style="display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
-            ${asgnNamePills}
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:13px;font-weight:700;color:${selCnt>0?'#4F46E5':'#9CA3AF'};">${selCnt}/${eqIds.length}台</div>
+            <div style="font-size:9px;font-weight:600;color:${selCnt>0?'#6366F1':'#C4C9D4'};margin-top:1px;">${selCnt>0?'選択中':'未選択'}</div>
           </div>
         </div>
-
-        <!-- [⑤ REDESIGN v4] 設定状態インジケーター：未設定をより明確に -->
-        ${existAssign
-          ?`<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:rgba(34,197,94,0.18);border:1.5px solid rgba(134,239,172,0.45);border-radius:10px;">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="#22C55E"/><path d="M4 7l2.5 2.5 3.5-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span style="font-size:12px;font-weight:700;color:#86EFAC;">設定済み — 設備 ${existAssign.equipmentIds.length}台</span>
-            </div>`
-          :`<div style="padding:10px 12px;background:rgba(251,191,36,0.14);border:1.5px solid rgba(251,191,36,0.38);border-radius:10px;">
-              <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" stroke="#FBBF24" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 5.5v3M7 9.8v.2" stroke="#FBBF24" stroke-width="1.6" stroke-linecap="round"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#FDE68A;">担当設備が未設定です</span>
-              </div>
-              <div style="font-size:11px;color:rgba(253,230,138,0.75);margin-left:21px;">→ このままだと全設備が表示されます</div>
-            </div>`
-        }
       </div>
+      ${open ? eqRows : ''}
+    </div>`;
+  }).join('');
 
-      <!-- [v7] 下部：設備フラットチェックリスト（白背景カード） -->
-      <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-top:none;border-radius:0 0 16px 16px;margin-bottom:20px;overflow:hidden;box-shadow:0 4px 16px rgba(30,58,138,0.08);">
+  // ─────────────────────────────────────────────
+  // タブナビゲーション
+  // ─────────────────────────────────────────────
+  const tabs = [
+    {id:'equip', label:'設備マスター', icon:`<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="4" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 4V3a2.5 2.5 0 015 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`, count: S.equipments.length},
+    {id:'line',  label:'ライン管理',   icon:`<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 5h7M4 7.5h5M4 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`, count: S.lines.length},
+    {id:'assign',label:'担当者紐づけ',  icon:`<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-3.038 2.462-5.5 5.5-5.5S13 9.962 13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`, count: S.assignments.length},
+  ];
 
-        <!-- ラインフィルターピル（白カード内・上部） -->
-        <div style="padding:10px 12px 0;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">
-          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.7px;margin-bottom:7px;display:flex;align-items:center;gap:5px;">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <path d="M1 2.5h9M2.5 5.5h6M4 8.5h3" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
-            ラインで絞り込み
-          </div>
-          <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:10px;">
-            <!-- すべて -->
-            <button onclick="asgnSetFilter(null)"
-              style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:6px 13px;border-radius:18px;
-                     border:1.5px solid ${!filterLine?'#4F46E5':'#E4E8EF'};
-                     background:${!filterLine?'#4F46E5':'#FFFFFF'};
-                     color:${!filterLine?'#FFFFFF':'#6B7280'};
-                     font-size:11px;font-weight:${!filterLine?700:500};
-                     cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-              すべて
-              <span style="background:${!filterLine?'rgba(255,255,255,0.25)':'#F1F3F8'};color:${!filterLine?'#FFFFFF':'#9CA3AF'};font-size:10px;font-weight:700;padding:0px 6px;border-radius:8px;">
-                ${S.equipments.length}
-              </span>
-            </button>
-            <!-- ラインピル -->
-            ${S.lines.map(l=>{
-              const on = filterLine===l.id;
-              const lineSel = S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)&&asgnSt.checked.includes(e.id)).length;
-              const lineTotal = (l.equipmentIds||[]).length;
-              return`<button onclick="asgnSetFilter('${l.id}')"
-                style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:18px;
-                       border:1.5px solid ${on?'#4F46E5':'#E4E8EF'};
-                       background:${on?'#4F46E5':'#FFFFFF'};
-                       color:${on?'#FFFFFF':'#6B7280'};
-                       font-size:11px;font-weight:${on?700:500};
-                       cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-                ${l.name}
-                <span style="background:${on?'rgba(255,255,255,0.25)':'lineSel>0?\"#EEF2FF\":\"#F1F3F8\"'};
-                             color:${on?'#FFFFFF':lineSel>0?'#4F46E5':'#9CA3AF'};
-                             font-size:10px;font-weight:700;padding:0px 6px;border-radius:8px;">
-                  ${lineSel>0?`${lineSel}/`:''}${lineTotal}
-                </span>
-              </button>`;
-            }).join('')}
-          </div>
-        </div>
+  const tabBar = tabs.map(t => {
+    const on = t.id === curTab;
+    return `<button onclick="S.leTab='${t.id}';render();"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border:none;background:none;cursor:pointer;touch-action:manipulation;font-family:inherit;border-bottom:2.5px solid ${on?'#C8292A':'transparent'};transition:border-color .2s;">
+      <div style="color:${on?'#C8292A':'#9CA3AF'};transition:color .2s;">${t.icon}</div>
+      <span style="font-size:10px;font-weight:${on?700:500};color:${on?'#C8292A':'#9CA3AF'};white-space:nowrap;transition:color .2s;">${t.label}</span>
+      <span style="font-size:9px;font-weight:700;color:${on?'#C8292A':'#CBD5E1'};transition:color .2s;">${t.count}</span>
+    </button>`;
+  }).join('');
 
-        <!-- エリアヘッダー（件数 ＋ 一括ボタン） -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">
-          <span style="font-size:11px;font-weight:700;color:#374151;">
-            ${filterLine
-              ? `<span style="display:inline-flex;align-items:center;gap:5px;">
-                   ${getLn(filterLine)?.name}の設備
-                   <button onclick="asgnSetFilter(null)"
-                     style="padding:2px 8px;border-radius:10px;border:1px solid #C7D2FE;background:#EEF2FF;
-                            color:#4F46E5;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;">
-                     ✕ 解除
-                   </button>
-                 </span>`
-              : `全設備 (${asgnVisibleEqs.length}台)`
-            }
-          </span>
-          ${asgnBulkBtn}
-        </div>
-
-        <!-- [v7] 設備チェックリスト（マスターからフラット表示） -->
-        <div style="padding:8px 10px;">
-          ${asgnVisibleEqs.length > 0 ? asgnVisibleEqs.map(e=>{
-            const on = asgnSt.checked.includes(e.id);
-            const lines = S.lines.filter(l=>(l.equipmentIds||[]).includes(e.id));
-            const lineLabel = lines.map(l=>l.name).join('・') || '未ライン';
-            return `
-            <div onclick="asgnToggleEq('${e.id}')"
-              style="display:flex;align-items:center;gap:12px;padding:10px 10px;background:${on?'#EEF2FF':'#FFFFFF'};border:1.5px solid ${on?'#818CF8':'#F0F1F6'};border-radius:10px;margin-bottom:5px;cursor:pointer;touch-action:manipulation;transition:all .12s;">
-              <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${on?'#4F46E5':'#D1D5DB'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
-                ${on?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
-              </div>
-              <div style="flex:1;min-width:0;">
-                <span style="font-size:13px;font-weight:${on?600:400};color:${on?'#312E81':'#4B5563'};">${e.name}</span>
-                <span style="font-size:12px;font-weight:400;color:${on?'#6366F1':'#9CA3AF'};">（${lineLabel}）</span>
-              </div>
-              ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:2px 9px;border-radius:8px;border:1px solid #C7D2FE;flex-shrink:0;">担当</span>`:''}
-            </div>`;
-          }).join('') : `<div style="padding:18px;text-align:center;color:#9CA3AF;font-size:12px;">設備がありません</div>`}
-        </div>
-      </div>
-
-      <!-- ══════════════════════════════════════════════════════
-           [v5 MODIFIED] ② 設備管理
-           設備をマスターとして独立管理（ライン内から切り離し）
-           ▼ 項目 で設備ごとの点検項目を展開・編集
-           ＋設備追加はマスターへの追加のみ（ライン内ボタン削除）
-           ══════════════════════════════════════════════════════ -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;">
-        <div style="font-size:10px;font-weight:700;color:#C8292A;letter-spacing:1.5px;text-transform:uppercase;">② 設備管理（マスター）</div>
-        <span style="font-size:11px;color:#9CA3AF;">▼ 項目 で点検項目を展開</span>
-      </div>
-      ${S.lines.length > 0 ? eqSectionHtml : `
-        <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:28px 16px;text-align:center;margin-bottom:20px;">
-          <div style="font-size:13px;color:#9CA3AF;margin-bottom:5px;">ラインがありません</div>
-          <div style="font-size:12px;color:#C9D0DB;">③ ライン管理でラインを追加してください</div>
-        </div>`}
-
-      <!-- ══════════════════════════════════════════════════════
-           [v5 MODIFIED] ③ ライン管理
-           各ラインに紐づける設備をチェックリストで選択
-           ▶ を展開して設備の紐づけを変更できる
-           ══════════════════════════════════════════════════════ -->
-      <div style="margin-top:22px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;">
-          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;">③ ライン管理</div>
-          <button onclick="S.modal={type:'addLine'};render();"
-            style="display:flex;align-items:center;gap:4px;padding:5px 11px;background:#F4F5F9;border:1px solid #E4E8EF;border-radius:18px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s;"
-            onmousedown="this.style.background='#E4E8EF'" onmouseup="this.style.background='#F4F5F9'">
-            <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M4.5 1v7M1 4.5h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            ライン追加
-          </button>
-        </div>
-        <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:14px;overflow:hidden;">
-          ${S.lines.length > 0 ? lineSectionHtml : `
-            <div style="padding:20px 14px;text-align:center;">
-              <div style="font-size:12px;color:#9CA3AF;">ラインがありません</div>
-            </div>`}
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- [REDESIGN v4 ④] 固定保存ボタン（btabsの上・常に操作可能）
-       選択中は青グラデーション、未選択時はグレーで非活性表示 -->
+  // ─────────────────────────────────────────────
+  // TAB C 担当者紐づけ — 保存ボタン
+  // ─────────────────────────────────────────────
+  const assignSaveBtn = curTab==='assign' ? `
   <div style="position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 58px);left:50%;transform:translateX(-50%);width:100%;max-width:520px;padding:8px 14px;z-index:19;pointer-events:none;">
     <button onclick="asgnSave()"
       style="pointer-events:auto;width:100%;padding:14px;
         background:${totalSel>0?'linear-gradient(135deg,#1E3A8A,#3B5FC9)':'#E5E7EB'};
         color:${totalSel>0?'#FFFFFF':'#9CA3AF'};
         border:none;border-radius:14px;font-size:14px;font-weight:800;
-        cursor:${totalSel>0?'pointer':'default'};
-        touch-action:manipulation;font-family:inherit;
+        cursor:${totalSel>0?'pointer':'default'};touch-action:manipulation;font-family:inherit;
         display:flex;align-items:center;justify-content:center;gap:9px;
         box-shadow:${totalSel>0?'0 4px 20px rgba(30,58,138,0.35)':'none'};
         transition:all .2s;"
-      onmousedown="if(${totalSel}>0){this.style.transform='scale(.97)';this.style.opacity='.9';}"
-      onmouseup="this.style.transform='';this.style.opacity='1';">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 7l3.5 4L12 2.5" stroke="${totalSel>0?'white':'#9CA3AF'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      onmousedown="if(${totalSel}>0){this.style.transform='scale(.97)';}"
+      onmouseup="this.style.transform='';">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 4L12 2.5" stroke="${totalSel>0?'white':'#9CA3AF'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       ${totalSel > 0 ? `${totalSel}台を保存する` : '設備を選択してください'}
       ${totalSel>0?`<span style="background:rgba(255,255,255,0.22);border-radius:9px;padding:2px 10px;font-size:11px;font-weight:700;">✓ ${totalSel}台</span>`:''}
     </button>
-  </div>
+  </div>` : '';
 
+  // ─────────────────────────────────────────────
+  // レンダリング
+  // ─────────────────────────────────────────────
+  return`
+  <div style="display:flex;flex-direction:column;height:100vh;background:#F4F5F9;overflow:hidden;" onclick="if(S.leMenu){S.leMenu=null;render();}">
+
+    <!-- ヘッダー -->
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 0;flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#1E3A8A 0%,#4F46E5 40%,#C8292A 80%,transparent);pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <button onclick="nav('HOME')" style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
+        <div style="flex:1;">
+          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">管理者設定</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">設定・管理</div>
+        </div>
+        ${curTab==='equip'?`<button onclick="S.modal={type:'addEqMaster'};render();"
+          style="display:flex;align-items:center;gap:5px;padding:7px 13px;background:#FFF1F1;border:1.5px solid rgba(200,41,42,0.3);border-radius:20px;color:#C8292A;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          設備追加
+        </button>`:''}
+        ${curTab==='line'?`<button onclick="S.modal={type:'addLine'};render();"
+          style="display:flex;align-items:center;gap:5px;padding:7px 13px;background:#F4F5F9;border:1px solid #E4E8EF;border-radius:20px;color:#6B7280;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+          <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M4.5 1v7M1 4.5h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          ライン追加
+        </button>`:''}
+        ${curTab==='assign'?`<div style="background:${totalSel>0?'linear-gradient(135deg,#1E3A8A,#3B5FC9)':'#F1F3F8'};color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:11px;font-weight:700;padding:6px 12px;border-radius:16px;white-space:nowrap;">
+          ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '未選択'}
+        </div>`:''}
+      </div>
+      <!-- タブバー -->
+      <div style="display:flex;border-top:1px solid #F0F1F5;">
+        ${tabBar}
+      </div>
+    </div>
+
+    <!-- スクロールエリア -->
+    <div id="leq-scroll" style="flex:1;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + ${curTab==='assign'?'120':'70'}px);-webkit-overflow-scrolling:touch;">
+
+      ${curTab === 'equip' ? `
+        <!-- ════ TAB A: 設備マスター ════ -->
+        ${S.equipments.length > 0 ? eqTabHtml : `
+          <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;padding:32px 16px;text-align:center;margin-top:8px;">
+            <div style="font-size:36px;margin-bottom:10px;">🔧</div>
+            <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:6px;">設備がまだありません</div>
+            <div style="font-size:12px;color:#9CA3AF;margin-bottom:16px;">右上の「設備追加」から追加してください</div>
+            <button onclick="S.modal={type:'addEqMaster'};render();" style="padding:11px 22px;background:#FFF1F1;border:1.5px solid rgba(200,41,42,0.3);border-radius:12px;color:#C8292A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;">＋ 設備を追加する</button>
+          </div>`}
+      ` : ''}
+
+      ${curTab === 'line' ? `
+        <!-- ════ TAB B: ライン管理 ════ -->
+        ${S.lines.length > 0 ? lineMgmtHtml : `
+          <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:14px;padding:32px 16px;text-align:center;margin-top:8px;">
+            <div style="font-size:36px;margin-bottom:10px;">🏭</div>
+            <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:6px;">ラインがありません</div>
+            <button onclick="S.modal={type:'addLine'};render();" style="margin-top:8px;padding:11px 22px;background:#F4F5F9;border:1px solid #E4E8EF;border-radius:12px;color:#374151;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;">＋ ラインを追加</button>
+          </div>`}
+      ` : ''}
+
+      ${curTab === 'assign' ? `
+        <!-- ════ TAB C: 担当者紐づけ ════ -->
+        <!-- 担当者選択エリア（青背景） -->
+        <div style="background:linear-gradient(145deg,#1E3A8A 0%,#2D4F9E 55%,#4338CA 100%);border-radius:16px 16px 0 0;padding:16px 16px 18px;box-shadow:0 4px 20px rgba(30,58,138,0.22);position:relative;overflow:visible;">
+          <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:relative;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="white" stroke-width="1.5"/><path d="M2 13c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <span style="font-size:14px;font-weight:700;color:#FFFFFF;">担当者を選択</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
+                <div style="font-size:15px;font-weight:800;color:#FFFFFF;line-height:1;">${assignedCount}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">設定済</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:5px 9px;text-align:center;border:1px solid rgba(255,255,255,0.15);">
+                <div style="font-size:15px;font-weight:800;color:${unassigned>0?'#FCD34D':'#FFFFFF'};line-height:1;">${unassigned}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;">未設定</div>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px 4px;margin-bottom:12px;">
+            <div style="display:flex;gap:6px;min-width:max-content;padding-right:16px;">
+              ${asgnNamePills}
+            </div>
+          </div>
+          <style>#leq-scroll .asgn-pills::-webkit-scrollbar{display:none;}</style>
+          ${existAssign
+            ?`<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:rgba(34,197,94,0.18);border:1.5px solid rgba(134,239,172,0.45);border-radius:10px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="#22C55E"/><path d="M4 7l2.5 2.5 3.5-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#86EFAC;">設定済み — 設備 ${existAssign.equipmentIds.length}台</span>
+              </div>`
+            :`<div style="padding:10px 12px;background:rgba(251,191,36,0.14);border:1.5px solid rgba(251,191,36,0.38);border-radius:10px;">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L12.5 11.5H1.5L7 1.5Z" stroke="#FBBF24" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 5.5v3M7 9.8v.2" stroke="#FBBF24" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span style="font-size:12px;font-weight:700;color:#FDE68A;">担当設備が未設定です</span>
+                </div>
+                <div style="font-size:11px;color:rgba(253,230,138,0.75);margin-left:21px;">→ このままだと全設備が表示されます</div>
+              </div>`
+          }
+        </div>
+        <!-- ライン×設備ツリー -->
+        <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-top:none;border-radius:0 0 16px 16px;margin-bottom:16px;overflow:hidden;box-shadow:0 4px 16px rgba(30,58,138,0.08);">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">
+            <span style="font-size:11px;font-weight:700;color:#374151;">ライン・設備を選択</span>
+            <span style="font-size:10px;color:#9CA3AF;">ライン名で全選択</span>
+          </div>
+          ${S.lines.length > 0 ? asgnLineBlocks : `<div style="padding:24px;text-align:center;color:#9CA3AF;font-size:13px;">ラインがありません</div>`}
+        </div>
+        <!-- 現在の紐づけ一覧 -->
+        ${S.assignments.length > 0 ? `
+        <div style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;margin:0 2px 8px;">現在の紐づけ一覧</div>
+        ${S.assignments.map(a=>`
+          <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:12px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1E3A8A,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;flex-shrink:0;">${a.name.charAt(0)}</div>
+              <div style="min-width:0;">
+                <div style="font-size:13px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.name}</div>
+                <div style="font-size:11px;color:#6B7280;margin-top:1px;">設備 ${a.equipmentIds.length}台担当</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:160px;">
+              ${a.equipmentIds.slice(0,3).map(id=>{
+                const e=getEq(id);
+                return e?`<span style="font-size:10px;font-weight:600;background:#EEF2FF;color:#4F46E5;padding:2px 7px;border-radius:6px;white-space:nowrap;">${eqDisplayName(e)}</span>`:'';
+              }).join('')}
+              ${a.equipmentIds.length>3?`<span style="font-size:10px;color:#9CA3AF;">+${a.equipmentIds.length-3}</span>`:''}
+            </div>
+          </div>`).join('')}` : ''}
+      ` : ''}
+
+    </div><!-- /scroll -->
+    ${assignSaveBtn}
+  </div><!-- /screen -->
   ${btabs()}`;
 }
 
-/* ── LINE_EQ_MGMT action helpers (v3) ── */
+/* ── LINE_EQ_MGMT action helpers (v5) ── */
+
+// [v5 NEW] ラインの equipmentIds をトグル（チェックボックス操作）
+function v5ToggleLineEq(lid, eid){
+  const l = getLn(lid);
+  if(!l) return;
+  l.equipmentIds = l.equipmentIds || [];
+  const idx = l.equipmentIds.indexOf(eid);
+  const eq = getEq(eid);
+  if(idx >= 0){
+    l.equipmentIds.splice(idx, 1);
+    // [v6] lineIds sync
+    if(eq && eq.lineIds){ eq.lineIds = eq.lineIds.filter(id=>id!==lid); }
+    toast(`${eqDisplayName(eq)} をラインから外しました`, 'warn');
+  } else {
+    l.equipmentIds.push(eid);
+    // [v6] lineIds sync
+    if(eq){ eq.lineIds = eq.lineIds||[]; if(!eq.lineIds.includes(lid)) eq.lineIds.push(lid); }
+    toast(`${eqDisplayName(eq)} を ${l.name} に追加しました`);
+  }
+  render();
+}
+
 function leDelLine(lid){
   // [v3] 削除を有効化（仕様通り）
   delLine(lid);
 }
 function leDelEq(eid){
+  // [v5] マスターから削除 + 全ラインのequipmentIdsからも除去
   const eq=getEq(eid);
-  if(!confirm(`「${eq.name}」を削除しますか？`))return;
-  for(const l of S.lines){const i=l.equip.findIndex(e=>e.id===eid);if(i!==-1){l.equip.splice(i,1);break;}}
+  if(!eq||!confirm(`「${eq.name}」を削除しますか？
+※ 全ラインから外れます`))return;
+  S.equipments=S.equipments.filter(e=>e.id!==eid);
+  S.lines.forEach(l=>{l.equipmentIds=(l.equipmentIds||[]).filter(id=>id!==eid);});
   toast('設備を削除しました');render();
 }
-// [v5 MODIFIED] addEqFullConfirm — ラインに追加せずマスターへ登録
+// [v5 NEW] 設備マスターに追加（ラインには紐づけない）
+function addEqMasterConfirm(){
+  const n=document.getElementById('meqm-n')?.value?.trim();
+  if(!n){toast('設備名を入力してください','warn');return;}
+  const k=document.getElementById('meqm-k')?.value?.trim()||'';
+  const num=document.getElementById('meqm-num')?.value?.trim()||'';
+  const displayName = n+(num?' '+num:'');
+  const newId='E'+Date.now();
+  S.equipments.push({id:newId,name:displayName,equipmentName:n,equipmentNumber:num,kind:k,lineIds:[],items:[
+    {id:'I'+newId+'a',n:'外観確認',t:'毎日'},
+    {id:'I'+newId+'b',n:'動作確認',t:'毎日'}
+  ]});
+  S.modal=null;
+  toast(`「${displayName}」を設備マスターに追加しました`);
+  render();
+}
+// [v6] alias
+function addEqMasterV6Confirm(){ addEqMasterConfirm(); }
 function addEqFullConfirm(lid){
+  // [v5] マスターに追加 → ラインにIDを登録
   const n=document.getElementById('meqf-n')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
   const k=document.getElementById('meqf-k')?.value?.trim()||'';
   const customId=document.getElementById('meqf-id')?.value?.trim();
   const newId=customId||'E'+Date.now();
-  // [v5] ラインには追加せず設備マスターに追加する
-  S.equipments.push({id:newId,name:n,kind:k,items:[
-    {id:'I'+Date.now()+'a',n:'外観確認',t:'毎日'},
-    {id:'I'+Date.now()+'b',n:'動作確認',t:'毎日'}
-  ]});
-  S.modal=null;toast(`「${n}」を設備マスターに追加しました\n③ ライン管理でラインに紐づけてください`);render();
+  S.equipments.push({id:newId,name:n,kind:k,items:[{id:'I'+newId+'a',n:'外観確認',t:'毎日'},{id:'I'+newId+'b',n:'動作確認',t:'毎日'}]});
+  if(lid){const l=getLn(lid);if(l){l.equipmentIds=l.equipmentIds||[];l.equipmentIds.push(newId);}}
+  S.modal=null;toast(`「${n}」を追加しました`);render();
 }
-// [v5 MODIFIED] editEqConfirm — マスターを更新して全ライン同期
 function editEqConfirm(eid){
   const n=document.getElementById('meqe-n')?.value?.trim();
   if(!n){toast('設備名を入力してください','warn');return;}
+  const num=document.getElementById('meqe-num')?.value?.trim()||'';
   const k=document.getElementById('meqe-k')?.value?.trim()||'';
-  // [v5] マスターを更新
-  const masterEq=S.equipments.find(e=>e.id===eid);
-  if(masterEq){masterEq.name=n;masterEq.kind=k;}
-  // [v5] 既存ラインの equip も同期（後方互換）
   const eq=getEq(eid);
-  if(eq){eq.name=n;eq.kind=k;}
+  if(eq){
+    eq.equipmentName=n;
+    eq.equipmentNumber=num;
+    eq.name = n+(num?' '+num:'');
+    eq.kind=k;
+  }
   S.modal=null;toast('設備を更新しました');render();
 }
 function editLineConfirm(lid){
@@ -2945,6 +3095,33 @@ function renderModalSheet(){
       <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
       <button onclick="addEqSelectConfirm('${m.lid}')" class="btn-primary" style="flex:2;width:auto;padding:13px;${!sel?'opacity:.45;pointer-events:none;':''}">追加する</button>
     </div>`;}
+  else if(m.type==='copyEq'){
+    const srcEq = getEq(m.srcId)||{};
+    inner=`
+    <div class="sheet-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:44px;height:44px;background:#EEF2FF;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="7" y="7" width="11" height="11" rx="2" stroke="#4F46E5" stroke-width="1.6"/><path d="M13 7V4a1 1 0 00-1-1H4a1 1 0 00-1 1v8a1 1 0 001 1h3" stroke="#4F46E5" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div style="font-size:17px;font-weight:700;color:#111827;">設備を複製</div>
+        <div style="font-size:12px;color:#6B7280;">点検項目ごとコピーして番号だけ変更</div>
+      </div>
+    </div>
+    <div style="background:#F5F3FF;border:1.5px solid #C7D2FE;border-radius:12px;padding:12px 14px;margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;color:#4F46E5;letter-spacing:.5px;margin-bottom:4px;">コピー元</div>
+      <div style="font-size:15px;font-weight:700;color:#1E1B4B;">${m.srcName||srcEq.name||'—'}</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;">点検項目 ${srcEq.items?.length||0}件がそのままコピーされます</div>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label class="flabel">新しい設備番号 <span style="color:var(--red);">*</span></label>
+      <input id="ceq-num" class="finput" type="text" placeholder="例: B / 2号機 / 002" autofocus>
+      <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">設備名：${m.srcName||srcEq.name||'?'} ＋ 入力値 で登録されます</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
+      <button onclick="copyEquipmentConfirm()" class="btn-primary" style="flex:2;width:auto;padding:13px;background:linear-gradient(135deg,#4F46E5,#6366F1);box-shadow:0 4px 16px rgba(79,70,229,0.28);">複製して追加</button>
+    </div>`;}
   else if(m.type==='addLine'){inner=`
     <div class="sheet-handle"></div>
     <div style="font-size:18px;font-weight:700;margin-bottom:4px;">ラインを追加</div>
@@ -2969,10 +3146,20 @@ function renderModalSheet(){
       <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
       <button onclick="editLineConfirm('${m.lid}')" class="btn-primary" style="flex:2;width:auto;padding:13px;">保存</button>
     </div>`;}
+  else if(m.type==='addEqMaster'){inner=`
+    <div class="sheet-handle"></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加（マスター）</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">設備マスターに登録します。ラインへの紐づけは③ライン管理で行えます。</div>
+    <div style="margin-bottom:12px;"><label class="flabel">設備名 <span style="color:var(--red);">*</span></label><input id="meqm-n" class="finput" type="text" placeholder="例: NC旋盤3" autofocus></div>
+    <div style="margin-bottom:20px;"><label class="flabel">種類（任意）</label><input id="meqm-k" class="finput" type="text" placeholder="例: 旋盤 / 溶接機"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
+      <button onclick="addEqMasterConfirm()" class="btn-primary" style="flex:2;width:auto;padding:13px;">マスターに追加</button>
+    </div>`;}
   else if(m.type==='addEqFull'){inner=`
     <div class="sheet-handle"></div>
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加（マスター登録）</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">登録後、③ ライン管理 でラインに紐づけてください</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を追加</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">ラインに設備を登録します（ライン自動紐付け）</div>
     <div style="margin-bottom:12px;"><label class="flabel">設備名 <span style="color:var(--red);">*</span></label><input id="meqf-n" class="finput" type="text" placeholder="例: NC旋盤3"></div>
     <div style="margin-bottom:12px;"><label class="flabel">種類（任意）</label><input id="meqf-k" class="finput" type="text" placeholder="例: 旋盤 / 溶接機"></div>
     <div style="margin-bottom:20px;"><label class="flabel">設備ID（任意・空欄で自動生成）</label><input id="meqf-id" class="finput" type="text" placeholder="例: EQ-2024-003"></div>
@@ -2984,9 +3171,10 @@ function renderModalSheet(){
     const _ee=getEq(m.eid);
     inner=`
     <div class="sheet-handle"></div>
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備を編集</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">設備情報を変更してください</div>
-    <div style="margin-bottom:12px;"><label class="flabel">設備名 <span style="color:var(--red);">*</span></label><input id="meqe-n" class="finput" type="text" value="${_ee?.name||''}" placeholder="例: NC旋盤3"></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">設備情報を変更</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;">${eqDisplayName(_ee)||''}の情報を変更します</div>
+    <div style="margin-bottom:12px;"><label class="flabel">設備名 <span style="color:var(--red);">*</span></label><input id="meqe-n" class="finput" type="text" value="${_ee?.equipmentName||_ee?.name||''}" placeholder="例：組立機"></div>
+    <div style="margin-bottom:12px;"><label class="flabel">設備番号</label><input id="meqe-num" class="finput" type="text" value="${_ee?.equipmentNumber||''}" placeholder="例：A / B / 1号機"></div>
     <div style="margin-bottom:20px;"><label class="flabel">種類（任意）</label><input id="meqe-k" class="finput" type="text" value="${_ee?.kind||''}" placeholder="例: 旋盤 / 溶接機"></div>
     <div style="display:flex;gap:10px;">
       <button onclick="S.modal=null;render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
@@ -3032,7 +3220,7 @@ function renderModalSheet(){
 /* ═══════════ EQ MONTHLY PDF MODAL ═══════════ */
 function openEqPdfModal(){
   // Default: all equipment selected
-  const allEids=S.lines.flatMap(l=>l.equip.map(e=>e.id));
+  const allEids=S.lines.flatMap(l=>getLineEquip(l).map(e=>e.id));
   S.eqPdfModal={on:true,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:allEids};
   render();
 }
@@ -3043,7 +3231,7 @@ function toggleEqPdfEid(eid){
 }
 function toggleEqPdfLine(lid){
   const m=S.eqPdfModal;
-  const lineEids=getLn(lid).equip.map(e=>e.id);
+  const lineEids=getLineEquip(getLn(lid)).map(e=>e.id);
   const allOn=lineEids.every(id=>m.eids.includes(id));
   m.eids=allOn?m.eids.filter(id=>!lineEids.includes(id)):[...new Set([...m.eids,...lineEids])];
   render();
@@ -3051,7 +3239,7 @@ function toggleEqPdfLine(lid){
 
 function renderEqPdfModal(){
   const m=S.eqPdfModal;
-  const allEids=S.lines.flatMap(l=>l.equip.map(e=>e.id));
+  const allEids=S.lines.flatMap(l=>getLineEquip(l).map(e=>e.id));
   const allSelected=allEids.every(id=>m.eids.includes(id));
   const now=new Date();
   // month nav bounds: don't go into future
@@ -3060,8 +3248,8 @@ function renderEqPdfModal(){
   const nextM=()=>{if(isMaxMonth)return;if(m.month===12){m.year++;m.month=1;}else m.month++;render();};
 
   const lineRows=S.lines.map(l=>{
-    const lineAllOn=l.equip.every(e=>m.eids.includes(e.id));
-    const lineSomeOn=l.equip.some(e=>m.eids.includes(e.id));
+    const lineAllOn=getLineEquip(l).every(e=>m.eids.includes(e.id));
+    const lineSomeOn=getLineEquip(l).some(e=>m.eids.includes(e.id));
     return`
     <div style="margin-bottom:4px;">
       <!-- Line header row -->
@@ -3071,13 +3259,13 @@ function renderEqPdfModal(){
         </div>
         <div style="flex:1;">
           <div style="font-size:13px;font-weight:700;color:#333333;">${l.name}</div>
-          <div style="font-size:11px;color:#888888;">${l.desc} · ${l.equip.length}台</div>
+          <div style="font-size:11px;color:#888888;">${l.desc} · ${getLineEquip(l).length}台</div>
         </div>
-        <div style="font-size:11px;color:#888888;">${l.equip.filter(e=>m.eids.includes(e.id)).length}/${l.equip.length}</div>
+        <div style="font-size:11px;color:#888888;">${getLineEquip(l).filter(e=>m.eids.includes(e.id)).length}/${getLineEquip(l).length}</div>
       </div>
       <!-- Equipment rows -->
       <div style="padding-left:12px;">
-        ${l.equip.map(eq=>{
+        ${getLineEquip(l).map(eq=>{
           const on=m.eids.includes(eq.id);
           return`<div onclick="toggleEqPdfEid('${eq.id}')" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:8px;cursor:pointer;touch-action:manipulation;transition:background .12s;" onmousedown="this.style.background='rgba(0,0,0,0.04)'" onmouseup="this.style.background=''" onmouseleave="this.style.background=''">
             <div style="width:16px;height:16px;border-radius:4px;border:1.5px solid ${on?'#4F8EF7':'rgba(0,0,0,0.08)'};background:${on?'#4F8EF7':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
@@ -3471,7 +3659,7 @@ function inspSetRes(eqId,itemId,result){
   // Update eq card header
   const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
   for(const line of selLines){
-    const eq=line.equip.find(e=>e.id===eqId);
+    const eq=getLineEquip(line).find(e=>e.id===eqId);
     if(eq){
       const items=eq.items.filter(i=>i.t==='毎日');
       const done=items.filter(i=>S.inspRunResults[eqId+'_'+i.id]).length;
@@ -3554,27 +3742,27 @@ function getInspectionByDate(eid,date,type){
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// [v8] 担当設備紐づけ管理 — 同一設備の複数台選択に対応
-// State: { selName, counts:{eid:n}, filterLine }
-// counts の値は台数(0=未選択, 1以上=選択済み)
-// equipmentIds は台数ぶん繰り返す配列で保存: ['E1','E1','E2'] = E1×2, E2×1
+// [REDESIGNED v2] 担当設備紐づけ管理画面
+// ─ DOM操作を全廃 → 全インタラクションで render() に統一
+// ─ 二重render問題を解消（saveAssignment内renderを使わない）
+// ─ S._asgn にステートを集約
 // ═══════════════════════════════════════════════════════════════════
 
-// ステート初期化
+// ── ステート初期化（担当者切り替え時に呼ぶ）
 function asgnInit(name){
-  const cur = getUserAssignment(name) || {equipmentIds:[]};
-  const ids = cur.equipmentIds || [];
-  // equipmentIds の重複回数をカウントしてcountsに変換
-  const counts = {};
-  ids.forEach(id=>{ counts[id] = (counts[id]||0) + 1; });
-  S._asgn = {
-    selName   : name,
-    counts    : counts,
-    filterLine: S._asgn?.selName===name ? S._asgn.filterLine : null
+  const cur=getUserAssignment(name)||{equipmentIds:[]};
+  // openLines: 初期は全ライン展開
+  const openLines=S._asgn&&S._asgn.selName===name
+    ? S._asgn.openLines                    // 同一担当者なら展開状態を維持
+    : [];                                  // 別担当者なら全折りたたみにリセット
+  S._asgn={
+    selName:name,
+    openLines:[...openLines],
+    checked:[...cur.equipmentIds]          // 保存済みの担当設備で初期化
   };
 }
 
-// ステート取得（未初期化なら自動初期化）
+// ── ステート取得（未初期化なら自動初期化）
 function asgnState(){
   const allNames=[...S.names.inspector,...S.names.admin];
   if(!S._assignSelName) S._assignSelName=allNames[0]||'';
@@ -3582,437 +3770,254 @@ function asgnState(){
   return S._asgn;
 }
 
-// 担当者切り替え
+// ── 担当者切り替え
 function asgnSetName(name){
   S._assignSelName=name;
   asgnInit(name);
   render();
 }
 
-// [v7] ラインフィルター切り替え
-function asgnSetFilter(lid){
+// ── ライン折りたたみトグル（render呼び出し）
+function asgnToggleOpen(lid){
   const st=asgnState();
-  if(lid===null){ st.filterLine=null; }
-  else { st.filterLine = (st.filterLine===lid) ? null : lid; }
+  const i=st.openLines.indexOf(lid);
+  if(i>=0) st.openLines.splice(i,1); else st.openLines.push(lid);
   render();
 }
 
-// [v8] 台数変更（delta=+1 or -1）
-function asgnSetCount(eid, delta){
-  const st=asgnState();
-  const cur = st.counts[eid]||0;
-  const next = Math.max(0, cur + delta);
-  if(next===0) delete st.counts[eid];
-  else st.counts[eid] = next;
-  render();
-}
-
-// [v8] ライン一括 — 全0なら各1台、それ以外は全解除
+// ── ライン内全設備チェック/アンチェック（render呼び出し）
 function asgnToggleLine(lid){
   const st=asgnState();
   const line=getLn(lid); if(!line)return;
-  const eqIds = S.equipments
-    .filter(e => (line.equipmentIds||[]).includes(e.id))
-    .map(e=>e.id);
-  const anyOn = eqIds.some(id=>(st.counts[id]||0)>0);
-  if(anyOn){
-    eqIds.forEach(id=>delete st.counts[id]);
+  const eqIds=getLineEquip(line).map(e=>e.id);
+  const allOn=eqIds.every(id=>st.checked.includes(id));
+  if(allOn){
+    st.checked=st.checked.filter(id=>!eqIds.includes(id)); // 全解除
   } else {
-    eqIds.forEach(id=>{ st.counts[id] = 1; });
+    eqIds.forEach(id=>{if(!st.checked.includes(id))st.checked.push(id);}); // 全選択
   }
   render();
 }
 
-// [v6] 後方互換のため残す
-function asgnToggleOpen(lid){ render(); }
-function asgnToggleEq(eid){ asgnSetCount(eid,1); render(); }
+// ── 個別設備チェックトグル（render呼び出し）
+function asgnToggleEq(eid){
+  const st=asgnState();
+  const i=st.checked.indexOf(eid);
+  if(i>=0) st.checked.splice(i,1); else st.checked.push(eid);
+  render();
+}
 
-// [v8] 保存 — counts を equipmentIds 配列（重複あり）に展開して保存
+// ── 保存（二重render解消: saveAssignmentを直接呼ばず自前で保存）
 function asgnSave(){
   const st=asgnState();
   const name=st.selName;
   if(!name){toast('担当者を選択してください','warn');return;}
-  // {E1:2, E2:1} → ['E1','E1','E2']
-  const equipmentIds=[];
-  Object.entries(st.counts).forEach(([id,n])=>{
-    for(let i=0;i<n;i++) equipmentIds.push(id);
-  });
+  const equipIds=[...st.checked];
+  // ⑤ lineIds は選択された設備が属するラインから自動算出
+  const lineIds=[...new Set(
+    S.lines.filter(l=>getLineEquip(l).some(e=>equipIds.includes(e.id))).map(l=>l.id)
+  )];
+  // データ保存（saveAssignment内のrenderは呼ばず直接保存）
   const idx=S.assignments.findIndex(a=>a.name===name);
-  const data={name,equipmentIds};
+  const data={name,lineIds,equipIds};
   if(idx>=0) S.assignments[idx]=data; else S.assignments.push(data);
   toast('紐づけを保存しました');
+  // 保存後にstateを最新データで再初期化してからrender（1回のみ）
   asgnInit(name);
   render();
 }
 
-// ── [v8] 担当設備紐づけ管理画面 — 複数台選択対応
+// ── メインレンダー関数
 function renderAssignmentMgmt(){
   const allNames=[...S.names.inspector,...S.names.admin];
   const st=asgnState();
   const selName=st.selName;
   const existAssign=getUserAssignment(selName);
-  const totalSel=Object.values(st.counts).reduce((a,b)=>a+b,0);
-  const filterLine=st.filterLine;
+  const totalSel=st.checked.length;
 
-  // ── 担当者ピル
+  // ── 担当者ピル（横スクロール）
   const namePills=allNames.map(n=>{
     const on=n===selName;
     const saved=!!getUserAssignment(n);
     return`<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
-      style="flex-shrink:0;display:inline-flex;align-items:center;gap:7px;padding:8px 16px 8px 10px;border-radius:22px;
-             border:2px solid ${on?'#4F46E5':'#E4E8EF'};
-             background:${on?'linear-gradient(135deg,#4F46E5,#6366F1)':'#FFFFFF'};
-             color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};
-             cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;
-             box-shadow:${on?'0 3px 10px rgba(79,70,229,0.25)':'none'};transition:all .15s;">
-      <span style="width:26px;height:26px;border-radius:50%;
-                   background:${on?'rgba(255,255,255,0.22)':'#F1F3F8'};
-                   display:inline-flex;align-items:center;justify-content:center;
-                   font-size:12px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">
-        ${n.charAt(0)}
-      </span>
-      ${n.split(' ')[0]}
-      ${saved?`<span style="width:7px;height:7px;border-radius:50%;background:${on?'rgba(255,255,255,0.9)':'#22C55E'};flex-shrink:0;" title="設定済み"></span>`:''}
+      style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 10px;border-radius:22px;border:2px solid ${on?'#1E3A8A':'#E4E8EF'};background:${on?'#1E3A8A':'#FFFFFF'};color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;scroll-snap-align:start;">
+      <span style="width:24px;height:24px;border-radius:50%;background:${on?'rgba(255,255,255,0.2)':'#F1F3F8'};display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">${n.charAt(0)}</span>
+      ${n}
+      ${saved?`<span style="width:6px;height:6px;border-radius:50%;background:${on?'rgba(255,255,255,0.8)':'#22C55E'};flex-shrink:0;"></span>`:''}
     </button>`;
   }).join('');
 
-  // ── [v7] ラインフィルター ピル（選択ではなく絞り込み専用）
-  const totalEqCount=S.equipments.length;
-  const filterPills=`
-    <button onclick="asgnSetFilter(null)"
-      style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;
-             padding:7px 14px;border-radius:20px;
-             border:1.5px solid ${!filterLine?'#4F46E5':'#E4E8EF'};
-             background:${!filterLine?'#4F46E5':'#F8F9FC'};
-             color:${!filterLine?'#FFFFFF':'#6B7280'};
-             font-size:12px;font-weight:${!filterLine?700:500};
-             cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="opacity:${!filterLine?1:.5}">
-        <rect x="1" y="1" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M3 5.5h5M3 3.5h5M5 7.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
-      すべて
-      <span style="background:${!filterLine?'rgba(255,255,255,0.25)':'#E4E8EF'};color:${!filterLine?'#FFFFFF':'#6B7280'};font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;">${totalEqCount}</span>
-    </button>
-    ${S.lines.map(l=>{
-      const on=filterLine===l.id;
-      const lineEqCnt=(l.equipmentIds||[]).length;
-      // このラインに含まれる選択済み台数合計
-      const lineSel=S.equipments.filter(e=>(l.equipmentIds||[]).includes(e.id)).reduce((s,e)=>s+(st.counts[e.id]||0),0);
-      return`<button onclick="asgnSetFilter('${l.id}')"
-        style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;
-               padding:7px 13px;border-radius:20px;
-               border:1.5px solid ${on?'#4F46E5':'#E4E8EF'};
-               background:${on?'#4F46E5':'#F8F9FC'};
-               color:${on?'#FFFFFF':'#6B7280'};
-               font-size:12px;font-weight:${on?700:500};
-               cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-        ${l.name}
-        <span style="background:${on?'rgba(255,255,255,0.25)':'lineSel>0?\"#DBEAFE\":\"#E4E8EF\"'};
-                     color:${on?'#FFFFFF':lineSel>0?'#1E40AF':'#9CA3AF'};
-                     font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;">
-          ${lineSel>0?`${lineSel}/`:''}${lineEqCnt}
-        </span>
-      </button>`;
-    }).join('')}`;
+  // ── ライン×設備ツリー
+  const lineBlocks=S.lines.map(line=>{
+    const open=st.openLines.includes(line.id);
+    const eqIds=getLineEquip(line).map(e=>e.id);
+    const selCnt=eqIds.filter(id=>st.checked.includes(id)).length;
+    const allOn=selCnt===eqIds.length&&eqIds.length>0;
+    const someOn=selCnt>0&&!allOn;
 
-  // ── [v7] 設備チェックリスト（フラット表示・絞り込み対応）
-  const visibleEqs = filterLine
-    ? S.equipments.filter(e=>{
-        const l=getLn(filterLine);
-        return l && (l.equipmentIds||[]).includes(e.id);
-      })
-    : S.equipments;
+    // ヘッダーの色：全選択=濃い青, 部分=薄い青, 未選択=グレー
+    const hBg  =allOn?'#EEF2FF':someOn?'#F5F7FF':'#F8F9FC';
+    const hBdr =allOn?'#6366F1':someOn?'#A5B4FC':'#E4E8EF';
+    const hClr =allOn?'#3730A3':someOn?'#4338CA':'#374151';
 
-  // アクティブフィルター帯
-  const filterBanner = filterLine ? (()=>{
-    const ln=getLn(filterLine);
-    const lineEqIds=visibleEqs.map(e=>e.id);
-    const anyOn=lineEqIds.some(id=>(st.counts[id]||0)>0);
-    return`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;
-                background:linear-gradient(90deg,#EEF2FF,#F5F3FF);
-                border:1px solid #C7D2FE;border-radius:12px;margin-bottom:10px;">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
-        <path d="M2 3h10M4 7h6M6 11h2" stroke="#4F46E5" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span style="font-size:12px;font-weight:600;color:#3730A3;flex:1;">${ln?.name} で絞り込み中 — ${visibleEqs.length}台</span>
-      <button onclick="asgnToggleLine('${filterLine}')"
-        style="padding:5px 12px;border-radius:16px;border:1.5px solid ${anyOn?'#FCA5A5':'#A5B4FC'};
-               background:${anyOn?'#FEF2F2':'#EEF2FF'};color:${anyOn?'#DC2626':'#4F46E5'};
-               font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
-        ${anyOn?'✕ 全解除':'✓ 全選択'}
-      </button>
-      <button onclick="asgnSetFilter(null)"
-        style="width:26px;height:26px;border-radius:50%;border:1px solid #C7D2FE;background:#FFFFFF;
-               color:#6366F1;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;
-               display:flex;align-items:center;justify-content:center;font-family:inherit;flex-shrink:0;">✕</button>
-    </div>`;
-  })() : '';
-
-  // 全設備表示時の一括操作
-  const globalBulkBtn = !filterLine&&visibleEqs.length>0 ? (()=>{
-    const anyOn=visibleEqs.some(e=>(st.counts[e.id]||0)>0);
-    return`<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
-      <button onclick="(function(){const st=asgnState();const ids=${JSON.stringify(visibleEqs.map(e=>e.id))};
-        const anyOn=ids.some(id=>(st.counts[id]||0)>0);
-        if(anyOn)ids.forEach(id=>delete st.counts[id]);
-        else ids.forEach(id=>{st.counts[id]=1;});render();})()"
-        style="padding:5px 13px;border-radius:18px;
-               border:1.5px solid ${anyOn?'rgba(200,41,42,0.3)':'#E4E8EF'};
-               background:${anyOn?'rgba(200,41,42,0.06)':'#F8F9FC'};
-               color:${anyOn?'#C8292A':'#6B7280'};
-               font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">
-        ${anyOn?'✕ 全解除':'全選択'}
-      </button>
-    </div>`;
-  })() : '';
-
-  // [v8] 設備行 — +/− ボタンで複数台選択
-  const eqCheckRows = visibleEqs.length>0 ? visibleEqs.map(eq=>{
-    const cnt = st.counts[eq.id]||0;
-    const on  = cnt > 0;
-    const lines = S.lines.filter(l=>(l.equipmentIds||[]).includes(eq.id));
-    const lineLabel = lines.map(l=>l.name).join('・') || '未ライン';
-    return`
-    <div style="display:flex;align-items:center;gap:10px;
-               padding:11px 12px;
-               background:${on?'#EEF2FF':'#FFFFFF'};
-               border:1.5px solid ${on?'#818CF8':'#E8EAF0'};
-               border-radius:12px;margin-bottom:6px;
-               transition:background .12s,border-color .12s;
-               box-shadow:${on?'0 2px 8px rgba(79,70,229,0.10)':'0 1px 2px rgba(0,0,0,0.04)'};">
-      <div style="flex:1;min-width:0;cursor:pointer;" onclick="asgnSetCount('${eq.id}',${on?-cnt:1})">
-        <span style="font-size:14px;font-weight:${on?600:400};color:${on?'#312E81':'#374151'};">${eq.name}</span>
-        <span style="font-size:13px;color:${on?'#6366F1':'#9CA3AF'};">（${lineLabel}）</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:0;flex-shrink:0;border-radius:10px;overflow:hidden;border:1.5px solid ${on?'#818CF8':'#E4E8EF'};">
-        <button onclick="asgnSetCount('${eq.id}',-1)" ${cnt===0?'disabled':''}
-          style="width:32px;height:32px;border:none;background:${cnt>0?'#EEF2FF':'#F8F9FC'};
-                 color:${cnt>0?'#4F46E5':'#CBD5E1'};font-size:18px;font-weight:700;
-                 cursor:${cnt>0?'pointer':'default'};touch-action:manipulation;font-family:inherit;
-                 display:flex;align-items:center;justify-content:center;">−</button>
-        <div style="min-width:38px;height:32px;background:${on?'#4F46E5':'#F1F3F8'};
-                    display:flex;align-items:center;justify-content:center;
-                    font-size:13px;font-weight:700;color:${on?'#FFFFFF':'#9CA3AF'};
-                    transition:background .15s,color .15s;">
-          ${cnt > 0 ? cnt+'台' : '0'}
+    // 設備行
+    const eqRows=getLineEquip(line).map(e=>{
+      const on=st.checked.includes(e.id);
+      return`
+      <div onclick="asgnToggleEq('${e.id}')"
+        style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid #F0F1F6;cursor:pointer;background:${on?'#EEF2FF':'#FFFFFF'};transition:background .1s;">
+        <!-- カスタムチェックマーク -->
+        <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${on?'#4F46E5':'#CBD5E1'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+          ${on?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
         </div>
-        <button onclick="asgnSetCount('${eq.id}',+1)"
-          style="width:32px;height:32px;border:none;background:#EEF2FF;
-                 color:#4F46E5;font-size:18px;font-weight:700;
-                 cursor:pointer;touch-action:manipulation;font-family:inherit;
-                 display:flex;align-items:center;justify-content:center;">＋</button>
+        <span style="flex:1;font-size:14px;font-weight:${on?600:400};color:${on?'#1E1B4B':'#4B5563'};">${e.name}</span>
+        ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:3px 9px;border-radius:8px;border:1px solid #C7D2FE;">担当</span>`:''}
+      </div>`;
+    }).join('');
+
+    return`
+    <div style="border:2px solid ${hBdr};border-radius:18px;margin-bottom:10px;overflow:hidden;background:#FFFFFF;box-shadow:0 1px 6px rgba(0,0,0,0.05);transition:border-color .2s;">
+
+      <!-- ラインヘッダー -->
+      <div style="background:${hBg};display:flex;align-items:center;transition:background .2s;">
+
+        <!-- 折りたたみ矢印 -->
+        <button onclick="asgnToggleOpen('${line.id}')"
+          style="padding:15px 4px 15px 16px;background:none;border:none;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"
+            style="transform:${open?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;flex-shrink:0;">
+            <path d="M2 2l5 5.5L2 13" stroke="${hClr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- ライン全選択エリア（クリックで全ON/OFF） -->
+        <div onclick="asgnToggleLine('${line.id}')"
+          style="flex:1;display:flex;align-items:center;gap:12px;padding:15px 16px 15px 10px;cursor:pointer;">
+          <!-- ライン全選択チェックボックス（視覚のみ・native inputなし） -->
+          <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${allOn?'#4F46E5':someOn?'#818CF8':'#CBD5E1'};background:${allOn?'#4F46E5':someOn?'#EEF2FF':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+            ${allOn?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:someOn?`<div style="width:8px;height:3px;background:#4F46E5;border-radius:2px;"></div>`:''}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;color:${hClr};">${line.name}</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${line.desc}</div>
+          </div>
+          <!-- 選択カウンター -->
+          <div style="text-align:right;flex-shrink:0;margin-right:4px;">
+            <div style="font-size:13px;font-weight:700;color:${selCnt>0?'#4F46E5':'#9CA3AF'};">${selCnt}/${eqIds.length}台</div>
+            <div style="font-size:9px;font-weight:600;color:${selCnt>0?'#6366F1':'#C4C9D4'};margin-top:1px;">${selCnt>0?'選択中':'未選択'}</div>
+          </div>
+        </div>
       </div>
+
+      <!-- 設備リスト（折りたたみ） -->
+      ${open?eqRows:''}
     </div>`;
-  }).join('') : `
-    <div style="padding:32px 20px;text-align:center;">
-      <div style="font-size:28px;margin-bottom:10px;">🔍</div>
-      <div style="font-size:13px;font-weight:600;color:#6B7280;margin-bottom:4px;">このラインに設備がありません</div>
-      <button onclick="asgnSetFilter(null)"
-        style="margin-top:8px;padding:7px 18px;border-radius:20px;border:1.5px solid #E4E8EF;
-               background:#FFFFFF;color:#4F46E5;font-size:12px;font-weight:600;
-               cursor:pointer;font-family:inherit;">フィルター解除</button>
-    </div>`;
+  }).join('');
 
   // ── 紐づけ済み一覧
   const assignList=S.assignments.length
     ?S.assignments.map(a=>{
       const editing=a.name===selName;
-      // [v8] 重複IDを集約して「設備名×台数」表示
-      const eqMap={};
-      (a.equipmentIds||[]).forEach(id=>{ eqMap[id]=(eqMap[id]||0)+1; });
-      const eqSummary=Object.entries(eqMap).map(([id,n])=>{
-        const nm=getEq(id)?.name||id;
-        return n>1?`${nm}×${n}`:nm;
-      }).join('・')||'設備なし';
-      const totalUnits=(a.equipmentIds||[]).length;
-      return`
-      <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;
-                  background:${editing?'#EEF2FF':'#FFFFFF'};
-                  border:2px solid ${editing?'#818CF8':'#E4E8EF'};
-                  border-radius:14px;margin-bottom:8px;transition:all .15s;">
-        <div style="width:38px;height:38px;border-radius:11px;
-                    background:${editing?'linear-gradient(135deg,#4F46E5,#6366F1)':'#F1F3F8'};
-                    display:flex;align-items:center;justify-content:center;
-                    font-size:15px;font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;">
-          ${a.name.charAt(0)}
-        </div>
+      return`<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:${editing?'#EEF2FF':'#FFFFFF'};border:2px solid ${editing?'#6366F1':'#E4E8EF'};border-radius:14px;margin-bottom:8px;transition:all .15s;">
+        <div style="width:38px;height:38px;border-radius:11px;background:${editing?'#4F46E5':'#F1F3F8'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;">${a.name.charAt(0)}</div>
         <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
             <span style="font-size:14px;font-weight:600;color:#111827;">${a.name}</span>
             <span style="font-size:10px;font-weight:700;color:#16A34A;background:#DCFCE7;padding:2px 8px;border-radius:8px;">設定済み</span>
           </div>
-          <div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-            計${totalUnits}台 — ${eqSummary}
-          </div>
+          <div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.lineIds.map(id=>getLn(id)?.name||id).join('・')||'ラインなし'} · 設備 ${a.equipmentIds.length}台</div>
         </div>
         ${editing
-          ?`<span style="font-size:11px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:5px 11px;border-radius:9px;border:1.5px solid #C7D2FE;flex-shrink:0;">編集中</span>`
+          ?`<span style="font-size:11px;font-weight:600;color:#4F46E5;background:#EEF2FF;padding:5px 11px;border-radius:9px;flex-shrink:0;">編集中</span>`
           :`<button onclick="asgnSetName('${a.name.replace(/'/g,"\\'")}')"
-               style="padding:7px 13px;background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:10px;
-                      color:#374151;font-size:12px;font-weight:600;cursor:pointer;
-                      touch-action:manipulation;font-family:inherit;flex-shrink:0;">編集</button>`
+              style="padding:7px 13px;background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:10px;color:#374151;font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;"
+              onmousedown="this.style.borderColor='#6366F1';this.style.color='#4F46E5'"
+              onmouseup="this.style.borderColor='#E4E8EF';this.style.color='#374151'">編集</button>`
         }
       </div>`;
     }).join('')
     :`<div style="padding:28px 20px;text-align:center;color:#9CA3AF;font-size:13px;">
         <div style="font-size:32px;margin-bottom:10px;">📋</div>
         <div style="font-weight:600;margin-bottom:3px;">まだ紐づけがありません</div>
-        <div style="font-size:12px;">上のリストで設備を選んで保存してください</div>
+        <div style="font-size:12px;">上のツリーで設備を選んで保存してください</div>
       </div>`;
 
   // ── HTML組み立て
   return`
   <style>
+    /* [REDESIGNED v2] assignment専用スタイル */
     #asgn-pills::-webkit-scrollbar{display:none;}
-    #asgn-filter::-webkit-scrollbar{display:none;}
-    .asgn-eq-row{transition:background .12s,border-color .12s;}
-    .asgn-eq-row:active{transform:scale(.985);opacity:.88;}
   </style>
+
   <div style="display:flex;flex-direction:column;height:100vh;background:#F4F5F9;overflow:hidden;">
 
     <!-- ヘッダー -->
-    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;
-                padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 16px;
-                flex-shrink:0;position:relative;">
-      <div style="position:absolute;left:0;bottom:0;right:0;height:2.5px;
-                  background:linear-gradient(90deg,#4F46E5,#818CF8 60%,transparent);
-                  pointer-events:none;"></div>
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 16px;flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;bottom:0;right:0;height:2.5px;background:linear-gradient(90deg,#4F46E5,#818CF8 60%,transparent);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
         <button onclick="S._assignSelName=null;S._asgn=null;nav('HOME');"
-          style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;
-                 border:1.5px solid #E4E8EF;display:flex;align-items:center;
-                 justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
-          ${BACK_ICO}
-        </button>
+          style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
         <div style="flex:1;min-width:0;">
           <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.8px;margin-bottom:3px;">管理者設定</div>
-          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">担当設備紐づけ</div>
+          <div style="font-size:21px;font-weight:800;color:#111827;letter-spacing:-.5px;">担当設備紐づけ</div>
         </div>
-        <!-- 選択カウンター バッジ -->
-        <div style="background:${totalSel>0?'linear-gradient(135deg,#4F46E5,#6366F1)':'#F1F3F8'};
-                    color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:12px;font-weight:700;
-                    padding:7px 14px;border-radius:22px;white-space:nowrap;transition:all .2s;
-                    box-shadow:${totalSel>0?'0 3px 12px rgba(79,70,229,0.28)':'none'};">
+        <!-- 選択カウンター -->
+        <div style="background:${totalSel>0?'#4F46E5':'#F1F3F8'};color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:12px;font-weight:700;padding:7px 14px;border-radius:22px;white-space:nowrap;transition:all .2s;box-shadow:${totalSel>0?'0 3px 12px rgba(79,70,229,0.28)':'none'};">
           ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '0台選択中'}
         </div>
       </div>
     </div>
 
     <!-- スクロール本体 -->
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-                padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px);">
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px);">
 
-      <!-- ① 担当者選択 -->
-      <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:14px 16px 14px;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <circle cx="6" cy="4" r="2.5" stroke="#9CA3AF" stroke-width="1.4"/>
-            <path d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <span style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;">担当者を選択</span>
-        </div>
-        <div id="asgn-pills" style="display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;
-                                     scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px;">
+      <!-- 担当者選択 -->
+      <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:14px 0 14px;overflow:visible;">
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin-bottom:10px;padding:0 16px;">担当者を選択</div>
+        <div id="asgn-pills" style="display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 16px 4px;margin-bottom:-4px;scroll-snap-type:x mandatory;">
           ${namePills}
         </div>
-        <!-- 設定状態インジケーター -->
-        <div style="margin-top:12px;">
+        <!-- 設定状態 -->
+        <div style="margin-top:12px;padding:0 16px;">
           ${existAssign
-            ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;
-                          background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="6" fill="#16A34A"/>
-                  <path d="M4 7l2.5 2.5 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span style="font-size:12px;font-weight:700;color:#15803D;">
-                  紐づけ済み — 設備 ${(existAssign.equipmentIds||[]).length}台
-                </span>
+            ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#16A34A"/><path d="M4 7l2.5 2.5 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#15803D;">紐づけ済み — 設備 ${existAssign.equipmentIds.length}台</span>
               </div>`
-            :`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;
-                          background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="6" fill="#CA8A04"/>
-                  <path d="M7 4v3.5M7 9.5v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
+            :`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#CA8A04"/><path d="M7 4v3.5M7 9.5v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
                 <span style="font-size:12px;font-weight:700;color:#854D0E;">未設定 — 現在は全設備が表示されます</span>
               </div>`
           }
         </div>
       </div>
 
-      <!-- ② ラインフィルター（絞り込み専用・選択対象ではない） -->
-      <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:10px 16px 12px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1 2.5h10M3 6h6M5 9.5h2" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <span style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;">ラインで絞り込み</span>
-          <span style="font-size:10px;color:#C7D2FE;font-weight:500;background:#EEF2FF;padding:1px 7px;border-radius:8px;">
-            フィルター
-          </span>
+      <!-- ライン×設備ツリー -->
+      <div style="padding:14px 14px 6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;">担当するラインと設備を選択</span>
+          <span style="font-size:10px;color:#9CA3AF;">ライン名タップで全選択</span>
         </div>
-        <div id="asgn-filter" style="display:flex;gap:6px;overflow-x:auto;
-                                      scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;">
-          ${filterPills}
-        </div>
+        ${lineBlocks}
       </div>
 
-      <!-- ③ 設備チェックリスト -->
-      <div style="padding:12px 14px 6px;">
-
-        <!-- アクティブフィルターバナー / カウント行 -->
-        ${filterLine
-          ? filterBanner
-          : `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-               <span style="font-size:11px;font-weight:700;color:#374151;">
-                 全設備 <span style="color:#6366F1;">${visibleEqs.length}</span> 台
-               </span>
-               ${globalBulkBtn}
-             </div>`
-        }
-
-        ${eqCheckRows}
-      </div>
-
-      <!-- 紐づけ済み一覧 -->
-      ${S.assignments.length>0?`
+      <!-- 紐づけ一覧 -->
       <div style="padding:6px 14px 14px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <rect x="1" y="1" width="10" height="10" rx="2.5" stroke="#6B7280" stroke-width="1.3"/>
-            <path d="M4 6l2 2 3-3" stroke="#16A34A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;">現在の紐づけ一覧</span>
-        </div>
+        <div style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;margin-bottom:10px;">現在の紐づけ一覧</div>
         ${assignList}
-      </div>`:''}
+      </div>
 
     </div>
 
     <!-- 保存ボタン（固定フッター） -->
-    <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
-                padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);
-                background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);
-                -webkit-backdrop-filter:blur(20px);border-top:1px solid #E4E8EF;z-index:20;">
+    <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #E4E8EF;z-index:20;">
       <button onclick="asgnSave()"
-        style="width:100%;padding:15px;
-               background:${totalSel>0?'linear-gradient(135deg,#4F46E5,#6366F1)':'#9CA3AF'};
-               color:white;border:none;border-radius:16px;font-size:15px;font-weight:700;
-               cursor:pointer;touch-action:manipulation;font-family:inherit;
-               box-shadow:${totalSel>0?'0 4px 20px rgba(79,70,229,0.3)':'none'};
-               display:flex;align-items:center;justify-content:center;gap:10px;
-               letter-spacing:.2px;transition:all .15s;"
-        onmousedown="if(${totalSel}>0){this.style.transform='scale(.97)';this.style.boxShadow='0 2px 8px rgba(79,70,229,0.2)'}"
+        style="width:100%;padding:15px;background:linear-gradient(135deg,#4F46E5,#6366F1);color:white;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 20px rgba(79,70,229,0.3);display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.2px;transition:transform .12s,box-shadow .12s;"
+        onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='0 2px 8px rgba(79,70,229,0.2)'"
         onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(79,70,229,0.3)'">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-          <path d="M2 7.5l4.5 4.5L13 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5l4.5 4.5L13 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         紐づけを保存する
-        <span style="background:rgba(255,255,255,0.22);border-radius:10px;padding:3px 11px;font-size:12px;font-weight:700;">
-          ${totalSel}台
-        </span>
+        <span style="background:rgba(255,255,255,0.22);border-radius:10px;padding:3px 11px;font-size:12px;font-weight:700;">${totalSel}台</span>
       </button>
     </div>
   </div>`;
@@ -4022,6 +4027,163 @@ function renderAssignmentMgmt(){
 function assignSaveClick(){asgnSave();}
 function assignChangeName(n){asgnSetName(n);}
 function assignUpdateEquipSection(){}
+
+// ══════════════════════════════════════════════════════════
+// [v6] 設備ヘルパー関数
+// ══════════════════════════════════════════════════════════
+
+function eqDisplayName(eq){
+  if(!eq) return '';
+  if(eq.equipmentName && eq.equipmentNumber) return eq.equipmentName + ' ' + eq.equipmentNumber;
+  if(eq.equipmentName) return eq.equipmentName;
+  return eq.name || '';
+}
+
+function eqLineNames(eq){
+  if(!eq) return [];
+  const ids = (eq.lineIds && eq.lineIds.length > 0)
+    ? eq.lineIds
+    : S.lines.filter(function(l){ return (l.equipmentIds||[]).includes(eq.id); }).map(function(l){ return l.id; });
+  return ids.map(function(id){ return getLn(id) && getLn(id).name; }).filter(Boolean);
+}
+
+function getDailyItems(eq){ return (eq && eq.items || []).filter(function(i){ return i.t === '毎日'; }); }
+function getTenDayItems(eq){ return (eq && eq.items || []).filter(function(i){ return i.t === '10日'; }); }
+function getMonthlyItems(eq){ return (eq && eq.items || []).filter(function(i){ return i.t === '月次'; }); }
+
+function copyEquipment(eid){
+  var src = getEq(eid);
+  if(!src) return;
+  S.modal = { type:'copyEq', srcId:eid, srcName: src.equipmentName || src.name };
+  render();
+}
+
+function copyEquipmentConfirm(){
+  var m = S.modal;
+  var src = getEq(m.srcId);
+  if(!src){ toast('元設備が見つかりません', 'warn'); return; }
+  var newNum = document.getElementById('ceq-num') && document.getElementById('ceq-num').value.trim();
+  if(!newNum){ toast('設備番号を入力してください', 'warn'); return; }
+  var baseName = src.equipmentName || src.name;
+  var newName = baseName + ' ' + newNum;
+  var newId = 'E' + Date.now();
+  var newItems = (src.items || []).map(function(it, idx){ return Object.assign({}, it, {id: 'I' + newId + '_' + idx}); });
+  S.equipments.push({
+    id: newId, name: newName,
+    equipmentName: baseName, equipmentNumber: newNum,
+    lineIds: [], items: newItems
+  });
+  S.modal = null;
+  toast('「' + newName + '」を複製しました');
+  render();
+}
+
+function addEqMasterV6Confirm(){ addEqMasterConfirm(); }
+
+// ══════════════════════════════════════════════════════════
+// [v6] 点検履歴 新データ層
+// コレクション: S.inspections[]
+// 1設備 × 1日 × 種別 = 1レコード
+// ══════════════════════════════════════════════════════════
+
+// 点検種別の正規化
+function normType(t){
+  if(t==='daily'||t==='毎日点検'||t==='毎日')return'daily';
+  if(t==='tenDay'||t==='10日点検'||t==='10日')return'tenDay';
+  if(t==='monthly'||t==='月次点検'||t==='月次')return'monthly';
+  return'daily';
+}
+function typeToLabel(t){return{daily:'毎日点検',tenDay:'10日点検',monthly:'月次点検'}[normType(t)]||t;}
+function typeToItemFilter(t){return{daily:'毎日',tenDay:'10日',monthly:'月次'}[normType(t)]||'毎日';}
+
+// ステータス自動判定
+function statusFromResults(itemsArr){
+  if(!itemsArr||!itemsArr.length)return'incomplete';
+  if(itemsArr.some(i=>i.result==='✕'))return'ng';
+  if(itemsArr.every(i=>i.result==='〇'))return'completed';
+  return'incomplete';
+}
+
+// S.insps の results → items配列に変換
+function resultsToItems(eq,type,results){
+  const filter=typeToItemFilter(type);
+  return (eq.items||[]).filter(i=>i.t===filter).map(it=>({
+    itemId:it.id, itemName:it.n,
+    result: results[it.id]?.r==='ng'?'✕':'〇',
+    comment: results[it.id]?.comment||''
+  }));
+}
+
+// 新レコードを生成して S.inspections に保存（同日・同設備・同種別は上書き）
+function saveInspRecord(eq, date, typeRaw, results){
+  const type=normType(typeRaw);
+  const itemsArr=resultsToItems(eq,type,results);
+  const okCnt=itemsArr.filter(i=>i.result==='〇').length;
+  const ngCnt=itemsArr.filter(i=>i.result==='✕').length;
+  const status=statusFromResults(itemsArr);
+  const lineId=(eq.lineIds&&eq.lineIds[0])||S.lines.find(function(l){return(l.equipmentIds||[]).includes(eq.id);})?.id||'';
+  const rec={
+    id: eq.id+'_'+date+'_'+type,
+    userId: S.currentName||'',
+    userName: S.currentName||'',
+    equipmentId: eq.id,
+    equipmentName: eq.equipmentName||eq.name,
+    equipmentNumber: eq.equipmentNumber||'',
+    lineId: lineId,
+    lineName: getLn(lineId)?.name||'',
+    date: date,
+    yearMonth: date.slice(0,7),
+    type: type,
+    status: status,
+    items: itemsArr,
+    summary:{ totalCount:itemsArr.length, okCount:okCnt, ngCount:ngCnt },
+    createdAt: new Date().toISOString()
+  };
+  // 上書き（同キー）
+  const idx=S.inspections.findIndex(function(r){return r.id===rec.id;});
+  if(idx>=0)S.inspections[idx]=rec; else S.inspections.push(rec);
+  return rec;
+}
+
+// クエリ：equipmentId + yearMonth で絞り込み（高速化）
+function queryInspections(eid, yearMonth, type){
+  return S.inspections.filter(function(r){
+    return r.equipmentId===eid
+      && (!yearMonth||r.yearMonth===yearMonth)
+      && (!type||normType(r.type)===normType(type));
+  });
+}
+
+// 新構造優先で点検データを取得（なければ旧 S.insps にフォールバック）
+function getInspectionByDate(eid, date, typeRaw){
+  const type=normType(typeRaw);
+  // ① 新構造から検索
+  const rec=S.inspections.find(function(r){return r.equipmentId===eid&&r.date===date&&normType(r.type)===type;});
+  if(rec){
+    // 旧形式に変換して返す（既存コードと互換）
+    const results={};
+    rec.items.forEach(function(it){results[it.itemId]={r:it.result==='✕'?'ng':'ok',comment:it.comment||''};});
+    return{date:rec.date,results:results,_v6:rec};
+  }
+  // ② 旧 S.insps からフォールバック
+  const label=typeToLabel(type);
+  const key=eid+':'+label;
+  const data=S.insps[key];
+  if(data&&data.date===date)return data;
+  return null;
+}
+
+// 月単位の設備ステータス取得（履歴タブ用）
+function getEqMonthSummary(eid, yearMonth){
+  const recs=queryInspections(eid,yearMonth,'daily');
+  const recMap={};
+  recs.forEach(function(r){recMap[r.date]=r;});
+  return recMap;
+}
+
+// ステータスラベル（日本語）
+function statusLabel(s){return{completed:'完了',ng:'異常',incomplete:'一部未入力'}[s]||'未実施';}
+
 // ════════════════════════════════════════════════════════════
 
 function render(){
