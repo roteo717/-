@@ -305,7 +305,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 
 /* PC: History 2-col overrides */
 @media(min-width:769px){
-  .hist-main-area{padding:16px 24px calc(env(safe-area-inset-bottom,0px)+90px) !important;}
+  .hist-main-area{overflow-y:auto !important;}
 }
 </style>
 </head>
@@ -2142,7 +2142,8 @@ function renderHistoryList(){
       </div>
 
       <!-- メインコンテンツ -->
-      <div class="hist-main-area" style="flex:1;min-height:0;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
+      <div class="hist-main-area" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;">
+        <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
 
         <!-- 月サマリーカード -->
         <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:14px 16px;margin-bottom:12px;">
@@ -2175,6 +2176,7 @@ function renderHistoryList(){
 
         <!-- 日付リスト -->
         ${dateList||`<div style="text-align:center;padding:44px 20px;color:#9CA3AF;"><div style="font-size:32px;margin-bottom:10px;">✅</div><div style="font-size:14px;font-weight:600;">${S.histFilter==='missing'?'未入力の日はありません':'データがありません'}</div></div>`}
+        </div>
       </div>
     </div>
   </div>
@@ -3524,7 +3526,8 @@ function renderInspRun(){
       </div>
 
       <!-- メインエリア（点検カード） -->
-      <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px calc(env(safe-area-inset-bottom,0px)+80px);">
+      <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;">
+        <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
 
         <!-- 設備バナー -->
         <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
@@ -3553,6 +3556,7 @@ function renderInspRun(){
           <div style="font-size:16px;font-weight:800;color:#16A34A;margin-bottom:4px;">全設備の点検が完了！</div>
           <div style="font-size:12px;color:#16A34A;opacity:.75;">下の提出ボタンを押してください</div>
         </div>`:''}
+        </div>
       </div>
     </div>
 
