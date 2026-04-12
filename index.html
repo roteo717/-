@@ -2135,7 +2135,7 @@ function renderHistoryList(){
   }).join('');
 
   return`
-  <div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
+  <div style="display:flex;flex-direction:column;height:100vh;height:100dvh;background:#F8F9FC;overflow:hidden;">
     <!-- ヘッダー -->
     <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 0;flex-shrink:0;position:relative;">
       <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#2563EB 0%,#4F46E5 50%,transparent);pointer-events:none;"></div>
@@ -2147,7 +2147,7 @@ function renderHistoryList(){
               <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
             <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">${viewY}年${viewM}月</div>
-            <button onclick="(function(){let y=S.histYear||${nowY},m=(S.histMonth||${nowM})+1;if(m>12){m=1;y++;}if(y>${nowY}||(y===${nowY}&&m>${nowM}))return;S.histYear=y;S.histMonth=m;render();})()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E4E8EF;background:${isCurrentMonth?'#F8F9FC':'#F8F9FC'};color:${isCurrentMonth?'#D1D5DB':'#374151'};display:flex;align-items:center;justify-content:center;cursor:${isCurrentMonth?'default':'pointer'};touch-action:manipulation;flex-shrink:0;opacity:${isCurrentMonth?0.4:1};">
+            <button onclick="(function(){let y=S.histYear||${nowY},m=(S.histMonth||${nowM})+1;if(m>12){m=1;y++;}if(y>${nowY}||(y===${nowY}&&m>${nowM}))return;S.histYear=y;S.histMonth=m;render();})()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E4E8EF;background:#F8F9FC;color:${isCurrentMonth?'#D1D5DB':'#374151'};display:flex;align-items:center;justify-content:center;cursor:${isCurrentMonth?'default':'pointer'};touch-action:manipulation;flex-shrink:0;opacity:${isCurrentMonth?0.4:1};">
               <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
@@ -2168,19 +2168,9 @@ function renderHistoryList(){
       </div>
     </div>
 
-    <!-- PC/スマホ分岐ボディ -->
-    <div class="hist-pc-body" style="flex:1;min-height:0;display:flex;overflow:hidden;">
-      <!-- PC: サイドバー（スマホ非表示） -->
-      <div class="hist-sidebar pc-only">
-        <div class="hist-sidebar-hdr">
-          <div style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;">設備一覧</div>
-        </div>
-        <div class="hist-sidebar-scroll">${sidebarEqHtml}</div>
-      </div>
-
-      <!-- メインコンテンツ -->
-      <div class="hist-main-area" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;">
-        <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
+    <!-- スクロールエリア -->
+    <div style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;">
+      <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);">
 
         <!-- 月サマリーカード -->
         <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:20px 20px 16px;margin-bottom:16px;">
@@ -2213,7 +2203,6 @@ function renderHistoryList(){
 
         <!-- 日付リスト -->
         ${dateList||`<div style="text-align:center;padding:44px 20px;color:#9CA3AF;"><div style="font-size:32px;margin-bottom:10px;">✅</div><div style="font-size:14px;font-weight:600;">${S.histFilter==='missing'?'未入力の日はありません':'データがありません'}</div></div>`}
-        </div>
       </div>
     </div>
   </div>
@@ -3284,9 +3273,11 @@ function renderModalSheet(){
 
 /* ═══════════ EQ MONTHLY PDF MODAL ═══════════ */
 function openEqPdfModal(){
-  // Default: all equipment selected
+  // 履歴画面で表示中の月をデフォルトにする
   const allEids=S.lines.flatMap(l=>getLineEquip(l).map(e=>e.id));
-  S.eqPdfModal={on:true,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:allEids};
+  const year=S.histYear||new Date().getFullYear();
+  const month=S.histMonth||new Date().getMonth()+1;
+  S.eqPdfModal={on:true,year,month,eids:allEids};
   render();
 }
 function toggleEqPdfEid(eid){
