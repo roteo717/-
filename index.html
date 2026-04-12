@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム v5</title>
+<title>日常点検システム v10</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -84,19 +84,25 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 100px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
-.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:1px solid var(--border);}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px;border:1px solid var(--border);}
 .card-tap{cursor:pointer;transition:transform .12s,opacity .12s;}
 .card-tap:active{transform:scale(.98);opacity:.85;}
-.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin:18px 0 8px 2px;}
+.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin:24px 0 12px 4px;}
 .section-label:first-child{margin-top:0;}
 
+/* ── icard内ボタン行 ── */
+.icard .btn-row{margin-top:12px;display:flex;gap:12px;}
+
+/* ── 履歴メインエリアのカード ── */
+.hist-main-area .card{padding:18px 20px;margin-bottom:14px;}
+
 /* ── Inspection Cards ── */
-.icard{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:10px;border:1.5px solid var(--border);transition:border-color .2s,background .2s;user-select:none;}
+.icard{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 20px;margin-bottom:18px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;border:1.5px solid var(--border);transition:border-color .2s,background .2s;user-select:none;}
 .icard.rok{border-color:var(--green);background:var(--green-lt);}
 .icard.rng{border-color:var(--red);background:var(--red-lt);}
 
 /* ── Judge Buttons ── */
-.jbtn{flex:1;height:52px;border-radius:14px;border:1.5px solid;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
+.jbtn{flex:1;height:56px;border-radius:16px;border:1.5px solid;cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
 .jbtn:active{transform:scale(.94);}
 .jok{background:var(--green-lt);color:var(--green);border-color:var(--green);}
 .jok:active{background:var(--green);color:white;box-shadow:0 4px 18px rgba(22,163,74,0.3);}
@@ -320,7 +326,7 @@ const S={
   selectedEquipmentId:null,
   selectedLine:null,selectedEq:null,inspType:'毎日点検',histView:'list',histDate:null,histWeekOffset:0,
   bulkActive:false,bulkLineId:null,bulkIdx:0,
-  modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},
+  modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},histQuickInput:null,
   eqPdfModal:{on:false,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:null},
   names:{
     inspector:['山田 太郎','佐藤 花子','田中 一郎','鈴木 次郎','高橋 三郎','渡辺 四郎'],
@@ -390,6 +396,16 @@ function getTodayInspTypes(){
   return types;
 }
 
+// ⑧ 担当設備0件時の例外処理対応 getUserEquipments()
+// getAllAssignedEquip() と同目的。空配列を返す（nullでなく）。
+function getUserEquipments(){
+  const a=getUserAssignment(S.currentName);
+  if(!a) return [];
+  const ids=a.equipmentIds||a.equipIds||[];
+  if(!ids.length) return [];
+  return S.equipments.filter(eq=>ids.includes(eq.id));
+}
+
 // [v5] ⑤ 担当者の紐づけデータを取得
 function getUserAssignment(name){
   return S.assignments.find(a => a.name === name);
@@ -404,14 +420,19 @@ function getVisibleLines(){
 function getVisibleEquip(line){
   const eqs = getLineEquip(line);
   const a = getUserAssignment(S.currentName);
-  if(!a || !a.equipmentIds || a.equipmentIds.length === 0) return eqs;
-  return eqs.filter(e => a.equipmentIds.includes(e.id));
+  if(!a) return eqs;
+  const ids = a.equipmentIds || a.equipIds || [];
+  if(!ids.length) return eqs;
+  return eqs.filter(e => ids.includes(e.id));
 }
 // [v6] 担当者の全設備（ライン横断）
 function getAllAssignedEquip(){
   const a = getUserAssignment(S.currentName);
-  if(!a || !a.equipmentIds || a.equipmentIds.length === 0) return null; // null = 未設定 = 全設備
-  return a.equipmentIds.map(id=>getEq(id)).filter(Boolean);
+  if(!a) return null;
+  // equipmentIds（新） or equipIds（旧）でフォールバック
+  const ids = a.equipmentIds || a.equipIds || [];
+  if(!ids.length) return null;
+  return ids.map(id=>getEq(id)).filter(Boolean);
 }
 // ⑧ 紐づけ保存処理
 function saveAssignment(name, lineIds, equipmentIds){
@@ -560,7 +581,7 @@ function confirmNg(){
   if(!S.insps[_nk])S.insps[_nk]={date:TODAY,results:{}};
   S.insps[_nk].results[iid]={r:'ng',comment:c,photos:S.ngModal.photos};
   if(!S.anomalies.find(a=>a.eid===eid&&a.iid===iid&&a.status!=='resolved')){
-    S.anomalies.push({id:'AN'+Date.now(),lid:eq.lid,eid,iid,iname:item.n,comment:c,status:'open',date:TODAY,by:'現場作業者'});
+    S.anomalies.push({id:'AN'+Date.now(),lid:S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||'',eid,iid,iname:item.n,comment:c,status:'open',date:TODAY,by:'現場作業者'});
   }
   S.ngModal={on:false,itemId:null,comment:'',photos:0};render();
 }
@@ -1749,7 +1770,7 @@ function renderInspection(){
           <button onclick="resetResult('${it.id}')" style="padding:5px 14px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text2);font-size:12px;cursor:pointer;touch-action:manipulation;font-family:inherit;">やり直し</button>
         </div>`;
     // [v6] 前回値チェック
-    const prevKey=eid+':'+S.inspType;
+    const prevKey=eq.id+':'+S.inspType;
     const prevInsp=Object.entries(S.insps).find(([k,v])=>k===prevKey&&v.date!==TODAY)?.[1];
     const prevResult=prevInsp?.results?.[it.id];
     const prevSymbol=prevResult?.r==='ok'?'○':prevResult?.r==='ng'?'✕':null;
@@ -1967,9 +1988,12 @@ function renderHistoryList(){
   const eid=S.selectedEquipmentId;
   const {eq:selectedEq,line:selectedLine}=displayEquip.find(({eq})=>eq.id===eid)||displayEquip[0];
 
-  // ── 設備タブ ──
+  // ── 月ナビ ──
   const nowY=now.getFullYear(),nowM=now.getMonth()+1;
-  const monthStr=`${nowY}-${String(nowM).padStart(2,'0')}`;
+  const viewY=S.histYear||nowY;
+  const viewM=S.histMonth||nowM;
+  const monthStr=`${viewY}-${String(viewM).padStart(2,'0')}`;
+  const isCurrentMonth=(viewY===nowY&&viewM===nowM);
 
   function eqMonthStatus(e){
     const v6Map=getEqMonthSummary(e.id,monthStr);
@@ -2004,13 +2028,13 @@ function renderHistoryList(){
     </button>`;
   }).join('');
 
-  // ── 日付リスト生成（過去60日） ──
+  // ── 日付リスト生成（表示月の全日） ──
   const WDAYS=['日','月','火','水','木','金','土'];
   const dateRows=[];
-  for(let i=0;i<60;i++){
-    const d=new Date();
-    d.setDate(d.getDate()-i);
-    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const daysInViewM=new Date(viewY,viewM,0).getDate();
+  for(let day=1;day<=daysInViewM;day++){
+    const d=new Date(viewY,viewM-1,day);
+    const ds=`${viewY}-${String(viewM).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const dow=d.getDay();
     const isFuture=d>now;
     if(isFuture) continue;
@@ -2042,12 +2066,15 @@ function renderHistoryList(){
       else{sym='';statusText='未入力';statusColor='#9CA3AF';bgColor='#F9FAFB';bdColor='#E4E8EF';}
     }
 
-    const clickable=status!=='pending';
+    const clickable = status !== 'pending';
+    // 未入力かつ平日 → 点検入力ボタンを表示
+    const canInput  = status === 'pending' && !isWeekend;
     const dayLabel=`${d.getMonth()+1}/${d.getDate()}（${WDAYS[dow]}）`;
     const dayNumColor=isToday?'#2563EB':dow===0?'#C8292A':dow===6?'#2563EB':'#111827';
 
-    dateRows.push(`<div style="background:${bgColor};border:1.5px solid ${isToday?'#2563EB':bdColor};border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:${clickable?'pointer':'default'};${isToday?'box-shadow:0 0 0 2.5px rgba(37,99,235,0.2);':''}"
-      ${clickable?`onclick="S.histView='detail';S.histDate='${ds}';S.histEqId='${eid}';render();"`:''}>
+    dateRows.push(`<div style="background:${bgColor};border:1.5px solid ${isToday?'#2563EB':bdColor};border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:${clickable?'pointer':canInput?'pointer':'default'};${isToday?'box-shadow:0 0 0 2.5px rgba(37,99,235,0.2);':''}"
+      ${clickable?`onclick="S.histView='detail';S.histDate='${ds}';S.histEqId='${eid}';render();"`:
+        canInput?`onclick="openHistQuickInput('${eid}','${ds}');"`:''}>
       <!-- 日付 -->
       <div style="min-width:88px;">
         <div style="font-size:15px;font-weight:800;color:${dayNumColor};display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
@@ -2063,7 +2090,8 @@ function renderHistoryList(){
       <div style="flex:1;min-width:0;">
         <div style="font-size:14px;font-weight:700;color:${statusColor};">${statusText}</div>
       </div>
-      ${clickable?`<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+      ${clickable?`<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:
+        canInput?`<span style="font-size:11px;font-weight:700;color:#2563EB;background:#EFF6FF;padding:5px 11px;border-radius:9px;white-space:nowrap;flex-shrink:0;">入力する</span>`:''}
     </div>`);
   }
 
@@ -2071,7 +2099,7 @@ function renderHistoryList(){
 
   // 月サマリー
   const v6Map=getEqMonthSummary(eid,monthStr);
-  const daysInM=new Date(nowY,nowM,0).getDate();
+  const daysInM=new Date(viewY,viewM,0).getDate();
   let mDone=0,mNg=0,mMissed=0,mExpected=0;
   for(let d=1;d<=daysInM;d++){
     const ds=`${monthStr}-${String(d).padStart(2,'0')}`;
@@ -2114,9 +2142,18 @@ function renderHistoryList(){
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <div style="flex:1;">
           <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">点検履歴</div>
-          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">${nowY}年${nowM}月</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button onclick="(function(){let y=S.histYear||${nowY},m=(S.histMonth||${nowM})-1;if(m<1){m=12;y--;}S.histYear=y;S.histMonth=m;render();})()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E4E8EF;background:#F8F9FC;color:#374151;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
+              <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">${viewY}年${viewM}月</div>
+            <button onclick="(function(){let y=S.histYear||${nowY},m=(S.histMonth||${nowM})+1;if(m>12){m=1;y++;}if(y>${nowY}||(y===${nowY}&&m>${nowM}))return;S.histYear=y;S.histMonth=m;render();})()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E4E8EF;background:${isCurrentMonth?'#F8F9FC':'#F8F9FC'};color:${isCurrentMonth?'#D1D5DB':'#374151'};display:flex;align-items:center;justify-content:center;cursor:${isCurrentMonth?'default':'pointer'};touch-action:manipulation;flex-shrink:0;opacity:${isCurrentMonth?0.4:1};">
+              <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
         </div>
         <div style="display:flex;gap:6px;">
+          ${S.currentRole==='admin'?`<button onclick="openEqPdfModal()" class="hdr-action-btn" style="padding:7px 13px;border-radius:20px;border:1.5px solid #2563EB;background:#EFF6FF;color:#2563EB;font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;"><svg width="12" height="14" viewBox="0 0 14 16" fill="none"><rect x="1" y="1" width="10" height="14" rx="2" stroke="#2563EB" stroke-width="1.6"/><path d="M3.5 6h6M3.5 9h4" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"/></svg>月次PDF</button>`:''}
           <button onclick="S.histFilter=S.histFilter==='missing'?'all':'missing';render();"
             style="padding:7px 13px;border-radius:20px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'#F8F9FC'};color:${S.histFilter==='missing'?'#C8292A':'#6B7280'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;">
             <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><circle cx="4.5" cy="4.5" r="4" stroke="currentColor" stroke-width="1.4"/></svg>
@@ -2146,7 +2183,7 @@ function renderHistoryList(){
         <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
 
         <!-- 月サマリーカード -->
-        <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:14px 16px;margin-bottom:12px;">
+        <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:20px 20px 16px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div>
               <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1px;margin-bottom:2px;">今月の実施率</div>
@@ -2260,7 +2297,167 @@ function renderHistoryDetail(date){
   return`${hdr}<div class="scroll">${lineBlocks}</div>${btabs()}`;
 }
 
-/* ═══════════ ANOMALY ═══════════ */
+/* ═══════════ HISTORY QUICK INPUT ═══════════
+   履歴画面の「未入力」欄をタップして点検入力できるシート
+   ─ S.histQuickInput = { eid, date, results:{itemId:'ok'|'ng'} }
+   ─ 画面は再描画せず、シートのみ追記
+   ════════════════════════════════════════════ */
+
+function openHistQuickInput(eid, date){
+  const eq = getEq(eid);
+  if(!eq) return;
+  S.histQuickInput = { eid, date, results:{} };
+  // 既存データがあれば引き継ぐ
+  const key = eid + ':毎日点検';
+  const existing = S.insps[key];
+  if(existing && existing.date === date){
+    S.histQuickInput.results = Object.assign({}, existing.results);
+  }
+  render();
+}
+
+function hqiSetResult(itemId, result){
+  if(!S.histQuickInput) return;
+  const cur = S.histQuickInput.results[itemId];
+  // 同じボタンを再タップ → 取消
+  if(cur && cur.r === result){
+    delete S.histQuickInput.results[itemId];
+  } else {
+    S.histQuickInput.results[itemId] = { r: result, comment: '', photos: 0 };
+  }
+  render();
+}
+
+function hqiBulkOk(){
+  if(!S.histQuickInput) return;
+  const eq = getEq(S.histQuickInput.eid);
+  if(!eq) return;
+  eq.items.filter(i => i.t === '毎日').forEach(it => {
+    if(!S.histQuickInput.results[it.id]){
+      S.histQuickInput.results[it.id] = { r:'ok', comment:'', photos:0 };
+    }
+  });
+  render();
+}
+
+function hqiSave(){
+  if(!S.histQuickInput) return;
+  const { eid, date, results } = S.histQuickInput;
+  const eq = getEq(eid);
+  if(!eq) return;
+  const items = eq.items.filter(i => i.t === '毎日');
+  const missing = items.filter(it => !results[it.id]).length;
+  if(missing > 0){ toast(`未入力が ${missing} 件あります`, 'warn'); return; }
+
+  // S.insps に保存
+  const key = eid + ':毎日点検';
+  S.insps[key] = { date, results, by: S.currentName || '点検者' };
+
+  // S.inspections（v6構造）にも保存
+  saveInspRecord(eq, date, '毎日点検', results);
+
+  // NG があれば異常記録
+  items.forEach(it => {
+    if(results[it.id]?.r === 'ng'){
+      const line = S.lines.find(l => (l.equipmentIds||[]).includes(eid));
+      const existing = S.anomalies.find(a => a.eid===eid && a.iid===it.id && a.status!=='resolved');
+      if(!existing) S.anomalies.push({
+        id:'AN'+Date.now()+Math.random().toString(36).slice(2),
+        lid: line?.id||'', eid, iid: it.id, iname: it.n,
+        comment: '履歴画面からNG入力', status:'open', date,
+        by: S.currentName||'点検者'
+      });
+    }
+  });
+
+  const ngCnt = items.filter(it => results[it.id]?.r === 'ng').length;
+  S.histQuickInput = null;
+  toast(ngCnt > 0 ? `保存しました（異常 ${ngCnt} 件）` : '点検を保存しました');
+  render();
+}
+
+function renderHistQuickInputSheet(){
+  if(!S.histQuickInput) return '';
+  const { eid, date, results } = S.histQuickInput;
+  const eq = getEq(eid);
+  if(!eq) return '';
+  const items = eq.items.filter(i => i.t === '毎日');
+  const d = new Date(date);
+  const dw = ['日','月','火','水','木','金','土'];
+  const dl = `${d.getMonth()+1}月${d.getDate()}日（${dw[d.getDay()]}）`;
+  const filledCnt = items.filter(it => results[it.id]).length;
+  const allFilled = filledCnt === items.length;
+
+  const itemRows = items.map((it, idx) => {
+    const r = results[it.id]?.r;
+    const isOk = r === 'ok';
+    const isNg = r === 'ng';
+    return `
+    <div style="display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #F0F1F6;">
+      <div style="width:24px;height:24px;border-radius:50%;background:#F1F3F8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#9CA3AF;flex-shrink:0;">${idx+1}</div>
+      <div style="flex:1;font-size:14px;font-weight:500;color:#111827;line-height:1.4;">${it.n}</div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="hqiSetResult('${it.id}','ok')"
+          style="height:44px;min-width:60px;padding:0 14px;border-radius:12px;border:2px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .12s;
+          ${isOk ? 'background:#16A34A;color:white;border-color:#16A34A;box-shadow:0 3px 12px rgba(22,163,74,0.3);' : 'background:#F0FDF4;color:#16A34A;border-color:rgba(22,163,74,0.4);'}">
+          ○
+        </button>
+        <button onclick="hqiSetResult('${it.id}','ng')"
+          style="height:44px;min-width:60px;padding:0 14px;border-radius:12px;border:2px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .12s;
+          ${isNg ? 'background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 3px 12px rgba(200,41,42,0.3);' : 'background:#FFF1F1;color:#C8292A;border-color:rgba(200,41,42,0.4);'}">
+          ✕
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="overlay" onclick="if(event.target===this){S.histQuickInput=null;render();}">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+
+      <!-- シートヘッダー -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:4px;">点検入力 — ${dl}</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">${eq.name}</div>
+        </div>
+        <button onclick="S.histQuickInput=null;render();"
+          style="width:36px;height:36px;border-radius:50%;background:#F1F3F8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;color:#6B7280;flex-shrink:0;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <!-- 進捗 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:12px;font-weight:600;color:#6B7280;">進捗</span>
+        <span style="font-size:12px;font-weight:700;color:${allFilled?'#16A34A':'#9CA3AF'};">${filledCnt} / ${items.length}</span>
+      </div>
+      <div style="background:#F1F3F8;border-radius:6px;height:5px;margin-bottom:20px;overflow:hidden;">
+        <div style="height:100%;border-radius:6px;background:linear-gradient(90deg,#2563EB,#3B82F6);width:${items.length>0?Math.round(filledCnt/items.length*100):0}%;transition:width .3s;"></div>
+      </div>
+
+      <!-- 一括正常ボタン -->
+      <button onclick="hqiBulkOk()"
+        style="width:100%;padding:11px;background:#F0FDF4;border:1.5px solid rgba(22,163,74,0.35);border-radius:12px;color:#16A34A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:7px;">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        未入力をすべて正常（○）にする
+      </button>
+
+      <!-- 点検項目リスト -->
+      <div style="margin:8px 0 20px;">${itemRows}</div>
+
+      <!-- 保存ボタン -->
+      <button onclick="hqiSave()"
+        style="width:100%;padding:16px;background:${allFilled?'linear-gradient(135deg,#2563EB,#1D4ED8)':'#E4E8EF'};color:${allFilled?'white':'#9CA3AF'};border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:${allFilled?'pointer':'default'};touch-action:manipulation;font-family:inherit;box-shadow:${allFilled?'0 4px 18px rgba(37,99,235,0.28)':'none'};letter-spacing:.2px;transition:all .2s;">
+        ${allFilled?'点検を保存する':'未入力の項目があります'}
+      </button>
+    </div>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════ */
+
 function renderAnomaly(){
   const open=S.anomalies.filter(a=>a.status==='open');const ip=S.anomalies.filter(a=>a.status==='in-progress');const res=S.anomalies.filter(a=>a.status==='resolved');
   const acard=a=>{
@@ -2742,7 +2939,7 @@ function renderLineEqMgmt(){
           ${existAssign
             ?`<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:rgba(34,197,94,0.18);border:1.5px solid rgba(134,239,172,0.45);border-radius:10px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="#22C55E"/><path d="M4 7l2.5 2.5 3.5-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#86EFAC;">設定済み — 設備 ${existAssign.equipmentIds.length}台</span>
+                <span style="font-size:12px;font-weight:700;color:#86EFAC;">設定済み — 設備 ${(existAssign.equipmentIds||existAssign.equipIds||[]).length}台</span>
               </div>`
             :`<div style="padding:10px 12px;background:rgba(251,191,36,0.14);border:1.5px solid rgba(251,191,36,0.38);border-radius:10px;">
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
@@ -2772,15 +2969,15 @@ function renderLineEqMgmt(){
               <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1E3A8A,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;flex-shrink:0;text-align:center;line-height:1.3;">${a.name.split(/\s+/).join('<br>')}</div>
               <div style="min-width:0;">
                 <div style="font-size:13px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.name}</div>
-                <div style="font-size:11px;color:#6B7280;margin-top:1px;">設備 ${a.equipmentIds.length}台担当</div>
+                <div style="font-size:11px;color:#6B7280;margin-top:1px;">設備 ${(a.equipmentIds||a.equipIds||[]).length}台担当</div>
               </div>
             </div>
             <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:160px;">
-              ${a.equipmentIds.slice(0,3).map(id=>{
+              ${(a.equipmentIds||a.equipIds||[]).slice(0,3).map(id=>{
                 const e=getEq(id);
                 return e?`<span style="font-size:10px;font-weight:600;background:#EEF2FF;color:#4F46E5;padding:2px 7px;border-radius:6px;white-space:nowrap;">${eqDisplayName(e)}</span>`:'';
               }).join('')}
-              ${a.equipmentIds.length>3?`<span style="font-size:10px;color:#9CA3AF;">+${a.equipmentIds.length-3}</span>`:''}
+              ${(a.equipmentIds||a.equipIds||[]).length>3?`<span style="font-size:10px;color:#9CA3AF;">+${(a.equipmentIds||a.equipIds||[]).length-3}</span>`:''}
             </div>
           </div>`).join('')}` : ''}
       ` : ''}
@@ -3140,7 +3337,7 @@ function renderEqPdfModal(){
               ${on?`<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:600;color:${on?'#E8EAF0':'#6A7080'};transition:color .15s;">${eq.name}</div>
+              <div style="font-size:13px;font-weight:600;color:${on?'#111827':'#6A7080'};transition:color .15s;">${eq.name}</div>
               <div style="font-size:11px;color:#999999;">点検項目 ${eq.items.length}件</div>
             </div>
           </div>`;
@@ -3222,7 +3419,7 @@ function exportEqMonthlyPDF(year, month, eids){
   const pages=eids.map(eid=>{
     const eq=getEq(eid);
     if(!eq)return'';
-    const line=getLn(eq.lid);
+    const line=getLn(S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id);
     const dailyItems=eq.items.filter(i=>i.t==='毎日');
     const tenItems=eq.items.filter(i=>i.t==='10日');
     const monthItems=eq.items.filter(i=>i.t==='月次');
@@ -3790,8 +3987,10 @@ function asgnSave(){
   )];
   // データ保存（saveAssignment内のrenderは呼ばず直接保存）
   const idx=S.assignments.findIndex(a=>a.name===name);
-  const data={name,lineIds,equipIds};
+  const data={name,lineIds,equipmentIds:equipIds};
   if(idx>=0) S.assignments[idx]=data; else S.assignments.push(data);
+  // ⑥ 永続化
+  try{localStorage.setItem('dk_assignments',JSON.stringify(S.assignments));}catch(e){}
   toast('紐づけを保存しました');
   // 保存後にstateを最新データで再初期化してからrender（1回のみ）
   asgnInit(name);
@@ -3896,7 +4095,7 @@ function renderAssignmentMgmt(){
             <span style="font-size:14px;font-weight:600;color:#111827;">${a.name}</span>
             <span style="font-size:10px;font-weight:700;color:#16A34A;background:#DCFCE7;padding:2px 8px;border-radius:8px;">設定済み</span>
           </div>
-          <div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.lineIds.map(id=>getLn(id)?.name||id).join('・')||'ラインなし'} · 設備 ${a.equipmentIds.length}台</div>
+          <div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(a.lineIds||[]).map(id=>getLn(id)?.name||id).join('・')||'ラインなし'} · 設備 ${(a.equipmentIds||a.equipIds||[]).length}台</div>
         </div>
         ${editing
           ?`<span style="font-size:11px;font-weight:600;color:#4F46E5;background:#EEF2FF;padding:5px 11px;border-radius:9px;flex-shrink:0;">編集中</span>`
@@ -3953,7 +4152,7 @@ function renderAssignmentMgmt(){
           ${existAssign
             ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#16A34A"/><path d="M4 7l2.5 2.5 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#15803D;">紐づけ済み — 設備 ${existAssign.equipmentIds.length}台</span>
+                <span style="font-size:12px;font-weight:700;color:#15803D;">紐づけ済み — 設備 ${(existAssign.equipmentIds||existAssign.equipIds||[]).length}台</span>
               </div>`
             :`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#CA8A04"/><path d="M7 4v3.5M7 9.5v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -4264,7 +4463,16 @@ function render(){
   if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
+  if(S.histQuickInput)sc.insertAdjacentHTML('beforeend',renderHistQuickInputSheet());
 }
+
+// ── LocalStorage restore: assignments（担当設備永続化） ──
+(function loadAssignments(){
+  try{
+    const data=localStorage.getItem('dk_assignments');
+    if(data) S.assignments=JSON.parse(data);
+  }catch(e){}
+})();
 
 // ── LocalStorage restore for inspector ──
 (function(){
@@ -4278,8 +4486,9 @@ function render(){
     // 担当設備タブ初期化
     const assigned=(function(){
       const a=S.assignments.find(x=>x.name===sn);
-      if(!a||!a.equipmentIds||!a.equipmentIds.length)return null;
-      return a.equipmentIds.map(id=>S.equipments.find(e=>e.id===id)).filter(Boolean);
+      const ids=a&&(a.equipmentIds||a.equipIds)||[];
+      if(!ids.length)return null;
+      return ids.map(id=>S.equipments.find(e=>e.id===id)).filter(Boolean);
     })();
     const firstEq=(assigned||S.equipments)[0];
     if(firstEq) S.inspRunEqTab=firstEq.id;
