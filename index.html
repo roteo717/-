@@ -81,7 +81,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .home-hero::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);}
 
 /* ── Scroll ── */
-.scroll{overflow-y:auto;overflow-x:hidden;flex:1;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
+.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
 .card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:1px solid var(--border);}
@@ -116,7 +116,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 
 /* ── Bottom Tabs ── */
 .btabs{display:flex;border-top:1px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:10px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
 .tab.active{color:var(--red);}
 
 /* ── Progress ── */
@@ -183,7 +183,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
   .pc-only{display:flex;}
 
   /* History 2-col */
-  .hist-pc-body{flex-direction:row !important;overflow:hidden;}
+  .hist-pc-body{flex-direction:row !important;overflow:hidden;min-height:0;}
   .hist-sidebar{
     display:flex !important;flex-direction:column;
     width:280px;flex-shrink:0;
@@ -191,9 +191,9 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
     background:#FAFBFC;overflow:hidden;
   }
   .hist-sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
-  .hist-sidebar-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;-webkit-overflow-scrolling:touch;}
+  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:10px 10px 20px;-webkit-overflow-scrolling:touch;}
   .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
-  .hist-main-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px calc(env(safe-area-inset-bottom,0px)+90px);}
+  .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px calc(env(safe-area-inset-bottom,0px)+90px);}
 
   /* Equipment list cards in sidebar */
   .hist-eq-card{
@@ -248,9 +248,9 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-nav-btn:active{background:rgba(0,0,0,.15);}
 .cal-filter-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;}
 .cal-unreported{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:var(--red-lt);color:var(--red);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;}
-.cal-body{display:flex;flex:1;overflow:hidden;}
+.cal-body{display:flex;flex:1;min-height:0;overflow:hidden;}
 .cal-left{flex-shrink:0;width:90px;display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;}
-.cal-right{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
+.cal-right{flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
 .cal-left-hdr{height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
 .cal-right-hdr{display:flex;height:44px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);}
 .cal-day-col{min-width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:0.5px solid var(--border);padding:4px 2px;}
@@ -261,7 +261,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-day-col.today .cal-day-wd{color:var(--red);}
 .cal-day-col.sun .cal-day-num,.cal-day-col.sun .cal-day-wd{color:#1D4ED8;}
 .cal-day-col.sat .cal-day-num,.cal-day-col.sat .cal-day-wd{color:#C62828;}
-.cal-scroll-body{display:flex;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.cal-scroll-body{display:flex;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .cal-left-body{width:90px;flex-shrink:0;overflow:hidden;border-right:1px solid var(--border);}
 .cal-right-body{flex:1;overflow:hidden;}
 .cal-group-hdr{display:flex;align-items:center;background:#1E293B;color:white;font-size:11px;font-weight:700;padding:5px 8px;letter-spacing:.2px;}
@@ -280,17 +280,22 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .equip-tabs-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 12px;scroll-snap-type:x mandatory;}
 .equip-tabs-wrap::-webkit-scrollbar{display:none;}
 .equip-tabs{display:flex;gap:8px;min-width:max-content;}
-.equip-tab{flex:0 0 auto;padding:9px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;scroll-snap-align:start;}
+.equip-tab{flex:0 0 auto;padding:10px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;scroll-snap-align:start;}
 .equip-tab:active{transform:scale(.96);}
-.equip-tab.inactive{background:#F1F3F8;color:#374151;border-color:#E4E8EF;}
+.equip-tab.inactive{background:#F1F3F8;color:#1F2937;border-color:#D1D5DB;}
 .equip-tab.active{background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 3px 12px rgba(200,41,42,0.28);}
 .equip-tab .tab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 /* Cal cell improvements */
-.cal-cell-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-cell-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;border-radius:10px;min-height:42px;transition:opacity .1s,transform .08s;}
+.cal-cell-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-cell-item{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 2px 4px;border-radius:10px;min-height:64px;transition:opacity .1s,transform .08s;overflow:hidden;}
 .cal-cell-item:active{transform:scale(.92);}
-.cal-missing-dot{width:7px;height:7px;border-radius:50%;background:#C8292A;margin-top:3px;animation:dotPulse 2s ease-in-out infinite;}
+.cal-missing-dot{width:8px;height:8px;border-radius:50%;background:#C8292A;margin:3px 0 2px;animation:dotPulse 2s ease-in-out infinite;}
 @keyframes dotPulse{0%,100%{opacity:.7}50%{opacity:1}}
+/* Mobile: make card padding tighter so calendar has more room */
+@media(max-width:768px){
+  .cal-cell-grid{gap:3px;}
+  .cal-cell-item{min-height:66px;padding:5px 1px 4px;border-radius:9px;}
+}
 
 </style>
 </head>
@@ -1344,7 +1349,7 @@ function renderNameSelect(){
     </div>
 
     <!-- 名前リスト -->
-    <div style="flex:1;overflow-y:auto;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 32px);">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 32px);">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div style="font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.4px;">担当者一覧　${names.length}名</div>
         ${editMode?`<div style="font-size:11px;color:var(--text2);">← 削除は✕ボタンから</div>`:''}
@@ -1365,19 +1370,21 @@ function renderNameSelect(){
           if(names.length===0) return `<div class="empty-state"><div style="font-size:32px;margin-bottom:10px;">👤</div><div style="font-weight:600;margin-bottom:4px;">担当者がいません</div><div style="font-size:13px;">編集モードで追加してください</div></div>`;
           return names.map(name=>{
             const ini=name.replace(/\s/g,'').charAt(0);
+            const avatarName=name.split(/\s+/).join('<br>');
+            const avatarFs=name.replace(/\s/g,'').length<=2?'13px':'10px';
             if(editMode) return(
               '<div style="background:var(--surface);border:1.5px solid rgba(200,41,42,0.25);border-radius:var(--r);display:flex;align-items:center;box-shadow:var(--shadow);overflow:hidden;">'+
               '<button onclick="delName(\'' +name+ '\');" style="width:56px;align-self:stretch;background:var(--red-lt);border:none;border-right:1px solid rgba(200,41,42,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;" onmousedown="this.style.background=\'var(--red)\'" onmouseup="this.style.background=\'var(--red-lt)\'" onmouseleave="this.style.background=\'var(--red-lt)\'">'+
               '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2.5A.5.5 0 015.5 2h5a.5.5 0 01.5.5V4M6 7v5M10 7v5M3 4l1 9.5A.5.5 0 004.5 14h7a.5.5 0 00.5-.5L13 4" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
               '</button>'+
               '<div style="flex:1;padding:16px 18px;display:flex;align-items:center;gap:14px;">'+
-              '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:var(--red);">'+ini+'</div>'+
+              '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:'+avatarFs+';font-weight:700;color:var(--red);text-align:center;line-height:1.4;">'+avatarName+'</div>'+
               '<div><div style="font-size:16px;font-weight:600;color:var(--text);">'+name+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">'+roleLabel+'</div></div>'+
               '</div></div>'
             );
             return(
               '<div onclick="selectName(\'' +name+ '\');" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);touch-action:manipulation;transition:border-color .15s;" onmousedown="this.style.borderColor=\'var(--red)\'" onmouseup="this.style.borderColor=\'var(--border)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">'+
-              '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:var(--red);">'+ini+'</div>'+
+              '<div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:'+avatarFs+';font-weight:700;color:var(--red);text-align:center;line-height:1.4;">'+avatarName+'</div>'+
               '<div style="flex:1;"><div style="font-size:16px;font-weight:600;color:var(--text);">'+name+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">'+roleLabel+'</div></div>'+
               '<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
               '</div>'
@@ -1461,7 +1468,17 @@ function renderInspectorHome(){
     const eqCnt=visEqs.length;
     // 本日対象の点検項目数を計算
     const todayItemCnt = visEqs.reduce((s,e)=>s+e.items.filter(isTargetDay).length,0);
-    const totalItemCnt = visEqs.reduce((s,e)=>s+e.items.length,0);
+    // 本日完了済みの設備数
+    const todayDoneEqs = visEqs.filter(e=>{
+      const key=e.id+':毎日点検';
+      return S.insps[key]&&S.insps[key].date===TODAY&&Object.keys(S.insps[key].results||{}).length>0;
+    }).length;
+    const todayNgEqs = visEqs.filter(e=>{
+      const key=e.id+':毎日点検';
+      return S.insps[key]&&S.insps[key].date===TODAY&&Object.values(S.insps[key].results||{}).some(r=>r.r==='ng');
+    }).length;
+    const lineAllDone = eqCnt>0 && todayDoneEqs===eqCnt;
+    const linePartial = todayDoneEqs>0 && todayDoneEqs<eqCnt;
     return`<div id="ilc-${l.id}" class="ilc${on?' ilc-on':''}"
       style="animation-delay:${i*0.05}s;"
       onclick="inspToggleLine('${l.id}')">
@@ -1472,15 +1489,27 @@ function renderInspectorHome(){
       </div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:17px;font-weight:700;color:#111827;margin-bottom:4px;">${l.name}</div>
-        <div style="font-size:12px;color:#6B7280;font-weight:500;margin-bottom:5px;">${l.desc}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span style="font-size:11px;font-weight:600;color:#C8292A;background:rgba(200,41,42,0.08);padding:2px 9px;border-radius:8px;">本日 ${todayItemCnt}件</span>
-          <span style="font-size:11px;color:#9CA3AF;font-weight:400;">設備 ${eqCnt}台 / 全${totalItemCnt}件</span>
+        <div style="font-size:12px;color:#6B7280;font-weight:500;margin-bottom:6px;">${l.desc}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:700;color:#C8292A;background:rgba(200,41,42,0.08);padding:3px 10px;border-radius:8px;">本日 ${todayItemCnt}件</span>
+          <span style="font-size:11px;color:#9CA3AF;font-weight:500;">設備 ${eqCnt}台</span>
+          ${lineAllDone?`<span style="font-size:11px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:2px 8px;border-radius:8px;border:1px solid #BBF7D0;">${todayNgEqs>0?`✕NG ${todayNgEqs}件`:'✓ 完了'}</span>`:''}
+          ${linePartial?`<span style="font-size:11px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 8px;border-radius:8px;border:1px solid #FDE68A;">${todayDoneEqs}/${eqCnt}台 実施済</span>`:''}
         </div>
       </div>
-      <div style="width:10px;height:10px;border-radius:50%;background:${on?'#C8292A':'#E4E8EF'};flex-shrink:0;transition:background .2s;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:${lineAllDone?'#16A34A':on?'#C8292A':'#E4E8EF'};flex-shrink:0;transition:background .2s;"></div>
     </div>`;
   }).join('');
+
+  // 本日の全ライン完了チェック
+  const allDoneToday = visibleLines.length>0 && visibleLines.every(l=>{
+    const eqs=getVisibleEquip(l);
+    return eqs.length===0||eqs.every(e=>{const key=e.id+':毎日点検';return S.insps[key]&&S.insps[key].date===TODAY&&Object.keys(S.insps[key].results||{}).length>0;});
+  });
+  const totalNgToday = visibleLines.reduce((s,l)=>s+getVisibleEquip(l).reduce((s2,e)=>{
+    const key=e.id+':毎日点検';
+    return s2+(S.insps[key]&&S.insps[key].date===TODAY?Object.values(S.insps[key].results||{}).filter(r=>r.r==='ng').length:0);
+  },0),0);
 
   return`
   <style>
@@ -1542,7 +1571,20 @@ function renderInspectorHome(){
     </div>
 
     <!-- Scroll area -->
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-home-scroll">
+    <div style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-home-scroll">
+
+      <!-- 本日完了バナー -->
+      ${allDoneToday?`<div style="margin:14px 16px 0;padding:14px 18px;background:${totalNgToday>0?'linear-gradient(135deg,#FFF1F1,#FFE4E4)':'linear-gradient(135deg,#F0FDF4,#DCFCE7)'};border:1.5px solid ${totalNgToday>0?'rgba(200,41,42,0.25)':'rgba(22,163,74,0.25)'};border-radius:18px;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:14px;background:${totalNgToday>0?'#C8292A':'#16A34A'};display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(${totalNgToday>0?'200,41,42':'22,163,74'},0.3);">
+          ${totalNgToday>0
+            ?`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="white" stroke-width="1.8"/><path d="M10 6v5M10 13v.5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`
+            :`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5.5 5.5L18 6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:15px;font-weight:700;color:${totalNgToday>0?'#C8292A':'#15803D'};margin-bottom:2px;">${totalNgToday>0?`本日の点検完了（NG ${totalNgToday}件）`:'本日の点検が完了しました！'}</div>
+          <div style="font-size:12px;color:${totalNgToday>0?'#EF4444':'#16A34A'};opacity:.8;">${totalNgToday>0?'異常管理から対応状況を確認してください':'全担当ラインの点検が完了しています'}</div>
+        </div>
+      </div>`:''}
 
       <!-- Quick-start banner -->
       ${hasLast?`<div class="insp-quick" onclick="inspQuickStart()">
@@ -1677,12 +1719,12 @@ function renderAdminHome(){
           <div style="font-size:10px;color:#9CA3AF;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">${dateStr}</div>
           <div style="font-size:26px;font-weight:800;color:#111827;letter-spacing:-.6px;line-height:1.1;font-family:'Noto Serif JP',serif;">管理<br>ダッシュボード</div>
         </div>
-        <button onclick="S.currentName=null;nav('NAME_SELECT');" style="width:42px;height:42px;border-radius:50%;border:1px solid #E4E8EF;background:#F8F9FC;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#111827;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;letter-spacing:0;">${displayName.charAt(0)}</button>
+        <button onclick="S.currentName=null;nav('NAME_SELECT');" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;color:#111827;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;letter-spacing:0;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;">${displayName}</button>
       </div>
     </div>
 
     <!-- ── Scroll ── -->
-    <div style="position:relative;z-index:1;flex:1;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;">
+    <div style="position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;">
 
       <!-- 定期点検リマインダー -->
       ${alerts.length?`
@@ -1748,6 +1790,37 @@ function renderAdminHome(){
       </div>
 
       <!-- 管理設定セクションは設定タブ（renderLineEqMgmt）に移動済み -->
+
+      <!-- ── 今日の点検状況サマリー ── -->
+      ${(()=>{
+        const allEqs=S.equipments;
+        if(!allEqs.length)return'';
+        const doneToday=allEqs.filter(e=>{
+          const key=e.id+':毎日点検';
+          return S.insps[key]&&S.insps[key].date===TODAY;
+        }).length;
+        const ngToday=allEqs.filter(e=>{
+          const key=e.id+':毎日点検';
+          return S.insps[key]&&S.insps[key].date===TODAY&&Object.values(S.insps[key].results||{}).some(r=>r.r==='ng');
+        }).length;
+        const pctToday=Math.round(doneToday/allEqs.length*100);
+        const barCol=ngToday>0?'#C8292A':pctToday<50?'#D97706':'#16A34A';
+        return`<div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.04);animation:adm-in .4s .18s ease both;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.2px;text-transform:uppercase;">本日の点検状況</div>
+            <div style="font-size:20px;font-weight:800;color:${barCol};">${pctToday}<span style="font-size:11px;font-weight:600;color:#9CA3AF;">%</span></div>
+          </div>
+          <div style="background:#F1F3F8;border-radius:6px;height:6px;overflow:hidden;margin-bottom:10px;">
+            <div style="height:100%;width:${pctToday}%;background:linear-gradient(90deg,${barCol},${barCol==='#C8292A'?'#A82020':barCol==='#D97706'?'#B45309':'#15803D'});border-radius:6px;transition:width .5s;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:12px;font-weight:600;color:#374151;">${doneToday}/${allEqs.length}設備 実施</span>
+            ${ngToday>0?`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 9px;border-radius:10px;">✕ NG ${ngToday}設備</span>`:''}
+            ${pctToday===100&&ngToday===0?`<span style="font-size:11px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:2px 9px;border-radius:10px;">✓ 全設備完了</span>`:''}
+            ${doneToday===0?`<span style="font-size:11px;color:#9CA3AF;">本日まだ点検が開始されていません</span>`:''}
+          </div>
+        </div>`;
+      })()}
 
     </div><!-- /scroll -->
   </div><!-- /screen -->
@@ -1916,7 +1989,7 @@ function renderApproval(){
         </div>
       </div>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
       ${pend.length===0?`<div style="text-align:center;padding:60px 20px;"><div style="width:56px;height:56px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">承認待ちはありません</div><div style="font-size:13px;color:#999999;">すべての申請が処理済みです</div></div>`:''}
       ${pend.length>0?`<div style="font-size:11px;font-weight:700;color:#4F8EF7;letter-spacing:.8px;margin:4px 2px 10px;">承認待ち (${pend.length})</div>`:''}
       ${pend.map(a=>acard(a,true)).join('')}
@@ -2157,24 +2230,10 @@ function renderHistoryList(){
   while(gridCells.length%7!==0) gridCells.push({blank:true});
 
   const WDAY_HDR=['月','火','水','木','金','土','日'];
-  const wdayHdr=WDAY_HDR.map((w,i)=>`<div style="text-align:center;font-size:10px;font-weight:700;color:${i===5?'#2563EB':i===6?'#C8292A':'#9CA3AF'};padding:3px 0 5px;">${w}</div>`).join('');
+  const wdayHdr=WDAY_HDR.map((w,i)=>`<div style="text-align:center;font-size:11px;font-weight:700;color:${i===5?'#2563EB':i===6?'#C8292A':'#9CA3AF'};padding:3px 0 6px;">${w}</div>`).join('');
 
-  const calRows=[];
-  for(let i=0;i<gridCells.length;i+=7){
-    const week=gridCells.slice(i,i+7);
-    const rowCells=week.map(c=>{
-      if(c.blank) return`<div></div>`;
-      const isSat=c.dow===6,isSun=c.dow===0;
-      const dayNumColor=c.isFuture?'#D1D5DB':c.isToday?'#2563EB':isSat?'#2563EB':isSun?'#C8292A':'#6B7280';
-      const todayStyle=c.isToday?`border:2px solid #2563EB;`:`border:1.5px solid ${c.border};`;
-      const todayBgExtra=c.isToday&&c.bg==='transparent'?'background:rgba(37,99,235,0.05);':'';
-      return`<div class="cal-cell-item" ${c.clickable?`onclick="S.histView='detail';S.histDate='${c.ds}';S.histEqId='${eid}';render();"`:''} style="${todayStyle}background:${c.bg};${todayBgExtra}cursor:${c.clickable?'pointer':'default'};" ${c.clickable?`onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"`:''}>
-          <div style="font-size:10px;font-weight:700;color:${dayNumColor};line-height:1;">${c.d}</div>
-          ${c.isMissing?`<div class="cal-missing-dot"></div>`:c.sym?`<div style="font-size:14px;font-weight:800;color:${c.color};line-height:1.2;margin-top:2px;">${c.sym}</div>`:`<div style="height:14px;margin-top:2px;"></div>`}
-        </div>`;
-    }).join('');
-    calRows.push(`<div class="cal-cell-grid">${rowCells}</div>`);
-  }
+  // ── Calendar rows for display (includes status labels + counts)
+  // calRows removed — calRowsPC is used for both mobile and PC
 
   // Tabs filter summary
   const missCount=allEquip.filter(({eq:e})=>eqMonthStatus(e)==='miss').length;
@@ -2226,9 +2285,15 @@ function renderHistoryList(){
       const tipDetail=cellData&&cellData.total>0?`${cellData.done}/${cellData.total}件`:'';
       const tipHtml=!c.isFuture?`<div class="cal-day-tip">${histMonth}/${c.d}(${wdLabel})<br><span style="font-size:13px;font-weight:700;color:${c.isMissing?'#FCA5A5':c.sym==='×'?'#FCA5A5':c.sym==='○'?'#6EE7B7':'#FCD34D'};">${tipStatus}</span>${tipDetail?`<br><span style="opacity:.7;">${tipDetail}</span>`:''}
         </div>`:'';
+      // Mobile status label and count
+      const statusLabel2=c.isMissing?'未入力':c.sym==='×'?'NG':c.sym==='○'?'正常':c.sym==='△'?'一部':c.sym==='—'?'休日':'';
+      const statusColor2=c.isMissing?'#C8292A':c.sym==='×'?'#C8292A':c.sym==='○'?'#16A34A':c.sym==='△'?'#D97706':c.sym==='—'?'rgba(0,0,0,0.2)':'#9CA3AF';
+      const showCount=cellData&&cellData.total>0&&!c.isFuture&&c.sym!=='—';
       return`<div class="cal-cell-item" ${c.clickable?`onclick="S.histView='detail';S.histDate='${c.ds}';S.histEqId='${eid}';render();"`:''} style="${todayStyle}background:${c.bg};${todayBgExtra}cursor:${c.clickable?'pointer':'default'};" ${c.clickable?`onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"`:''}>
-          <div style="font-size:10px;font-weight:700;color:${dayNumColor};line-height:1;">${c.d}</div>
-          ${c.isMissing?`<div class="cal-missing-dot"></div>`:c.sym?`<div style="font-size:14px;font-weight:800;color:${c.color};line-height:1.2;margin-top:2px;">${c.sym}</div>`:`<div style="height:14px;margin-top:2px;"></div>`}
+          <div style="font-size:11px;font-weight:700;color:${dayNumColor};line-height:1;">${c.d}<span style="font-size:8px;font-weight:600;opacity:0.65;margin-left:1px;">${wdLabel}</span></div>
+          ${c.isMissing?`<div class="cal-missing-dot"></div>`:c.sym?`<div style="font-size:16px;font-weight:800;color:${c.color};line-height:1;margin:2px 0 1px;">${c.sym}</div>`:`<div style="height:16px;margin:2px 0 1px;"></div>`}
+          ${statusLabel2?`<div style="font-size:9px;font-weight:700;color:${statusColor2};line-height:1;white-space:nowrap;">${statusLabel2}</div>`:`<div style="height:9px;"></div>`}
+          ${showCount?`<div style="font-size:8px;font-weight:500;color:#9CA3AF;line-height:1;margin-top:2px;">${cellData.done}/${cellData.total}件</div>`:''}
           ${tipHtml}
         </div>`;
     }).join('');
@@ -2237,36 +2302,49 @@ function renderHistoryList(){
 
   // ── 共通パーツ：ステータスカード ──
   const statusCardHtml=`
-    <div style="background:white;border-radius:16px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 14px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};padding:14px 18px;margin-bottom:12px;">
+    <div style="background:white;border-radius:16px;border:1.5px solid ${totalNg>0?'rgba(200,41,42,0.25)':hasIssue?'rgba(217,119,6,0.2)':'#F1F3F8'};box-shadow:${totalNg>0?'0 2px 14px rgba(200,41,42,0.07)':'0 1px 6px rgba(0,0,0,0.04)'};padding:14px 16px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="width:9px;height:9px;border-radius:50%;flex-shrink:0;background:${barColor};box-shadow:0 0 0 3px ${totalNg>0?'rgba(200,41,42,0.15)':hasIssue?'rgba(217,119,6,0.15)':'rgba(22,163,74,0.15)'};"></div>
-        <div style="font-size:16px;font-weight:700;color:#111827;">${eq.name}</div>
-        <div style="font-size:11px;color:#9CA3AF;">${lineLabel}</div>
-        <div style="margin-left:auto;font-size:18px;font-weight:800;color:${barColor};">${rate}<span style="font-size:11px;font-weight:600;">%</span></div>
+        <div style="font-size:16px;font-weight:700;color:#111827;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq.name}</div>
+        <div style="font-size:11px;color:#9CA3AF;flex-shrink:0;">${lineLabel}</div>
+        <div style="font-size:20px;font-weight:800;color:${barColor};flex-shrink:0;">${rate}<span style="font-size:11px;font-weight:600;">%</span></div>
       </div>
-      <div style="background:#F1F3F8;border-radius:6px;height:7px;overflow:hidden;margin-bottom:10px;">
+      <div style="background:#F1F3F8;border-radius:6px;height:7px;overflow:hidden;margin-bottom:12px;">
         <div style="height:100%;width:${rate}%;background:linear-gradient(90deg,${barColor},${barColor==='#C8292A'?'#A82020':barColor==='#D97706'?'#B45309':'#15803D'});border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span style="font-size:11px;color:#9CA3AF;">${totalDone}/${totalExpected}日実施</span>
-        ${missedDays>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">● 未入力 ${missedDays}日</span>`:''}
-        ${totalNg>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;">✕ NG ${totalNg}日</span>`:''}
+      <!-- Day breakdown stats row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+        <div style="background:#F0FDF4;border-radius:10px;padding:8px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:#16A34A;line-height:1;">${totalDone}</div>
+          <div style="font-size:9px;font-weight:600;color:#16A34A;opacity:.8;margin-top:2px;">実施</div>
+        </div>
+        <div style="background:${missedDays>0?'#FFFBEB':'#F8F9FC'};border-radius:10px;padding:8px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:${missedDays>0?'#D97706':'#9CA3AF'};line-height:1;">${missedDays}</div>
+          <div style="font-size:9px;font-weight:600;color:${missedDays>0?'#D97706':'#9CA3AF'};opacity:.8;margin-top:2px;">未入力</div>
+        </div>
+        <div style="background:${totalNg>0?'#FFF1F1':'#F8F9FC'};border-radius:10px;padding:8px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:${totalNg>0?'#C8292A':'#9CA3AF'};line-height:1;">${totalNg}</div>
+          <div style="font-size:9px;font-weight:600;color:${totalNg>0?'#C8292A':'#9CA3AF'};opacity:.8;margin-top:2px;">NG</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#9CA3AF;">${histMonth}月 対象${totalExpected}日</span>
         ${allGood?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:3px 10px;border-radius:20px;">✓ 今月完了</span>`:''}
       </div>
     </div>`;
 
   // ── 共通パーツ：カレンダーカード ──
   const calCardHtml=`
-    <div style="background:white;border-radius:16px;border:1px solid #F1F3F8;box-shadow:0 1px 6px rgba(0,0,0,0.04);padding:16px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <div style="background:white;border-radius:16px;border:1px solid #F1F3F8;box-shadow:0 1px 6px rgba(0,0,0,0.04);padding:14px 10px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;padding:0 4px;">
         <span style="font-size:11px;font-weight:700;color:#374151;">日別ステータス</span>
         <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#16A34A;font-weight:700;"><span style="font-size:12px;">○</span>正常</span>
         <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#D97706;font-weight:700;"><span style="font-size:12px;">△</span>一部</span>
         <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="font-size:12px;">×</span>NG</span>
         <span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#C8292A;font-weight:700;"><span style="width:7px;height:7px;border-radius:50%;background:#C8292A;display:inline-block;"></span>未入力</span>
       </div>
-      <div class="cal-cell-grid" style="margin-bottom:5px;">${wdayHdr}</div>
-      <div style="display:flex;flex-direction:column;gap:5px;">${calRowsPC.join('')}</div>
+      <div class="cal-cell-grid" style="margin-bottom:4px;">${wdayHdr}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">${calRowsPC.join('')}</div>
     </div>`;
 
   return`<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#F8F9FC;">
@@ -2291,10 +2369,10 @@ function renderHistoryList(){
       </div>
 
       <!-- Status bar -->
-      ${ngCount>0||missCount>0?`<div style="display:flex;gap:6px;padding:0 18px 8px;align-items:center;">
-        ${ngCount>0?`<span style="font-size:10px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,41,42,0.2);">⚠ NG ${ngCount}設備</span>`:''}
-        ${missCount>0?`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:3px 10px;border-radius:20px;border:1px solid rgba(217,119,6,0.2);">● 未入力 ${missCount}設備</span>`:''}
-        <button onclick="S.histFilter=(S.histFilter==='missing'?'all':'missing');render();" style="margin-left:auto;padding:3px 12px;height:26px;border-radius:20px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'transparent'};color:${S.histFilter==='missing'?'#C8292A':'#9CA3AF'};font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">未入力のみ</button>
+      ${ngCount>0||missCount>0?`<div style="display:flex;gap:8px;padding:0 18px 10px;align-items:center;">
+        ${ngCount>0?`<span style="font-size:12px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:5px 12px;border-radius:20px;border:1.5px solid rgba(200,41,42,0.25);display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#C8292A" stroke-width="1.5"/><path d="M6 3.5v3M6 8v.5" stroke="#C8292A" stroke-width="1.5" stroke-linecap="round"/></svg> NG ${ngCount}設備</span>`:''}
+        ${missCount>0?`<span style="font-size:12px;font-weight:700;color:#D97706;background:#FFFBEB;padding:5px 12px;border-radius:20px;border:1.5px solid rgba(217,119,6,0.25);display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#D97706;display:inline-block;"></span> 未入力 ${missCount}設備</span>`:''}
+        <button onclick="S.histFilter=(S.histFilter==='missing'?'all':'missing');render();" style="margin-left:auto;padding:4px 14px;height:30px;border-radius:20px;border:1.5px solid ${S.histFilter==='missing'?'#C8292A':'#E4E8EF'};background:${S.histFilter==='missing'?'#FFF1F1':'transparent'};color:${S.histFilter==='missing'?'#C8292A':'#9CA3AF'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">未入力のみ</button>
       </div>`:''}
 
       <!-- Equipment tabs — スマホのみ表示 -->
@@ -2306,7 +2384,7 @@ function renderHistoryList(){
     </div>
 
     <!-- ── Body：スマホ=縦並び / PC=横2カラム ── -->
-    <div class="hist-pc-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <div class="hist-pc-body" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
 
       <!-- PC サイドバー（設備一覧） -->
       <div class="hist-sidebar" style="display:none;">
@@ -2323,7 +2401,7 @@ function renderHistoryList(){
       </div>
 
       <!-- メインエリア：スマホ=通常スクロール / PC=.hist-main-area -->
-      <div class="hist-main-area" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom,0px)+90px);">
+      <div class="hist-main-area" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 10px calc(env(safe-area-inset-bottom,0px)+90px);">
         ${statusCardHtml}
         ${calCardHtml}
       </div>
@@ -2441,7 +2519,7 @@ function renderAnomaly(){
         </div>
       </div>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
       ${totalActive===0?`<div style="text-align:center;padding:60px 20px;"><div style="width:56px;height:56px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">異常はありません</div></div>`:``}
       ${open.length>0?`<div style="font-size:11px;font-weight:700;color:#F97316;letter-spacing:.8px;margin:4px 2px 10px;">未対応 (${open.length})</div>${open.map(acard).join('')}`:''}
       ${ip.length>0?`<div style="font-size:11px;font-weight:700;color:#FFB020;letter-spacing:.8px;margin:${open.length?'18':'4'}px 2px 10px;">対応中 (${ip.length})</div>${ip.map(acard).join('')}`:''}
@@ -2702,7 +2780,7 @@ function renderLineEqMgmt(){
     const on = n === selName, saved = !!getUserAssignment(n);
     return `<button onclick="asgnSetName('${n.replace(/'/g,"\'")}');"
       style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:6px 11px 6px 8px;border-radius:20px;border:2px solid ${on?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.22)'};background:${on?'rgba(255,255,255,0.20)':'rgba(255,255,255,0.06)'};color:${on?'#FFFFFF':'rgba(255,255,255,0.60)'};font-size:12px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;letter-spacing:-.2px;">
-      <span style="width:20px;height:20px;border-radius:50%;background:${on?'rgba(255,255,255,0.28)':'rgba(255,255,255,0.10)'};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#FFFFFF;flex-shrink:0;">${n.charAt(0)}</span>
+      <span style="width:20px;height:20px;border-radius:50%;background:${on?'rgba(255,255,255,0.28)':'rgba(255,255,255,0.10)'};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#FFFFFF;flex-shrink:0;">${n.replace(/\s/g,'').slice(0,2)}</span>
       ${n}${saved?`<svg width="5" height="5" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="${on?'#86EFAC':'rgba(134,239,172,0.75)'}" /></svg>`:''}
     </button>`;
   }).join('');
@@ -2832,7 +2910,7 @@ function renderLineEqMgmt(){
     </div>
 
     <!-- スクロールエリア -->
-    <div id="leq-scroll" style="flex:1;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + ${curTab==='assign'?'120':'70'}px);-webkit-overflow-scrolling:touch;">
+    <div id="leq-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + ${curTab==='assign'?'120':'70'}px);-webkit-overflow-scrolling:touch;">
 
       ${curTab === 'equip' ? `
         <!-- ════ TAB A: 設備マスター ════ -->
@@ -2878,10 +2956,8 @@ function renderLineEqMgmt(){
               </div>
             </div>
           </div>
-          <div style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px 4px;margin-bottom:12px;">
-            <div style="display:flex;gap:6px;min-width:max-content;padding-right:16px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;padding-bottom:4px;margin-bottom:12px;">
               ${asgnNamePills}
-            </div>
           </div>
           <style>#leq-scroll .asgn-pills::-webkit-scrollbar{display:none;}</style>
           ${existAssign
@@ -2912,7 +2988,7 @@ function renderLineEqMgmt(){
         ${S.assignments.map(a=>`
           <div style="background:#FFFFFF;border:1px solid #E4E8EF;border-radius:12px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
-              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1E3A8A,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;flex-shrink:0;">${a.name.charAt(0)}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1E3A8A,#4F46E5);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;flex-shrink:0;text-align:center;line-height:1.3;">${a.name.split(/\s+/).join('<br>')}</div>
               <div style="min-width:0;">
                 <div style="font-size:13px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.name}</div>
                 <div style="font-size:11px;color:#6B7280;margin-top:1px;">設備 ${a.equipmentIds.length}台担当</div>
@@ -3023,32 +3099,43 @@ function editLineConfirm(lid){
   S.modal=null;toast('ラインを更新しました');render();
 }
 function renderNgSheet(){
+  const eid=S.selectedEq;const eq=getEq(eid);
+  const item=eq?.items.find(i=>i.id===S.ngModal.itemId);
   return`<div class="overlay" onclick="if(event.target===this){S.ngModal={on:false,itemId:null,comment:'',photos:0};render();}">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <div style="width:44px;height:44px;background:var(--red-lt);border-radius:12px;display:flex;align-items:center;justify-content:center;">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3l14 14M17 3L3 17" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:48px;height:48px;background:#FFF1F1;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(200,41,42,0.2);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#C8292A" stroke-width="1.8"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7" stroke="#C8292A" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
-      <div><div style="font-size:18px;font-weight:700;color:var(--red);">異常を記録</div><div style="font-size:12px;color:var(--text2);">異常内容を記録してください</div></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;color:#C8292A;letter-spacing:.3px;margin-bottom:2px;">異常を記録</div>
+        <div style="font-size:15px;font-weight:700;color:#111827;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item?item.n:'点検項目'}</div>
+      </div>
     </div>
+    <!-- Item badge -->
+    ${eq?`<div style="background:#FFF1F1;border:1px solid rgba(200,41,42,0.15);border-radius:10px;padding:8px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="#C8292A" stroke-width="1.3"/><path d="M3 6.5h7M3 9h4" stroke="#C8292A" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span style="font-size:12px;font-weight:600;color:#C8292A;">${eq.name}</span>
+    </div>`:''}
+    <!-- Comment -->
     <div style="margin-bottom:14px;">
-      <label class="flabel">異常の内容</label>
-      <textarea id="ng-c" placeholder="異常内容を詳しく入力してください" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;resize:none;height:80px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <label class="flabel" style="color:#374151;font-weight:600;">異常の内容 <span style="color:#C8292A;">*</span></label>
+      <textarea id="ng-c" placeholder="どのような異常が発生しているか記入してください" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:90px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;line-height:1.5;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'"></textarea>
     </div>
-    <div style="margin-bottom:22px;">
-      <label class="flabel">写真</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="S.ngModal.photos++;render();" style="width:72px;height:72px;border:1.5px dashed var(--border);border-radius:var(--r-sm);background:var(--bg);cursor:pointer;font-size:26px;color:var(--text3);touch-action:manipulation;display:flex;align-items:center;justify-content:center;">+</button>
-        ${Array.from({length:S.ngModal.photos},(_,i)=>`<div style="width:72px;height:72px;background:var(--red-lt);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--red);font-weight:600;">写真${i+1}</div>`).join('')}
-      </div>
-
-    </div>
+    <!-- Action buttons -->
     <div style="display:flex;gap:10px;">
-      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" class="btn-ghost" style="flex:1;width:auto;">キャンセル</button>
-      <button onclick="confirmNg()" style="flex:2;padding:14px;background:var(--red);color:white;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .12s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">異常を登録</button>
+      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" style="flex:1;padding:14px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">キャンセル</button>
+      <button onclick="confirmNg()" style="flex:2;padding:14px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 16px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(200,41,42,0.3)'">
+        <span style="display:flex;align-items:center;justify-content:center;gap:7px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 4L12 2.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          異常を登録する
+        </span>
+      </button>
     </div>
-  </div></div>`;
+  </div></div>
+  <script>requestAnimationFrame(()=>{const t=document.getElementById('ng-c');if(t){t.focus();t.setSelectionRange(0,0);}})<\/script>`;
 }
 
 /* ═══════════ MODAL SHEET ═══════════ */
@@ -3539,14 +3626,14 @@ function renderInspRun(){
         const cycleBg = item.t==='10日'?'rgba(217,119,6,0.12)':item.t==='月次'?'rgba(107,114,128,0.12)':'transparent';
         const cycleColor = item.t==='10日'?'#D97706':item.t==='月次'?'#6B7280':'transparent';
         const cycleLbl = item.t!=='毎日'?`<span style="font-size:10px;font-weight:600;color:${cycleColor};background:${cycleBg};padding:2px 7px;border-radius:6px;flex-shrink:0;">${item.t==='10日'?'10日毎':'月次'}</span>`:'';
-        return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);${ok?'opacity:0.65;':''}" id="ir-${key}">
+        return`<div style="display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid rgba(0,0,0,0.06);${ok?'opacity:0.65;':''}" id="ir-${key}">
           <div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0;">
-            <div style="flex:1;font-size:13px;color:${ok?'#6B7280':ng?'#C8292A':'#333'};font-weight:${ok||ng?400:500};line-height:1.4;${ok?'text-decoration:line-through;':''}">${item.n}</div>
+            <div style="flex:1;font-size:14px;color:${ok?'#6B7280':ng?'#C8292A':'#333'};font-weight:${ok||ng?400:500};line-height:1.4;${ok?'text-decoration:line-through;':''}">${item.n}</div>
             ${cycleLbl}
           </div>
           <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);':'background:white;color:#22C55E;border-color:rgba(34,197,94,0.5);'}" id="ibtn-ok-${key}">○</button>
-            <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.35);':'background:white;color:#C8292A;border-color:rgba(200,41,42,0.5);'}" id="ibtn-ng-${key}">✕</button>
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ok')" style="height:48px;min-width:64px;padding:0 14px;border-radius:12px;border:1.5px solid;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ok?'background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);':'background:white;color:#22C55E;border-color:rgba(34,197,94,0.5);'}" id="ibtn-ok-${key}">○</button>
+            <button onclick="inspSetRes('${eq.id}','${item.id}','ng')" style="height:48px;min-width:64px;padding:0 14px;border-radius:12px;border:1.5px solid;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;${ng?'background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.35);':'background:white;color:#C8292A;border-color:rgba(200,41,42,0.5);'}" id="ibtn-ng-${key}">✕</button>
           </div>
         </div>`;
       }).join('');
@@ -3556,11 +3643,11 @@ function renderInspRun(){
         未入力 ${pend}件 をすべて正常に一括入力
       </button>`:'';
       return`<div style="background:#FFFFFF;border:1.5px solid ${allDone?'rgba(34,197,94,0.35)':pend>0?'rgba(0,0,0,0.07)':'rgba(0,0,0,0.07)'};border-top:1px solid rgba(0,0,0,0.06);padding:16px;transition:border-color .2s;" id="ec-${eq.id}">
-        <div style="font-size:14px;font-weight:700;color:#111111;display:flex;align-items:center;gap:8px;margin-bottom:${items.length?'12px':'0'};">
+        <div style="font-size:15px;font-weight:700;color:#111111;display:flex;align-items:center;gap:8px;margin-bottom:${items.length?'14px':'0'};">
           ${eq.name}
           ${allDone
-            ?`<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:auto;background:rgba(34,197,94,0.12);color:#16A34A;">完了</span>`
-            :`<span style="font-size:11px;font-weight:600;color:${pend>0?'#C8292A':'#9CA3AF'};margin-left:auto;">${done}/${items.length} 完了</span>`}
+            ?`<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;margin-left:auto;background:rgba(34,197,94,0.12);color:#16A34A;">✓ 完了</span>`
+            :`<span style="font-size:12px;font-weight:600;color:${pend>0?'#C8292A':'#9CA3AF'};margin-left:auto;">${done}/${items.length} 完了</span>`}
         </div>
         ${itemsHtml}${bulkBtn}
       </div>`;
@@ -3595,28 +3682,53 @@ function renderInspRun(){
       </div>
     </div>
     <!-- Progress -->
-    <div style="padding:14px 20px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.07);">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-size:12px;color:#AAAAAA;font-weight:600;">進捗</div>
-        <div style="font-size:14px;font-weight:700;color:#111111;">${doneItems} / ${totalItems} <span style="font-size:11px;font-weight:400;color:#AAAAAA;">（本日対象）</span></div>
+    <div style="padding:12px 16px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.07);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-size:12px;color:#AAAAAA;font-weight:600;">進捗</div>
+          <div style="font-size:15px;font-weight:800;color:${pct===100?'#16A34A':'#111111'};">${doneItems}<span style="font-size:12px;font-weight:500;color:#AAAAAA;">/${totalItems}件</span></div>
+          ${pct===100?`<span style="font-size:10px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:2px 8px;border-radius:8px;border:1px solid #BBF7D0;">完了 ✓</span>`:''}
+        </div>
+        ${pct<100?`<button onclick="inspBulkOkAll()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:#F0FDF4;border:1.5px solid rgba(22,163,74,0.35);border-radius:10px;color:#16A34A;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.94)';this.style.background='#DCFCE7'" onmouseup="this.style.transform='';this.style.background='#F0FDF4'">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          全件一括で○
+        </button>`:''}
       </div>
-      <div style="height:6px;background:#E8E8EC;border-radius:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:${pct===100?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF7070)'};border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
+      <div style="height:7px;background:#F0F0F4;border-radius:6px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${pct===100?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF6B6B)'};border-radius:6px;transition:width .38s cubic-bezier(.4,0,.2,1);"></div>
       </div>
     </div>
     <!-- Content -->
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-run-scroll">
+    <div style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="insp-run-scroll">
       ${lineGroupsHtml}
       <div style="height:16px;"></div>
     </div>
     <!-- Footer -->
-    <div style="padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
-      <button onclick="inspFinish()" style="width:100%;padding:16px;background:${pct===100?'#22C55E':'#C8292A'};color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(${pct===100?'34,197,94':'200,41,42'},0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,background .3s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 9l5 5 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ${pct===100?'点検完了 — 提出する':`点検を完了する（未入力 ${totalItems-doneItems}件）`}
+    <div style="padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 14px);flex-shrink:0;border-top:1px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+      <button onclick="inspFinish()" style="width:100%;padding:16px;background:${pct===100?'linear-gradient(135deg,#22C55E,#16A34A)':'linear-gradient(135deg,#C8292A,#A82020)'};color:white;border:none;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 6px 24px rgba(${pct===100?'34,197,94':'200,41,42'},0.28);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,background .3s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+        ${pct===100
+          ?`<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 9l5 5 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>点検完了 — 提出する`
+          :`<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="white" stroke-width="2"/><path d="M9 5v4.5M9 12v.5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>提出（残り ${totalItems-doneItems}件 未入力）`}
       </button>
     </div>
   </div>`;
+}
+
+function inspBulkOkAll(){
+  if(!S.inspRunResults)S.inspRunResults={};
+  const selLines=getVisibleLines().filter(l=>S.inspSelectedLines.includes(l.id));
+  let cnt=0;
+  selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
+    eq.items.filter(isTargetDay).forEach(it=>{
+      const key=eq.id+'_'+it.id;
+      if(!S.inspRunResults[key]){S.inspRunResults[key]='ok';cnt++;}
+    });
+  }));
+  const scrollEl=document.getElementById('insp-run-scroll');
+  const st=scrollEl?scrollEl.scrollTop:0;
+  toast(cnt>0?`${cnt}件をすべて○に一括入力`:'未入力の項目はありません',cnt>0?'ok':'info');
+  render();
+  requestAnimationFrame(()=>{const el=document.getElementById('insp-run-scroll');if(el)el.scrollTop=st;});
 }
 
 function inspBulkOkEq(eqId){
@@ -3650,11 +3762,11 @@ function inspSetRes(eqId,itemId,result){
   const ngBtn=document.getElementById('ibtn-ng-'+key);
   if(okBtn){
     if(result==='ok'){okBtn.style.cssText+='background:#22C55E;color:white;border-color:#22C55E;box-shadow:0 4px 16px rgba(34,197,94,0.35);';}
-    else{okBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#22C55E;border-color:rgba(34,197,94,0.5);';}
+    else{okBtn.style.cssText='height:48px;min-width:64px;padding:0 14px;border-radius:12px;border:1.5px solid;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#22C55E;border-color:rgba(34,197,94,0.5);';}
   }
   if(ngBtn){
     if(result==='ng'){ngBtn.style.cssText+='background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 4px 16px rgba(200,41,42,0.32);';}
-    else{ngBtn.style.cssText='height:40px;min-width:52px;padding:0 14px;border-radius:10px;border:1.5px solid;font-size:18px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#C8292A;border-color:rgba(200,41,42,0.5);';}
+    else{ngBtn.style.cssText='height:48px;min-width:64px;padding:0 14px;border-radius:12px;border:1.5px solid;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s,box-shadow .12s;background:#F8F9FC;color:#C8292A;border-color:rgba(200,41,42,0.5);';}
   }
   // Update eq card header
   const selLines=S.lines.filter(l=>S.inspSelectedLines.includes(l.id));
@@ -3840,8 +3952,8 @@ function renderAssignmentMgmt(){
     const on=n===selName;
     const saved=!!getUserAssignment(n);
     return`<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
-      style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 10px;border-radius:22px;border:2px solid ${on?'#1E3A8A':'#E4E8EF'};background:${on?'#1E3A8A':'#FFFFFF'};color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;scroll-snap-align:start;">
-      <span style="width:24px;height:24px;border-radius:50%;background:${on?'rgba(255,255,255,0.2)':'#F1F3F8'};display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">${n.charAt(0)}</span>
+      style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 10px;border-radius:22px;border:2px solid ${on?'#1E3A8A':'#E4E8EF'};background:${on?'#1E3A8A':'#FFFFFF'};color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;">
+      <span style="width:24px;height:24px;border-radius:50%;background:${on?'rgba(255,255,255,0.2)':'#F1F3F8'};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">${n.replace(/\s/g,'').slice(0,2)}</span>
       ${n}
       ${saved?`<span style="width:6px;height:6px;border-radius:50%;background:${on?'rgba(255,255,255,0.8)':'#22C55E'};flex-shrink:0;"></span>`:''}
     </button>`;
@@ -3919,7 +4031,7 @@ function renderAssignmentMgmt(){
     ?S.assignments.map(a=>{
       const editing=a.name===selName;
       return`<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:${editing?'#EEF2FF':'#FFFFFF'};border:2px solid ${editing?'#6366F1':'#E4E8EF'};border-radius:14px;margin-bottom:8px;transition:all .15s;">
-        <div style="width:38px;height:38px;border-radius:11px;background:${editing?'#4F46E5':'#F1F3F8'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;">${a.name.charAt(0)}</div>
+        <div style="width:38px;height:38px;border-radius:11px;background:${editing?'#4F46E5':'#F1F3F8'};display:flex;align-items:center;justify-content:center;font-size:${a.name.replace(/\s/g,'').length<=2?'11px':'9px'};font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;text-align:center;line-height:1.4;">${a.name.split(/\s+/).join('<br>')}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
             <span style="font-size:14px;font-weight:600;color:#111827;">${a.name}</span>
@@ -3969,12 +4081,12 @@ function renderAssignmentMgmt(){
     </div>
 
     <!-- スクロール本体 -->
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px);">
+    <div style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px);">
 
       <!-- 担当者選択 -->
       <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:14px 0 14px;overflow:visible;">
         <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin-bottom:10px;padding:0 16px;">担当者を選択</div>
-        <div id="asgn-pills" style="display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 16px 4px;margin-bottom:-4px;scroll-snap-type:x mandatory;">
+        <div id="asgn-pills" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 4px;margin-bottom:-4px;">
           ${namePills}
         </div>
         <!-- 設定状態 -->
