@@ -2109,12 +2109,12 @@ function renderHistoryList(){
   return`
   <div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <!-- ヘッダー -->
-    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px)+14px) 18px 0;flex-shrink:0;position:relative;">
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 0;flex-shrink:0;position:relative;">
       <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#2563EB 0%,#4F46E5 50%,transparent);pointer-events:none;"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <div style="flex:1;">
           <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">点検履歴</div>
-          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">${nowY}年${nowM}月</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.5px;">${nowY}年${nowM}月</div>
         </div>
         <div style="display:flex;gap:6px;">
           <button onclick="S.histFilter=S.histFilter==='missing'?'all':'missing';render();"
@@ -2125,7 +2125,7 @@ function renderHistoryList(){
         </div>
       </div>
       <!-- 設備タブ（スマホのみ） -->
-      <div class="mobile-only" style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin:0 -18px;padding:0 18px 12px;">
+      <div class="mobile-only" style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin:0 -20px;padding:0 20px 12px;">
         <style>.htabs::-webkit-scrollbar{display:none;}</style>
         <div class="htabs" style="display:flex;gap:7px;min-width:max-content;">${tabsHtml}</div>
       </div>
@@ -2687,7 +2687,7 @@ function renderLineEqMgmt(){
     </div>
 
     <!-- スクロールエリア -->
-    <div id="leq-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + ${curTab==='assign'?'120':'70'}px);-webkit-overflow-scrolling:touch;">
+    <div id="leq-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + ${curTab==='assign'?'120':'70'}px);-webkit-overflow-scrolling:touch;">
 
       ${curTab === 'equip' ? `
         <!-- ════ TAB A: 設備マスター ════ -->
@@ -2757,7 +2757,9 @@ function renderLineEqMgmt(){
             <span style="font-size:11px;font-weight:700;color:#374151;">ライン・設備を選択</span>
             <span style="font-size:10px;color:#9CA3AF;">ライン名で全選択</span>
           </div>
+          <div style="padding:10px 10px 4px;">
           ${S.lines.length > 0 ? asgnLineBlocks : `<div style="padding:24px;text-align:center;color:#9CA3AF;font-size:13px;">ラインがありません</div>`}
+          </div>
         </div>
         <!-- 現在の紐づけ一覧 -->
         ${S.assignments.length > 0 ? `
@@ -3466,7 +3468,8 @@ function renderInspRun(){
   return`
   <div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <!-- ヘッダー -->
-    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px)+14px) 18px 12px;flex-shrink:0;">
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 12px;flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#C8292A 0%,#A82020 40%,transparent 100%);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         <button onclick="inspChangeUser()" style="width:38px;height:38px;border-radius:12px;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;" title="担当者切替">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#6B7280" stroke-width="1.5"/><path d="M2 16c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -3484,44 +3487,73 @@ function renderInspRun(){
         <div style="height:100%;width:${pctAll}%;background:${pctAll===100?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF6464)'};border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);"></div>
       </div>
       ${todayTypes.length>1?`<div style="margin-top:8px;display:flex;gap:5px;">${todayTypes.slice(1).map(t=>`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 9px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">本日：${t}</span>`).join('')}</div>`:''}
+      <!-- 設備タブ（スマホのみ） -->
+      <div class="mobile-only" style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:10px -20px 0;padding:0 20px 12px;">
+        <style>.irt::-webkit-scrollbar{display:none;}</style>
+        <div class="irt" style="display:flex;gap:8px;min-width:max-content;">${tabsHtml}</div>
+      </div>
     </div>
 
-    <!-- 設備タブ -->
-    <div style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:11px 16px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E4E8EF;">
-      <style>.irt::-webkit-scrollbar{display:none;}</style>
-      <div class="irt" style="display:flex;gap:8px;min-width:max-content;">${tabsHtml}</div>
-    </div>
+    <!-- PC/スマホ分岐ボディ -->
+    <div style="flex:1;min-height:0;display:flex;overflow:hidden;">
 
-    <!-- 点検カード -->
-    <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
-
-      <!-- 設備バナー -->
-      <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
-        <div style="width:42px;height:42px;border-radius:12px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <!-- PC: 設備サイドバー -->
+      <div class="hist-sidebar pc-only">
+        <div class="hist-sidebar-hdr">
+          <div style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;">設備一覧</div>
         </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:16px;font-weight:800;color:#111827;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
-          <div style="font-size:12px;color:#9CA3AF;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
+        <div class="hist-sidebar-scroll">
+          ${assignedEqs.map(eq=>{
+            const eqItems=eq.items.filter(isTargetDay);
+            const d=eqItems.filter(i=>results[eq.id+'_'+i.id]).length;
+            const t=eqItems.length;
+            const done100=d===t&&t>0;
+            const hasNg=eqItems.some(i=>results[eq.id+'_'+i.id]==='ng');
+            const isActive=eq.id===S.inspRunEqTab;
+            const dotColor=done100?(hasNg?'#C8292A':'#16A34A'):d>0?'#D97706':'#9CA3AF';
+            return`<div class="hist-eq-card ${isActive?'hist-eq-active':''}" onclick="S.inspRunEqTab='${eq.id}';render();">
+              <div style="width:8px;height:8px;border-radius:50%;background:${dotColor};flex-shrink:0;box-shadow:0 0 0 3px ${dotColor}22;"></div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;font-weight:${isActive?700:600};color:${isActive?'#C8292A':'#111827'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq.name}${eq.equipmentNumber?`<span style="font-size:10px;color:#9CA3AF;margin-left:4px;">No.${eq.equipmentNumber}</span>`:''}</div>
+                <div style="font-size:10px;color:#9CA3AF;margin-top:1px;">${d}/${t}件</div>
+              </div>
+              ${done100?`<span style="font-size:9px;font-weight:700;color:${hasNg?'#C8292A':'#16A34A'};background:${hasNg?'#FFF1F1':'#F0FDF4'};padding:2px 7px;border-radius:8px;flex-shrink:0;">${hasNg?'NG':'完了'}</span>`:d>0?`<span style="font-size:9px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 7px;border-radius:8px;flex-shrink:0;">途中</span>`:''}
+            </div>`;
+          }).join('')}
         </div>
-        ${eqAllDone
-          ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
-          :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
       </div>
 
-      ${!eqTotal?`<div style="text-align:center;padding:44px 20px;"><div style="font-size:36px;margin-bottom:10px;">✅</div><div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">本日の点検項目はありません</div></div>`:icards}
+      <!-- メインエリア（点検カード） -->
+      <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px calc(env(safe-area-inset-bottom,0px)+80px);">
 
-      ${!eqAllDone&&eqTotal>0?`<button onclick="inspBulkOkEq2('${selectedEq.id}')"
-        style="width:100%;padding:14px;background:#F0FDF4;border:2px solid rgba(34,197,94,0.35);border-radius:14px;color:#16A34A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .15s;" onmousedown="this.style.background='#DCFCE7';this.style.transform='scale(.97)'" onmouseup="this.style.background='#F0FDF4';this.style.transform=''">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力
-      </button>`:''}
+        <!-- 設備バナー -->
+        <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+          <div style="width:42px;height:42px;border-radius:12px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:16px;font-weight:800;color:#111827;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
+            <div style="font-size:12px;color:#9CA3AF;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
+          </div>
+          ${eqAllDone
+            ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
+            :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
+        </div>
 
-      ${pctAll===100?`<div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid rgba(34,197,94,0.35);border-radius:18px;padding:22px;text-align:center;margin-top:14px;">
-        <div style="font-size:36px;margin-bottom:8px;">🎉</div>
-        <div style="font-size:16px;font-weight:800;color:#16A34A;margin-bottom:4px;">全設備の点検が完了！</div>
-        <div style="font-size:12px;color:#16A34A;opacity:.75;">下の提出ボタンを押してください</div>
-      </div>`:''}
+        ${!eqTotal?`<div style="text-align:center;padding:44px 20px;"><div style="font-size:36px;margin-bottom:10px;">✅</div><div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">本日の点検項目はありません</div></div>`:icards}
+
+        ${!eqAllDone&&eqTotal>0?`<button onclick="inspBulkOkEq2('${selectedEq.id}')"
+          style="width:100%;padding:14px;background:#F0FDF4;border:2px solid rgba(34,197,94,0.35);border-radius:14px;color:#16A34A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .15s;" onmousedown="this.style.background='#DCFCE7';this.style.transform='scale(.97)'" onmouseup="this.style.background='#F0FDF4';this.style.transform=''">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力
+        </button>`:''}
+
+        ${pctAll===100?`<div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid rgba(34,197,94,0.35);border-radius:18px;padding:22px;text-align:center;margin-top:14px;">
+          <div style="font-size:36px;margin-bottom:8px;">🎉</div>
+          <div style="font-size:16px;font-weight:800;color:#16A34A;margin-bottom:4px;">全設備の点検が完了！</div>
+          <div style="font-size:12px;color:#16A34A;opacity:.75;">下の提出ボタンを押してください</div>
+        </div>`:''}
+      </div>
     </div>
 
     <!-- 提出ボタン -->
