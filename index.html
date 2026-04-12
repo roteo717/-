@@ -48,7 +48,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .phdr{
   background:#FFFFFF;
   border-bottom:1px solid var(--border);
-  padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 18px;
+  padding:calc(env(safe-area-inset-top,0px) + 20px) 24px 22px;
   display:flex;align-items:flex-end;gap:14px;
   flex-shrink:0;overflow:hidden;position:relative;z-index:10;
 }
@@ -75,13 +75,13 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .home-hero{
   background:#FFFFFF;
   border-bottom:1px solid var(--border);
-  padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 24px;
+  padding:calc(env(safe-area-inset-top,0px) + 26px) 24px 28px;
   flex-shrink:0;position:relative;overflow:hidden;
 }
 .home-hero::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);}
 
 /* ── Scroll ── */
-.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
+.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 100px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
 .card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px;border:1px solid var(--border);}
@@ -138,7 +138,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .itype-pill.active .itp-sub{color:rgba(255,255,255,0.78);}
 
 /* ── Bulk Bar ── */
-.bulk-bar{background:linear-gradient(90deg,rgba(200,41,42,.05),transparent);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(200,41,42,.12);}
+.bulk-bar{background:linear-gradient(90deg,rgba(200,41,42,.05),transparent);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(200,41,42,.12);}
 
 /* ── Overlay / Sheet ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:50;display:flex;align-items:flex-end;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fadeIn .2s ease;}
@@ -190,10 +190,10 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
     border-right:1.5px solid #E4E8EF;
     background:#FAFBFC;overflow:hidden;
   }
-  .hist-sidebar-hdr{padding:16px 16px 12px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
-  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:10px 10px 20px;-webkit-overflow-scrolling:touch;}
+  .hist-sidebar-hdr{padding:20px 20px 14px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
+  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 24px;-webkit-overflow-scrolling:touch;}
   .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
-  .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px calc(env(safe-area-inset-bottom,0px)+90px);}
+  .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 28px calc(env(safe-area-inset-bottom,0px)+100px);}
 
   /* Equipment list cards in sidebar */
   .hist-eq-card{
@@ -2124,8 +2124,8 @@ function renderHistoryList(){
           </button>
         </div>
       </div>
-      <!-- 設備タブ -->
-      <div style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin:0 -18px;padding:0 18px 12px;">
+      <!-- 設備タブ（スマホのみ） -->
+      <div class="mobile-only" style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin:0 -18px;padding:0 18px 12px;">
         <style>.htabs::-webkit-scrollbar{display:none;}</style>
         <div class="htabs" style="display:flex;gap:7px;min-width:max-content;">${tabsHtml}</div>
       </div>
@@ -2496,23 +2496,29 @@ function renderLineEqMgmt(){
     const lineEqs = getLineEquip(l);
     return `
     <div style="background:#FFFFFF;border:1.5px solid ${isFocus?'#C8292A':'#E4E8EF'};border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;">
-      <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;cursor:pointer;" onclick="S.leLineSel=(S.leLineSel==='${l.id}'?null:'${l.id}');render();">
-        <div style="width:8px;height:8px;border-radius:50%;background:${isFocus?'#C8292A':'#9CA3AF'};flex-shrink:0;transition:background .2s;"></div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:700;color:#111827;">${l.name}</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${l.desc||l.location||''} · 設備 ${lineEqs.length}台</div>
+      <div style="padding:12px 14px;cursor:pointer;" onclick="S.leLineSel=(S.leLineSel==='${l.id}'?null:'${l.id}');render();">
+        <!-- 上段：ドット + 名前 + 矢印 -->
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${isFocus?'#C8292A':'#9CA3AF'};flex-shrink:0;transition:background .2s;"></div>
+          <div style="flex:1;min-width:0;overflow:hidden;">
+            <div style="font-size:14px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.name}</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.desc||l.location||''} · 設備 ${lineEqs.length}台</div>
+          </div>
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="transform:${isFocus?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;flex-shrink:0;"><path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div style="display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:160px;">
-          ${lineEqs.slice(0,3).map(e=>`<span style="font-size:10px;font-weight:600;color:#374151;background:#F1F3F8;padding:2px 7px;border-radius:6px;white-space:nowrap;">${eqDisplayName(e)}</span>`).join('')}
-          ${lineEqs.length>3?`<span style="font-size:10px;color:#9CA3AF;">+${lineEqs.length-3}</span>`:''}
+        <!-- 下段：設備タグ + ボタン -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px;">
+          <div style="display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0;">
+            ${lineEqs.slice(0,3).map(e=>`<span style="font-size:10px;font-weight:600;color:#374151;background:#F1F3F8;padding:2px 7px;border-radius:6px;white-space:nowrap;">${eqDisplayName(e)}</span>`).join('')}
+            ${lineEqs.length>3?`<span style="font-size:10px;color:#9CA3AF;padding:2px 4px;">+${lineEqs.length-3}</span>`:''}
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0;">
+            <button onclick="event.stopPropagation();S.modal={type:'editLine',lid:'${l.id}'};render();"
+              style="padding:5px 12px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:7px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">編集</button>
+            <button onclick="event.stopPropagation();delLine('${l.id}')"
+              style="padding:5px 12px;background:rgba(200,41,42,0.06);border:1px solid rgba(200,41,42,0.2);border-radius:7px;color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">削除</button>
+          </div>
         </div>
-        <div style="display:flex;gap:5px;flex-shrink:0;">
-          <button onclick="event.stopPropagation();S.modal={type:'editLine',lid:'${l.id}'};render();"
-            style="padding:5px 9px;background:#F8F9FC;border:1px solid #E4E8EF;border-radius:7px;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">編集</button>
-          <button onclick="event.stopPropagation();delLine('${l.id}')"
-            style="padding:5px 9px;background:rgba(200,41,42,0.06);border:1px solid rgba(200,41,42,0.2);border-radius:7px;color:#C8292A;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;font-family:inherit;">削除</button>
-        </div>
-        <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="transform:${isFocus?'rotate(90deg)':'rotate(0deg)'};transition:transform .2s;flex-shrink:0;"><path d="M1 1l5 5-5 5" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       ${isFocus ? `
       <div style="border-top:1px solid #F0F1F6;padding:10px 14px;">
