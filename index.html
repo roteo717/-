@@ -199,7 +199,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
     background:#FAFBFC;overflow:hidden;
   }
   .hist-sidebar-hdr{padding:20px 20px 14px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
-  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 24px;-webkit-overflow-scrolling:touch;}
+  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + 160px);-webkit-overflow-scrolling:touch;}
   .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
   .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px 28px calc(env(safe-area-inset-bottom,0px)+112px);}
 
@@ -3798,19 +3798,6 @@ function renderInspRun(){
         <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:clip;-webkit-overflow-scrolling:touch;padding-top:14px;">
           <div style="padding:16px 18px calc(env(safe-area-inset-bottom,0px)+${!eqAllDone&&eqTotal>0?180:90}px);width:100%;box-sizing:border-box;">
 
-          <!-- 設備バナー -->
-          <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:18px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
-            <div style="width:46px;height:46px;border-radius:13px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:17px;font-weight:800;color:#111827;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
-              <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
-            </div>
-            ${eqAllDone
-              ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:7px 13px;border-radius:10px;flex-shrink:0;letter-spacing:.3px;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
-              :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:7px 13px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
-          </div>
 
           ${!eqTotal?`<div style="text-align:center;padding:44px 20px;"><div style="font-size:36px;margin-bottom:10px;">✅</div><div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">本日の点検項目はありません</div></div>`:icards}
 
