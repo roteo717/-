@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム v10</title>
+<title>日常点検システム v11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -62,8 +62,8 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 }
 .hdr-back-btn:active{transform:scale(.90);background:var(--border);}
 .hdr-center{flex:1;position:relative;z-index:1;min-width:0;}
-.hdr-eyebrow{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.5px;margin-bottom:3px;}
-.hdr-title{font-size:21px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.1;}
+.hdr-eyebrow{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.8px;margin-bottom:4px;}
+.hdr-title{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.15;}
 .hdr-action-btn{
   display:flex;align-items:center;gap:6px;
   background:var(--surface2);border:1px solid var(--border);border-radius:22px;
@@ -81,28 +81,28 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .home-hero::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);}
 
 /* ── Scroll ── */
-.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 100px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
+.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:28px 20px calc(env(safe-area-inset-bottom,0px) + 112px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
-.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px;border:1px solid var(--border);}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:20px;border:1px solid var(--border);}
 .card-tap{cursor:pointer;transition:transform .12s,opacity .12s;}
 .card-tap:active{transform:scale(.98);opacity:.85;}
-.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin:24px 0 12px 4px;}
-.section-label:first-child{margin-top:0;}
+.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:28px 0 14px 4px;}
+.section-label:first-child{margin-top:4px;}
 
 /* ── icard内ボタン行 ── */
-.icard .btn-row{margin-top:12px;display:flex;gap:12px;}
+.icard .btn-row{margin-top:14px;display:flex;gap:12px;}
 
 /* ── 履歴メインエリアのカード ── */
-.hist-main-area .card{padding:18px 20px;margin-bottom:14px;}
+.hist-main-area .card{padding:20px 24px;margin-bottom:16px;}
 
 /* ── Inspection Cards ── */
-.icard{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 20px;margin-bottom:18px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;border:1.5px solid var(--border);transition:border-color .2s,background .2s;user-select:none;}
+.icard{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:24px 22px;margin-bottom:20px;min-height:126px;display:flex;flex-direction:column;justify-content:space-between;border:1.5px solid var(--border);transition:border-color .2s,background .2s;user-select:none;}
 .icard.rok{border-color:var(--green);background:var(--green-lt);}
 .icard.rng{border-color:var(--red);background:var(--red-lt);}
 
 /* ── Judge Buttons ── */
-.jbtn{flex:1;height:56px;border-radius:16px;border:1.5px solid;cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;}
+.jbtn{flex:1;height:60px;border-radius:16px;border:1.5px solid;cursor:pointer;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;letter-spacing:.2px;}
 .jbtn:active{transform:scale(.94);}
 .jok{background:var(--green-lt);color:var(--green);border-color:var(--green);}
 .jok:active{background:var(--green);color:white;box-shadow:0 4px 18px rgba(22,163,74,0.3);}
@@ -114,15 +114,15 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 }
 
 /* ── Badges ── */
-.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;letter-spacing:.2px;}
+.badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;letter-spacing:.4px;}
 .bOk{background:var(--green-lt);color:var(--green);}
 .bNg{background:var(--red-lt);color:var(--red);}
 .bWarn{background:var(--orange-lt);color:var(--orange);}
 .bGray{background:var(--surface2);color:var(--text3);}
 
 /* ── Bottom Tabs ── */
-.btabs{display:flex;border-top:1px solid var(--border);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
+.btabs{display:flex;border-top:1px solid var(--border);padding:10px 0 calc(env(safe-area-inset-bottom,0px) + 10px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:5px 2px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
 .tab.active{color:var(--red);}
 
 /* ── Progress ── */
@@ -130,33 +130,33 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .prog-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1);}
 
 /* ── Pill Selector ── */
-.pill-row{display:flex;gap:4px;background:var(--surface2);border-radius:12px;padding:3px;border:1px solid var(--border);}
-.pill{flex:1;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;}
+.pill-row{display:flex;gap:4px;background:var(--surface2);border-radius:12px;padding:4px;border:1px solid var(--border);}
+.pill{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);touch-action:manipulation;transition:all .15s;font-family:inherit;letter-spacing:.2px;}
 .pill.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.10);border:1px solid var(--border);}
 /* ── Inspection-type pill row (home screen) ── */
-.itype-row{display:flex;gap:6px;padding:3px;}
-.itype-pill{flex:1;padding:10px 6px 9px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;touch-action:manipulation;font-family:inherit;text-align:center;transition:background .15s,border-color .15s,transform .1s;}
+.itype-row{display:flex;gap:8px;padding:3px;}
+.itype-pill{flex:1;padding:13px 8px 11px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;touch-action:manipulation;font-family:inherit;text-align:center;transition:background .15s,border-color .15s,transform .1s;}
 .itype-pill:active{transform:scale(.96);}
-.itype-pill .itp-label{font-size:13px;font-weight:700;color:var(--text2);display:block;line-height:1;}
-.itype-pill .itp-sub{font-size:10px;font-weight:500;color:var(--text3);display:block;margin-top:4px;line-height:1.2;}
+.itype-pill .itp-label{font-size:14px;font-weight:700;color:var(--text2);display:block;line-height:1;letter-spacing:.2px;}
+.itype-pill .itp-sub{font-size:10px;font-weight:500;color:var(--text3);display:block;margin-top:5px;line-height:1.3;}
 .itype-pill.active{background:var(--red);border-color:var(--red);box-shadow:0 4px 16px rgba(200,41,42,0.24);}
 .itype-pill.active .itp-label{color:white;}
 .itype-pill.active .itp-sub{color:rgba(255,255,255,0.78);}
 
 /* ── Bulk Bar ── */
-.bulk-bar{background:linear-gradient(90deg,rgba(200,41,42,.05),transparent);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(200,41,42,.12);}
+.bulk-bar{background:linear-gradient(90deg,rgba(200,41,42,.05),transparent);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(200,41,42,.12);}
 
 /* ── Overlay / Sheet ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:50;display:flex;align-items:flex-end;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fadeIn .2s ease;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.sheet{background:var(--surface);border-radius:28px 28px 0 0;padding:26px 20px calc(env(safe-area-inset-bottom,0px) + 26px);width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -12px 60px rgba(0,0,0,0.12),0 0 0 1px var(--border);}
-.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 22px;}
+.sheet{background:var(--surface);border-radius:28px 28px 0 0;padding:30px 24px calc(env(safe-area-inset-bottom,0px) + 32px);width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -12px 60px rgba(0,0,0,0.12),0 0 0 1px var(--border);}
+.sheet-handle{width:44px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 26px;}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ── Form ── */
-.finput{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.finput{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;line-height:1.5;}
 .finput:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,0.08);}
-.flabel{font-size:13px;color:var(--text2);display:block;margin-bottom:6px;font-weight:500;}
+.flabel{font-size:13px;color:var(--text2);display:block;margin-bottom:8px;font-weight:600;letter-spacing:.2px;}
 
 /* ── Toast ── */
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;color:white;z-index:99;white-space:nowrap;pointer-events:none;animation:fadeUp .25s ease;font-family:inherit;box-shadow:0 8px 32px rgba(0,0,0,0.22);letter-spacing:.2px;}
@@ -165,9 +165,9 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 /* ── Utility ── */
 .icon-circle{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .empty-state{text-align:center;padding:48px 20px;color:var(--text2);}
-.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(200,41,42,0.28);transition:transform .12s,box-shadow .12s;touch-action:manipulation;font-family:inherit;letter-spacing:.2px;}
+.btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(200,41,42,0.28);transition:transform .12s,box-shadow .12s;touch-action:manipulation;font-family:inherit;letter-spacing:.4px;}
 .btn-primary:active{transform:scale(.97);}
-.btn-ghost{width:100%;padding:13px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;color:var(--text2);font-weight:500;transition:transform .12s,background .15s;touch-action:manipulation;font-family:inherit;}
+.btn-ghost{width:100%;padding:15px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;color:var(--text2);font-weight:500;transition:transform .12s,background .15s;touch-action:manipulation;font-family:inherit;}
 .btn-ghost:active{transform:scale(.97);}
 @keyframes cardIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card,.icard{animation:cardIn .2s ease both;}
@@ -199,7 +199,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
   .hist-sidebar-hdr{padding:20px 20px 14px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
   .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 24px;-webkit-overflow-scrolling:touch;}
   .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
-  .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 28px calc(env(safe-area-inset-bottom,0px)+100px);}
+  .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px 28px calc(env(safe-area-inset-bottom,0px)+112px);}
 
   /* Equipment list cards in sidebar */
   .hist-eq-card{
@@ -272,8 +272,8 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-right-body{flex:1;overflow:hidden;}
 .cal-group-hdr{display:flex;align-items:center;background:#1E293B;color:white;font-size:11px;font-weight:700;padding:5px 8px;letter-spacing:.2px;}
 .cal-group-hdr.line{background:#F1F3F8;color:var(--text2);font-size:10px;font-weight:600;padding:4px 8px;}
-.cal-eq-left{display:flex;align-items:center;padding:0 6px 0 8px;border-bottom:0.5px solid var(--border);min-height:52px;}
-.cal-eq-right-row{display:flex;border-bottom:0.5px solid var(--border);min-height:52px;}
+.cal-eq-left{display:flex;align-items:center;padding:0 6px 0 8px;border-bottom:0.5px solid var(--border);min-height:58px;}
+.cal-eq-right-row{display:flex;border-bottom:0.5px solid var(--border);min-height:58px;}
 .cal-eq-name-txt{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;word-break:break-all;}
 .cal-cell{min-width:80px;flex-shrink:0;border-right:0.5px solid var(--border);padding:4px;display:flex;flex-direction:column;gap:3px;justify-content:center;align-items:flex-start;}
 .cal-cell.today-col{background:rgba(200,41,42,.04);}
@@ -283,10 +283,10 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .cal-badge.partial{background:var(--orange-lt);color:var(--orange);}
 .cal-badge.done-daily{background:#E8F5E9;color:#16A34A;}
 /* ── Equipment Tabs ── */
-.equip-tabs-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 12px;scroll-snap-type:x mandatory;}
+.equip-tabs-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 14px;scroll-snap-type:x mandatory;}
 .equip-tabs-wrap::-webkit-scrollbar{display:none;}
 .equip-tabs{display:flex;gap:8px;min-width:max-content;}
-.equip-tab{flex:0 0 auto;padding:10px 18px;border-radius:22px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;scroll-snap-align:start;}
+.equip-tab{flex:0 0 auto;padding:12px 20px;border-radius:24px;border:1.5px solid transparent;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation;font-family:inherit;transition:background .15s,color .15s,border-color .15s,box-shadow .15s;scroll-snap-align:start;letter-spacing:.1px;}
 .equip-tab:active{transform:scale(.96);}
 .equip-tab.inactive{background:#F1F3F8;color:#1F2937;border-color:#D1D5DB;}
 .equip-tab.active{background:#C8292A;color:white;border-color:#C8292A;box-shadow:0 3px 12px rgba(200,41,42,0.28);}
@@ -313,6 +313,18 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 @media(min-width:769px){
   .hist-main-area{overflow-y:auto !important;}
 }
+
+/* ── v11 Spacing Refinements ── */
+/* 全カードのテキストにゆとりある行間を付与 */
+.card p,.icard p{line-height:1.65;}
+/* 設備名など主要テキストの視認性強化 */
+.eq-name{font-size:15px;font-weight:700;letter-spacing:.1px;}
+/* NG/OK状態バッジの文字間隔 */
+.bNg,.bOk,.bWarn,.bGray{letter-spacing:.4px;}
+/* セクションの上下余白を統一 */
+.section-label+*{margin-top:0;}
+/* スクロールエリア最下部のクッション（ナビバーとの重なり防止） */
+.scroll,.hist-main-area{padding-bottom:max(112px, calc(env(safe-area-inset-bottom,0px) + 112px));}
 </style>
 </head>
 <body>
@@ -326,7 +338,10 @@ const S={
   selectedEquipmentId:null,
   selectedLine:null,selectedEq:null,inspType:'毎日点検',histView:'list',histDate:null,histWeekOffset:0,
   bulkActive:false,bulkLineId:null,bulkIdx:0,
-  modal:null,ngModal:{on:false,itemId:null,comment:'',photos:0},histQuickInput:null,
+  modal:null,ngModal:{on:false,itemId:null,comment:'',hasPhoto:false,photos:0},histQuickInput:null,
+  bulkConfirm:false,bulkConfirmTimer:null,   // INSPECTION画面の一括OK確認フラグ
+  bulkConfirmEq:null,bulkConfirmTimer2:null,
+  inspRunNgModal:{on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''},
   eqPdfModal:{on:false,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:null},
   names:{
     inspector:['山田 太郎','佐藤 花子','田中 一郎','鈴木 次郎','高橋 三郎','渡辺 四郎'],
@@ -547,14 +562,29 @@ function setResult(itemId,r){
   if(r==='ng'){S.ngModal={on:true,itemId,comment:'',photos:0};render();return;}
   const eid=S.selectedEq;const _k=eid+':'+S.inspType;
   if(!S.insps[_k])S.insps[_k]={date:TODAY,results:{}};
-  S.insps[_k].results[itemId]={r:'ok',comment:'',photos:0};render();
+  S.insps[_k].results[itemId]={r:'ok',comment:'',photos:0};
+  saveInspState();
+  render();
 }
 function bulkOk(){
+  // 2ステップ確認：1回目はボタン色変化、2回目で実行
+  if(!S.bulkConfirm){
+    S.bulkConfirm=true;
+    render();
+    // 3秒後に自動リセット
+    if(S.bulkConfirmTimer) clearTimeout(S.bulkConfirmTimer);
+    S.bulkConfirmTimer=setTimeout(()=>{S.bulkConfirm=false;render();},3000);
+    return;
+  }
+  S.bulkConfirm=false;
+  if(S.bulkConfirmTimer){clearTimeout(S.bulkConfirmTimer);S.bulkConfirmTimer=null;}
   const eid=S.selectedEq;const eq=getEq(eid);const items=typeItems(eq,S.inspType);
   const _bk=eid+':'+S.inspType;
   if(!S.insps[_bk])S.insps[_bk]={date:TODAY,results:{}};
   let cnt=0;items.forEach(it=>{if(!S.insps[_bk].results[it.id]){S.insps[_bk].results[it.id]={r:'ok',comment:'',photos:0};cnt++;}});
-  toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');render();
+  toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
+  saveInspState();
+  render();
 }
 function resetResult(iid){const eid=S.selectedEq;const _rk=eid+':'+S.inspType;if(S.insps[_rk])delete S.insps[_rk].results[iid];render();}
 function submitInsp(){
@@ -574,16 +604,26 @@ function submitInsp(){
 function approve(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='approved';a.approver=S.currentName||'管理者';a.approvedDate=TODAY;}toast('承認しました');render();}
 function reject(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='rejected';a.approver=S.currentName||'管理者';a.approvedDate=TODAY;}toast('差し戻しました','warn');render();}
 function anomStatus(id,st){const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();}
+function toggleNgPhoto(){
+  S.ngModal.hasPhoto=!S.ngModal.hasPhoto;
+  // 写真フラグ変更後もテキスト保持
+  const v=document.getElementById('ng-c')?.value;
+  if(v!=null)S.ngModal._draft=v;
+  render();
+}
 function confirmNg(){
-  const c=document.getElementById('ng-c')?.value?.trim()||'';
+  const c=document.getElementById('ng-c')?.value?.trim()||S.ngModal._draft?.trim()||'';
   const eid=S.selectedEq;const eq=getEq(eid);const iid=S.ngModal.itemId;const item=eq.items.find(i=>i.id===iid);
   const _nk=eid+':'+S.inspType;
   if(!S.insps[_nk])S.insps[_nk]={date:TODAY,results:{}};
-  S.insps[_nk].results[iid]={r:'ng',comment:c,photos:S.ngModal.photos};
+  const photos=S.ngModal.hasPhoto?1:0;
+  S.insps[_nk].results[iid]={r:'ng',comment:c,photos};
+  // 異常管理へ自動連携
   if(!S.anomalies.find(a=>a.eid===eid&&a.iid===iid&&a.status!=='resolved')){
-    S.anomalies.push({id:'AN'+Date.now(),lid:S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||'',eid,iid,iname:item.n,comment:c,status:'open',date:TODAY,by:'現場作業者'});
+    S.anomalies.push({id:'AN'+Date.now(),lid:S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||'',eid,iid,iname:item.n,comment:c||'点検にてNG',photos,status:'open',date:TODAY,by:S.currentName||'現場作業者'});
   }
-  S.ngModal={on:false,itemId:null,comment:'',photos:0};render();
+  saveInspState();
+  S.ngModal={on:false,itemId:null,comment:'',hasPhoto:false,photos:0,_draft:''};render();
 }
 function addItemConfirm(){
   const n=document.getElementById('mit-n')?.value?.trim();
@@ -1816,10 +1856,14 @@ function renderInspection(){
     </div>
   </div>
   <div class="scroll" style="padding-top:14px;">
-    ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:13px;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;touch-action:manipulation;font-family:inherit;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力</button>`:''}
+    ${pend>0?`<button onclick="bulkOk()" style="width:100%;padding:13px;background:${S.bulkConfirm?'var(--orange-lt)':'var(--green-lt)'};border:1.5px solid ${S.bulkConfirm?'rgba(217,119,6,0.5)':'var(--green)'};border-radius:var(--r);color:${S.bulkConfirm?'var(--orange)':'var(--green)'};font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;">
+      ${S.bulkConfirm
+        ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
+        :`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力`}
+    </button>`:''}
     ${icards}
-    <button onclick="submitInsp()" style="width:100%;padding:15px;background:${pend>0?'var(--surface)':'linear-gradient(135deg,#C8292A,#A82020)'};color:${pend>0?'var(--text2)':'white'};border:${pend>0?'1.5px solid var(--border)':'none'};border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;touch-action:manipulation;box-shadow:${pend>0?'none':'0 4px 16px rgba(200,41,42,0.28)'};font-family:inherit;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
-      ${pend>0?`点検提出（未入力 ${pend}件あり）`:'`<svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` 点検完了 · 提出する'}
+    <button onclick="submitInsp()" style="width:100%;padding:17px;background:${pend>0?'var(--surface)':'linear-gradient(135deg,#C8292A,#A82020)'};color:${pend>0?'var(--text2)':'white'};border:${pend>0?'1.5px solid var(--border)':'none'};border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;touch-action:manipulation;box-shadow:${pend>0?'none':'0 4px 20px rgba(200,41,42,0.28)'};font-family:inherit;letter-spacing:.3px;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+      ${pend>0?`点検提出（未入力 ${pend}件あり）`:'点検完了 · 提出する'}
     </button>
   </div>`;
 }
@@ -1863,11 +1907,11 @@ function renderApproval(){
         </div>
       </div>
     </div>
-    <div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
-      ${pend.length===0?`<div style="text-align:center;padding:60px 20px;"><div style="width:56px;height:56px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">承認待ちはありません</div><div style="font-size:13px;color:#999999;">すべての申請が処理済みです</div></div>`:''}
-      ${pend.length>0?`<div style="font-size:11px;font-weight:700;color:#4F8EF7;letter-spacing:.8px;margin:4px 2px 10px;">承認待ち (${pend.length})</div>`:''}
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 104px);-webkit-overflow-scrolling:touch;">
+      ${pend.length===0?`<div style="text-align:center;padding:64px 20px;"><div style="width:58px;height:58px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">承認待ちはありません</div><div style="font-size:13px;color:#999999;">すべての申請が処理済みです</div></div>`:''}
+      ${pend.length>0?`<div style="font-size:11px;font-weight:700;color:#4F8EF7;letter-spacing:1px;margin:4px 2px 12px;">承認待ち (${pend.length})</div>`:''}
       ${pend.map(a=>acard(a,true)).join('')}
-      ${hist.length>0?`<div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;margin:18px 2px 10px;">処理済み (${hist.length})</div>${hist.map(a=>acard(a,false)).join('')}`:''}
+      ${hist.length>0?`<div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:1px;margin:22px 2px 12px;">処理済み (${hist.length})</div>${hist.map(a=>acard(a,false)).join('')}`:''}
     </div>
   </div>${btabs()}`;
 }
@@ -2454,17 +2498,17 @@ function renderAnomaly(){
     const isOpen=a.status==='open';const isIp=a.status==='in-progress';
     const col=isOpen?'#F97316':isIp?'#FFB020':'#34C759';
     const lbl=isOpen?'未対応':isIp?'対応中':'解決済';
-    return`<div style="background:#FFFFFF;border:1px solid ${isOpen?'rgba(249,115,22,0.3)':isIp?'rgba(255,176,32,0.2)':'rgba(0,0,0,0.07)'};border-radius:16px;padding:16px;margin-bottom:10px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;">
+    return`<div style="background:#FFFFFF;border:1.5px solid ${isOpen?'rgba(249,115,22,0.3)':isIp?'rgba(255,176,32,0.2)':'rgba(0,0,0,0.07)'};border-radius:18px;padding:18px 18px 16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;">
         <div style="flex:1;min-width:0;">
-          <div style="display:inline-block;background:${isOpen?'rgba(249,115,22,0.18)':isIp?'rgba(255,176,32,0.14)':'rgba(52,199,89,0.12)'};color:${col};font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:8px;">${lbl}</div>
-          <div style="font-weight:700;font-size:16px;color:#111111;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
-          <div style="font-size:12px;color:#777777;">${eq?.name||'-'} · ${l?.name||'-'} · ${a.date}</div>
+          <div style="display:inline-block;background:${isOpen?'rgba(249,115,22,0.18)':isIp?'rgba(255,176,32,0.14)':'rgba(52,199,89,0.12)'};color:${col};font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:10px;letter-spacing:.3px;">${lbl}</div>
+          <div style="font-weight:700;font-size:16px;color:#111111;margin-bottom:5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.iname}</div>
+          <div style="font-size:12px;color:#777777;line-height:1.5;">${eq?.name||'-'} · ${l?.name||'-'} · ${a.date}</div>
         </div>
       </div>
-      <div style="font-size:13px;padding:10px 12px;background:#F0F1F5;border-radius:10px;color:#7A8090;margin-bottom:${a.status!=='resolved'?'12px':'0'};line-height:1.5;">${a.comment}</div>
-      ${isOpen?`<button onclick="anomStatus('${a.id}','in-progress')" style="width:100%;padding:12px;background:rgba(249,115,22,0.15);border:1.5px solid rgba(249,115,22,0.35);border-radius:12px;color:#F97316;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.97)';this.style.background='rgba(249,115,22,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(249,115,22,0.15)'">対応開始</button>`:''}
-      ${isIp?`<button onclick="anomStatus('${a.id}','resolved')" style="width:100%;padding:12px;background:rgba(52,199,89,0.15);border:1.5px solid rgba(52,199,89,0.35);border-radius:12px;color:#34C759;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.97)';this.style.background='rgba(52,199,89,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(52,199,89,0.15)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>解決済にする</button>`:''}
+      <div style="font-size:13px;padding:12px 14px;background:#F0F1F5;border-radius:12px;color:#7A8090;margin-bottom:${a.status!=='resolved'?'14px':'0'};line-height:1.65;">${a.comment}</div>
+      ${isOpen?`<button onclick="anomStatus('${a.id}','in-progress')" style="width:100%;padding:14px;background:rgba(249,115,22,0.15);border:1.5px solid rgba(249,115,22,0.35);border-radius:12px;color:#F97316;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;letter-spacing:.2px;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.97)';this.style.background='rgba(249,115,22,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(249,115,22,0.15)'">対応開始</button>`:''}
+      ${isIp?`<button onclick="anomStatus('${a.id}','resolved')" style="width:100%;padding:14px;background:rgba(52,199,89,0.15);border:1.5px solid rgba(52,199,89,0.35);border-radius:12px;color:#34C759;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;letter-spacing:.2px;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.97)';this.style.background='rgba(52,199,89,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(52,199,89,0.15)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>解決済にする</button>`:''}
     </div>`;
   };
   const totalActive=open.length+ip.length;
@@ -2478,11 +2522,11 @@ function renderAnomaly(){
         </div>
       </div>
     </div>
-    <div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 88px);-webkit-overflow-scrolling:touch;">
-      ${totalActive===0?`<div style="text-align:center;padding:60px 20px;"><div style="width:56px;height:56px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">異常はありません</div></div>`:``}
-      ${open.length>0?`<div style="font-size:11px;font-weight:700;color:#F97316;letter-spacing:.8px;margin:4px 2px 10px;">未対応 (${open.length})</div>${open.map(acard).join('')}`:''}
-      ${ip.length>0?`<div style="font-size:11px;font-weight:700;color:#FFB020;letter-spacing:.8px;margin:${open.length?'18':'4'}px 2px 10px;">対応中 (${ip.length})</div>${ip.map(acard).join('')}`:''}
-      ${res.length>0?`<div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:.8px;margin:${totalActive?'18':'4'}px 2px 10px;">解決済 (${res.length})</div>${res.map(acard).join('')}`:''}
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 104px);-webkit-overflow-scrolling:touch;">
+      ${totalActive===0?`<div style="text-align:center;padding:64px 20px;"><div style="width:58px;height:58px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">異常はありません</div></div>`:``}
+      ${open.length>0?`<div style="font-size:11px;font-weight:700;color:#F97316;letter-spacing:1px;margin:4px 2px 12px;">未対応 (${open.length})</div>${open.map(acard).join('')}`:''}
+      ${ip.length>0?`<div style="font-size:11px;font-weight:700;color:#FFB020;letter-spacing:1px;margin:${open.length?'22':'4'}px 2px 12px;">対応中 (${ip.length})</div>${ip.map(acard).join('')}`:''}
+      ${res.length>0?`<div style="font-size:11px;font-weight:700;color:#999999;letter-spacing:1px;margin:${totalActive?'22':'4'}px 2px 12px;">解決済 (${res.length})</div>${res.map(acard).join('')}`:''}
     </div>
   </div>${btabs()}`;
 }
@@ -3087,14 +3131,22 @@ function renderNgSheet(){
       <span style="font-size:12px;font-weight:600;color:#C8292A;">${eq.name}</span>
     </div>`:''}
     <!-- Comment -->
-    <div style="margin-bottom:14px;">
+    <div style="margin-bottom:16px;">
       <label class="flabel" style="color:#374151;font-weight:600;">異常の内容 <span style="color:#C8292A;">*</span></label>
-      <textarea id="ng-c" placeholder="どのような異常が発生しているか記入してください" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:90px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;line-height:1.5;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <textarea id="ng-c" placeholder="どのような異常が発生しているか記入してください" style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:100px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;line-height:1.6;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+    <!-- Photo attachment -->
+    <div style="margin-bottom:16px;">
+      <button onclick="toggleNgPhoto()" style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;border:1.5px solid ${S.ngModal.hasPhoto?'rgba(200,41,42,0.4)':'#E4E8EF'};background:${S.ngModal.hasPhoto?'#FFF1F1':'#F8F9FC'};cursor:pointer;touch-action:manipulation;font-family:inherit;width:100%;transition:all .15s;" onmousedown="this.style.opacity='.8'" onmouseup="this.style.opacity='1'">
+        <span style="font-size:22px;">📷</span>
+        <span style="font-size:13px;font-weight:600;color:${S.ngModal.hasPhoto?'#C8292A':'#6B7280'};">${S.ngModal.hasPhoto?'📎 画像添付済み（タップで取消）':'写真を追加する'}</span>
+        ${S.ngModal.hasPhoto?`<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C8292A"/><path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+      </button>
     </div>
     <!-- Action buttons -->
     <div style="display:flex;gap:10px;">
-      <button onclick="S.ngModal={on:false,itemId:null,comment:'',photos:0};render();" style="flex:1;padding:14px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">キャンセル</button>
-      <button onclick="confirmNg()" style="flex:2;padding:14px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 16px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(200,41,42,0.3)'">
+      <button onclick="S.ngModal={on:false,itemId:null,comment:'',hasPhoto:false,photos:0,_draft:''};render();" style="flex:1;padding:16px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">キャンセル</button>
+      <button onclick="confirmNg()" style="flex:2;padding:16px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 16px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;letter-spacing:.3px;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(200,41,42,0.3)'">
         <span style="display:flex;align-items:center;justify-content:center;gap:7px;">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 4L12 2.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           異常を登録する
@@ -3616,34 +3668,34 @@ function renderInspRun(){
     const key=selectedEq.id+'_'+it.id;
     const r=results[key];
     const isOk=r==='ok',isNg=r==='ng',isDone=isOk||isNg;
-    const cycleBadge=it.t!=='毎日'?`<span style="font-size:10px;font-weight:700;color:${it.t==='10日'?'#D97706':'#6B7280'};background:${it.t==='10日'?'#FFFBEB':'#F3F4F6'};padding:2px 8px;border-radius:8px;flex-shrink:0;">${it.t}点検</span>`:'';
-    return`<div id="ir2-${key}" style="background:${isOk?'#F0FDF4':isNg?'#FFF1F1':'#FFFFFF'};border:2px solid ${isOk?'rgba(34,197,94,0.4)':isNg?'rgba(200,41,42,0.4)':'#E4E8EF'};border-radius:14px;padding:12px 14px 10px;margin-bottom:8px;transition:all .2s;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="font-size:10px;font-weight:700;color:${isDone?(isOk?'#16A34A':'#C8292A'):'#9CA3AF'};background:${isDone?(isOk?'#DCFCE7':'#FEE2E2'):'#F3F4F6'};padding:2px 9px;border-radius:8px;">No.${idx+1}</span>
+    const cycleBadge=it.t!=='毎日'?`<span style="font-size:10px;font-weight:700;color:${it.t==='10日'?'#D97706':'#6B7280'};background:${it.t==='10日'?'#FFFBEB':'#F3F4F6'};padding:3px 9px;border-radius:8px;flex-shrink:0;letter-spacing:.2px;">${it.t}点検</span>`:'';
+    return`<div id="ir2-${key}" style="background:${isOk?'#F0FDF4':isNg?'#FFF1F1':'#FFFFFF'};border:2px solid ${isOk?'rgba(34,197,94,0.4)':isNg?'rgba(200,41,42,0.4)':'#E4E8EF'};border-radius:16px;padding:16px 16px 14px;margin-bottom:10px;transition:all .2s;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:10px;font-weight:700;color:${isDone?(isOk?'#16A34A':'#C8292A'):'#9CA3AF'};background:${isDone?(isOk?'#DCFCE7':'#FEE2E2'):'#F3F4F6'};padding:3px 10px;border-radius:8px;letter-spacing:.3px;">No.${idx+1}</span>
         ${cycleBadge}
         ${isDone?`<span style="font-size:11px;font-weight:700;color:${isOk?'#16A34A':'#C8292A'};margin-left:auto;display:flex;align-items:center;gap:4px;">${isOk?`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>正常確認済`:`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>異常記録済`}</span>`:''}
       </div>
-      <div style="font-size:15px;font-weight:${isDone?500:700};color:${isOk?'#15803D':isNg?'#991B1B':'#111827'};line-height:1.3;margin-bottom:10px;${isOk?'text-decoration:line-through;opacity:.65;':''}">${it.n}</div>
-      <div style="display:flex;gap:8px;">
+      <div style="font-size:15px;font-weight:${isDone?500:700};color:${isOk?'#15803D':isNg?'#991B1B':'#111827'};line-height:1.5;margin-bottom:12px;${isOk?'text-decoration:line-through;opacity:.65;':''}">${it.n}</div>
+      <div style="display:flex;gap:10px;">
         <button id="ibtn2-ng-${key}" onclick="inspSetRes2('${selectedEq.id}','${it.id}','ng')"
-          style="flex:1;height:46px;border-radius:12px;border:2px solid ${isNg?'#C8292A':'#F3F4F6'};
+          style="flex:1;height:52px;border-radius:13px;border:2px solid ${isNg?'#C8292A':'#F3F4F6'};
           background:${isNg?'linear-gradient(135deg,#C8292A,#A82020)':'#FAFAFA'};
           color:${isNg?'white':'#C8292A'};cursor:pointer;touch-action:manipulation;font-family:inherit;
-          display:flex;align-items:center;justify-content:center;gap:6px;
+          display:flex;align-items:center;justify-content:center;gap:7px;
           box-shadow:${isNg?'0 4px 18px rgba(200,41,42,0.35)':'none'};
           transition:all .15s;" onmousedown="this.style.transform='scale(.92)'" onmouseup="this.style.transform=''">
-          <span style="font-size:18px;line-height:1;">✕</span>
-          <span style="font-size:13px;font-weight:700;">異常</span>
+          <span style="font-size:20px;line-height:1;">✕</span>
+          <span style="font-size:14px;font-weight:700;letter-spacing:.2px;">異常</span>
         </button>
         <button id="ibtn2-ok-${key}" onclick="inspSetRes2('${selectedEq.id}','${it.id}','ok')"
-          style="flex:2;height:46px;border-radius:12px;border:2px solid ${isOk?'#22C55E':'#F3F4F6'};
+          style="flex:2;height:52px;border-radius:13px;border:2px solid ${isOk?'#22C55E':'#F3F4F6'};
           background:${isOk?'linear-gradient(135deg,#22C55E,#16A34A)':'#FAFAFA'};
           color:${isOk?'white':'#16A34A'};cursor:pointer;touch-action:manipulation;font-family:inherit;
-          display:flex;align-items:center;justify-content:center;gap:6px;
+          display:flex;align-items:center;justify-content:center;gap:7px;
           box-shadow:${isOk?'0 4px 18px rgba(34,197,94,0.35)':'none'};
           transition:all .15s;" onmousedown="this.style.transform='scale(.92)'" onmouseup="this.style.transform=''">
-          <span style="font-size:18px;line-height:1;">〇</span>
-          <span style="font-size:13px;font-weight:700;">正常</span>
+          <span style="font-size:20px;line-height:1;">〇</span>
+          <span style="font-size:14px;font-weight:700;letter-spacing:.2px;">正常</span>
         </button>
       </div>
     </div>`;
@@ -3714,29 +3766,30 @@ function renderInspRun(){
       </div>
 
       <!-- メインエリア（点検カード） -->
-      <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:clip;-webkit-overflow-scrolling:touch;padding-top:12px;">
-        <div style="padding:40px 16px calc(env(safe-area-inset-bottom,0px)+200px);width:100%;box-sizing:border-box;">
+      <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:clip;-webkit-overflow-scrolling:touch;padding-top:14px;">
+        <div style="padding:16px 18px calc(env(safe-area-inset-bottom,0px)+220px);width:100%;box-sizing:border-box;">
 
         <!-- 設備バナー -->
-        <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
-          <div style="width:42px;height:42px;border-radius:12px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:18px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+          <div style="width:46px;height:46px;border-radius:13px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
           <div style="flex:1;min-width:0;">
-            <div style="font-size:16px;font-weight:800;color:#111827;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
-            <div style="font-size:12px;color:#9CA3AF;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
+            <div style="font-size:17px;font-weight:800;color:#111827;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
+            <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
           </div>
           ${eqAllDone
-            ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
-            :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:6px 12px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
+            ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:7px 13px;border-radius:10px;flex-shrink:0;letter-spacing:.3px;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
+            :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:7px 13px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
         </div>
 
         ${!eqTotal?`<div style="text-align:center;padding:44px 20px;"><div style="font-size:36px;margin-bottom:10px;">✅</div><div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">本日の点検項目はありません</div></div>`:icards}
 
         ${!eqAllDone&&eqTotal>0?`<button onclick="inspBulkOkEq2('${selectedEq.id}')"
-          style="width:100%;padding:14px;background:#F0FDF4;border:2px solid rgba(34,197,94,0.35);border-radius:14px;color:#16A34A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .15s;" onmousedown="this.style.background='#DCFCE7';this.style.transform='scale(.97)'" onmouseup="this.style.background='#F0FDF4';this.style.transform=''">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力
+          style="width:100%;padding:14px;background:${S.bulkConfirmEq===selectedEq.id?'#FFF7ED':'#F0FDF4'};border:2px solid ${S.bulkConfirmEq===selectedEq.id?'rgba(217,119,6,0.5)':'rgba(34,197,94,0.35)'};border-radius:14px;color:${S.bulkConfirmEq===selectedEq.id?'#D97706':'#16A34A'};font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .2s;">
+          ${S.bulkConfirmEq===selectedEq.id
+            ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
+            :`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力`}
         </button>`:''}
 
         ${pctAll===100?`<div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid rgba(34,197,94,0.35);border-radius:18px;padding:22px;text-align:center;margin-top:14px;">
@@ -4346,6 +4399,11 @@ function inspSetRes2(eqId, itemId, result){
   // 同じボタンをもう一度押したらリセット（取消）
   if(S.inspRunResults[key]===result){
     delete S.inspRunResults[key];
+    saveInspState(); render(); return;
+  }
+  // NG時 → モーダルで詳細入力
+  if(result==='ng'){
+    S.inspRunNgModal={on:true,eqId,itemId,comment:'',hasPhoto:false,_draft:''};
     render(); return;
   }
   S.inspRunResults[key]=result;
@@ -4359,10 +4417,99 @@ function inspSetRes2(eqId, itemId, result){
       toast(hasNg?`${eq.name}：異常あり`:`${eq.name}：全項目正常✓`,hasNg?'warn':'ok');
     }
   }
+  saveInspState();
   render();
 }
 
+function toggleInspRunNgPhoto(){
+  const v=document.getElementById('irng-c')?.value;
+  if(v!=null) S.inspRunNgModal._draft=v;
+  S.inspRunNgModal.hasPhoto=!S.inspRunNgModal.hasPhoto;
+  render();
+}
+
+function confirmInspRunNg(){
+  const c=document.getElementById('irng-c')?.value?.trim()||S.inspRunNgModal._draft?.trim()||'';
+  const {eqId,itemId}=S.inspRunNgModal;
+  if(!S.inspRunResults) S.inspRunResults={};
+  const key=eqId+'_'+itemId;
+  S.inspRunResults[key]='ng';
+  // 異常管理へ自動連携
+  const eq=getEq(eqId);
+  const item=eq?.items.find(i=>i.id===itemId);
+  if(eq&&item&&!S.anomalies.find(a=>a.eid===eqId&&a.iid===itemId&&a.status!=='resolved')){
+    const line=S.lines.find(l=>(l.equipmentIds||[]).includes(eqId));
+    S.anomalies.push({
+      id:'AN'+Date.now()+Math.random().toString(36).slice(2),
+      lid:line?.id||'',eid:eqId,iid:itemId,iname:item.n,
+      comment:c||'点検にてNG',
+      photos:S.inspRunNgModal.hasPhoto?1:0,
+      status:'open',date:TODAY,by:S.currentName||'点検者'
+    });
+  }
+  // 全項目完了チェック
+  if(eq){
+    const todayItems=eq.items.filter(isTargetDay);
+    const allDone=todayItems.length>0&&todayItems.every(i=>S.inspRunResults[eq.id+'_'+i.id]);
+    if(allDone) toast(`${eq.name}：異常あり`,'warn');
+  }
+  saveInspState();
+  S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};
+  render();
+}
+
+function renderInspRunNgSheet(){
+  const {eqId,itemId}=S.inspRunNgModal;
+  const eq=getEq(eqId);
+  const item=eq?.items.find(i=>i.id===itemId);
+  const hp=S.inspRunNgModal.hasPhoto;
+  return`<div class="overlay" onclick="if(event.target===this){S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};render();}">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:44px;height:44px;background:#FFF1F1;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(200,41,42,0.2);">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#C8292A" stroke-width="1.8"/><path d="M7 7l6 6M13 7l-6 6" stroke="#C8292A" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;font-weight:700;color:#C8292A;letter-spacing:.3px;margin-bottom:2px;">異常を記録</div>
+        <div style="font-size:15px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item?item.n:'点検項目'}</div>
+      </div>
+    </div>
+    ${eq?`<div style="background:#FFF1F1;border:1px solid rgba(200,41,42,0.15);border-radius:10px;padding:7px 12px;margin-bottom:14px;font-size:12px;font-weight:600;color:#C8292A;">${eq.name}</div>`:''}
+    <div style="margin-bottom:14px;">
+      <label class="flabel" style="font-weight:600;color:#374151;">異常の内容</label>
+      <textarea id="irng-c" placeholder="どのような異常か記入してください（省略可）" style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:92px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;line-height:1.6;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'">${S.inspRunNgModal._draft||''}</textarea>
+    </div>
+    <div style="margin-bottom:16px;">
+      <button onclick="toggleInspRunNgPhoto()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1.5px solid ${hp?'rgba(200,41,42,0.4)':'#E4E8EF'};background:${hp?'#FFF1F1':'#F8F9FC'};cursor:pointer;touch-action:manipulation;font-family:inherit;width:100%;transition:all .15s;">
+        <span style="font-size:20px;">📷</span>
+        <span style="font-size:13px;font-weight:600;color:${hp?'#C8292A':'#6B7280'};">${hp?'📎 画像添付済み（タップで取消）':'写真を追加する'}</span>
+        ${hp?`<svg style="margin-left:auto;flex-shrink:0;" width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6.5" fill="#C8292A"/><path d="M4.5 7.5l2 2 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+      </button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};render();" style="flex:1;padding:15px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:13px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;">キャンセル</button>
+      <button onclick="confirmInspRunNg()" style="flex:2;padding:15px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 14px rgba(200,41,42,0.28);letter-spacing:.2px;">
+        <span style="display:flex;align-items:center;justify-content:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 4L11 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          異常を登録する
+        </span>
+      </button>
+    </div>
+  </div></div>
+  <script>requestAnimationFrame(()=>{const t=document.getElementById('irng-c');if(t)t.focus();})<\/script>`;
+}
+
 function inspBulkOkEq2(eqId){
+  // 2ステップ確認：1回目はフラグをセット、2回目で実行
+  if(S.bulkConfirmEq !== eqId){
+    S.bulkConfirmEq = eqId;
+    render();
+    // 3秒後に自動リセット
+    setTimeout(()=>{ if(S.bulkConfirmEq===eqId){S.bulkConfirmEq=null;render();} },3000);
+    return;
+  }
+  S.bulkConfirmEq = null;
   if(!S.inspRunResults) S.inspRunResults={};
   const eq=getEq(eqId);
   if(!eq) return;
@@ -4375,6 +4522,7 @@ function inspBulkOkEq2(eqId){
   });
   if(cnt>0) toast(`${cnt}件をすべて正常に入力しました`,'ok');
   else toast('未入力の項目はありません');
+  saveInspState();
   render();
 }
 
@@ -4444,12 +4592,43 @@ function render(){
   if(prevScroll!=null)requestAnimationFrame(()=>{const el=document.getElementById('insp-run-scroll');if(el)el.scrollTop=prevScroll;});
   if(prevLeqScroll!=null)requestAnimationFrame(()=>{const el=document.getElementById('leq-scroll');if(el)el.scrollTop=prevLeqScroll;});
   if(S.ngModal.on)sc.insertAdjacentHTML('beforeend',renderNgSheet());
+  if(S.inspRunNgModal.on)sc.insertAdjacentHTML('beforeend',renderInspRunNgSheet());
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
   if(S.histQuickInput)sc.insertAdjacentHTML('beforeend',renderHistQuickInputSheet());
 }
 
-// ── LocalStorage restore: assignments（担当設備永続化） ──
+// ════════════ LocalStorage: 点検結果永続化 ════════════
+function saveInspState(){
+  try{
+    localStorage.setItem('dk_insps', JSON.stringify(S.insps));
+    localStorage.setItem('dk_inspRunResults', JSON.stringify(S.inspRunResults||{}));
+    localStorage.setItem('dk_insps_date', TODAY);
+    // 異常リストも保存（デフォルトデータは除外してユーザー追加分のみ）
+    const userAnomalies=S.anomalies.filter(a=>a.id.startsWith('AN'));
+    localStorage.setItem('dk_anomalies', JSON.stringify(userAnomalies));
+  }catch(e){}
+}
+(function loadInspState(){
+  try{
+    const savedDate=localStorage.getItem('dk_insps_date');
+    // 今日のデータのみ復元
+    if(savedDate===TODAY){
+      const insps=JSON.parse(localStorage.getItem('dk_insps')||'null');
+      if(insps) S.insps=insps;
+      const res=JSON.parse(localStorage.getItem('dk_inspRunResults')||'null');
+      if(res) S.inspRunResults=res;
+    }
+    // 異常リストは日付問わず復元
+    const anoms=JSON.parse(localStorage.getItem('dk_anomalies')||'null');
+    if(anoms&&anoms.length){
+      // デフォルトデータに重複しないよう追加
+      anoms.forEach(a=>{if(!S.anomalies.find(x=>x.id===a.id))S.anomalies.push(a);});
+    }
+  }catch(e){}
+})();
+
+
 (function loadAssignments(){
   try{
     const data=localStorage.getItem('dk_assignments');
