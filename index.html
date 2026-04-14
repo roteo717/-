@@ -199,7 +199,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
     background:#FAFBFC;overflow:hidden;
   }
   .hist-sidebar-hdr{padding:20px 20px 14px;border-bottom:1px solid #E4E8EF;flex-shrink:0;}
-  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px calc(env(safe-area-inset-bottom,0px) + 160px);-webkit-overflow-scrolling:touch;}
+  .hist-sidebar-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 24px;-webkit-overflow-scrolling:touch;}
   .hist-sidebar-scroll::-webkit-scrollbar{width:3px;}
   .hist-main-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px 28px calc(env(safe-area-inset-bottom,0px)+112px);}
 
@@ -310,30 +310,6 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 #insp-run-scroll::-webkit-scrollbar{display:none;}
 .irt::-webkit-scrollbar{display:none;}
 .htabs::-webkit-scrollbar{display:none;}
-
-/* ── 一括正常ボタン (fixed) ── */
-.insp-bulk-fixed{
-  position:fixed;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 70px);
-  left:0;right:0;
-  z-index:21;
-  padding:10px 18px;
-  background:rgba(248,249,252,0.98);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border-top:1px solid rgba(34,197,94,0.2);
-  box-shadow:0 -4px 16px rgba(0,0,0,0.06);
-}
-@media(min-width:769px){
-  .insp-bulk-fixed{
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:1120px;
-    padding-left:calc(280px + 18px);
-    padding-right:18px;
-  }
-}
 
 /* PC: History 2-col overrides */
 @media(min-width:769px){
@@ -1545,18 +1521,97 @@ function inspDoStart(){
   nav('INSP_RUN');
 }
 
-/* ─── Inspector Home (設備タブ型 INSP_RUN に直行) ─── */
+/* ─── Inspector Home: 今日の点検状況サマリー ─── */
 function renderInspectorHome(){
-  // ログイン済みの点検者はINSP_RUNへ直行
-  if(S.currentName){
-    // inspRunEqTab が未設定なら初期化
-    const assignedEqs=getAllAssignedEquip()||S.equipments;
-    if(!S.inspRunEqTab&&assignedEqs.length) S.inspRunEqTab=assignedEqs[0].id;
-    S.view='INSP_RUN';
-    return renderInspRun();
-  }
-  // 未ログインなら名前選択へ
-  return renderNameSelect();
+  if(!S.currentName) return renderNameSelect();
+
+  const assignedEqs=getAllAssignedEquip()||S.equipments;
+  if(!S.inspRunResults) S.inspRunResults={};
+  const results=S.inspRunResults;
+
+  // 全体進捗
+  let totalAll=0,doneAll=0;
+  assignedEqs.forEach(eq=>{
+    const items=eq.items.filter(isTargetDay);
+    totalAll+=items.length;
+    doneAll+=items.filter(i=>results[eq.id+'_'+i.id]).length;
+  });
+  const pctAll=totalAll>0?Math.round(doneAll/totalAll*100):0;
+  const allComplete=pctAll===100&&totalAll>0;
+
+  const now=new Date();
+  const WDAYS=['日','月','火','水','木','金','土'];
+  const dateStr=`${now.getMonth()+1}月${now.getDate()}日（${WDAYS[now.getDay()]}）`;
+
+  // 設備ごとのステータスカード
+  const eqCards=assignedEqs.map(eq=>{
+    const items=eq.items.filter(isTargetDay);
+    const done=items.filter(i=>results[eq.id+'_'+i.id]).length;
+    const total=items.length;
+    const hasNg=items.some(i=>results[eq.id+'_'+i.id]==='ng');
+    const complete=done===total&&total>0;
+    let sCol,sBg,sLabel,sIcon;
+    if(complete&&hasNg){sCol='#C8292A';sBg='#FFF1F1';sLabel='NGあり';sIcon='✕';}
+    else if(complete){sCol='#16A34A';sBg='#F0FDF4';sLabel='完了';sIcon='✓';}
+    else if(done>0){sCol='#D97706';sBg='#FFFBEB';sLabel='途中';sIcon='△';}
+    else{sCol='#9CA3AF';sBg='#F8F9FC';sLabel='未着手';sIcon='○';}
+    return`<div onclick="S.inspRunEqTab='${eq.id}';nav('INSP_RUN');"
+      style="background:${sBg};border:1.5px solid ${sCol}30;border-radius:14px;padding:14px 12px 12px;cursor:pointer;touch-action:manipulation;transition:transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:700;color:#111827;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${eq.name}</div>
+        <span style="font-size:9px;font-weight:800;color:${sCol};background:${sCol}18;padding:2px 6px;border-radius:6px;flex-shrink:0;white-space:nowrap;">${sIcon} ${sLabel}</span>
+      </div>
+      <div style="height:4px;background:#E4E8EF;border-radius:2px;overflow:hidden;margin-bottom:5px;">
+        <div style="height:100%;width:${total>0?Math.round(done/total*100):0}%;background:${sCol};border-radius:2px;transition:width .3s;"></div>
+      </div>
+      <div style="font-size:11px;color:${sCol};font-weight:600;">${done}/${total}件</div>
+    </div>`;
+  }).join('');
+
+  return`
+  <div style="display:flex;flex-direction:column;height:100vh;height:100dvh;background:#F8F9FC;overflow:hidden;">
+    <!-- ヘッダー -->
+    <div style="background:#FFFFFF;border-bottom:1px solid #E4E8EF;padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 16px;flex-shrink:0;position:relative;">
+      <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#C8292A,#A82020 40%,transparent);pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1px;margin-bottom:2px;">${dateStr}</div>
+          <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">${S.currentName}</div>
+        </div>
+        <button onclick="inspChangeUser()" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;">担当者切替</button>
+      </div>
+      <!-- 全体進捗 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+        <div style="font-size:11px;font-weight:600;color:#9CA3AF;">今日の進捗</div>
+        <div style="font-size:13px;font-weight:800;color:${allComplete?'#16A34A':'#C8292A'};">${doneAll}<span style="font-size:10px;font-weight:500;color:#9CA3AF;">/${totalAll}件</span></div>
+      </div>
+      <div style="height:6px;background:#F1F3F8;border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pctAll}%;background:${allComplete?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF6464)'};border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);"></div>
+      </div>
+    </div>
+
+    <!-- スクロールエリア -->
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px calc(env(safe-area-inset-bottom,0px)+80px);">
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.2px;text-transform:uppercase;margin:2px 2px 10px;">今日の点検状況</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">${eqCards}</div>
+      ${allComplete?`
+      <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid rgba(34,197,94,0.35);border-radius:18px;padding:20px;text-align:center;">
+        <div style="font-size:30px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:15px;font-weight:800;color:#16A34A;margin-bottom:3px;">本日の点検が完了！</div>
+        <div style="font-size:12px;color:#16A34A;opacity:.75;">お疲れ様でした</div>
+      </div>`:''}
+    </div>
+
+    <!-- 点検開始ボタン（固定フッター） -->
+    <div style="flex-shrink:0;padding:10px 16px calc(env(safe-area-inset-bottom,0px)+64px);background:#F8F9FC;border-top:1px solid #E4E8EF;">
+      <button onclick="S.inspRunEqTab=null;nav('INSP_RUN');"
+        style="width:100%;padding:16px;background:${allComplete?'linear-gradient(135deg,#16A34A,#15803D)':'linear-gradient(135deg,#C8292A,#A82020)'};color:white;border:none;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:${allComplete?'0 4px 20px rgba(22,163,74,0.3)':'0 4px 20px rgba(200,41,42,0.3)'};letter-spacing:.2px;transition:transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+        ${PLAY_ICO}
+        ${allComplete?'点検内容を確認する':doneAll>0?'点検を続ける':'点検を開始する'}
+      </button>
+    </div>
+  </div>
+  ${btabs()}`;
 }
 
 /* ─── Admin Home ─── */
@@ -2137,14 +2192,17 @@ function renderHistoryList(){
     }
 
     const clickable = status !== 'pending';
-    // 未入力かつ平日 → 点検入力ボタンを表示
+    // 未入力かつ平日 → 今日ならINSP_RUNへ、過去なら修正入力シート
     const canInput  = status === 'pending' && !isWeekend;
+    const isInputToday = canInput && isToday;   // 今日の未入力 → 点検画面へ
+    const isInputPast  = canInput && !isToday;  // 過去の未入力 → 修正入力シート
     const dayLabel=`${d.getMonth()+1}/${d.getDate()}（${WDAYS[dow]}）`;
     const dayNumColor=isToday?'#2563EB':dow===0?'#C8292A':dow===6?'#2563EB':'#111827';
 
-    dateRows.push(`<div style="background:${bgColor};border:1.5px solid ${isToday?'#2563EB':bdColor};border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:${clickable?'pointer':canInput?'pointer':'default'};${isToday?'box-shadow:0 0 0 2.5px rgba(37,99,235,0.2);':''}"
+    dateRows.push(`<div ${isToday?'id="hist-today"':''} style="background:${bgColor};border:1.5px solid ${isToday?'#2563EB':bdColor};border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:${clickable||canInput?'pointer':'default'};${isToday?'box-shadow:0 0 0 2.5px rgba(37,99,235,0.2);':''}"
       ${clickable?`onclick="S.histView='detail';S.histDate='${ds}';S.histEqId='${eid}';render();"`:
-        canInput?`onclick="openHistQuickInput('${eid}','${ds}');"`:''}>
+        isInputToday?`onclick="S.inspRunEqTab='${eid}';nav('INSP_RUN');"`:
+        isInputPast?`onclick="openHistQuickInput('${eid}','${ds}');"`:''}>
       <!-- 日付 -->
       <div style="flex-shrink:0;">
         <div style="font-size:15px;font-weight:800;color:${dayNumColor};white-space:nowrap;">
@@ -2161,7 +2219,8 @@ function renderHistoryList(){
         <div style="font-size:14px;font-weight:700;color:${statusColor};">${statusText}</div>
       </div>
       ${clickable?`<svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:
-        canInput?`<span style="font-size:11px;font-weight:700;color:#2563EB;background:#EFF6FF;padding:5px 11px;border-radius:9px;white-space:nowrap;flex-shrink:0;">入力する</span>`:''}
+        isInputToday?`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:5px 11px;border-radius:9px;white-space:nowrap;flex-shrink:0;border:1px solid rgba(200,41,42,0.25);">点検へ →</span>`:
+        isInputPast?`<span style="font-size:11px;font-weight:700;color:#2563EB;background:#EFF6FF;padding:5px 11px;border-radius:9px;white-space:nowrap;flex-shrink:0;">修正入力</span>`:''}
     </div>`);
   }
 
@@ -2211,7 +2270,7 @@ function renderHistoryList(){
       <div style="position:absolute;left:0;top:0;right:0;height:2.5px;background:linear-gradient(90deg,#2563EB 0%,#4F46E5 50%,transparent);pointer-events:none;"></div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <div style="flex:1;">
-          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">点検履歴</div>
+          <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">点検履歴（確認・修正）</div>
           <div style="display:flex;align-items:center;gap:8px;">
             <button onclick="(function(){let y=S.histYear||${nowY},m=(S.histMonth||${nowM})-1;if(m<1){m=12;y--;}S.histYear=y;S.histMonth=m;render();})()" style="width:28px;height:28px;border-radius:50%;border:1px solid #E4E8EF;background:#F8F9FC;color:#374151;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
               <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2238,9 +2297,9 @@ function renderHistoryList(){
       </div>
     </div>
 
-    <!-- スクロールエリア -->
-    <div style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;">
-      <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);">
+      <div style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;" id="hist-scroll-area">
+        <div style="padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 90px);">
+        <script>requestAnimationFrame(()=>{const t=document.getElementById('hist-today');if(t)t.scrollIntoView({behavior:'instant',block:'center'});});<\/script>
 
         <!-- 月サマリーカード -->
         <div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:16px;padding:20px 20px 16px;margin-bottom:16px;">
@@ -2478,7 +2537,7 @@ function renderHistQuickInputSheet(){
       <!-- シートヘッダー -->
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;">
         <div>
-          <div style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:4px;">点検入力 — ${dl}</div>
+          <div style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.8px;margin-bottom:4px;">修正入力（過去データ） — ${dl}</div>
           <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">${eq.name}</div>
         </div>
         <button onclick="S.histQuickInput=null;render();"
@@ -3796,8 +3855,21 @@ function renderInspRun(){
 
         <!-- スクロールエリア（一括ボタンは含まない） -->
         <div id="insp-run-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:clip;-webkit-overflow-scrolling:touch;padding-top:14px;">
-          <div style="padding:16px 18px calc(env(safe-area-inset-bottom,0px)+${!eqAllDone&&eqTotal>0?260:100}px);width:100%;box-sizing:border-box;">
+          <div style="padding:16px 18px calc(env(safe-area-inset-bottom,0px)+20px);width:100%;box-sizing:border-box;">
 
+          <!-- 設備バナー -->
+          <div style="background:${eqAllDone?(eqHasNg?'#FFF1F1':'#F0FDF4'):'#FFFFFF'};border:2px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.35)':'rgba(34,197,94,0.4)'):'#E4E8EF'};border-radius:18px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+            <div style="width:46px;height:46px;border-radius:13px;background:${eqAllDone?(eqHasNg?'#FEE2E2':'#DCFCE7'):'#F8F9FC'};border:1.5px solid ${eqAllDone?(eqHasNg?'rgba(200,41,42,0.25)':'rgba(34,197,94,0.3)'):'#E4E8EF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="12" rx="2" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6"/><path d="M7 5V4a3 3 0 016 0v1" stroke="${eqAllDone?(eqHasNg?'#C8292A':'#16A34A'):'#9CA3AF'}" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:17px;font-weight:800;color:#111827;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${selectedEq.name}${selectedEq.equipmentNumber?`<span style="font-size:12px;color:#9CA3AF;font-weight:500;margin-left:6px;">No.${selectedEq.equipmentNumber}</span>`:''}</div>
+              <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">${lineName?lineName+' · ':''}点検項目 ${eqTotal}件</div>
+            </div>
+            ${eqAllDone
+              ?`<span style="font-size:11px;font-weight:800;color:${eqHasNg?'#C8292A':'#16A34A'};background:${eqHasNg?'#FEE2E2':'#DCFCE7'};padding:7px 13px;border-radius:10px;flex-shrink:0;letter-spacing:.3px;">${eqHasNg?'✕ NGあり':'✓ 完了'}</span>`
+              :`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:7px 13px;border-radius:10px;flex-shrink:0;">${eqTotal-eqDone}件 残り</span>`}
+          </div>
 
           ${!eqTotal?`<div style="text-align:center;padding:44px 20px;"><div style="font-size:36px;margin-bottom:10px;">✅</div><div style="font-size:15px;font-weight:700;color:#374151;margin-bottom:4px;">本日の点検項目はありません</div></div>`:icards}
 
@@ -3809,20 +3881,20 @@ function renderInspRun(){
           </div>
         </div>
 
-        <!-- 一括正常ボタンはfixedで描画（下記） -->
+        <!-- 一括正常ボタン: スクロール外・btabsの上に常時表示 -->
+        ${!eqAllDone&&eqTotal>0?`<div style="flex-shrink:0;position:relative;z-index:21;padding:10px 18px calc(env(safe-area-inset-bottom,0px)+74px);background:#F8F9FC;border-top:1px solid rgba(34,197,94,0.18);">
+          <button onclick="inspBulkOkEq2('${selectedEq.id}')"
+            style="width:100%;padding:14px;background:${S.bulkConfirmEq===selectedEq.id?'#FFF7ED':'#F0FDF4'};border:2px solid ${S.bulkConfirmEq===selectedEq.id?'rgba(217,119,6,0.5)':'rgba(34,197,94,0.35)'};border-radius:14px;color:${S.bulkConfirmEq===selectedEq.id?'#D97706':'#16A34A'};font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;">
+            ${S.bulkConfirmEq===selectedEq.id
+              ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
+              :`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力`}
+          </button>
+        </div>`:''}
 
       </div>
     </div>
 
   </div>
-  ${!eqAllDone&&eqTotal>0?`<div class="insp-bulk-fixed">
-    <button onclick="inspBulkOkEq2('${selectedEq.id}')"
-      style="width:100%;padding:14px;background:${S.bulkConfirmEq===selectedEq.id?'#FFF7ED':'#F0FDF4'};border:2px solid ${S.bulkConfirmEq===selectedEq.id?'rgba(217,119,6,0.5)':'rgba(34,197,94,0.35)'};border-radius:14px;color:${S.bulkConfirmEq===selectedEq.id?'#D97706':'#16A34A'};font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;">
-      ${S.bulkConfirmEq===selectedEq.id
-        ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
-        :`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力`}
-    </button>
-  </div>`:''}
   ${btabs()}`;
 }
 
@@ -4675,7 +4747,7 @@ function saveInspState(){
     })();
     const firstEq=(assigned||S.equipments)[0];
     if(firstEq) S.inspRunEqTab=firstEq.id;
-    S.view='INSP_RUN';
+    S.view='HOME';
   }
 })();
 
