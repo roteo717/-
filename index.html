@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム v11</title>
+<title>日常点検システム v16</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -81,13 +81,13 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .home-hero::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red) 0%,var(--red-dk) 40%,transparent 100%);}
 
 /* ── Scroll ── */
-.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:28px 12px calc(env(safe-area-inset-bottom,0px) + 150px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
+.scroll{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:14px 10px calc(env(safe-area-inset-bottom,0px) + 120px);-webkit-overflow-scrolling:touch;background:var(--surface2);}
 
 /* ── Cards ── */
-.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:20px;border:1px solid var(--border);}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border);}
 .card-tap{cursor:pointer;transition:transform .12s,opacity .12s;}
 .card-tap:active{transform:scale(.98);opacity:.85;}
-.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:28px 0 14px 4px;}
+.section-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px 4px;}
 .section-label:first-child{margin-top:4px;}
 
 /* ── icard内ボタン行 ── */
@@ -96,18 +96,17 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 /* ── 履歴メインエリアのカード ── */
 .hist-main-area .card{padding:20px 24px;margin-bottom:16px;}
 
-/* ── Inspection Cards ── */
-.icard{background:#FFFFFF;border-radius:var(--r);box-shadow:var(--shadow);padding:16px 16px 16px 20px;margin-bottom:14px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--border);border-left:8px solid #D1D5DB;transition:border-left-color .2s,background .2s;user-select:none;}
-.icard.rok{border-left-color:#2E7D32;background:#F0FDF4;}
-.icard.rng{border-left-color:#D32F2F;background:#FFF1F1;}
-/* 点検項目名は常に視認最大 */
-.icard .item-name{font-size:16px;font-weight:800;color:#111827;line-height:1.5;}
+/* ── Inspection Cards (リスト形式) ── */
+.icard{background:#FFFFFF;border-radius:10px;padding:10px 12px 10px 16px;margin-bottom:6px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--border);border-left:5px solid #D1D5DB;transition:border-left-color .15s,background .15s;user-select:none;}
+.icard.rok{border-left-color:#2E7D32;background:#F8FFF9;}
+.icard.rng{border-left-color:#D32F2F;background:#FFF8F8;}
+.icard .item-name{font-size:14px;font-weight:700;color:#111827;line-height:1.4;}
 
 /* ── Judge Buttons ── */
 .jbtn{flex:1;height:64px;border-radius:16px;border:1.5px solid;cursor:pointer;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px;touch-action:manipulation;transition:transform .1s,background .12s,box-shadow .12s;letter-spacing:.2px;}
 .jbtn:active{transform:scale(.94);}
 /* ── icard内限定: jbtnのはみ出し防止スコープ ── */
-.icard .jbtn{flex:1;min-width:0;font-size:16px;height:64px;}
+.icard .jbtn{flex:1;min-width:0;font-size:14px;height:52px;}
 .jok{background:var(--green-lt);color:var(--green);border-color:var(--green);}
 .jok:active{background:var(--green);color:white;box-shadow:0 4px 18px rgba(22,163,74,0.3);}
 .jng{background:var(--red-lt);color:var(--red);border-color:var(--red);}
@@ -124,10 +123,34 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .bWarn{background:var(--orange-lt);color:var(--orange);}
 .bGray{background:var(--surface2);color:var(--text3);}
 
-/* ── Bottom Tabs ── */
-.btabs{display:flex;border-top:1px solid var(--border);padding:10px 0 calc(env(safe-area-inset-bottom,0px) + 10px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:5px 2px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text3);touch-action:manipulation;font-family:inherit;transition:color .15s;}
-.tab.active{color:var(--red);}
+/* ── Bottom Bar (hamburger only) ── */
+.btabs{display:flex;align-items:center;justify-content:flex-end;border-top:1px solid var(--border);padding:8px 20px calc(env(safe-area-inset-bottom,0px) + 8px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:20;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255,255,255,0.96);}
+.hamburger-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:44px;height:44px;border-radius:12px;border:none;background:none;cursor:pointer;touch-action:manipulation;padding:6px;}
+.hamburger-btn span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:transform .2s,opacity .2s;}
+/* ── Sidebar ── */
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:80;animation:fadeIn .2s ease;}
+.sb-drawer{position:fixed;top:0;left:0;bottom:0;width:272px;background:#FFFFFF;z-index:81;display:flex;flex-direction:column;box-shadow:4px 0 32px rgba(0,0,0,0.12);animation:sbIn .25s cubic-bezier(.34,1.1,.64,1);}
+@keyframes sbIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+.sb-top{padding:calc(env(safe-area-inset-top,0px)+22px) 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.sb-logo{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+.sb-logo span{color:var(--red);}
+.sb-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
+.sb-scroll{flex:1;overflow-y:auto;padding:14px 12px 24px;}
+.sb-group-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px;margin:14px 0 6px;}
+.sb-group-label:first-child{margin-top:2px;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;border:none;background:none;font-family:inherit;width:100%;text-align:left;color:var(--text);transition:background .13s,color .13s;touch-action:manipulation;margin-bottom:2px;}
+.sb-item:active{background:var(--surface2);}
+.sb-item.active{background:#FFF1F1;color:var(--red);}
+.sb-item.active .sb-ico{color:var(--red);}
+.sb-ico{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--surface2);flex-shrink:0;color:var(--text);transition:background .13s,color .13s;}
+.sb-item.active .sb-ico{background:#FFEAEA;}
+.sb-item-label{font-size:13px;font-weight:600;letter-spacing:.1px;}
+.sb-footer{padding:12px 20px calc(env(safe-area-inset-bottom,0px)+12px);border-top:1px solid var(--border);flex-shrink:0;}
+.sb-user-row{display:flex;align-items:center;gap:10px;}
+.sb-user-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0;}
+.sb-user-info{flex:1;min-width:0;}
+.sb-user-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:10px;color:var(--text3);font-weight:500;margin-top:1px;}
 
 /* ── Progress ── */
 .prog-wrap{background:var(--surface2);border-radius:6px;height:6px;overflow:hidden;}
@@ -331,24 +354,92 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .section-label+*{margin-top:0;}
 /* スクロールエリア最下部のクッション（ナビバーとの重なり防止） */
 .scroll,.hist-main-area{padding-bottom:max(150px, calc(env(safe-area-inset-bottom,0px) + 150px));}
+
+/* ════ REPORT SCREEN ════ */
+.rpt-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#E8EAF0;}
+.rpt-topbar{background:#1E3A8A;padding:calc(env(safe-area-inset-top,0px)+14px) 16px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative;z-index:10;}
+.rpt-topbar-title{flex:1;font-size:16px;font-weight:800;color:#FFFFFF;letter-spacing:-.3px;}
+.rpt-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:auto;padding:16px 12px calc(env(safe-area-inset-bottom,0px)+100px);-webkit-overflow-scrolling:touch;}
+/* A4 paper card */
+.rpt-paper{background:#FFFFFF;border-radius:6px;box-shadow:0 4px 24px rgba(0,0,0,0.16),0 1px 4px rgba(0,0,0,0.08);max-width:860px;margin:0 auto;overflow:hidden;}
+.rpt-paper-hdr{padding:20px 24px 14px;border-bottom:2px solid #111;}
+.rpt-paper-title{font-size:20px;font-weight:800;color:#111;letter-spacing:-.4px;font-family:'Noto Serif JP',serif;}
+.rpt-paper-meta{display:flex;align-items:flex-start;justify-content:space-between;margin-top:8px;gap:12px;}
+.rpt-meta-left{font-size:11px;color:#444;line-height:1.9;}
+.rpt-meta-left strong{font-size:12px;color:#111;}
+.rpt-seal-row{display:flex;align-items:flex-end;gap:10px;flex-shrink:0;}
+.rpt-seal-box{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.rpt-seal-lbl{font-size:9px;font-weight:700;color:#555;letter-spacing:.4px;}
+/* デジタル印（ハンコ） */
+.hanko{width:44px;height:44px;border:2.5px solid #C8292A;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:#FFFAFA;position:relative;flex-shrink:0;}
+.hanko::before{content:'';position:absolute;inset:2px;border:0.8px solid rgba(200,41,42,0.25);border-radius:50%;pointer-events:none;}
+.hanko-name{font-size:12px;font-weight:800;color:#C8292A;font-family:'Noto Serif JP',serif;line-height:1.1;letter-spacing:.5px;}
+.hanko-date{font-size:6.5px;font-weight:600;color:#C8292A;letter-spacing:.2px;line-height:1;margin-top:1px;}
+.hanko-empty{width:44px;height:44px;border:1.5px dashed #D1D5DB;border-radius:50%;background:#F9FAFB;}
+/* Report table */
+.rpt-table-wrap{overflow-x:auto;padding:0;}
+.rpt-table{width:100%;border-collapse:collapse;font-size:11px;}
+.rpt-table thead th{background:#1E3A8A;color:#FFFFFF;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.4px;border:0.5px solid #1a3070;white-space:nowrap;}
+.rpt-table thead th.center{text-align:center;}
+.rpt-table tbody tr{border-bottom:0.5px solid #E4E8EF;transition:background .1s;}
+.rpt-table tbody tr:nth-child(even){background:#FAFBFC;}
+.rpt-table tbody tr:hover{background:#F0F4FF;}
+.rpt-table td{padding:7px 10px;vertical-align:middle;color:#1F2937;line-height:1.4;}
+.rpt-table td.center{text-align:center;}
+.rpt-table td.result-ok{text-align:center;font-weight:800;font-size:14px;color:#16A34A;}
+.rpt-table td.result-ng{text-align:center;font-weight:800;font-size:14px;color:#C8292A;background:rgba(200,41,42,0.04);}
+.rpt-table td.result-pending{text-align:center;color:#9CA3AF;font-size:12px;}
+.rpt-table .line-grp{background:#F1F3F8;font-size:10px;font-weight:700;color:#374151;letter-spacing:.5px;}
+.rpt-table .line-grp td{padding:5px 10px;}
+.rpt-table .eq-grp td{font-weight:700;color:#111827;background:#F8F9FC;font-size:11px;border-top:1px solid #D1D5DB;}
+.rpt-paper-ftr{padding:12px 24px;border-top:1px solid #E4E8EF;display:flex;align-items:center;justify-content:space-between;background:#F8F9FC;}
+.rpt-paper-ftr-note{font-size:9px;color:#9CA3AF;}
+/* Approve banner */
+.rpt-approve-banner{background:linear-gradient(90deg,#1E3A8A,#2563EB);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
+.rpt-approve-btn{padding:10px 20px;background:#FFFFFF;color:#1E3A8A;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;touch-action:manipulation;font-family:inherit;letter-spacing:.2px;box-shadow:0 2px 8px rgba(0,0,0,0.18);transition:transform .1s,box-shadow .1s;white-space:nowrap;flex-shrink:0;}
+.rpt-approve-btn:active{transform:scale(.95);box-shadow:none;}
+
+/* ════ PRINT STYLES ════ */
+@media print{
+  @page{size:A4 landscape;margin:10mm 12mm;}
+  /* 不要なUI要素を全て非表示 */
+  .btabs,.rpt-topbar,.rpt-approve-banner,.no-print{display:none!important;}
+  /* スクロール解除・余白リセット */
+  html,body,#app,.screen,.rpt-screen,.rpt-scroll{height:auto!important;overflow:visible!important;background:#FFF!important;padding:0!important;margin:0!important;max-width:none!important;}
+  .rpt-scroll{padding:0!important;}
+  .rpt-paper{box-shadow:none!important;border-radius:0!important;max-width:none!important;margin:0!important;page-break-inside:avoid;}
+  .rpt-table{font-size:9px!important;}
+  .rpt-table thead th{font-size:8px!important;padding:5px 7px!important;}
+  .rpt-table td{padding:4px 7px!important;}
+  .hanko{width:36px!important;height:36px!important;border-width:2px!important;}
+  .hanko-name{font-size:10px!important;}
+  .hanko-date{font-size:5.5px!important;}
+  .rpt-paper-title{font-size:16px!important;}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  /* 表が複数ページに渡る場合のヘッダー繰り返し */
+  .rpt-table thead{display:table-header-group;}
+  .rpt-table tbody tr{page-break-inside:avoid;}
+}
 </style>
 </head>
 <body>
 <div id="app"><div id="screen" class="screen"></div></div>
 <script>
-const TODAY=(()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
+function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 const S={
-  view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,
+  view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,sidebarOpen:false,
+  adminLineFilter:true, // true=担当ラインのみ, false=全ライン
   inspRunEqTab:null,
   inspSelectedLines:[],inspLastLines:[],
   selectedEquipmentId:null,
   selectedLine:null,selectedEq:null,inspType:'毎日点検',histView:'list',histDate:null,histWeekOffset:0,
   bulkActive:false,bulkLineId:null,bulkIdx:0,
-  modal:null,ngModal:{on:false,itemId:null,comment:'',hasPhoto:false,photos:0},histQuickInput:null,
+  modal:null,ngModal:{on:false,itemId:null,comment:''},histQuickInput:null,
   bulkConfirm:false,bulkConfirmTimer:null,   // INSPECTION画面の一括OK確認フラグ
   bulkConfirmEq:null,bulkConfirmTimer2:null,
-  inspRunNgModal:{on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''},
+  inspRunNgModal:{on:false,eqId:null,itemId:null,comment:'',_draft:''},
   eqPdfModal:{on:false,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:null},
+  reportCtx:null, // {approvalId, lid, eid, type, date} — REPORT画面のコンテキスト
   names:{
     inspector:['山田 太郎','佐藤 花子','田中 一郎','鈴木 次郎','高橋 三郎','渡辺 四郎'],
     admin:['鈴木 部長','伊藤 課長','渡辺 係長','中村 主任'],
@@ -446,6 +537,12 @@ function getVisibleEquip(line){
   if(!ids.length) return eqs;
   return eqs.filter(e => ids.includes(e.id));
 }
+// [v12] 管理者の担当ライン取得（未設定なら全ライン）
+function getAdminLines(){
+  const a=getUserAssignment(S.currentName);
+  if(!a||(a.lineIds||[]).length===0) return S.lines;
+  return S.lines.filter(l=>a.lineIds.includes(l.id));
+}
 // [v6] 担当者の全設備（ライン横断）
 function getAllAssignedEquip(){
   const a = getUserAssignment(S.currentName);
@@ -462,6 +559,15 @@ function saveAssignment(name, lineIds, equipmentIds){
   const data = { name, lineIds, equipmentIds };
   if(idx >= 0){ S.assignments[idx] = data; }
   else { S.assignments.push(data); }
+  // ★ Fix1: LocalStorageに永続化
+  try{ localStorage.setItem('dk_assignments', JSON.stringify(S.assignments)); }catch(e){}
+  // ★ Fix2: LINE_DATA の inspectors リストを更新（点検入力画面で正しい担当者が表示されるように）
+  S.lines.forEach(l => {
+    if(lineIds.includes(l.id)){
+      l.inspectors = l.inspectors || [];
+      if(!l.inspectors.includes(name)) l.inspectors.push(name);
+    }
+  });
   toast('紐づけを保存しました');
   render();
 }
@@ -472,7 +578,7 @@ function navAssignment(){nav('ASSIGNMENT_MGMT');}
 (function seedDemo(){
   const d=new Date();
   function ds(offset){const x=new Date(d);x.setDate(x.getDate()+offset);return`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}
-  const okR=(items)=>{const r={};items.forEach(i=>{r[i.id]={r:'ok',comment:'',photos:0};});return r;};
+  const okR=(items)=>{const r={};items.forEach(i=>{r[i.id]={r:'ok',comment:''};});return r;};
   const ngR=(items,ngId)=>{const r=okR(items);r[ngId]={r:'ng',comment:'異常あり',photos:1};return r;};
 
   function mkInspRecord(eq,date,type,results){
@@ -548,7 +654,7 @@ function lineStats(lid){
 }
 function eqStatus(eid){
   const eq=getEq(eid);const insp=getInsps(eid,S.inspType);const items=typeItems(eq,S.inspType);
-  if(!insp||insp.date!==TODAY)return'pending';
+  if(!insp||insp.date!==getToday())return'pending';
   const rs=insp.results;
   if(items.some(i=>rs[i.id]?.r==='ng'))return'ng';
   if(items.every(i=>rs[i.id]))return'done';
@@ -565,29 +671,21 @@ function toast(msg,type='ok'){
 }
 function nav(view,data={}){Object.assign(S,{view},data);window.scrollTo(0,0);render();}
 function setResult(itemId,r){
-  if(r==='ng'){S.ngModal={on:true,itemId,comment:'',photos:0};render();return;}
+  if(r==='ng'){S.ngModal={on:true,itemId,comment:''};render();return;}
   const eid=S.selectedEq;const _k=eid+':'+S.inspType;
-  if(!S.insps[_k])S.insps[_k]={date:TODAY,results:{}};
-  S.insps[_k].results[itemId]={r:'ok',comment:'',photos:0};
+  if(!S.insps[_k])S.insps[_k]={date:getToday(),results:{}};
+  S.insps[_k].results[itemId]={r:'ok',comment:''};
   saveInspState();
   render();
 }
 function bulkOk(){
-  // 2ステップ確認：1回目はボタン色変化、2回目で実行
-  if(!S.bulkConfirm){
-    S.bulkConfirm=true;
-    render();
-    // 3秒後に自動リセット
-    if(S.bulkConfirmTimer) clearTimeout(S.bulkConfirmTimer);
-    S.bulkConfirmTimer=setTimeout(()=>{S.bulkConfirm=false;render();},3000);
-    return;
-  }
+  if(!confirm('未入力の項目をすべて「正常（○）」に一括入力しますか？')) return;
   S.bulkConfirm=false;
   if(S.bulkConfirmTimer){clearTimeout(S.bulkConfirmTimer);S.bulkConfirmTimer=null;}
   const eid=S.selectedEq;const eq=getEq(eid);const items=typeItems(eq,S.inspType);
   const _bk=eid+':'+S.inspType;
-  if(!S.insps[_bk])S.insps[_bk]={date:TODAY,results:{}};
-  let cnt=0;items.forEach(it=>{if(!S.insps[_bk].results[it.id]){S.insps[_bk].results[it.id]={r:'ok',comment:'',photos:0};cnt++;}});
+  if(!S.insps[_bk])S.insps[_bk]={date:getToday(),results:{}};
+  let cnt=0;items.forEach(it=>{if(!S.insps[_bk].results[it.id]){S.insps[_bk].results[it.id]={r:'ok',comment:''};cnt++;}});
   toast(cnt>0?`${cnt}件を○に一括入力しました`:'未入力の項目はありません',cnt>0?'ok':'info');
   saveInspState();
   render();
@@ -598,8 +696,8 @@ function submitInsp(){
   const _sk=eid+':'+S.inspType;const rs=S.insps[_sk]?.results||{};const pend=items.filter(i=>!rs[i.id]).length;
   if(pend>0){toast(`未入力が${pend}件あります`,'warn');return;}
   // [v6] 新構造に保存（旧S.inspsと並行）
-  saveInspRecord(eq, TODAY, S.inspType, rs);
-  if(S.inspType!=='毎日点検'){S.approvals.push({id:'A'+Date.now(),lid:getEq(eid)?S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||null:null,eid,type:S.inspType,date:TODAY,status:'pending',by:'現場作業者',approver:null});toast('点検完了。承認申請しました');}
+  saveInspRecord(eq, getToday(), S.inspType, rs);
+  if(S.inspType!=='毎日点検'){S.approvals.push({id:'APR'+Date.now(),lid:getEq(eid)?S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||null:null,eid,type:S.inspType,date:getToday(),status:'pending',by:S.currentName||'現場作業者',approver:null,_sheet:true});try{localStorage.setItem('dk_approvals',JSON.stringify(S.approvals.filter(a=>(a.id+'').startsWith('APR'))));}catch(e){}toast('点検完了。承認申請しました');}
   else toast('点検完了しました');
   if(S.bulkActive){
     const l=getLn(S.bulkLineId);const eqs=getLineEquip(l);const ni=S.bulkIdx+1;
@@ -607,29 +705,61 @@ function submitInsp(){
     else{S.bulkActive=false;toast('ライン点検完了！');nav('LINE_DETAIL',{selectedLine:S.bulkLineId});}
   }else nav('LINE_DETAIL');
 }
-function approve(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='approved';a.approver=S.currentName||'管理者';a.approvedDate=TODAY;}toast('承認しました');render();}
-function reject(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='rejected';a.approver=S.currentName||'管理者';a.approvedDate=TODAY;}toast('差し戻しました','warn');render();}
-function anomStatus(id,st){const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();}
-function toggleNgPhoto(){
-  S.ngModal.hasPhoto=!S.ngModal.hasPhoto;
-  // 写真フラグ変更後もテキスト保持
-  const v=document.getElementById('ng-c')?.value;
-  if(v!=null)S.ngModal._draft=v;
-  render();
+// ─── 承認可否チェック：10日点検・月次点検の必要回数を満たしているか ───
+function checkApprovalEligible(a){
+  if(a.type!=='10日点検'&&a.type!=='月次点検')return{ok:true,missing:[],required:0,done:0};
+  const ym=a.date.slice(0,7);
+  const year=parseInt(ym.slice(0,4));
+  const month=parseInt(ym.slice(5,7));
+  const approvalDay=parseInt(a.date.slice(8,10));
+  if(a.type==='10日点検'){
+    const daysInMonth=new Date(year,month,0).getDate();
+    const requiredDays=[10,20,30].filter(d=>d<=daysInMonth&&d<=approvalDay);
+    if(!requiredDays.length)return{ok:false,missing:['点検日（10日・20日・30日）未到来'],required:0,done:0,requiredDays:[]};
+    const missing=requiredDays.filter(d=>{
+      const ds=`${ym}-${String(d).padStart(2,'0')}`;
+      return!S.inspections.some(r=>r.equipmentId===a.eid&&r.date===ds&&r.type==='tenDay');
+    });
+    return{ok:missing.length===0,missing:missing.map(d=>`${month}月${d}日`),required:requiredDays.length,done:requiredDays.length-missing.length,requiredDays};
+  }
+  if(a.type==='月次点検'){
+    const ds=`${ym}-01`;
+    const done=S.inspections.some(r=>r.equipmentId===a.eid&&r.date===ds&&r.type==='monthly');
+    return{ok:done,missing:done?[]:[`${month}月1日`],required:1,done:done?1:0};
+  }
+  return{ok:true,missing:[],required:0,done:0};
 }
+function approve(id){
+  const a=S.approvals.find(x=>x.id===id);if(!a)return;
+  const chk=checkApprovalEligible(a);
+  if(!chk.ok){
+    const msg=chk.missing.length?`未実施の点検があります：${chk.missing.join('、')}`:'必要な点検が完了していません';
+    toast(msg,'warn');return;
+  }
+  a.status='approved';a.approver=S.currentName||'管理者';a.approvedDate=getToday();
+  toast('承認しました');render();
+}
+// ★ Fix3: 点検表の完了承認（ダッシュボードから直接承認）
+function approveSheet(id){
+  const a=S.approvals.find(x=>x.id===id);if(!a)return;
+  a.status='approved';a.approver=S.currentName||'管理者';a.approvedDate=getToday();
+  try{localStorage.setItem('dk_approvals',JSON.stringify(S.approvals.filter(ap=>(ap.id+'').startsWith('APR'))));}catch(e){}
+  toast('点検表を承認しました');render();
+}
+function reject(id){const a=S.approvals.find(x=>x.id===id);if(a){a.status='rejected';a.approver=S.currentName||'管理者';a.approvedDate=getToday();}toast('差し戻しました','warn');render();}
+function anomStatus(id,st){const a=S.anomalies.find(x=>x.id===id);if(a)a.status=st;toast(st==='in-progress'?'対応開始しました':'解決済にしました');render();}
 function confirmNg(){
   const c=document.getElementById('ng-c')?.value?.trim()||S.ngModal._draft?.trim()||'';
   const eid=S.selectedEq;const eq=getEq(eid);const iid=S.ngModal.itemId;const item=eq.items.find(i=>i.id===iid);
   const _nk=eid+':'+S.inspType;
-  if(!S.insps[_nk])S.insps[_nk]={date:TODAY,results:{}};
-  const photos=S.ngModal.hasPhoto?1:0;
-  S.insps[_nk].results[iid]={r:'ng',comment:c,photos};
+  if(!S.insps[_nk])S.insps[_nk]={date:getToday(),results:{}};
+  S.insps[_nk].results[iid]={r:'ng',comment:c};
   // 異常管理へ自動連携
   if(!S.anomalies.find(a=>a.eid===eid&&a.iid===iid&&a.status!=='resolved')){
-    S.anomalies.push({id:'AN'+Date.now(),lid:S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||'',eid,iid,iname:item.n,comment:c||'点検にてNG',photos,status:'open',date:TODAY,by:S.currentName||'現場作業者'});
+    S.anomalies.push({id:'AN'+Date.now(),lid:S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||'',eid,iid,iname:item.n,comment:c||'点検にてNG',status:'open',date:getToday(),by:S.currentName||'現場作業者'});
   }
   saveInspState();
-  S.ngModal={on:false,itemId:null,comment:'',hasPhoto:false,photos:0,_draft:''};render();
+  S.ngModal={on:false,itemId:null,comment:'',_draft:''};render();
 }
 function addItemConfirm(){
   const n=document.getElementById('mit-n')?.value?.trim();
@@ -730,7 +860,7 @@ function toDateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStar
 
 // 今月の10日点検予定日（10日・20日・月末）を休日調整して返す
 function get10DaySchedule(){
-  const [y,m]=TODAY.split('-').map(Number);
+  const [y,m]=getToday().split('-').map(Number);
   const lastDay=new Date(y,m,0).getDate();
   const raw=[10,20,lastDay];
   const seen=new Set();
@@ -745,7 +875,7 @@ function get10DaySchedule(){
 
 // 今月の月次点検予定日（月末 → 休日なら前平日）
 function getMonthlySchedule(){
-  const [y,m]=TODAY.split('-').map(Number);
+  const [y,m]=getToday().split('-').map(Number);
   const lastDay=new Date(y,m,0).getDate();
   const adjusted=toPrevWeekday(new Date(y,m-1,lastDay));
   return{scheduled:lastDay,date:toDateStr(adjusted),day:adjusted.getDate()};
@@ -755,9 +885,9 @@ function getMonthlySchedule(){
 function getTodayScheduledTypes(){
   const alerts=[];
   const ten=get10DaySchedule();
-  if(ten.some(s=>s.date===TODAY))alerts.push('10日点検');
+  if(ten.some(s=>s.date===getToday()))alerts.push('10日点検');
   const monthly=getMonthlySchedule();
-  if(monthly.date===TODAY)alerts.push('月次点検');
+  if(monthly.date===getToday())alerts.push('月次点検');
   return alerts;
 }
 
@@ -766,7 +896,7 @@ function getNextScheduleLabel(type){
   const WDAYS=['日','月','火','水','木','金','土'];
   if(type==='10日点検'){
     const list=get10DaySchedule();
-    const next=list.find(s=>s.date>=TODAY)||list[0];
+    const next=list.find(s=>s.date>=getToday())||list[0];
     const d=new Date(next.date);
     return`${d.getMonth()+1}月${d.getDate()}日(${WDAYS[d.getDay()]})`;
   }
@@ -1227,46 +1357,85 @@ td{font-size:8.5px;padding:5px 7px;border:0.5px solid #ddd;vertical-align:middle
 // 変更後: ホーム / 履歴 / 設定
 // 「承認」「異常」タブを削除し、「設定」タブ（LINE_EQ_MGMT）を追加。タブ数を4→3に削減してシンプル化。
 function btabs(){
-  const isAdmin=S.currentRole==='admin';
-
-  // [CHANGED ①] 管理者タブ：承認・異常を削除、設定を追加（3タブ）
-  const adminTabs=[
-    ['HOME','ホーム',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 20v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`],
-    ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
-    ['LINE_EQ_MGMT','設定',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M11 2v2M11 18v2M2 11h2M18 11h2M4.93 4.93l1.41 1.41M15.66 15.66l1.41 1.41M4.93 17.07l1.41-1.41M15.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`],
-  ];
-
-  const inspectorTabs=[
-    ['HOME','ホーム',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 20v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`],
-    ['HISTORY','履歴',`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h8M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`],
-  ];
-
-  const tabs=isAdmin?adminTabs:inspectorTabs;
-  const getActiveColor=(v)=>{
-    if(v==='HISTORY')return'#2563EB';
-    if(v==='LINE_EQ_MGMT')return'#374151';
-    if(isAdmin)return'#1E3A8A';
-    return'#C8292A';
-  };
-  const inactiveColor='var(--text3)';
-
-  // [CHANGED ①] タブのアクティブ判定: LINE_EQ_MGMT系画面はまとめて「設定」アクティブ
-  const SETTINGS_VIEWS=['LINE_EQ_MGMT','EQUIPMENT_MGMT','LINE_MGMT','ITEM_MGMT','ASSIGNMENT_MGMT'];
-  const INSP_VIEWS=['HOME','INSP_RUN']; // インスペクターのホーム＝INSP_RUN
-  const isActive=(v)=> {
-    if(v==='LINE_EQ_MGMT') return SETTINGS_VIEWS.includes(S.view);
-    if(v==='HOME' && !isAdmin) return INSP_VIEWS.includes(S.view);
-    return S.view===v;
-  };
-
   return`<div class="btabs">
-  ${tabs.map(([v,l,ico])=>`
-    <button class="tab ${isActive(v)?'active':''}" onclick="${v==='HISTORY'?'S.histYear=null;S.histMonth=null;':''}nav('${v}')" style="color:${isActive(v)?getActiveColor(v):inactiveColor};transition:color .15s;">
-      <div style="position:relative;display:inline-flex;">
-        ${ico}
+    <button class="hamburger-btn" onclick="S.sidebarOpen=true;render();" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>`;
+}
+
+function changeView(v){
+  S.sidebarOpen=false;
+  if(v==='DAILY_OP'){nav('INSP_RUN');return;}
+  if(v==='ANOMALY_LIST'){nav('ANOMALY');return;}
+  if(v==='MASTER_MGMT'){nav('LINE_EQ_MGMT');return;}
+  if(v==='HISTORY'){S.histYear=null;S.histMonth=null;nav('HISTORY');return;}
+  nav(v);
+}
+
+function renderSidebar(){
+  const isAdmin=S.currentRole==='admin';
+  const cur=S.view;
+  const isActive=(v)=>{
+    if(v==='DAILY_OP')return['INSP_RUN','LINE_DETAIL','INSPECTION'].includes(cur);
+    if(v==='ANOMALY_LIST')return cur==='ANOMALY';
+    if(v==='MASTER_MGMT')return['LINE_EQ_MGMT','EQUIPMENT_MGMT','LINE_MGMT','ITEM_MGMT'].includes(cur);
+    if(v==='ASSIGNMENT_MGMT')return cur==='ASSIGNMENT_MGMT';
+    if(v==='REPORT')return cur==='REPORT';
+    if(v==='HISTORY')return['HISTORY'].includes(cur);
+    return cur===v;
+  };
+  const ico=(path)=>`<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+  const ICONS={
+    HOME:    ico('<path d="M3 8.5L10 3l7 5.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V8.5z"/><path d="M7 18v-6h6v6"/>'),
+    DAILY_OP:ico('<rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 10h6M7 13h4"/><circle cx="10" cy="7" r="1" fill="currentColor"/>'),
+    TEN_H_OP:ico('<circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/>'),
+    MONTHLY_OP:ico('<rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 3v2M13 3v2M6 12h2M9 12h2M12 12h2"/>'),
+    ANOMALY_LIST:ico('<path d="M10 3L2 17h16L10 3z"/><path d="M10 10v3"/><circle cx="10" cy="15" r=".7" fill="currentColor"/>'),
+    REPORT:  ico('<rect x="4" y="2" width="12" height="16" rx="2"/><path d="M7 7h6M7 10h6M7 13h4"/>'),
+    MASTER_MGMT:ico('<circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>'),
+    USER_MGMT:ico('<circle cx="10" cy="7" r="3"/><path d="M4 17c0-3.31 2.69-6 6-6s6 2.69 6 6"/>'),
+    ASSIGNMENT_MGMT:ico('<path d="M4 6h12M4 10h8M4 14h5"/><circle cx="15" cy="14" r="3"/><path d="M13.5 14l1 1 2-2"/>'),
+  };
+  const item=(v,label)=>`<button class="sb-item ${isActive(v)?'active':''}" onclick="changeView('${v}')"><span class="sb-ico">${ICONS[v]||''}</span><span class="sb-item-label">${label}</span></button>`;
+  const roleLabel=isAdmin?'管理者':'点検者';
+  const userName=S.currentName||roleLabel;
+  const initial=userName.charAt(0)||'?';
+  return`<div class="sb-overlay" onclick="S.sidebarOpen=false;render();">
+    <div class="sb-drawer" onclick="event.stopPropagation()">
+      <div class="sb-top">
+        <div class="sb-logo">日常<span>点検</span>システム</div>
+        <button class="sb-close" onclick="S.sidebarOpen=false;render();">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>
+        </button>
       </div>
-      <span>${l}</span>
-    </button>`).join('')}</div>`;
+      <div class="sb-scroll">
+        <div class="sb-group-label">業務メニュー</div>
+        ${item('HOME','ホーム')}
+        ${item('DAILY_OP','日常点検')}
+        ${item('TEN_H_OP','10h点検')}
+        ${item('MONTHLY_OP','月次点検')}
+        ${item('ANOMALY_LIST','異常報告')}
+        ${isAdmin?`
+        <div class="sb-group-label" style="margin-top:20px;">管理メニュー</div>
+        ${item('REPORT','レポート')}
+        ${item('MASTER_MGMT','マスター設定')}
+        ${item('USER_MGMT','ユーザー管理')}
+        ${item('ASSIGNMENT_MGMT','割り当て設定')}
+        `:''}
+      </div>
+      <div class="sb-footer">
+        <div class="sb-user-row">
+          <div class="sb-user-avatar">${initial}</div>
+          <div class="sb-user-info">
+            <div class="sb-user-name">${userName}</div>
+            <div class="sb-user-role">${roleLabel}</div>
+          </div>
+          <button onclick="S.sidebarOpen=false;S.currentName=null;S.currentRole=null;nav('ROLE_SELECT');" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;touch-action:manipulation;white-space:nowrap;">ログアウト</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 // [ADDED ④] ホーム画面から直接「対応開始」できるヘルパー関数
@@ -1339,7 +1508,7 @@ function renderRoleSelect(){
       </button>
 
       <!-- 管理者 -->
-      <button class="rs-card" onclick="S.currentRole='admin';S.currentName=null;nav('NAME_SELECT');"
+      <button class="rs-card" onclick="(function(){const pw=prompt('管理者パスコードを入力してください');if(pw!=='1234'){if(pw!==null)alert('パスコードが正しくありません');return;}S.currentRole='admin';S.currentName=null;nav('NAME_SELECT');})()"
         style="background:#111827;box-shadow:0 4px 24px rgba(17,24,39,0.3);"
         onmousedown="this.style.opacity='0.9'" onmouseup="this.style.opacity='1'">
         <div style="width:56px;height:56px;background:rgba(255,255,255,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,0.15);">
@@ -1620,10 +1789,16 @@ function renderInspectorHome(){
 
 /* ─── Admin Home ─── */
 function renderAdminHome(){
-  const pa=pendApprovals().length;
+  // ── 担当ラインフィルタ
+  const adminAssign=getUserAssignment(S.currentName);
+  const hasAdminLines=adminAssign&&(adminAssign.lineIds||[]).length>0;
+  const filterActive=hasAdminLines&&S.adminLineFilter;
+  const visibleLineIds=filterActive?(adminAssign.lineIds||[]):S.lines.map(l=>l.id);
+
+  const pa=S.approvals.filter(a=>a.status==='pending'&&visibleLineIds.includes(a.lid)).length;
   const displayName=S.currentName||'管理者';
-  const openA=S.anomalies.filter(a=>a.status==='open').length;
-  const inProgA=S.anomalies.filter(a=>a.status==='in-progress').length;
+  const openA=S.anomalies.filter(a=>a.status==='open'&&visibleLineIds.includes(a.lid)).length;
+  const inProgA=S.anomalies.filter(a=>a.status==='in-progress'&&visibleLineIds.includes(a.lid)).length;
   const totalAnomActive=openA+inProgA;
   const now=new Date();
   const WDAYS=['日','月','火','水','木','金','土'];
@@ -1636,7 +1811,7 @@ function renderAdminHome(){
   // [CHANGED ⑥] 「要対応→」ボタンでAPPROVAL/ANOMALYへ遷移
 
   // ① 未対応（最優先）: openAnomaly
-  const openAnomalyItems=S.anomalies.filter(a=>a.status==='open').slice(0,3).map(a=>{
+  const openAnomalyItems=S.anomalies.filter(a=>a.status==='open'&&visibleLineIds.includes(a.lid)).slice(0,3).map(a=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
     return`<div class="adm-row" style="background:rgba(200,41,42,0.03);border-left:3px solid #C8292A;">
       <div class="adm-dot" style="background:#C8292A;box-shadow:0 0 8px #C8292A88;"></div>
@@ -1652,7 +1827,7 @@ function renderAdminHome(){
   });
 
   // ② 承認待ち
-  const pendingApprovalItems=S.approvals.filter(a=>a.status==='pending').slice(0,3).map(a=>{
+  const pendingApprovalItems=S.approvals.filter(a=>a.status==='pending'&&visibleLineIds.includes(a.lid)).slice(0,3).map(a=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
     return`<div class="adm-row">
       <div class="adm-dot" style="background:#1E3A8A;box-shadow:0 0 8px rgba(30,58,138,0.4);"></div>
@@ -1668,7 +1843,7 @@ function renderAdminHome(){
   });
 
   // ③ 対応中
-  const inProgressItems=S.anomalies.filter(a=>a.status==='in-progress').slice(0,2).map(a=>{
+  const inProgressItems=S.anomalies.filter(a=>a.status==='in-progress'&&visibleLineIds.includes(a.lid)).slice(0,2).map(a=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
     return`<div class="adm-row">
       <div class="adm-dot" style="background:#D97706;"></div>
@@ -1718,7 +1893,14 @@ function renderAdminHome(){
           <div style="font-size:10px;color:#9CA3AF;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">${dateStr}</div>
           <div style="font-size:26px;font-weight:800;color:#111827;letter-spacing:-.6px;line-height:1.1;font-family:'Noto Serif JP',serif;">管理<br>ダッシュボード</div>
         </div>
-        <button onclick="S.currentName=null;nav('NAME_SELECT');" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;color:#111827;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;letter-spacing:0;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;">${displayName}</button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <button onclick="S.currentName=null;nav('NAME_SELECT');" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;color:#111827;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;letter-spacing:0;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;">${displayName}</button>
+          ${hasAdminLines?`<button onclick="S.adminLineFilter=!S.adminLineFilter;render();"
+            style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:16px;border:1.5px solid ${filterActive?'#1E3A8A':'#E4E8EF'};background:${filterActive?'#EFF6FF':'#F8F9FC'};color:${filterActive?'#1E3A8A':'#6B7280'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 2.5h9M3 5.5h5M5 8.5h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            ${filterActive?`担当ライン (${(adminAssign.lineIds||[]).length}本)`:'全ライン表示中'}
+          </button>`:''}
+        </div>
       </div>
     </div>
 
@@ -1790,23 +1972,69 @@ function renderAdminHome(){
 
       <!-- 管理設定セクションは設定タブ（renderLineEqMgmt）に移動済み -->
 
+      <!-- ★ Fix3: 点検表の完了承認セクション（10日・月次点検） -->
+      ${(()=>{
+        const sheetPending=S.approvals.filter(a=>a._sheet&&a.status==='pending'&&visibleLineIds.includes(a.lid));
+        if(!sheetPending.length) return '';
+        const rows=sheetPending.slice(0,5).map(a=>{
+          const eq=getEq(a.eid);const l=getLn(a.lid);
+          const typeCol=a.type==='月次点検'?'#7C3AED':'#1E3A8A';
+          const typeBg=a.type==='月次点検'?'rgba(124,58,237,0.1)':'rgba(30,58,138,0.1)';
+          return`<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #F3F4F6;last:border-bottom:none;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <span style="font-size:10px;font-weight:700;color:${typeCol};background:${typeBg};padding:2px 7px;border-radius:7px;">${a.type}</span>
+                <span style="font-size:10px;color:#9CA3AF;">${a.date}</span>
+              </div>
+              <div style="font-size:13px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
+              <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${l?.name||'-'} · 申請: ${a.by}</div>
+            </div>
+            <button onclick="event.stopPropagation();approveSheet('${a.id}')"
+              style="padding:7px 13px;background:linear-gradient(135deg,#1E3A8A,#2563EB);color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(30,58,138,0.25);" onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
+              ✓ 承認
+            </button>
+            <button onclick="event.stopPropagation();navReport('${a.id}')"
+              style="padding:7px 10px;background:rgba(30,58,138,0.1);color:#1E3A8A;border:1px solid rgba(30,58,138,0.2);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;" onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
+              📄
+            </button>
+          </div>`;
+        }).join('');
+        return`<div style="background:#FFFFFF;border:1.5px solid rgba(30,58,138,0.25);border-radius:18px;overflow:hidden;margin-bottom:12px;animation:adm-in .4s .16s ease both;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(90deg,rgba(30,58,138,0.06),transparent);border-bottom:1px solid rgba(30,58,138,0.1);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="12" height="12" rx="2.5" stroke="#1E3A8A" stroke-width="1.5"/><path d="M4.5 7.5l2 2 4-4" stroke="#1E3A8A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font-size:11px;font-weight:700;color:#1E3A8A;letter-spacing:.5px;">点検表の完了承認</span>
+              <span style="font-size:10px;font-weight:800;color:white;background:#1E3A8A;padding:1px 7px;border-radius:10px;">${sheetPending.length}件</span>
+            </div>
+            <button onclick="nav('APPROVAL')" style="font-size:11px;color:#1E3A8A;background:none;border:none;cursor:pointer;font-weight:700;font-family:inherit;touch-action:manipulation;">全件 →</button>
+          </div>
+          ${rows}
+        </div>`;
+      })()}
+
       <!-- ── 今日の点検状況サマリー ── -->
       ${(()=>{
-        const allEqs=S.equipments;
+        // 担当ラインの設備のみ対象
+        const visibleEqIds=visibleLineIds.flatMap(lid=>(getLn(lid)?.equipmentIds||[]));
+        const allEqs=S.equipments.filter(e=>visibleEqIds.includes(e.id));
         if(!allEqs.length)return'';
         const doneToday=allEqs.filter(e=>{
           const key=e.id+':毎日点検';
-          return S.insps[key]&&S.insps[key].date===TODAY;
+          return S.insps[key]&&S.insps[key].date===getToday();
         }).length;
         const ngToday=allEqs.filter(e=>{
           const key=e.id+':毎日点検';
-          return S.insps[key]&&S.insps[key].date===TODAY&&Object.values(S.insps[key].results||{}).some(r=>r.r==='ng');
+          return S.insps[key]&&S.insps[key].date===getToday()&&Object.values(S.insps[key].results||{}).some(r=>r.r==='ng');
         }).length;
         const pctToday=Math.round(doneToday/allEqs.length*100);
         const barCol=ngToday>0?'#C8292A':pctToday<50?'#D97706':'#16A34A';
+        const lineLabel=filterActive?`担当ライン (${visibleLineIds.map(id=>getLn(id)?.name||id).join('・')}) `:'全ライン ';
         return`<div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.04);animation:adm-in .4s .18s ease both;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.2px;text-transform:uppercase;">本日の点検状況</div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1.2px;text-transform:uppercase;">本日の点検状況</div>
+              <div style="font-size:10px;color:#9CA3AF;margin-top:2px;">${lineLabel}${allEqs.length}設備対象</div>
+            </div>
             <div style="font-size:20px;font-weight:800;color:${barCol};">${pctToday}<span style="font-size:11px;font-weight:600;color:#9CA3AF;">%</span></div>
           </div>
           <div style="background:#F1F3F8;border-radius:6px;height:6px;overflow:hidden;margin-bottom:10px;">
@@ -1817,6 +2045,88 @@ function renderAdminHome(){
             ${ngToday>0?`<span style="font-size:11px;font-weight:700;color:#C8292A;background:#FFF1F1;padding:2px 9px;border-radius:10px;">✕ NG ${ngToday}設備</span>`:''}
             ${pctToday===100&&ngToday===0?`<span style="font-size:11px;font-weight:700;color:#16A34A;background:#F0FDF4;padding:2px 9px;border-radius:10px;">✓ 全設備完了</span>`:''}
             ${doneToday===0?`<span style="font-size:11px;color:#9CA3AF;">本日まだ点検が開始されていません</span>`:''}
+          </div>
+        </div>`;
+      })()}
+
+      <!-- ★ Fix4: 当月の10日点検・月次点検 実施ステータス表 -->
+      ${(()=>{
+        const now=new Date();
+        const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        const today_day=now.getDate();
+        const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+        // 対象ライン・設備
+        const targetLines=visibleLineIds.map(lid=>getLn(lid)).filter(Boolean);
+        if(!targetLines.length) return '';
+        // 10日点検の期待実施日（今月すでに来た日）
+        const tenDayExpected=[10,20,30].filter(d=>d<=daysInMonth&&d<=today_day);
+        // 月次点検期待（1日 ← 今月1日が来ていれば）
+        const monthlyExpected=today_day>=1?[1]:[];
+        // 各ラインの各設備の実施状況を集計
+        const lineRows=targetLines.map(line=>{
+          const eqs=getLineEquip(line);
+          if(!eqs.length) return '';
+          const eqRows=eqs.map(eq=>{
+            // 10日点検
+            const tenDayItems=eq.items.filter(i=>i.t==='10日'||i.t==='10day');
+            const monthlyItems=eq.items.filter(i=>i.t==='月次'||i.t==='monthly');
+            if(!tenDayItems.length&&!monthlyItems.length) return '';
+            // 10日点検ステータス
+            let tenSt='—';let tenCol='#9CA3AF';let tenBg='#F8F9FC';
+            if(tenDayItems.length>0&&tenDayExpected.length>0){
+              const done=tenDayExpected.filter(d=>{
+                const ds=`${ym}-${String(d).padStart(2,'0')}`;
+                return S.inspections.some(r=>r.equipmentId===eq.id&&r.date===ds&&normType(r.type)==='tenDay')
+                  || !!(S.insps[eq.id+':10日点検']&&S.insps[eq.id+':10日点検'].date===ds);
+              }).length;
+              const last=tenDayExpected[tenDayExpected.length-1];
+              const daysSinceLast=today_day-last;
+              if(done===tenDayExpected.length){tenSt=`完了 (${done}/${tenDayExpected.length})`;tenCol='#16A34A';tenBg='#F0FDF4';}
+              else if(done>0){tenSt=`一部 (${done}/${tenDayExpected.length})`;tenCol='#D97706';tenBg='#FFFBEB';}
+              else if(daysSinceLast>2){tenSt=`未完了 (0/${tenDayExpected.length})`;tenCol='#C8292A';tenBg='#FFF1F1';}
+              else{tenSt=`未着手 (0/${tenDayExpected.length})`;tenCol='#9CA3AF';tenBg='#F8F9FC';}
+            } else if(tenDayItems.length===0){ tenSt='対象外'; }
+            // 月次点検ステータス
+            let monSt='—';let monCol='#9CA3AF';let monBg='#F8F9FC';
+            if(monthlyItems.length>0){
+              const ds=`${ym}-01`;
+              const done=S.inspections.some(r=>r.equipmentId===eq.id&&r.date===ds&&normType(r.type)==='monthly')
+                || !!(S.insps[eq.id+':月次点検']&&S.insps[eq.id+':月次点検'].date===ds);
+              if(done){monSt='完了';monCol='#16A34A';monBg='#F0FDF4';}
+              else if(today_day>3){monSt='未完了';monCol='#C8292A';monBg='#FFF1F1';}
+              else{monSt='未実施';monCol='#9CA3AF';monBg='#F8F9FC';}
+            } else { monSt='対象外'; }
+            return`<tr>
+              <td style="padding:8px 10px;font-size:12px;font-weight:600;color:#374151;border-bottom:1px solid #F3F4F6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${eq.name}</td>
+              <td style="padding:8px 6px;border-bottom:1px solid #F3F4F6;text-align:center;">
+                <span style="font-size:10px;font-weight:700;color:${tenCol};background:${tenBg};padding:3px 8px;border-radius:8px;white-space:nowrap;display:inline-block;">${tenSt}</span>
+              </td>
+              <td style="padding:8px 6px;border-bottom:1px solid #F3F4F6;text-align:center;">
+                <span style="font-size:10px;font-weight:700;color:${monCol};background:${monBg};padding:3px 8px;border-radius:8px;white-space:nowrap;display:inline-block;">${monSt}</span>
+              </td>
+            </tr>`;
+          }).filter(Boolean).join('');
+          if(!eqRows) return '';
+          return`<tr><td colspan="3" style="padding:6px 10px 3px;background:#F8F9FC;font-size:10px;font-weight:700;color:#6B7280;letter-spacing:.5px;border-bottom:1px solid #E4E8EF;">${line.name}</td></tr>${eqRows}`;
+        }).filter(Boolean).join('');
+        if(!lineRows) return '';
+        return`<div style="background:#FFFFFF;border:1.5px solid #E4E8EF;border-radius:18px;overflow:hidden;margin-bottom:12px;animation:adm-in .4s .22s ease both;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #E4E8EF;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#374151" stroke-width="1.4"/><path d="M4 7h6M4 4.5h6M4 9.5h3" stroke="#374151" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span style="font-size:11px;font-weight:700;color:#374151;letter-spacing:.4px;">当月の定期点検 実施状況</span>
+            </div>
+            <span style="font-size:10px;color:#9CA3AF;">${now.getFullYear()}年${now.getMonth()+1}月</span>
+          </div>
+          <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;min-width:260px;">
+            <thead><tr>
+              <th style="padding:7px 10px;font-size:10px;font-weight:700;color:#9CA3AF;text-align:left;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">設備</th>
+              <th style="padding:7px 6px;font-size:10px;font-weight:700;color:#1E3A8A;text-align:center;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">10日点検</th>
+              <th style="padding:7px 6px;font-size:10px;font-weight:700;color:#7C3AED;text-align:center;background:#F8F9FC;border-bottom:1px solid #E4E8EF;">月次点検</th>
+            </tr></thead>
+            <tbody>${lineRows}</tbody>
+          </table>
           </div>
         </div>`;
       })()}
@@ -1896,7 +2206,7 @@ function renderInspection(){
         </div>`;
     // [v6] 前回値チェック
     const prevKey=eq.id+':'+S.inspType;
-    const prevInsp=Object.entries(S.insps).find(([k,v])=>k===prevKey&&v.date!==TODAY)?.[1];
+    const prevInsp=Object.entries(S.insps).find(([k,v])=>k===prevKey&&v.date!==getToday())?.[1];
     const prevResult=prevInsp?.results?.[it.id];
     const prevSymbol=prevResult?.r==='ok'?'○':prevResult?.r==='ng'?'✕':null;
     return`<div class="icard ${isOk?'rok':isNg?'rng':''}" data-iid="${it.id}">
@@ -1909,7 +2219,7 @@ function renderInspection(){
           </div>
           <div style="font-size:16px;font-weight:700;line-height:1.3;color:var(--text);">${it.n}</div>
           ${r?.comment?`<div style="font-size:12px;color:var(--red);margin-top:8px;padding:8px 10px;background:rgba(200,41,42,.08);border-radius:8px;"><span style="color:var(--red);vertical-align:middle;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 4.5h7M3.5 7h5M3.5 9.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${r.comment}</div>`:''}
-          ${r?.photos>0?`<div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:500;"><span style="display:inline-flex;align-items:center;gap:4px;vertical-align:middle;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 3.5l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span> 写真 ${r.photos}枚</div>`:''}
+
         </div>
         ${isOk?`<div style="width:34px;height:34px;background:var(--green-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8l4 4 7-7" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`:``}
         ${isNg?`<div style="width:34px;height:34px;background:var(--red-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="var(--red)" stroke-width="2.1" stroke-linecap="round"/></svg></div>`:``}
@@ -1941,10 +2251,8 @@ function renderInspection(){
     </div>
   </div>
   ${pend>0?`<div class="bulk-sticky">
-    <button onclick="bulkOk()" style="width:100%;padding:14px;background:${S.bulkConfirm?'var(--orange-lt)':'var(--green-lt)'};border:1.5px solid ${S.bulkConfirm?'rgba(217,119,6,0.5)':'var(--green)'};border-radius:var(--r);color:${S.bulkConfirm?'var(--orange)':'var(--green)'};font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;">
-      ${S.bulkConfirm
-        ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
-        :`<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力`}
+    <button onclick="bulkOk()" style="width:100%;padding:14px;background:var(--green-lt);border:1.5px solid var(--green);border-radius:var(--r);color:var(--green);font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${pend}件 をすべて正常に一括入力
     </button>
   </div>`:''}
   <div class="scroll" style="padding-top:14px;">
@@ -1957,13 +2265,38 @@ function renderInspection(){
 
 /* ═══════════ APPROVAL ═══════════ */
 function renderApproval(){
-  const pend=S.approvals.filter(a=>a.status==='pending');const hist=S.approvals.filter(a=>a.status!=='pending');
+  // 管理者の担当ラインフィルタ
+  const adminAssign=getUserAssignment(S.currentName);
+  const hasAdminLines=adminAssign&&(adminAssign.lineIds||[]).length>0;
+  const filterActive=hasAdminLines&&S.adminLineFilter;
+  const visibleLineIds=filterActive?(adminAssign.lineIds||[]):S.lines.map(l=>l.id);
+
+  const allPend=S.approvals.filter(a=>a.status==='pending');
+  const allHist=S.approvals.filter(a=>a.status!=='pending');
+  const pend=allPend.filter(a=>visibleLineIds.includes(a.lid));
+  const hist=allHist.filter(a=>visibleLineIds.includes(a.lid));
   const acard=(a,editable)=>{
     const eq=getEq(a.eid);const l=getLn(a.lid);
     const isApproved=a.status==='approved';
-    const isRejected=a.status==='rejected';
-    return`<div style="background:#FFFFFF;border:1px solid ${editable?'rgba(79,142,247,0.25)':'rgba(0,0,0,0.07)'};border-radius:16px;padding:16px;margin-bottom:10px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:${editable?'14px':'0'};">
+    const chk=editable?checkApprovalEligible(a):null;
+    const canApprove=!chk||chk.ok;
+    // 点検実施状況バー（10日点検・月次点検のみ）
+    const eligBlock=(editable&&chk&&chk.required>0)?`<div style="background:${canApprove?'rgba(22,163,74,0.07)':'rgba(200,41,42,0.06)'};border:1px solid ${canApprove?'rgba(22,163,74,0.2)':'rgba(200,41,42,0.18)'};border-radius:10px;padding:10px 12px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:11px;font-weight:700;color:${canApprove?'#16A34A':'#C8292A'};letter-spacing:.4px;">点検実施状況</span>
+        <span style="font-size:12px;font-weight:800;color:${canApprove?'#16A34A':'#C8292A'};">${chk.done} / ${chk.required} 回</span>
+      </div>
+      <div style="background:rgba(0,0,0,0.08);border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px;">
+        <div style="height:100%;width:${chk.required?Math.round(chk.done/chk.required*100):0}%;background:${canApprove?'#16A34A':'#C8292A'};border-radius:4px;transition:width .4s;"></div>
+      </div>
+      ${canApprove
+        ?`<div style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="rgba(22,163,74,0.15)"/><path d="M3.5 6l2 2 3-3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:11px;color:#16A34A;font-weight:600;">必要な点検がすべて実施されています</span></div>`
+        :`<div style="display:flex;align-items:flex-start;gap:5px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="6" cy="6" r="5" fill="rgba(200,41,42,0.15)"/><path d="M6 3.5v3M6 8.2v.3" stroke="#C8292A" stroke-width="1.4" stroke-linecap="round"/></svg><span style="font-size:11px;color:#C8292A;font-weight:600;line-height:1.5;">未実施：${chk.missing.join('、')}</span></div>`
+      }
+    </div>`:
+    (editable&&a.type!=='毎日点検'?'':'');
+    return`<div style="background:#FFFFFF;border:1px solid ${editable?canApprove?'rgba(79,142,247,0.25)':'rgba(200,41,42,0.2)':'rgba(0,0,0,0.07)'};border-radius:16px;padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:${editable?'12px':'0'};">
         <div style="flex:1;min-width:0;">
           <div style="display:inline-block;background:rgba(79,142,247,0.15);color:#4F8EF7;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:8px;">${a.type}</div>
           <div style="font-weight:700;font-size:16px;color:#111111;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eq?.name||'-'}</div>
@@ -1976,14 +2309,19 @@ function renderApproval(){
         </div>
         ${!editable?`<div style="background:${isApproved?'rgba(52,199,89,0.15)':'rgba(200,41,42,0.15)'};color:${isApproved?'#34C759':'#C8292A'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;">${isApproved?'承認済':'差戻'}</div>`:''}
       </div>
+      ${eligBlock}
       ${editable?`<div style="display:flex;gap:8px;">
-        <button onclick="approve('${a.id}')" style="flex:1;padding:12px;background:rgba(52,199,89,0.15);border:1.5px solid rgba(52,199,89,0.35);border-radius:12px;color:#34C759;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(52,199,89,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(52,199,89,0.15)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>承認</button>
+        <button onclick="approve('${a.id}')" ${canApprove?'':'disabled'} style="flex:1;padding:12px;background:${canApprove?'rgba(52,199,89,0.15)':'rgba(0,0,0,0.05)'};border:1.5px solid ${canApprove?'rgba(52,199,89,0.35)':'rgba(0,0,0,0.1)'};border-radius:12px;color:${canApprove?'#34C759':'#AAAAAA'};font-size:14px;font-weight:700;cursor:${canApprove?'pointer':'not-allowed'};touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;opacity:${canApprove?'1':'.55'};" ${canApprove?`onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(52,199,89,0.28)'" onmouseup="this.style.transform='';this.style.background='rgba(52,199,89,0.15)'"`:''} ><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>承認</button>
         <button onclick="reject('${a.id}')" style="flex:1;padding:12px;background:rgba(200,41,42,0.12);border:1.5px solid rgba(200,41,42,0.3);border-radius:12px;color:#C8292A;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:transform .1s,background .12s;" onmousedown="this.style.transform='scale(.95)';this.style.background='rgba(200,41,42,0.25)'" onmouseup="this.style.transform='';this.style.background='rgba(200,41,42,0.12)'"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M2 2l9 9M11 2L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>差し戻し</button>
-      </div>`:''}
+        <button onclick="navReport('${a.id}')" style="padding:12px 14px;background:rgba(30,58,138,0.10);border:1.5px solid rgba(30,58,138,0.22);border-radius:12px;color:#1E3A8A;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">📄</button>
+      </div>`:`<div style="margin-top:10px;">
+        <button onclick="navReport('${a.id}')" style="width:100%;padding:10px;background:rgba(30,58,138,0.07);border:1px solid rgba(30,58,138,0.15);border-radius:10px;color:#1E3A8A;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .12s;" onmousedown="this.style.background='rgba(30,58,138,0.15)'" onmouseup="this.style.background='rgba(30,58,138,0.07)'">
+          📄 点検報告書を表示
+        </button>
+      </div>`}
     </div>`;
   };
   const isAdmin=S.currentRole==='admin';
-  const hdrStyle=isAdmin?`background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 18px;flex-shrink:0;`:``;
   return`<div style="display:flex;flex-direction:column;height:100vh;background:#F8F9FC;overflow:hidden;">
     <div style="background:#F7F7F9;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 18px;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:12px;">
@@ -1992,7 +2330,16 @@ function renderApproval(){
           <div style="font-size:11px;color:#888888;font-weight:600;letter-spacing:.8px;margin-bottom:2px;">承認管理</div>
           <div style="font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px;">承認待ち <span style="color:#4F8EF7;">${pend.length}</span>件</div>
         </div>
+        ${hasAdminLines?`<button onclick="S.adminLineFilter=!S.adminLineFilter;render();"
+          style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:16px;border:1.5px solid ${filterActive?'#1E3A8A':'#E4E8EF'};background:${filterActive?'#EFF6FF':'#F8F9FC'};color:${filterActive?'#1E3A8A':'#6B7280'};font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;flex-shrink:0;">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 2.5h9M3 5.5h5M5 8.5h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          ${filterActive?'担当のみ':'全ライン'}
+        </button>`:''}
       </div>
+      ${S.currentName?`<div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(30,58,138,0.06);border-radius:10px;">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="3.5" r="2" stroke="#1E3A8A" stroke-width="1.3"/><path d="M1 9.5c0-2.485 2.015-4 4.5-4s4.5 1.515 4.5 4" stroke="#1E3A8A" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span style="font-size:11px;font-weight:600;color:#1E3A8A;">${S.currentName} として承認</span>
+      </div>`:''}
     </div>
     <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 104px);-webkit-overflow-scrolling:touch;">
       ${pend.length===0?`<div style="text-align:center;padding:64px 20px;"><div style="width:58px;height:58px;background:rgba(52,199,89,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#34C759" stroke-width="2"/><path d="M8 13l3.5 3.5 6.5-6.5" stroke="#34C759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:16px;font-weight:700;color:#111111;margin-bottom:5px;">承認待ちはありません</div><div style="font-size:13px;color:#999999;">すべての申請が処理済みです</div></div>`:''}
@@ -2172,7 +2519,7 @@ function renderHistoryList(){
 
     const status=getEqStatusForDate(eid,ds);
     const isWeekend=dow===0||dow===6;
-    const isToday=ds===TODAY;
+    const isToday=ds===getToday();
 
     // 未入力フィルター
     if(S.histFilter==='missing'&&status!=='pending') continue;
@@ -3203,7 +3550,7 @@ function editLineConfirm(lid){
 function renderNgSheet(){
   const eid=S.selectedEq;const eq=getEq(eid);
   const item=eq?.items.find(i=>i.id===S.ngModal.itemId);
-  return`<div class="overlay" onclick="if(event.target===this){S.ngModal={on:false,itemId:null,comment:'',photos:0};render();}">
+  return`<div class="overlay" onclick="if(event.target===this){S.ngModal={on:false,itemId:null,comment:''};render();}">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <!-- Header -->
@@ -3226,17 +3573,10 @@ function renderNgSheet(){
       <label class="flabel" style="color:#374151;font-weight:600;">異常の内容 <span style="color:#C8292A;">*</span></label>
       <textarea id="ng-c" placeholder="どのような異常が発生しているか記入してください" style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:100px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;line-height:1.6;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'"></textarea>
     </div>
-    <!-- Photo attachment -->
-    <div style="margin-bottom:16px;">
-      <button onclick="toggleNgPhoto()" style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;border:1.5px solid ${S.ngModal.hasPhoto?'rgba(200,41,42,0.4)':'#E4E8EF'};background:${S.ngModal.hasPhoto?'#FFF1F1':'#F8F9FC'};cursor:pointer;touch-action:manipulation;font-family:inherit;width:100%;transition:all .15s;" onmousedown="this.style.opacity='.8'" onmouseup="this.style.opacity='1'">
-        <span style="font-size:22px;">📷</span>
-        <span style="font-size:13px;font-weight:600;color:${S.ngModal.hasPhoto?'#C8292A':'#6B7280'};">${S.ngModal.hasPhoto?'📎 画像添付済み（タップで取消）':'写真を追加する'}</span>
-        ${S.ngModal.hasPhoto?`<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C8292A"/><path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
-      </button>
-    </div>
+
     <!-- Action buttons -->
     <div style="display:flex;gap:10px;">
-      <button onclick="S.ngModal={on:false,itemId:null,comment:'',hasPhoto:false,photos:0,_draft:''};render();" style="flex:1;padding:16px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">キャンセル</button>
+      <button onclick="S.ngModal={on:false,itemId:null,comment:'',_draft:''};render();" style="flex:1;padding:16px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;transition:background .12s,transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">キャンセル</button>
       <button onclick="confirmNg()" style="flex:2;padding:16px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 16px rgba(200,41,42,0.3);transition:transform .12s,box-shadow .12s;letter-spacing:.3px;" onmousedown="this.style.transform='scale(.97)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(200,41,42,0.3)'">
         <span style="display:flex;align-items:center;justify-content:center;gap:7px;">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 4L12 2.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3862,10 +4202,8 @@ function renderInspRun(){
         <!-- 一括正常ボタン: スクロール上部・ヘッダー直下に固定 -->
         ${!eqAllDone&&eqTotal>0?`<div class="bulk-sticky">
           <button onclick="inspBulkOkEq2('${selectedEq.id}')"
-            style="width:100%;padding:14px;background:${S.bulkConfirmEq===selectedEq.id?'#FFF7ED':'#F0FDF4'};border:1.5px solid ${S.bulkConfirmEq===selectedEq.id?'rgba(217,119,6,0.5)':'rgba(46,125,50,0.4)'};border-radius:14px;color:${S.bulkConfirmEq===selectedEq.id?'#D97706':'#2E7D32'};font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;">
-            ${S.bulkConfirmEq===selectedEq.id
-              ?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v3.5M7 10v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> タップで確定する（3秒でリセット）`
-              :`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力`}
+            style="width:100%;padding:14px;background:#F0FDF4;border:1.5px solid rgba(46,125,50,0.4);border-radius:14px;color:#2E7D32;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5 6.5-6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 未入力 ${eqTotal-eqDone}件 をすべて正常に一括入力
           </button>
         </div>`:''}
 
@@ -4003,13 +4341,13 @@ function inspFinish(){
   selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
     const items=eq.items.filter(isTargetDay);
     const key=eq.id+':毎日点検';
-    S.insps[key]={date:TODAY,results:{},by:S.currentName||'点検者',lines:S.inspSelectedLines.slice()};
+    S.insps[key]={date:getToday(),results:{},by:S.currentName||'点検者',lines:S.inspSelectedLines.slice()};
     items.forEach(it=>{
       const r=S.inspRunResults[eq.id+'_'+it.id]||'ok';
-      S.insps[key].results[it.id]={r,comment:'',photos:0};
+      S.insps[key].results[it.id]={r,comment:''};
       if(r==='ng'){
         const existing=S.anomalies.find(a=>a.eid===eq.id&&a.iid===it.id&&a.status!=='resolved');
-        if(!existing)S.anomalies.push({id:'AN'+Date.now()+Math.random().toString(36).slice(2),lid:line.id,eid:eq.id,iid:it.id,iname:it.n,comment:'点検にてNG',status:'open',date:TODAY,by:S.currentName||'点検者'});
+        if(!existing)S.anomalies.push({id:'AN'+Date.now()+Math.random().toString(36).slice(2),lid:line.id,eid:eq.id,iid:it.id,iname:it.n,comment:'点検にてNG',status:'open',date:getToday(),by:S.currentName||'点検者'});
       }
     });
   }));
@@ -4040,15 +4378,17 @@ function getInspectionByDate(eid,date,type){
 
 // ── ステート初期化（担当者切り替え時に呼ぶ）
 function asgnInit(name){
-  const cur=getUserAssignment(name)||{equipmentIds:[]};
-  // openLines: 初期は全ライン展開
+  const isAdm=S.names.admin.includes(name);
+  const cur=getUserAssignment(name)||{equipmentIds:[],lineIds:[]};
   const openLines=S._asgn&&S._asgn.selName===name
-    ? S._asgn.openLines                    // 同一担当者なら展開状態を維持
-    : [];                                  // 別担当者なら全折りたたみにリセット
+    ? S._asgn.openLines
+    : [];
   S._asgn={
     selName:name,
+    isAdmin:isAdm,
     openLines:[...openLines],
-    checked:[...cur.equipmentIds]          // 保存済みの担当設備で初期化
+    // 管理者はラインID、点検者は設備IDを checked に格納
+    checked:isAdm ? [...(cur.lineIds||[])] : [...(cur.equipmentIds||[])]
   };
 }
 
@@ -4102,14 +4442,19 @@ function asgnSave(){
   const st=asgnState();
   const name=st.selName;
   if(!name){toast('担当者を選択してください','warn');return;}
-  const equipIds=[...st.checked];
-  // ⑤ lineIds は選択された設備が属するラインから自動算出
-  const lineIds=[...new Set(
-    S.lines.filter(l=>getLineEquip(l).some(e=>equipIds.includes(e.id))).map(l=>l.id)
-  )];
-  // データ保存（saveAssignment内のrenderは呼ばず直接保存）
+  let data;
+  if(st.isAdmin){
+    // 管理者: checked = lineIds
+    data={name,lineIds:[...st.checked],equipmentIds:[]};
+  } else {
+    // 点検者: checked = equipmentIds → lineIds を自動算出
+    const equipIds=[...st.checked];
+    const lineIds=[...new Set(
+      S.lines.filter(l=>getLineEquip(l).some(e=>equipIds.includes(e.id))).map(l=>l.id)
+    )];
+    data={name,lineIds,equipmentIds:equipIds};
+  }
   const idx=S.assignments.findIndex(a=>a.name===name);
-  const data={name,lineIds,equipmentIds:equipIds};
   if(idx>=0) S.assignments[idx]=data; else S.assignments.push(data);
   // ⑥ 永続化
   try{localStorage.setItem('dk_assignments',JSON.stringify(S.assignments));}catch(e){}
@@ -4119,11 +4464,11 @@ function asgnSave(){
   render();
 }
 
-// ── メインレンダー関数
 function renderAssignmentMgmt(){
   const allNames=[...S.names.inspector,...S.names.admin];
   const st=asgnState();
   const selName=st.selName;
+  const isAdm=st.isAdmin;
   const existAssign=getUserAssignment(selName);
   const totalSel=st.checked.length;
 
@@ -4131,34 +4476,48 @@ function renderAssignmentMgmt(){
   const namePills=allNames.map(n=>{
     const on=n===selName;
     const saved=!!getUserAssignment(n);
+    const isA=S.names.admin.includes(n);
     return`<button onclick="asgnSetName('${n.replace(/'/g,"\\'")}')"
-      style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 10px;border-radius:22px;border:2px solid ${on?'#1E3A8A':'#E4E8EF'};background:${on?'#1E3A8A':'#FFFFFF'};color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;">
-      <span style="width:24px;height:24px;border-radius:50%;background:${on?'rgba(255,255,255,0.2)':'#F1F3F8'};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${on?'#FFFFFF':'#6B7280'};flex-shrink:0;">${n.replace(/\s/g,'').slice(0,2)}</span>
+      style="flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 10px;border-radius:22px;border:2px solid ${on?(isA?'#1E3A8A':'#1E3A8A'):'#E4E8EF'};background:${on?(isA?'#1E3A8A':'#1E3A8A'):'#FFFFFF'};color:${on?'#FFFFFF':'#374151'};font-size:13px;font-weight:${on?700:500};cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:all .15s;">
+      <span style="width:24px;height:24px;border-radius:50%;background:${on?'rgba(255,255,255,0.2)':(isA?'#FEF3C7':'#F1F3F8')};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${on?'#FFFFFF':(isA?'#92400E':'#6B7280')};flex-shrink:0;">${isA?'管':'点'}</span>
       ${n}
       ${saved?`<span style="width:6px;height:6px;border-radius:50%;background:${on?'rgba(255,255,255,0.8)':'#22C55E'};flex-shrink:0;"></span>`:''}
     </button>`;
   }).join('');
 
-  // ── ライン×設備ツリー
+  // ── 管理者用: ラインチェックボックス
+  const adminLineBlocks=S.lines.map(line=>{
+    const on=st.checked.includes(line.id);
+    const eqCnt=getLineEquip(line).length;
+    return`
+    <div onclick="(function(){var st=asgnState();var i=st.checked.indexOf('${line.id}');if(i>=0)st.checked.splice(i,1);else st.checked.push('${line.id}');render();})()"
+      style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:${on?'#EEF2FF':'#FFFFFF'};border:2px solid ${on?'#6366F1':'#E4E8EF'};border-radius:16px;margin-bottom:8px;cursor:pointer;transition:all .15s;">
+      <div style="width:24px;height:24px;border-radius:8px;border:2px solid ${on?'#4F46E5':'#CBD5E1'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
+        ${on?`<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1.5 5l3.5 3.5 5.5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:15px;font-weight:700;color:${on?'#3730A3':'#374151'};">${line.name}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${line.desc} · 設備 ${eqCnt}台</div>
+      </div>
+      ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:4px 10px;border-radius:8px;border:1px solid #C7D2FE;flex-shrink:0;">担当</span>`:''}
+    </div>`;
+  }).join('');
+
+  // ── 点検者用: ライン×設備ツリー
   const lineBlocks=S.lines.map(line=>{
     const open=st.openLines.includes(line.id);
     const eqIds=getLineEquip(line).map(e=>e.id);
     const selCnt=eqIds.filter(id=>st.checked.includes(id)).length;
     const allOn=selCnt===eqIds.length&&eqIds.length>0;
     const someOn=selCnt>0&&!allOn;
-
-    // ヘッダーの色：全選択=濃い青, 部分=薄い青, 未選択=グレー
     const hBg  =allOn?'#EEF2FF':someOn?'#F5F7FF':'#F8F9FC';
     const hBdr =allOn?'#6366F1':someOn?'#A5B4FC':'#E4E8EF';
     const hClr =allOn?'#3730A3':someOn?'#4338CA':'#374151';
-
-    // 設備行
     const eqRows=getLineEquip(line).map(e=>{
       const on=st.checked.includes(e.id);
       return`
       <div onclick="asgnToggleEq('${e.id}')"
         style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid #F0F1F6;cursor:pointer;background:${on?'#EEF2FF':'#FFFFFF'};transition:background .1s;">
-        <!-- カスタムチェックマーク -->
         <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${on?'#4F46E5':'#CBD5E1'};background:${on?'#4F46E5':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
           ${on?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
         </div>
@@ -4166,14 +4525,9 @@ function renderAssignmentMgmt(){
         ${on?`<span style="font-size:10px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:3px 9px;border-radius:8px;border:1px solid #C7D2FE;">担当</span>`:''}
       </div>`;
     }).join('');
-
     return`
     <div style="border:2px solid ${hBdr};border-radius:18px;margin-bottom:10px;overflow:hidden;background:#FFFFFF;box-shadow:0 1px 6px rgba(0,0,0,0.05);transition:border-color .2s;">
-
-      <!-- ラインヘッダー -->
       <div style="background:${hBg};display:flex;align-items:center;transition:background .2s;">
-
-        <!-- 折りたたみ矢印 -->
         <button onclick="asgnToggleOpen('${line.id}')"
           style="padding:15px 4px 15px 16px;background:none;border:none;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;">
           <svg width="9" height="15" viewBox="0 0 9 15" fill="none"
@@ -4181,11 +4535,8 @@ function renderAssignmentMgmt(){
             <path d="M2 2l5 5.5L2 13" stroke="${hClr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-
-        <!-- ライン全選択エリア（クリックで全ON/OFF） -->
         <div onclick="asgnToggleLine('${line.id}')"
           style="flex:1;display:flex;align-items:center;gap:12px;padding:15px 16px 15px 10px;cursor:pointer;">
-          <!-- ライン全選択チェックボックス（視覚のみ・native inputなし） -->
           <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${allOn?'#4F46E5':someOn?'#818CF8':'#CBD5E1'};background:${allOn?'#4F46E5':someOn?'#EEF2FF':'#FFFFFF'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;">
             ${allOn?`<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:someOn?`<div style="width:8px;height:3px;background:#4F46E5;border-radius:2px;"></div>`:''}
           </div>
@@ -4193,15 +4544,12 @@ function renderAssignmentMgmt(){
             <div style="font-size:15px;font-weight:700;color:${hClr};">${line.name}</div>
             <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${line.desc}</div>
           </div>
-          <!-- 選択カウンター -->
           <div style="text-align:right;flex-shrink:0;margin-right:4px;">
             <div style="font-size:13px;font-weight:700;color:${selCnt>0?'#4F46E5':'#9CA3AF'};">${selCnt}/${eqIds.length}台</div>
             <div style="font-size:9px;font-weight:600;color:${selCnt>0?'#6366F1':'#C4C9D4'};margin-top:1px;">${selCnt>0?'選択中':'未選択'}</div>
           </div>
         </div>
       </div>
-
-      <!-- 設備リスト（折りたたみ） -->
       ${open?eqRows:''}
     </div>`;
   }).join('');
@@ -4210,14 +4558,18 @@ function renderAssignmentMgmt(){
   const assignList=S.assignments.length
     ?S.assignments.map(a=>{
       const editing=a.name===selName;
+      const isAEntry=S.names.admin.includes(a.name);
+      const summary=isAEntry
+        ?`担当ライン ${(a.lineIds||[]).length}本`
+        :`${(a.lineIds||[]).map(id=>getLn(id)?.name||id).join('・')||'ラインなし'} · 設備 ${(a.equipmentIds||a.equipIds||[]).length}台`;
       return`<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:${editing?'#EEF2FF':'#FFFFFF'};border:2px solid ${editing?'#6366F1':'#E4E8EF'};border-radius:14px;margin-bottom:8px;transition:all .15s;">
-        <div style="width:38px;height:38px;border-radius:11px;background:${editing?'#4F46E5':'#F1F3F8'};display:flex;align-items:center;justify-content:center;font-size:${a.name.replace(/\s/g,'').length<=2?'11px':'9px'};font-weight:700;color:${editing?'#FFFFFF':'#6B7280'};flex-shrink:0;text-align:center;line-height:1.4;">${a.name.split(/\s+/).join('<br>')}</div>
+        <div style="width:38px;height:38px;border-radius:11px;background:${editing?'#4F46E5':(isAEntry?'#FEF3C7':'#F1F3F8')};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${editing?'#FFFFFF':(isAEntry?'#92400E':'#6B7280')};flex-shrink:0;text-align:center;line-height:1.4;">${isAEntry?'管':'点'}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
             <span style="font-size:14px;font-weight:600;color:#111827;">${a.name}</span>
-            <span style="font-size:10px;font-weight:700;color:#16A34A;background:#DCFCE7;padding:2px 8px;border-radius:8px;">設定済み</span>
+            <span style="font-size:10px;font-weight:700;color:${isAEntry?'#D97706':'#16A34A'};background:${isAEntry?'#FEF3C7':'#DCFCE7'};padding:2px 8px;border-radius:8px;">${isAEntry?'管理者':'点検者'} 設定済み</span>
           </div>
-          <div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(a.lineIds||[]).map(id=>getLn(id)?.name||id).join('・')||'ラインなし'} · 設備 ${(a.equipmentIds||a.equipIds||[]).length}台</div>
+          <div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${summary}</div>
         </div>
         ${editing
           ?`<span style="font-size:11px;font-weight:600;color:#4F46E5;background:#EEF2FF;padding:5px 11px;border-radius:9px;flex-shrink:0;">編集中</span>`
@@ -4231,13 +4583,14 @@ function renderAssignmentMgmt(){
     :`<div style="padding:28px 20px;text-align:center;color:#9CA3AF;font-size:13px;">
         <div style="font-size:32px;margin-bottom:10px;">📋</div>
         <div style="font-weight:600;margin-bottom:3px;">まだ紐づけがありません</div>
-        <div style="font-size:12px;">上のツリーで設備を選んで保存してください</div>
+        <div style="font-size:12px;">上のツリーで選んで保存してください</div>
       </div>`;
+
+  const selLabel=isAdm?`${totalSel}ライン選択中`:`${totalSel}台選択中`;
 
   // ── HTML組み立て
   return`
   <style>
-    /* [REDESIGNED v2] assignment専用スタイル */
     #asgn-pills::-webkit-scrollbar{display:none;}
   </style>
 
@@ -4251,11 +4604,10 @@ function renderAssignmentMgmt(){
           style="width:36px;height:36px;border-radius:50%;background:#F8F9FC;border:1.5px solid #E4E8EF;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">${BACK_ICO}</button>
         <div style="flex:1;min-width:0;">
           <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.8px;margin-bottom:3px;">管理者設定</div>
-          <div style="font-size:21px;font-weight:800;color:#111827;letter-spacing:-.5px;">担当設備紐づけ</div>
+          <div style="font-size:21px;font-weight:800;color:#111827;letter-spacing:-.5px;">担当紐づけ管理</div>
         </div>
-        <!-- 選択カウンター -->
         <div style="background:${totalSel>0?'#4F46E5':'#F1F3F8'};color:${totalSel>0?'#FFFFFF':'#9CA3AF'};font-size:12px;font-weight:700;padding:7px 14px;border-radius:22px;white-space:nowrap;transition:all .2s;box-shadow:${totalSel>0?'0 3px 12px rgba(79,70,229,0.28)':'none'};">
-          ${totalSel > 0 ? `✓ ${totalSel}台選択中` : '0台選択中'}
+          ${totalSel>0?`✓ ${selLabel}`:`0${isAdm?'ライン':'台'}選択中`}
         </div>
       </div>
     </div>
@@ -4269,28 +4621,29 @@ function renderAssignmentMgmt(){
         <div id="asgn-pills" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 4px;margin-bottom:-4px;">
           ${namePills}
         </div>
-        <!-- 設定状態 -->
-        <div style="margin-top:12px;padding:0 16px;">
+        <!-- ロール表示 & 設定状態 -->
+        <div style="margin-top:12px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:${isAdm?'#FEF3C7':'#EFF6FF'};color:${isAdm?'#92400E':'#1E3A8A'};">${isAdm?'👔 管理者':'🔧 点検者'}</span>
           ${existAssign
-            ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
+            ?`<div style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#16A34A"/><path d="M4 7l2.5 2.5 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#15803D;">紐づけ済み — 設備 ${(existAssign.equipmentIds||existAssign.equipIds||[]).length}台</span>
+                <span style="font-size:12px;font-weight:700;color:#15803D;">紐づけ済み — ${isAdm?`ライン ${(existAssign.lineIds||[]).length}本`:`設備 ${(existAssign.equipmentIds||existAssign.equipIds||[]).length}台`}</span>
               </div>`
-            :`<div style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
+            :`<div style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;background:#FEF9C3;border:1.5px solid #FDE047;border-radius:12px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#CA8A04"/><path d="M7 4v3.5M7 9.5v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#854D0E;">未設定 — 現在は全設備が表示されます</span>
+                <span style="font-size:12px;font-weight:700;color:#854D0E;">未設定 — 全${isAdm?'ライン':'設備'}が対象になります</span>
               </div>`
           }
         </div>
       </div>
 
-      <!-- ライン×設備ツリー -->
+      <!-- 選択エリア -->
       <div style="padding:14px 14px 6px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;">担当するラインと設備を選択</span>
-          <span style="font-size:10px;color:#9CA3AF;">ライン名タップで全選択</span>
+          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px;">${isAdm?'担当するラインを選択':'担当するラインと設備を選択'}</span>
+          ${!isAdm?`<span style="font-size:10px;color:#9CA3AF;">ライン名タップで全選択</span>`:''}
         </div>
-        ${lineBlocks}
+        ${isAdm ? adminLineBlocks : lineBlocks}
       </div>
 
       <!-- 紐づけ一覧 -->
@@ -4309,7 +4662,7 @@ function renderAssignmentMgmt(){
         onmouseup="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(79,70,229,0.3)'">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5l4.5 4.5L13 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         紐づけを保存する
-        <span style="background:rgba(255,255,255,0.22);border-radius:10px;padding:3px 11px;font-size:12px;font-weight:700;">${totalSel}台</span>
+        <span style="background:rgba(255,255,255,0.22);border-radius:10px;padding:3px 11px;font-size:12px;font-weight:700;">${totalSel>0?selLabel:'未選択'}</span>
       </button>
     </div>
   </div>`;
@@ -4507,12 +4860,6 @@ function inspSetRes2(eqId, itemId, result){
   render();
 }
 
-function toggleInspRunNgPhoto(){
-  const v=document.getElementById('irng-c')?.value;
-  if(v!=null) S.inspRunNgModal._draft=v;
-  S.inspRunNgModal.hasPhoto=!S.inspRunNgModal.hasPhoto;
-  render();
-}
 
 function confirmInspRunNg(){
   const c=document.getElementById('irng-c')?.value?.trim()||S.inspRunNgModal._draft?.trim()||'';
@@ -4529,8 +4876,8 @@ function confirmInspRunNg(){
       id:'AN'+Date.now()+Math.random().toString(36).slice(2),
       lid:line?.id||'',eid:eqId,iid:itemId,iname:item.n,
       comment:c||'点検にてNG',
-      photos:S.inspRunNgModal.hasPhoto?1:0,
-      status:'open',date:TODAY,by:S.currentName||'点検者'
+
+      status:'open',date:getToday(),by:S.currentName||'点検者'
     });
   }
   // 全項目完了チェック
@@ -4540,7 +4887,7 @@ function confirmInspRunNg(){
     if(allDone) toast(`${eq.name}：異常あり`,'warn');
   }
   saveInspState();
-  S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};
+  S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',_draft:''};
   render();
 }
 
@@ -4548,8 +4895,7 @@ function renderInspRunNgSheet(){
   const {eqId,itemId}=S.inspRunNgModal;
   const eq=getEq(eqId);
   const item=eq?.items.find(i=>i.id===itemId);
-  const hp=S.inspRunNgModal.hasPhoto;
-  return`<div class="overlay" onclick="if(event.target===this){S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};render();}">
+  return`<div class="overlay" onclick="if(event.target===this){S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',_draft:''};render();}">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
@@ -4566,15 +4912,9 @@ function renderInspRunNgSheet(){
       <label class="flabel" style="font-weight:600;color:#374151;">異常の内容</label>
       <textarea id="irng-c" placeholder="どのような異常か記入してください（省略可）" style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;resize:none;height:92px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;line-height:1.6;" onfocus="this.style.borderColor='#C8292A'" onblur="this.style.borderColor='var(--border)'">${S.inspRunNgModal._draft||''}</textarea>
     </div>
-    <div style="margin-bottom:16px;">
-      <button onclick="toggleInspRunNgPhoto()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1.5px solid ${hp?'rgba(200,41,42,0.4)':'#E4E8EF'};background:${hp?'#FFF1F1':'#F8F9FC'};cursor:pointer;touch-action:manipulation;font-family:inherit;width:100%;transition:all .15s;">
-        <span style="font-size:20px;">📷</span>
-        <span style="font-size:13px;font-weight:600;color:${hp?'#C8292A':'#6B7280'};">${hp?'📎 画像添付済み（タップで取消）':'写真を追加する'}</span>
-        ${hp?`<svg style="margin-left:auto;flex-shrink:0;" width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6.5" fill="#C8292A"/><path d="M4.5 7.5l2 2 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
-      </button>
-    </div>
+
     <div style="display:flex;gap:10px;">
-      <button onclick="S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',hasPhoto:false,_draft:''};render();" style="flex:1;padding:15px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:13px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;">キャンセル</button>
+      <button onclick="S.inspRunNgModal={on:false,eqId:null,itemId:null,comment:'',_draft:''};render();" style="flex:1;padding:15px;background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:13px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;">キャンセル</button>
       <button onclick="confirmInspRunNg()" style="flex:2;padding:15px;background:linear-gradient(135deg,#C8292A,#A82020);color:white;border:none;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 14px rgba(200,41,42,0.28);letter-spacing:.2px;">
         <span style="display:flex;align-items:center;justify-content:center;gap:6px;">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 4L11 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -4587,14 +4927,7 @@ function renderInspRunNgSheet(){
 }
 
 function inspBulkOkEq2(eqId){
-  // 2ステップ確認：1回目はフラグをセット、2回目で実行
-  if(S.bulkConfirmEq !== eqId){
-    S.bulkConfirmEq = eqId;
-    render();
-    // 3秒後に自動リセット
-    setTimeout(()=>{ if(S.bulkConfirmEq===eqId){S.bulkConfirmEq=null;render();} },3000);
-    return;
-  }
+  if(!confirm('この設備の未入力項目をすべて「正常（○）」に一括入力しますか？')) return;
   S.bulkConfirmEq = null;
   if(!S.inspRunResults) S.inspRunResults={};
   const eq=getEq(eqId);
@@ -4626,30 +4959,406 @@ function inspFinish2(){
   });
   if(done<total){toast(`未入力が ${total-done} 件あります`,'warn');return;}
   // 保存
+  const day=new Date().getDate();
+  const isTenDay=(day%10===0);
+  const isMonthly=(day===1);
   assignedEqs.forEach(eq=>{
     const items=eq.items.filter(isTargetDay);
     if(!items.length) return;
+    const dailyItems=items.filter(i=>i.t==='毎日'||i.t==='daily');
+    const tenDayItems=items.filter(i=>i.t==='10日'||i.t==='10day');
+    const monthlyItems=items.filter(i=>i.t==='月次'||i.t==='monthly');
+    const line=S.lines.find(l=>(l.equipmentIds||[]).includes(eq.id));
+    const lineId=line?.id||'';
+    // 毎日点検レコード
     const key=eq.id+':毎日点検';
-    S.insps[key]={date:TODAY,results:{},by:S.currentName||'点検者'};
+    S.insps[key]={date:getToday(),results:{},by:S.currentName||'点検者'};
     items.forEach(it=>{
       const r=S.inspRunResults[eq.id+'_'+it.id]||'ok';
-      S.insps[key].results[it.id]={r,comment:'',photos:0};
+      S.insps[key].results[it.id]={r,comment:''};
       if(r==='ng'){
-        const line=S.lines.find(l=>(l.equipmentIds||[]).includes(eq.id));
         const existing=S.anomalies.find(a=>a.eid===eq.id&&a.iid===it.id&&a.status!=='resolved');
         if(!existing) S.anomalies.push({
           id:'AN'+Date.now()+Math.random().toString(36).slice(2),
-          lid:line?.id||'',eid:eq.id,iid:it.id,iname:it.n,
-          comment:'点検にてNG',status:'open',date:TODAY,by:S.currentName||'点検者'
+          lid:lineId,eid:eq.id,iid:it.id,iname:it.n,
+          comment:'点検にてNG',status:'open',date:getToday(),by:S.currentName||'点検者'
         });
       }
     });
-    saveInspRecord(eq,TODAY,'毎日点検',S.insps[key].results);
+    saveInspRecord(eq,getToday(),'毎日点検',S.insps[key].results);
+    // ★ Fix3: 10日点検・月次点検が完了した場合、承認待ちレコードを作成
+    if(isTenDay && tenDayItems.length>0){
+      const tenResults={};
+      tenDayItems.forEach(it=>{tenResults[it.id]={r:S.inspRunResults[eq.id+'_'+it.id]||'ok',comment:''};});
+      S.insps[eq.id+':10日点検']={date:getToday(),results:tenResults,by:S.currentName||'点検者'};
+      saveInspRecord(eq,getToday(),'10日点検',tenResults);
+      // 承認待ちレコード（設備単位）
+      const existsApproval=S.approvals.find(a=>a.eid===eq.id&&a.type==='10日点検'&&a.date===getToday()&&a.status==='pending');
+      if(!existsApproval){
+        S.approvals.push({
+          id:'APR'+Date.now()+Math.random().toString(36).slice(2,6),
+          lid:lineId,eid:eq.id,type:'10日点検',date:getToday(),
+          status:'pending',by:S.currentName||'点検者',approver:null,
+          approvedDate:null,_sheet:true
+        });
+      }
+    }
+    if(isMonthly && monthlyItems.length>0){
+      const mResults={};
+      monthlyItems.forEach(it=>{mResults[it.id]={r:S.inspRunResults[eq.id+'_'+it.id]||'ok',comment:''};});
+      S.insps[eq.id+':月次点検']={date:getToday(),results:mResults,by:S.currentName||'点検者'};
+      saveInspRecord(eq,getToday(),'月次点検',mResults);
+      const existsApproval=S.approvals.find(a=>a.eid===eq.id&&a.type==='月次点検'&&a.date===getToday()&&a.status==='pending');
+      if(!existsApproval){
+        S.approvals.push({
+          id:'APR'+Date.now()+Math.random().toString(36).slice(2,6),
+          lid:lineId,eid:eq.id,type:'月次点検',date:getToday(),
+          status:'pending',by:S.currentName||'点検者',approver:null,
+          approvedDate:null,_sheet:true
+        });
+      }
+    }
   });
   S.inspRunResults={};
+  // ★ 承認データもLocalStorageに保存
+  try{ localStorage.setItem('dk_approvals', JSON.stringify(S.approvals.filter(a=>a.id.startsWith('APR')))); }catch(e){}
   toast(ng>0?`点検完了（異常 ${ng} 件）`:'点検完了！全項目正常です');
   setTimeout(()=>nav('HOME'),1600);
 }
+
+/* ══════════════════════════════════════════════════════════
+   REPORT SCREEN — A4横向き表形式 点検報告書
+══════════════════════════════════════════════════════════ */
+
+// ハンコHTML生成（name=表示名、date=日付文字列 'YY.MM.DD'）
+function hankoHtml(name, dateStr){
+  if(!name) return `<div class="hanko-empty"></div>`;
+  // 名字を最大3文字取得（姓のみ or 全体の先頭3文字）
+  const parts = name.trim().split(/[\s　]+/);
+  const sei = parts[0] ? parts[0].slice(0,3) : name.slice(0,3);
+  return `<div class="hanko" title="${name} ${dateStr||''}">
+    <span class="hanko-name">${sei}</span>
+    ${dateStr?`<span class="hanko-date">${dateStr}</span>`:''}
+  </div>`;
+}
+
+// 日付を印鑑形式に変換 '2026-04-15' → '26.04.15'
+function toHankoDate(ds){
+  if(!ds) return '';
+  const p = ds.split('-');
+  return `${p[0]?p[0].slice(2):''}`.padStart(2,'0')+`.${(p[1]||'').padStart(2,'0')}.${(p[2]||'').padStart(2,'0')}`;
+}
+
+// レポート画面に遷移
+function navReport(approvalId){
+  const a = S.approvals.find(x=>x.id===approvalId);
+  if(!a){ toast('承認レコードが見つかりません','warn'); return; }
+  S.reportCtx = { approvalId, lid: a.lid, eid: a.eid, type: a.type, date: a.date };
+  S._reportBack = S.view;
+  nav('REPORT');
+}
+
+// レポート画面から承認
+function approveReport(){
+  const ctx = S.reportCtx;
+  if(!ctx) return;
+  const a = S.approvals.find(x=>x.id===ctx.approvalId);
+  if(!a){ toast('承認レコードが見つかりません','warn'); return; }
+  if(a.status === 'approved'){ toast('すでに承認済みです'); return; }
+  a.status    = 'approved';
+  a.approver  = S.currentName || '管理者';
+  a.approvedDate = getToday();
+  try{ localStorage.setItem('dk_approvals', JSON.stringify(S.approvals.filter(ap=>(ap.id+'').startsWith('APR')))); }catch(e){}
+  toast('点検表を承認しました ✓');
+  render();
+}
+
+function renderReport(){
+  const ctx = S.reportCtx;
+  if(!ctx) return renderHome();
+
+  const approval = S.approvals.find(x=>x.id===ctx.approvalId);
+  const line     = getLn(ctx.lid);
+  const typeLabel= ctx.type || '点検';
+  const isAdmin  = S.currentRole === 'admin';
+  const isPending= approval && approval.status === 'pending';
+  const isApproved = approval && approval.status === 'approved';
+
+  // 日付表示
+  const WDAYS=['日','月','火','水','木','金','土'];
+  const dObj = new Date(ctx.date);
+  const dateLabel = isNaN(dObj)?ctx.date
+    : `${dObj.getFullYear()}年${dObj.getMonth()+1}月${dObj.getDate()}日（${WDAYS[dObj.getDay()]}）`;
+
+  // 点検者・承認者情報
+  const inspectorName = approval?.by || '';
+  const approverName  = isApproved ? (approval.approver||'') : '';
+  const inspDate  = toHankoDate(ctx.date);
+  const apprvDate = isApproved ? toHankoDate(approval.approvedDate||getToday()) : '';
+
+  // 対象設備一覧（ライン全体 or 単一設備）
+  const targetEqs = line ? getLineEquip(line).filter(eq=>{
+    // その設備に対象種別の項目があるもののみ
+    const tFilter = normType(typeLabel)==='tenDay' ? '10日'
+                  : normType(typeLabel)==='monthly' ? '月次' : '毎日';
+    return eq.items.some(i=>i.t===tFilter);
+  }) : [getEq(ctx.eid)].filter(Boolean);
+
+  // typeフィルタ
+  const tFilter = normType(typeLabel)==='tenDay' ? '10日'
+                : normType(typeLabel)==='monthly' ? '月次' : '毎日';
+  // 毎日点検のみ一括表示、定期は全項目
+  const getItems = (eq) => {
+    if(normType(typeLabel)==='daily')   return eq.items.filter(i=>i.t==='毎日');
+    if(normType(typeLabel)==='tenDay')  return eq.items.filter(i=>i.t==='毎日'||i.t==='10日');
+    if(normType(typeLabel)==='monthly') return eq.items;
+    return eq.items.filter(i=>i.t===tFilter);
+  };
+
+  // 結果取得
+  const getResult = (eq, item) => {
+    // 新構造
+    const rec = S.inspections.find(r=>
+      r.equipmentId===eq.id && r.date===ctx.date && normType(r.type)===normType(typeLabel)
+    );
+    if(rec){ const it=rec.items.find(i=>i.itemId===item.id); return it?it.result:null; }
+    // 旧構造フォールバック
+    const typeKey = typeLabel==='10日点検'?'10日点検':typeLabel==='月次点検'?'月次点検':'毎日点検';
+    const insData = S.insps[eq.id+':'+typeKey];
+    if(insData&&insData.date===ctx.date){
+      const r=insData.results?.[item.id];
+      return r ? (r.r==='ng'?'✕':'〇') : null;
+    }
+    return null;
+  };
+  const getComment = (eq, item) => {
+    const rec = S.inspections.find(r=>
+      r.equipmentId===eq.id && r.date===ctx.date && normType(r.type)===normType(typeLabel)
+    );
+    if(rec){ const it=rec.items.find(i=>i.itemId===item.id); return it?.comment||''; }
+    const typeKey = typeLabel==='10日点検'?'10日点検':typeLabel==='月次点検'?'月次点検':'毎日点検';
+    const insData = S.insps[eq.id+':'+typeKey];
+    if(insData&&insData.date===ctx.date) return insData.results?.[item.id]?.comment||'';
+    return '';
+  };
+
+  // 全NGカウント
+  let totalItems=0, ngCount=0, okCount=0, unfilledCount=0;
+  targetEqs.forEach(eq=>{
+    getItems(eq).forEach(item=>{
+      totalItems++;
+      const r=getResult(eq,item);
+      if(r==='✕') ngCount++;
+      else if(r==='〇') okCount++;
+      else unfilledCount++;
+    });
+  });
+
+  // テーブル行生成
+  const tableRows = targetEqs.map(eq=>{
+    const items = getItems(eq);
+    if(!items.length) return '';
+    const eqRows = items.map((item, idx)=>{
+      const res = getResult(eq, item);
+      const cmt = getComment(eq, item);
+      const resCell = res==='〇'
+        ? `<td class="result-ok">○</td>`
+        : res==='✕'
+          ? `<td class="result-ng">✕</td>`
+          : `<td class="result-pending">—</td>`;
+      const cycleMap = {'毎日':'毎日','10日':'10日毎','月次':'月1回'};
+      const cycleLbl = cycleMap[item.t]||item.t;
+      // 最初の行だけ設備名をrowspan
+      const eqCell = idx===0
+        ? `<td rowspan="${items.length}" style="font-weight:700;font-size:11px;color:#111827;vertical-align:middle;border-right:1px solid #D1D5DB;background:#F8F9FC;white-space:nowrap;">${eq.name}</td>`
+        : '';
+      return `<tr>
+        ${eqCell}
+        <td style="color:#374151;">${item.n}</td>
+        <td class="center" style="color:#6B7280;font-size:10px;white-space:nowrap;">${cycleLbl}</td>
+        ${resCell}
+        <td style="color:#C8292A;font-size:10px;">${cmt||''}</td>
+        <td class="center">${idx===0 ? hankoHtml(inspectorName,inspDate) : ''}</td>
+        <td class="center">${idx===0 ? (isApproved ? hankoHtml(approverName,apprvDate) : `<div class="hanko-empty"></div>`) : ''}</td>
+      </tr>`;
+    }).join('');
+    return eqRows;
+  }).join('');
+
+  // 承認バナー
+  const approveBanner = (isAdmin && isPending) ? `
+  <div class="rpt-approve-banner no-print">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:2px;">未承認の点検表</div>
+      <div style="font-size:13px;font-weight:800;color:#FFFFFF;">${typeLabel} — ${line?.name||''} · ${dateLabel}</div>
+    </div>
+    <button class="rpt-approve-btn" onclick="approveReport()">
+      ✓ この点検表を承認する
+    </button>
+  </div>` : (isApproved ? `
+  <div style="background:linear-gradient(90deg,rgba(22,163,74,0.12),transparent);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;no-print;border-bottom:1px solid rgba(22,163,74,0.2);">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#16A34A"/><path d="M4 7l2 2 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="font-size:12px;font-weight:700;color:#16A34A;">承認済み — ${approverName} （${approval.approvedDate||''}）</span>
+  </div>` : '');
+
+  // ステータスサマリー表示色
+  const statCol = ngCount>0?'#C8292A':unfilledCount>0?'#D97706':'#16A34A';
+  const statTxt = ngCount>0?`異常 ${ngCount}件`:unfilledCount>0?`未入力 ${unfilledCount}件`:'全項目正常';
+
+  return `
+  <div class="rpt-screen">
+    <!-- ── トップバー (印刷時非表示) ── -->
+    <div class="rpt-topbar no-print">
+      <button onclick="nav(S._reportBack||'APPROVAL')"
+        style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;touch-action:manipulation;">
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7l6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="rpt-topbar-title">点検報告書</div>
+      <button onclick="window.print()"
+        style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;color:#FFFFFF;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;white-space:nowrap;transition:background .15s;" onmousedown="this.style.background='rgba(255,255,255,0.28)'" onmouseup="this.style.background='rgba(255,255,255,0.15)'">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="5" width="9" height="6" rx="1" stroke="white" stroke-width="1.3"/><path d="M4 5V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V5" stroke="white" stroke-width="1.3"/><rect x="4" y="8" width="5" height="2" rx=".3" fill="white"/></svg>
+        印刷
+      </button>
+    </div>
+
+    <!-- ── 承認バナー ── -->
+    ${approveBanner}
+
+    <!-- ── スクロールエリア ── -->
+    <div class="rpt-scroll">
+      <div class="rpt-paper">
+
+        <!-- ── 文書ヘッダー ── -->
+        <div class="rpt-paper-hdr">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div class="rpt-paper-title">点検報告書</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:10px;font-weight:700;color:${statCol};background:${statCol}18;padding:3px 10px;border-radius:8px;letter-spacing:.3px;">${statTxt}</span>
+              <span style="font-size:10px;font-weight:700;color:${isApproved?'#16A34A':isPending?'#1E3A8A':'#9CA3AF'};background:${isApproved?'rgba(22,163,74,0.1)':isPending?'rgba(30,58,138,0.1)':'#F3F4F6'};padding:3px 10px;border-radius:8px;">${isApproved?'承認済':isPending?'承認待ち':'未申請'}</span>
+            </div>
+          </div>
+          <div class="rpt-paper-meta">
+            <div class="rpt-meta-left">
+              <div><strong>点検種別</strong>　${typeLabel}</div>
+              <div><strong>対象ライン</strong>　${line?.name||'—'}${line?.desc?` （${line.desc}）`:''}</div>
+              <div><strong>点検日</strong>　${dateLabel}</div>
+              <div><strong>設備数</strong>　${targetEqs.length}台 ／ 点検項目合計 ${totalItems}件</div>
+            </div>
+            <div class="rpt-seal-row">
+              <div class="rpt-seal-box">
+                <div class="rpt-seal-lbl">点検者</div>
+                ${hankoHtml(inspectorName, inspDate)}
+                <div style="font-size:8px;color:#555;margin-top:3px;text-align:center;max-width:52px;line-height:1.3;">${inspectorName||'—'}</div>
+              </div>
+              <div class="rpt-seal-box">
+                <div class="rpt-seal-lbl">管理者承認</div>
+                ${isApproved ? hankoHtml(approverName, apprvDate) : `<div class="hanko-empty"></div>`}
+                <div style="font-size:8px;color:#555;margin-top:3px;text-align:center;max-width:52px;line-height:1.3;">${approverName||'（未承認）'}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 点検表 テーブル ── -->
+        <div class="rpt-table-wrap">
+          <table class="rpt-table">
+            <thead>
+              <tr>
+                <th style="width:100px;">設備名</th>
+                <th>点検項目</th>
+                <th class="center" style="width:54px;">周期</th>
+                <th class="center" style="width:44px;">結果</th>
+                <th style="width:130px;">異常内容</th>
+                <th class="center" style="width:60px;">点検者印</th>
+                <th class="center" style="width:60px;">管理者印</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows || `<tr><td colspan="7" style="text-align:center;padding:28px;color:#9CA3AF;">点検データがありません</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── フッター ── -->
+        <div class="rpt-paper-ftr">
+          <div class="rpt-paper-ftr-note">日常点検システム v15 ／ 出力日：${getToday()}</div>
+          <div class="rpt-paper-ftr-note">
+            ${isApproved?`承認：${approverName}（${approval.approvedDate||''}）`:'※ 管理者の承認が必要です'}
+          </div>
+        </div>
+
+      </div><!-- /rpt-paper -->
+    </div><!-- /rpt-scroll -->
+  </div><!-- /rpt-screen -->
+  ${btabs()}`;
+}
+
+/* ════════ RENDER HELPERS ════════ */
+function renderHeader(title, eyebrow, backView, actionBtn){
+  return`<div class="phdr">
+    ${backView!==null?`<button class="hdr-back-btn" onclick="nav('${backView||'HOME'}')">${BACK_ICO}</button>`:''}
+    <div class="hdr-center">
+      ${eyebrow?`<div class="hdr-eyebrow">${eyebrow}</div>`:''}
+      <div class="hdr-title">${title}</div>
+    </div>
+    ${actionBtn||''}
+  </div>`;
+}
+
+function renderListItem({label, sub, badge, badgeCls, onClick, progress}){
+  return`<div onclick="${onClick||''}" style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#FFFFFF;border:1px solid var(--border);border-radius:10px;margin-bottom:5px;cursor:${onClick?'pointer':'default'};touch-action:manipulation;transition:background .12s;" onmousedown="${onClick?'this.style.background=\'#F8F9FC\'':''}" onmouseup="${onClick?'this.style.background=\'#FFFFFF\'':''}">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+      ${sub?`<div style="font-size:11px;color:var(--text2);margin-top:2px;">${sub}</div>`:''}
+      ${progress!=null?`<div style="margin-top:5px;"><div class="prog-wrap"><div class="prog-fill" style="width:${progress}%;background:${progress===100?'var(--green)':'linear-gradient(90deg,#C8292A,#A82020)'};"></div></div></div>`:''}
+    </div>
+    ${badge?`<span class="badge ${badgeCls||'bGray'}">${badge}</span>`:''}
+    ${CHEVR}
+  </div>`;
+}
+
+function renderAdminSection(title, items){
+  if(!items||!items.length)return'';
+  return`<div style="margin-bottom:14px;">
+    <div class="section-label">${title}</div>
+    ${items.join('')}
+  </div>`;
+}
+
+function renderPlaceholder(title, sub){
+  return`<div class="screen">
+    <div class="phdr">
+      <button class="hdr-back-btn" onclick="nav('HOME')">${BACK_ICO}</button>
+      <div class="hdr-center"><div class="hdr-eyebrow">点検</div><div class="hdr-title">${title}</div></div>
+    </div>
+    <div class="scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;">
+      <div style="text-align:center;padding:60px 24px;">
+        <div style="font-size:48px;margin-bottom:20px;">🚧</div>
+        <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px;">${title}</div>
+        <div style="font-size:14px;color:var(--text2);">${sub||'この機能は現在準備中です'}</div>
+      </div>
+    </div>
+    ${btabs()}
+  </div>`;
+}
+
+function renderUserMgmt(){
+  const allNames=[...S.names.inspector,...S.names.admin];
+  const hdr=phdr('ユーザー管理','HOME');
+  const rows=allNames.map(n=>{
+    const isAdm=S.names.admin.includes(n);
+    return`<div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:${isAdm?'#FEF3C7':'#EFF6FF'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${isAdm?'#92400E':'#1E3A8A'};flex-shrink:0;">${n.charAt(0)}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px;">${isAdm?'👔 管理者':'🔧 点検者'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const empty=allNames.length===0?'<div class="empty-state">登録されているユーザーはありません</div>':'';
+  return`${hdr}<div class="scroll">${rows}${empty}</div>${btabs()}`;
+}
+
 
 function render(){
   const sc=document.getElementById('screen');
@@ -4672,6 +5381,10 @@ function render(){
     case'LINE_EQ_MGMT':body=renderLineEqMgmt();break;
     // [ADDED] ⑦ 担当設備紐づけ管理画面
     case'ASSIGNMENT_MGMT':body=renderAssignmentMgmt();break;
+    case'REPORT':body=renderReport();break;
+    case'TEN_H_OP':body=renderPlaceholder('10h点検','10時間点検機能は現在準備中です');break;
+    case'MONTHLY_OP':body=renderPlaceholder('月次点検','月次点検機能は現在準備中です');break;
+    case'USER_MGMT':body=renderUserMgmt();break;
     default:body=renderHome();
   }
   sc.innerHTML=body;
@@ -4682,24 +5395,47 @@ function render(){
   if(S.modal)sc.insertAdjacentHTML('beforeend',renderModalSheet());
   if(S.eqPdfModal.on)sc.insertAdjacentHTML('beforeend',renderEqPdfModal());
   if(S.histQuickInput)sc.insertAdjacentHTML('beforeend',renderHistQuickInputSheet());
+  if(S.sidebarOpen)sc.insertAdjacentHTML('beforeend',renderSidebar());
 }
 
 // ════════════ LocalStorage: 点検結果永続化 ════════════
-function saveInspState(){
+function saveState(){
   try{
     localStorage.setItem('dk_insps', JSON.stringify(S.insps));
     localStorage.setItem('dk_inspRunResults', JSON.stringify(S.inspRunResults||{}));
-    localStorage.setItem('dk_insps_date', TODAY);
-    // 異常リストも保存（デフォルトデータは除外してユーザー追加分のみ）
+    localStorage.setItem('dk_insps_date', getToday());
     const userAnomalies=S.anomalies.filter(a=>a.id.startsWith('AN'));
     localStorage.setItem('dk_anomalies', JSON.stringify(userAnomalies));
+    localStorage.setItem('dk_assignments', JSON.stringify(S.assignments));
+    localStorage.setItem('dk_approvals', JSON.stringify(S.approvals.filter(a=>(a.id+'').startsWith('APR'))));
   }catch(e){}
 }
+function saveInspState(){ saveState(); }
+(function cleanupOldData(){
+  try{
+    const threshold=new Date();threshold.setDate(threshold.getDate()-30);
+    const thStr=threshold.getFullYear()+'-'+String(threshold.getMonth()+1).padStart(2,'0')+'-'+String(threshold.getDate()).padStart(2,'0');
+    // S.insps から30日以上前のデータを削除
+    Object.keys(S.insps).forEach(k=>{if(S.insps[k].date&&S.insps[k].date<thStr)delete S.insps[k];});
+    // S.inspections から30日以上前のデータを削除
+    S.inspections=S.inspections.filter(r=>!r.date||r.date>=thStr);
+    // S.anomalies から30日以上前の解決済みデータを削除
+    S.anomalies=S.anomalies.filter(a=>a.status!=='resolved'||!a.date||a.date>=thStr);
+    // LocalStorage の古い key を削除
+    const keysToCheck=['dk_insps','dk_inspRunResults','dk_anomalies'];
+    const savedDate=localStorage.getItem('dk_insps_date');
+    if(savedDate&&savedDate<thStr){
+      keysToCheck.forEach(k=>localStorage.removeItem(k));
+      localStorage.removeItem('dk_insps_date');
+    }
+  }catch(e){}
+})();
+
 (function loadInspState(){
   try{
     const savedDate=localStorage.getItem('dk_insps_date');
     // 今日のデータのみ復元
-    if(savedDate===TODAY){
+    if(savedDate===getToday()){
       const insps=JSON.parse(localStorage.getItem('dk_insps')||'null');
       if(insps) S.insps=insps;
       const res=JSON.parse(localStorage.getItem('dk_inspRunResults')||'null');
@@ -4711,16 +5447,27 @@ function saveInspState(){
       // デフォルトデータに重複しないよう追加
       anoms.forEach(a=>{if(!S.anomalies.find(x=>x.id===a.id))S.anomalies.push(a);});
     }
+    // ★ Fix1: dk_assignments を S.assignments に正しくセット（ページリロード後も設定を維持）
+    const asgn=JSON.parse(localStorage.getItem('dk_assignments')||'null');
+    if(asgn&&Array.isArray(asgn)&&asgn.length){
+      S.assignments=asgn;
+      // LINE_DATA の inspectors も復元
+      asgn.forEach(a=>{
+        (a.lineIds||[]).forEach(lid=>{
+          const l=getLn(lid);
+          if(l){l.inspectors=l.inspectors||[];if(!l.inspectors.includes(a.name))l.inspectors.push(a.name);}
+        });
+      });
+    }
+    // approvals は日付問わず復元
+    const apprv=JSON.parse(localStorage.getItem('dk_approvals')||'null');
+    if(apprv&&apprv.length){
+      apprv.forEach(a=>{if(!S.approvals.find(x=>x.id===a.id))S.approvals.push(a);});
+    }
   }catch(e){}
 })();
 
 
-(function loadAssignments(){
-  try{
-    const data=localStorage.getItem('dk_assignments');
-    if(data) S.assignments=JSON.parse(data);
-  }catch(e){}
-})();
 
 // ── LocalStorage restore for inspector ──
 (function(){
