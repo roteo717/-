@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>日常点検システム v16</title>
+<title>日常点検システム v18</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -126,7 +126,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 /* ── Top Navigation ── */
 .topnav{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:520px;z-index:20;
+  width:100%;max-width:520px;z-index:100;
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
@@ -350,6 +350,15 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .irt::-webkit-scrollbar{display:none;}
 .htabs::-webkit-scrollbar{display:none;}
 
+/* NG インライン備考エリア */
+.ng-inline-wrap{margin-top:10px;animation:ngSlideDown .25s cubic-bezier(.34,1.2,.64,1);overflow:hidden;}
+@keyframes ngSlideDown{from{opacity:0;max-height:0;transform:translateY(-6px);}to{opacity:1;max-height:140px;transform:translateY(0);}}
+.ng-inline-textarea{width:100%;padding:10px 12px;border:1.5px solid rgba(200,41,42,0.35);border-radius:10px;font-size:13px;font-family:inherit;color:#111827;background:#FFF8F8;resize:none;height:76px;outline:none;line-height:1.55;transition:border-color .15s;}
+.ng-inline-textarea:focus{border-color:#C8292A;background:#FFF1F1;}
+
+/* 完了バッジ（カード右上） */
+.done-badge{font-size:10px;font-weight:800;color:#16A34A;background:rgba(22,163,74,0.12);padding:3px 9px;border-radius:8px;border:1px solid rgba(22,163,74,0.22);white-space:nowrap;}
+
 /* PC: History 2-col overrides */
 @media(min-width:769px){
   .hist-main-area{overflow-y:auto !important;}
@@ -373,8 +382,8 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .rpt-topbar-title{flex:1;font-size:16px;font-weight:800;color:#FFFFFF;letter-spacing:-.3px;}
 .rpt-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:auto;padding:16px 12px calc(env(safe-area-inset-bottom,0px)+100px);-webkit-overflow-scrolling:touch;}
 /* A4 paper card */
-.rpt-paper{background:#FFFFFF;border-radius:6px;box-shadow:0 4px 24px rgba(0,0,0,0.16),0 1px 4px rgba(0,0,0,0.08);max-width:860px;margin:0 auto;overflow:hidden;}
-.rpt-paper-hdr{padding:20px 24px 14px;border-bottom:2px solid #111;}
+.rpt-paper{background:#FFFFFF;border-radius:6px;box-shadow:0 4px 24px rgba(0,0,0,0.16),0 1px 4px rgba(0,0,0,0.08);max-width:860px;margin:0 auto;overflow:hidden;border:1.5px solid #C7CDD9;}
+.rpt-paper-hdr{padding:20px 24px 14px;border-bottom:2.5px solid #1E3A8A;}
 .rpt-paper-title{font-size:20px;font-weight:800;color:#111;letter-spacing:-.4px;font-family:'Noto Serif JP',serif;}
 .rpt-paper-meta{display:flex;align-items:flex-start;justify-content:space-between;margin-top:8px;gap:12px;}
 .rpt-meta-left{font-size:11px;color:#444;line-height:1.9;}
@@ -390,20 +399,21 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 .hanko-empty{width:44px;height:44px;border:1.5px dashed #D1D5DB;border-radius:50%;background:#F9FAFB;}
 /* Report table */
 .rpt-table-wrap{overflow-x:auto;padding:0;}
-.rpt-table{width:100%;border-collapse:collapse;font-size:11px;}
-.rpt-table thead th{background:#1E3A8A;color:#FFFFFF;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.4px;border:0.5px solid #1a3070;white-space:nowrap;}
+.rpt-table{width:100%;border-collapse:collapse;font-size:11px;border:1.5px solid #1E3A8A;}
+.rpt-table thead th{background:#1E3A8A;color:#FFFFFF;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.4px;border:1px solid #1a3070;white-space:nowrap;}
 .rpt-table thead th.center{text-align:center;}
-.rpt-table tbody tr{border-bottom:0.5px solid #E4E8EF;transition:background .1s;}
+.rpt-table tbody tr{border-bottom:1px solid #D1D5DB;}
 .rpt-table tbody tr:nth-child(even){background:#FAFBFC;}
 .rpt-table tbody tr:hover{background:#F0F4FF;}
-.rpt-table td{padding:7px 10px;vertical-align:middle;color:#1F2937;line-height:1.4;}
+.rpt-table td{padding:7px 10px;vertical-align:middle;color:#1F2937;line-height:1.4;border-right:1px solid #E4E8EF;}
+.rpt-table td:last-child{border-right:none;}
 .rpt-table td.center{text-align:center;}
 .rpt-table td.result-ok{text-align:center;font-weight:800;font-size:14px;color:#16A34A;}
 .rpt-table td.result-ng{text-align:center;font-weight:800;font-size:14px;color:#C8292A;background:rgba(200,41,42,0.04);}
 .rpt-table td.result-pending{text-align:center;color:#9CA3AF;font-size:12px;}
 .rpt-table .line-grp{background:#F1F3F8;font-size:10px;font-weight:700;color:#374151;letter-spacing:.5px;}
 .rpt-table .line-grp td{padding:5px 10px;}
-.rpt-table .eq-grp td{font-weight:700;color:#111827;background:#F8F9FC;font-size:11px;border-top:1px solid #D1D5DB;}
+.rpt-table .eq-grp td{font-weight:700;color:#111827;background:#F8F9FC;font-size:11px;border-top:1.5px solid #C7CDD9;}
 .rpt-paper-ftr{padding:12px 24px;border-top:1px solid #E4E8EF;display:flex;align-items:center;justify-content:space-between;background:#F8F9FC;}
 .rpt-paper-ftr-note{font-size:9px;color:#9CA3AF;}
 /* Approve banner */
@@ -439,7 +449,7 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans JP',-apple-sys
 <script>
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 const S={
-  view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,sidebarOpen:false,
+  view:'ROLE_SELECT',currentRole:null,currentName:null,nameEditMode:false,
   adminLineFilter:true, // true=担当ラインのみ, false=全ライン
   inspRunEqTab:null,
   inspSelectedLines:[],inspLastLines:[],
@@ -450,6 +460,7 @@ const S={
   bulkConfirm:false,bulkConfirmTimer:null,   // INSPECTION画面の一括OK確認フラグ
   bulkConfirmEq:null,bulkConfirmTimer2:null,
   inspRunNgModal:{on:false,eqId:null,itemId:null,comment:'',_draft:''},
+  inspRunNgComments:{}, // {eqId_itemId: comment} — inline NG comments
   eqPdfModal:{on:false,year:new Date().getFullYear(),month:new Date().getMonth()+1,eids:null},
   reportCtx:null, // {approvalId, lid, eid, type, date} — REPORT画面のコンテキスト
   names:{
@@ -503,15 +514,8 @@ function getLineEquip(line){
   return (line.equipmentIds||[]).map(id=>getEq(id)).filter(Boolean);
 }
 
-// [v5 NEW] isTargetDay — 周期に基づく表示判定
-function isTargetDay(item){
-  const day = new Date().getDate();
-  const t = item.t || item.cycle;
-  if(t === 'daily'  || t === '毎日') return true;
-  if(t === '10day'  || t === '10日') return day % 10 === 0;
-  if(t === 'monthly'|| t === '月次') return day === 1;
-  return true;
-}
+// isTargetDay — 全アイテムを日常点検に含める
+function isTargetDay(item){ return true; }
 function getTodayInspTypes(){
   const day = new Date().getDate();
   const types = ['毎日'];
@@ -652,12 +656,7 @@ function getEq(id){ return S.equipments.find(e=>e.id===id)||null; }
 // [v5] 初期選択設備：マスターの先頭
 S.selectedEquipmentId=S.equipments[0]?.id||null;
 function getInsps(eid,type){type=type||S.inspType;return S.insps[eid+':'+type];}
-function typeItems(eq,type){
-  const m={'毎日点検':'毎日','10日点検':'all2','月次点検':'all'};const t=m[type]||'毎日';
-  if(t==='毎日')return eq.items.filter(i=>i.t==='毎日');
-  if(t==='all2')return eq.items.filter(i=>i.t==='毎日'||i.t==='10日');
-  return eq.items;
-}
+function typeItems(eq,type){ return eq.items; }
 function lineStats(lid){
   // [v5] getLineEquip() でマスター参照
   const l=getLn(lid);const eqs=getLineEquip(l);let done=0,ng=0,pend=0;
@@ -709,8 +708,7 @@ function submitInsp(){
   if(pend>0){toast(`未入力が${pend}件あります`,'warn');return;}
   // [v6] 新構造に保存（旧S.inspsと並行）
   saveInspRecord(eq, getToday(), S.inspType, rs);
-  if(S.inspType!=='毎日点検'){S.approvals.push({id:'APR'+Date.now(),lid:getEq(eid)?S.lines.find(l=>(l.equipmentIds||[]).includes(eid))?.id||null:null,eid,type:S.inspType,date:getToday(),status:'pending',by:S.currentName||'現場作業者',approver:null,_sheet:true});try{localStorage.setItem('dk_approvals',JSON.stringify(S.approvals.filter(a=>(a.id+'').startsWith('APR'))));}catch(e){}toast('点検完了。承認申請しました');}
-  else toast('点検完了しました');
+  toast('点検完了しました');
   if(S.bulkActive){
     const l=getLn(S.bulkLineId);const eqs=getLineEquip(l);const ni=S.bulkIdx+1;
     if(ni<eqs.length){S.bulkIdx=ni;S.selectedEq=eqs[ni].id;render();}
@@ -1396,11 +1394,12 @@ function topnav(){
   const tab=(v,label)=>`<button class="tnav-tab ${isActive(v)?'active':''}" onclick="changeView('${v}')">${ICONS[v]||''}${label}</button>`;
   const userName=S.currentName||(isAdmin?'管理者':'点検者');
   const roleLabel=isAdmin?'管理者':'点検者';
-  const bizTabs=[
+  const bizTabs=isAdmin?[
     tab('HOME','ホーム'),
     tab('DAILY_OP','日常点検'),
-    tab('TEN_H_OP','10h点検'),
-    tab('MONTHLY_OP','月次点検'),
+    tab('ANOMALY_LIST','異常報告'),
+  ]:[
+    tab('DAILY_OP','日常点検'),
     tab('ANOMALY_LIST','異常報告'),
   ];
   const adminTabs=isAdmin?[
@@ -1727,12 +1726,9 @@ function renderInspectorHome(){
     else{sCol='#9CA3AF';sBg='#F8F9FC';sLabel='未着手';sIcon='○';}
     return`<div onclick="S.inspRunEqTab='${eq.id}';nav('INSP_RUN');"
       style="background:${sBg};border:1.5px solid ${sCol}30;border-radius:14px;padding:14px 12px 12px;cursor:pointer;touch-action:manipulation;transition:transform .1s;" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:8px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:#111827;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${eq.name}</div>
         <span style="font-size:9px;font-weight:800;color:${sCol};background:${sCol}18;padding:2px 6px;border-radius:6px;flex-shrink:0;white-space:nowrap;">${sIcon} ${sLabel}</span>
-      </div>
-      <div style="height:4px;background:#E4E8EF;border-radius:2px;overflow:hidden;margin-bottom:5px;">
-        <div style="height:100%;width:${total>0?Math.round(done/total*100):0}%;background:${sCol};border-radius:2px;transition:width .3s;"></div>
       </div>
       <div style="font-size:11px;color:${sCol};font-weight:600;">${done}/${total}件</div>
     </div>`;
@@ -1750,13 +1746,12 @@ function renderInspectorHome(){
         </div>
         <button onclick="inspChangeUser()" style="background:#F8F9FC;border:1.5px solid #E4E8EF;border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;touch-action:manipulation;font-family:inherit;">担当者切替</button>
       </div>
-      <!-- 全体進捗 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
-        <div style="font-size:11px;font-weight:600;color:#9CA3AF;">今日の進捗</div>
-        <div style="font-size:13px;font-weight:800;color:${allComplete?'#16A34A':'#C8292A'};">${doneAll}<span style="font-size:10px;font-weight:500;color:#9CA3AF;">/${totalAll}件</span></div>
-      </div>
-      <div style="height:6px;background:#F1F3F8;border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pctAll}%;background:${allComplete?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF6464)'};border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);"></div>
+      <!-- 完了カウント -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+        <div style="font-size:11px;font-weight:600;color:#9CA3AF;">今日の点検</div>
+        <div style="font-size:13px;font-weight:800;color:${allComplete?'#16A34A':'#C8292A'};">${doneAll}<span style="font-size:10px;font-weight:500;color:#9CA3AF;">/${totalAll}件 完了</span>
+        ${allComplete?'<span style="font-size:10px;font-weight:800;color:#16A34A;background:rgba(22,163,74,0.12);padding:2px 8px;border-radius:8px;margin-left:6px;">✓ 完了</span>':''}
+        </div>
       </div>
     </div>
 
@@ -2225,20 +2220,6 @@ function renderInspection(){
   <div style="padding:10px 16px;flex-shrink:0;background:var(--surface);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
     <span style="font-size:13px;font-weight:500;color:var(--text2);">${done} / ${items.length} 項目</span>
     ${pct===100?`<span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--green);"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M4.5 8l2.5 2.5 4-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>完了</span>`:`<span style="font-size:13px;font-weight:600;color:var(--red);">${pct}%</span>`}
-  </div>
-  <!-- [v6] 点検種別クイックセレクタ -->
-  <div style="padding:10px 16px;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;">
-    <div class="pill-row">
-      <button class="pill ${S.inspType==='毎日点検'?'active':''}" onclick="S.inspType='毎日点検';render();">
-        毎日点検
-      </button>
-      <button class="pill ${S.inspType==='10日点検'?'active':''}" onclick="S.inspType='10日点検';render();">
-        10日点検
-      </button>
-      <button class="pill ${S.inspType==='月次点検'?'active':''}" onclick="S.inspType='月次点検';render();">
-        月次点検
-      </button>
-    </div>
   </div>
   ${pend>0?`<div class="bulk-sticky">
     <button onclick="bulkOk()" style="width:100%;padding:14px;background:var(--green-lt);border:1.5px solid var(--green);border-radius:var(--r);color:var(--green);font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;">
@@ -4119,6 +4100,7 @@ function renderInspRun(){
           <span style="font-size:15px;font-weight:700;letter-spacing:.2px;">正常</span>
         </button>
       </div>
+      ${isNg?`<div class="ng-inline-wrap"><textarea class="ng-inline-textarea" placeholder="異常の内容を記入（任意）" oninput="inspSetNgComment('${selectedEq.id}','${it.id}',this.value)">${S.inspRunNgComments&&S.inspRunNgComments[key]||''}</textarea></div>`:''}
     </div>`;
   }).join('');
 
@@ -4141,16 +4123,13 @@ function renderInspRun(){
           <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;margin-bottom:1px;">${dateLabel}</div>
           <div style="font-size:17px;font-weight:800;color:#111827;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${S.currentName||'点検者'}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div style="font-size:24px;font-weight:800;color:${pctAll===100?'#16A34A':'#C8292A'};line-height:1;">${pctAll}<span style="font-size:12px;color:#9CA3AF;font-weight:600;">%</span></div>
-          <div style="font-size:10px;color:#9CA3AF;">${doneAll}/${totalAll}</div>
+        <div data-insp-counter style="text-align:right;flex-shrink:0;">
+          ${pctAll===100
+            ?`<span style="font-size:11px;font-weight:800;color:#16A34A;background:rgba(22,163,74,0.12);padding:4px 10px;border-radius:10px;border:1px solid rgba(22,163,74,0.22);">✓ 全完了</span>`
+            :`<span style="font-size:11px;font-weight:700;color:#6B7280;">${doneAll}<span style="font-size:10px;font-weight:500;color:#9CA3AF;">/${totalAll}</span></span>`}
         </div>
       </div>
-      <div style="height:6px;background:#F1F3F8;border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pctAll}%;background:${pctAll===100?'linear-gradient(90deg,#22C55E,#16A34A)':'linear-gradient(90deg,#C8292A,#FF6464)'};border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);"></div>
-      </div>
-      ${todayTypes.length>1?`<div style="margin-top:8px;display:flex;gap:5px;">${todayTypes.slice(1).map(t=>`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 9px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">本日：${t}</span>`).join('')}</div>`:''}
-      <!-- 設備タブ（スマホのみ） -->
+      ${todayTypes.length>1?`<div style="margin-top:6px;display:flex;gap:5px;">${todayTypes.slice(1).map(t=>`<span style="font-size:10px;font-weight:700;color:#D97706;background:#FFFBEB;padding:2px 9px;border-radius:8px;border:1px solid rgba(217,119,6,0.25);">本日：${t}</span>`).join('')}</div>`:''}      <!-- 設備タブ（スマホのみ） -->
       <div class="mobile-only" style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:10px -20px 0;padding:0 20px 12px;">
         <style>.irt::-webkit-scrollbar{display:none;}</style>
         <div class="irt" style="display:flex;gap:8px;min-width:max-content;">${tabsHtml}</div>
@@ -4292,8 +4271,7 @@ function inspSetRes(eqId,itemId,result){
       break;
     }
   }
-  // Update progress bar
-  // [FIXED] getVisibleEquip() で担当設備のみカウント（全設備を数えると未入力判定がずれる）
+  // Update done counter in header
   let total=0,doneAll=0;
   selLines.forEach(line=>getVisibleEquip(line).forEach(eq=>{
     const items=eq.items.filter(i=>i.t==='毎日');
@@ -4301,14 +4279,12 @@ function inspSetRes(eqId,itemId,result){
     doneAll+=items.filter(i=>S.inspRunResults[eq.id+'_'+i.id]).length;
   }));
   const pct=total>0?Math.round(doneAll/total*100):0;
-  const fill=document.querySelector('#insp-run-scroll')?.closest('div')?.querySelector('.prog-fill');
-  // Update the progress bar directly
-  const progBars=document.querySelectorAll('[style*="width:'+Math.max(0,pct-1)+'%"]');
-  // Simpler: find via parent traversal
-  const progFill=document.evaluate('//div[contains(@style,"linear-gradient(90deg,#C8292A")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-  if(progFill)progFill.style.width=pct+'%';
-  const progNums=document.evaluate('//div[contains(text()," / ")]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-  if(progNums)progNums.textContent=doneAll+' / '+total;
+  // Update the compact counter element if present
+  const counterEl=document.querySelector('[data-insp-counter]');
+  if(counterEl){
+    if(pct===100){counterEl.innerHTML='<span style="font-size:11px;font-weight:800;color:#16A34A;background:rgba(22,163,74,0.12);padding:4px 10px;border-radius:10px;border:1px solid rgba(22,163,74,0.22);">✓ 全完了</span>';}
+    else{counterEl.innerHTML=`<span style="font-size:11px;font-weight:700;color:#6B7280;">${doneAll}<span style="font-size:10px;font-weight:500;color:#9CA3AF;">/${total}</span></span>`;}
+  }
 }
 
 function inspFinish(){
@@ -4830,10 +4806,30 @@ function inspSetRes2(eqId, itemId, result){
     delete S.inspRunResults[key];
     saveInspState(); render(); return;
   }
-  // NG時 → モーダルで詳細入力
+  // NG時 → インライン備考フィールドを表示（再レンダリング）。モーダル不要。
   if(result==='ng'){
-    S.inspRunNgModal={on:true,eqId,itemId,comment:'',hasPhoto:false,_draft:''};
-    render(); return;
+    S.inspRunResults[key]=result;
+    // 異常管理へ自動連携
+    const eq=getEq(eqId);
+    const item=eq?.items.find(i=>i.id===itemId);
+    if(eq&&item&&!S.anomalies.find(a=>a.eid===eqId&&a.iid===itemId&&a.status!=='resolved')){
+      const line=S.lines.find(l=>(l.equipmentIds||[]).includes(eqId));
+      const cmt=(S.inspRunNgComments&&S.inspRunNgComments[key])||'点検にてNG';
+      S.anomalies.push({
+        id:'AN'+Date.now()+Math.random().toString(36).slice(2),
+        lid:line?.id||'',eid:eqId,iid:itemId,iname:item.n,
+        comment:cmt,status:'open',date:getToday(),by:S.currentName||'点検者'
+      });
+    }
+    // 全項目完了チェック
+    if(eq){
+      const todayItems=eq.items.filter(isTargetDay);
+      const allDone=todayItems.length>0&&todayItems.every(i=>S.inspRunResults[eq.id+'_'+i.id]);
+      if(allDone) toast(`${eq.name}：異常あり`,'warn');
+    }
+    saveInspState();
+    render();
+    return;
   }
   S.inspRunResults[key]=result;
   // 全項目完了チェック → 自動トースト
@@ -4916,8 +4912,16 @@ function renderInspRunNgSheet(){
   <script>requestAnimationFrame(()=>{const t=document.getElementById('irng-c');if(t)t.focus();})<\/script>`;
 }
 
+function inspSetNgComment(eqId, itemId, val){
+  if(!S.inspRunNgComments) S.inspRunNgComments={};
+  S.inspRunNgComments[eqId+'_'+itemId]=val;
+  // 異常コメントを anomalies に反映（既存の未解決エントリのみ）
+  const existing=S.anomalies.find(a=>a.eid===eqId&&a.iid===itemId&&a.status!=='resolved');
+  if(existing&&val) existing.comment=val;
+}
+
 function inspBulkOkEq2(eqId){
-  if(!confirm('この設備の未入力項目をすべて「正常（○）」に一括入力しますか？')) return;
+  if(!confirm('この設備の未入力項目をすべて「正常（○）」に一括入力しますか？\n（すでにNGを選択した項目は変更しません）')) return;
   S.bulkConfirmEq = null;
   if(!S.inspRunResults) S.inspRunResults={};
   const eq=getEq(eqId);
@@ -4925,11 +4929,13 @@ function inspBulkOkEq2(eqId){
   const items=eq.items.filter(isTargetDay);
   let cnt=0;
   items.forEach(it=>{
-    if(!S.inspRunResults[eqId+'_'+it.id]){
-      S.inspRunResults[eqId+'_'+it.id]='ok'; cnt++;
+    const key=eqId+'_'+it.id;
+    // NGが選択済みの項目はスキップ（上書きしない）
+    if(!S.inspRunResults[key]){
+      S.inspRunResults[key]='ok'; cnt++;
     }
   });
-  if(cnt>0) toast(`${cnt}件をすべて正常に入力しました`,'ok');
+  if(cnt>0) toast(`${cnt}件をすべて正常に入力しました（NG項目は除く）`,'ok');
   else toast('未入力の項目はありません');
   saveInspState();
   render();
@@ -4968,11 +4974,13 @@ function inspFinish2(){
       S.insps[key].results[it.id]={r,comment:''};
       if(r==='ng'){
         const existing=S.anomalies.find(a=>a.eid===eq.id&&a.iid===it.id&&a.status!=='resolved');
+        const cmt=(S.inspRunNgComments&&S.inspRunNgComments[eq.id+'_'+it.id])||'点検にてNG';
         if(!existing) S.anomalies.push({
           id:'AN'+Date.now()+Math.random().toString(36).slice(2),
           lid:lineId,eid:eq.id,iid:it.id,iname:it.n,
-          comment:'点検にてNG',status:'open',date:getToday(),by:S.currentName||'点検者'
+          comment:cmt,status:'open',date:getToday(),by:S.currentName||'点検者'
         });
+        else if(cmt&&cmt!=='点検にてNG') existing.comment=cmt;
       }
     });
     saveInspRecord(eq,getToday(),'毎日点検',S.insps[key].results);
@@ -4982,14 +4990,15 @@ function inspFinish2(){
       tenDayItems.forEach(it=>{tenResults[it.id]={r:S.inspRunResults[eq.id+'_'+it.id]||'ok',comment:''};});
       S.insps[eq.id+':10日点検']={date:getToday(),results:tenResults,by:S.currentName||'点検者'};
       saveInspRecord(eq,getToday(),'10日点検',tenResults);
-      // 承認待ちレコード（設備単位）
+      // 承認待ちレコード（設備単位）★ 点検者印は自動セット
       const existsApproval=S.approvals.find(a=>a.eid===eq.id&&a.type==='10日点検'&&a.date===getToday()&&a.status==='pending');
       if(!existsApproval){
         S.approvals.push({
           id:'APR'+Date.now()+Math.random().toString(36).slice(2,6),
           lid:lineId,eid:eq.id,type:'10日点検',date:getToday(),
-          status:'pending',by:S.currentName||'点検者',approver:null,
-          approvedDate:null,_sheet:true
+          status:'pending',by:S.currentName||'点検者',
+          inspectorName:S.currentName||'点検者',inspectedAt:getToday(),
+          approver:null,approvedDate:null,_sheet:true
         });
       }
     }
@@ -5003,13 +5012,15 @@ function inspFinish2(){
         S.approvals.push({
           id:'APR'+Date.now()+Math.random().toString(36).slice(2,6),
           lid:lineId,eid:eq.id,type:'月次点検',date:getToday(),
-          status:'pending',by:S.currentName||'点検者',approver:null,
-          approvedDate:null,_sheet:true
+          status:'pending',by:S.currentName||'点検者',
+          inspectorName:S.currentName||'点検者',inspectedAt:getToday(),
+          approver:null,approvedDate:null,_sheet:true
         });
       }
     }
   });
   S.inspRunResults={};
+  S.inspRunNgComments={};
   // ★ 承認データもLocalStorageに保存
   try{ localStorage.setItem('dk_approvals', JSON.stringify(S.approvals.filter(a=>a.id.startsWith('APR')))); }catch(e){}
   toast(ng>0?`点検完了（異常 ${ng} 件）`:'点検完了！全項目正常です');
@@ -5271,7 +5282,7 @@ function renderReport(){
 
         <!-- ── フッター ── -->
         <div class="rpt-paper-ftr">
-          <div class="rpt-paper-ftr-note">日常点検システム v15 ／ 出力日：${getToday()}</div>
+          <div class="rpt-paper-ftr-note">日常点検システム v18 ／ 出力日：${getToday()}</div>
           <div class="rpt-paper-ftr-note">
             ${isApproved?`承認：${approverName}（${approval.approvedDate||''}）`:'※ 管理者の承認が必要です'}
           </div>
@@ -5358,7 +5369,7 @@ function render(){
   switch(S.view){
     case'ROLE_SELECT':body=renderRoleSelect();break;
     case'NAME_SELECT':body=renderNameSelect();break;
-    case'HOME':body=renderHome();break;
+    case'HOME':if(S.currentRole==='inspector'){S.view='INSP_RUN';body=renderInspRun();}else body=renderHome();break;
     case'INSP_RUN':body=renderInspRun();break;
     case'LINE_DETAIL':body=renderLineDetail();break;
     case'INSPECTION':body=renderInspection();break;
@@ -5372,8 +5383,7 @@ function render(){
     // [ADDED] ⑦ 担当設備紐づけ管理画面
     case'ASSIGNMENT_MGMT':body=renderAssignmentMgmt();break;
     case'REPORT':body=renderReport();break;
-    case'TEN_H_OP':body=renderPlaceholder('10h点検','10時間点検機能は現在準備中です');break;
-    case'MONTHLY_OP':body=renderPlaceholder('月次点検','月次点検機能は現在準備中です');break;
+    case'TEN_H_OP':case'MONTHLY_OP':S.view='INSP_RUN';body=renderInspRun();break;
     case'USER_MGMT':body=renderUserMgmt();break;
     default:body=renderHome();
   }
@@ -5500,7 +5510,7 @@ function saveInspState(){ saveState(); }
     })();
     const firstEq=(assigned||S.equipments)[0];
     if(firstEq) S.inspRunEqTab=firstEq.id;
-    S.view='HOME';
+    S.view='INSP_RUN';
   }
 })();
 
