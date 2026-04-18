@@ -149,6 +149,101 @@
   .role-badge.show { display: flex; }
   .role-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #4cd964; flex-shrink: 0; }
 
+  /* ── Name Select Screen ── */
+  .name-screen {
+    position: fixed; inset: 0; z-index: 99;
+    background: linear-gradient(160deg, #1a2e50 0%, #2a4a7a 55%, #1e3a6a 100%);
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 24px;
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .name-screen.visible { display: flex; }
+  .name-screen.fade-out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+  .name-screen-back {
+    position: absolute; top: 20px; left: 20px;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s;
+  }
+  .name-screen-back:hover { background: rgba(255,255,255,0.22); }
+  .name-screen-back svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .name-screen-role-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(224,96,32,0.25);
+    border: 1px solid rgba(224,96,32,0.5);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 12px; color: rgba(255,255,255,0.9);
+    margin-bottom: 10px; letter-spacing: .5px;
+  }
+  .name-screen-role-dot { width: 7px; height: 7px; border-radius: 50%; background: #e06020; }
+
+  .name-screen-title {
+    font-size: 18px; font-weight: 700; color: #fff;
+    margin-bottom: 6px; letter-spacing: .5px;
+  }
+  .name-screen-sub {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+  }
+
+  .name-list {
+    width: 100%; max-width: 340px;
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 28px;
+    max-height: 50vh; overflow-y: auto;
+  }
+  .name-card {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, transform .15s;
+    user-select: none;
+  }
+  .name-card:hover { background: rgba(255,255,255,0.18); transform: translateX(3px); }
+  .name-card.selected {
+    background: rgba(255,255,255,0.2);
+    border-color: #e06020;
+  }
+  .name-card-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .2s;
+  }
+  .name-card.selected .name-card-avatar { background: rgba(224,96,32,0.35); }
+  .name-card-avatar svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.85); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .name-card-text { flex: 1; font-size: 15px; font-weight: 600; color: #fff; }
+  .name-card-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s; flex-shrink: 0;
+  }
+  .name-card.selected .name-card-check { background: #e06020; border-color: #e06020; }
+  .name-card-check svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s; }
+  .name-card.selected .name-card-check svg { opacity: 1; }
+
+  .name-btn {
+    width: 100%; max-width: 340px;
+    padding: 16px; border: none; border-radius: 16px;
+    background: linear-gradient(135deg, #e06020, #c04010);
+    color: #fff; font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; opacity: .4;
+    transition: opacity .2s, transform .15s;
+    box-shadow: 0 6px 20px rgba(224,96,32,0.4);
+  }
+  .name-btn.ready { opacity: 1; }
+  .name-btn.ready:hover { transform: scale(1.02); }
+
   /* ── Compact Header ── */
   .compact-header {
     background: linear-gradient(135deg, #f0857a 0%, #e8657a 50%, #d4607e 100%);
@@ -861,12 +956,27 @@
     </div>
   </div>
 
-  <button class="role-btn" id="role-btn" onclick="enterApp()">ログイン</button>
+  <button class="role-btn" id="role-btn" onclick="enterApp()">次へ</button>
 
   <div class="role-badge" id="role-badge">
     <span class="role-badge-dot"></span>
     <span id="role-badge-text"></span>
   </div>
+</div>
+
+<!-- Name Selection Screen -->
+<div class="name-screen" id="name-screen">
+  <button class="name-screen-back" onclick="backToRole()" title="戻る">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="name-screen-role-badge">
+    <span class="name-screen-role-dot"></span>
+    <span id="name-screen-role-label">点検者</span>
+  </div>
+  <div class="name-screen-title">名前を選択してください</div>
+  <div class="name-screen-sub">ログインするアカウントを選んでください</div>
+  <div class="name-list" id="name-list"></div>
+  <button class="name-btn" id="name-btn" onclick="proceedToApp()">ログイン</button>
 </div>
 
 <div class="phone" id="app-inner" style="display:none">
@@ -2109,6 +2219,8 @@ function toggleLinkInspector(fi, name, chipEl) {
 
 // legacy alias (toggleLinkKey removed)
 
+let selectedName = null;
+
 function selectRole(role) {
   selectedRole = role;
   document.getElementById('card-inspector').classList.toggle('selected', role === 'inspector');
@@ -2121,10 +2233,67 @@ function selectRole(role) {
 
 function enterApp() {
   if (!selectedRole) return;
-  const screen = document.getElementById('role-screen');
-  screen.classList.add('fade-out');
+  // Transition: role screen → name screen
+  const roleScreen = document.getElementById('role-screen');
+  roleScreen.classList.add('fade-out');
   setTimeout(() => {
-    screen.classList.add('hidden');
+    roleScreen.classList.add('hidden');
+    // Populate name list
+    const names = selectedRole === 'inspector' ? staffData.inspectors : staffData.managers;
+    const label  = selectedRole === 'inspector' ? '点検者' : '管理人';
+    document.getElementById('name-screen-role-label').textContent = label;
+    const listEl = document.getElementById('name-list');
+    listEl.innerHTML = names.map(name => `
+      <div class="name-card" id="name-card-${CSS.escape(name)}" onclick="selectName('${name.replace(/'/g,"\\'")}')">
+        <div class="name-card-avatar">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <span class="name-card-text">${name}</span>
+        <div class="name-card-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+      </div>`).join('');
+    selectedName = null;
+    document.getElementById('name-btn').classList.remove('ready');
+    // Show name screen
+    const nameScreen = document.getElementById('name-screen');
+    nameScreen.classList.add('visible');
+    nameScreen.style.opacity = '0';
+    nameScreen.style.transition = 'opacity .35s ease';
+    requestAnimationFrame(() => { nameScreen.style.opacity = '1'; });
+  }, 380);
+}
+
+function selectName(name) {
+  selectedName = name;
+  document.querySelectorAll('.name-card').forEach(el => el.classList.remove('selected'));
+  const safe = name.replace(/'/g, "\\'");
+  // find by text content
+  document.querySelectorAll('.name-card').forEach(el => {
+    if (el.querySelector('.name-card-text').textContent === name) el.classList.add('selected');
+  });
+  document.getElementById('name-btn').classList.add('ready');
+}
+
+function backToRole() {
+  const nameScreen = document.getElementById('name-screen');
+  nameScreen.style.opacity = '0';
+  setTimeout(() => {
+    nameScreen.classList.remove('visible');
+    nameScreen.style.opacity = '';
+    const roleScreen = document.getElementById('role-screen');
+    roleScreen.classList.remove('hidden', 'fade-out');
+    roleScreen.style.opacity = '0';
+    roleScreen.style.transition = 'opacity .35s ease';
+    requestAnimationFrame(() => { roleScreen.style.opacity = '1'; });
+  }, 300);
+}
+
+function proceedToApp() {
+  if (!selectedName) return;
+  const nameScreen = document.getElementById('name-screen');
+  nameScreen.classList.add('fade-out');
+  setTimeout(() => {
+    nameScreen.classList.remove('visible');
+    nameScreen.classList.remove('fade-out');
     const app = document.getElementById('app-inner');
     app.style.display = 'flex';
     app.style.opacity = '0';
@@ -2132,10 +2301,9 @@ function enterApp() {
     requestAnimationFrame(() => { app.style.opacity = '1'; });
     const roleLabel = selectedRole === 'inspector' ? '点検者' : '管理人';
     const badge = document.getElementById('header-role-badge');
-    if (badge) badge.textContent = roleLabel;
+    if (badge) badge.textContent = selectedName;
     const pdfBtn = document.getElementById('pdf-btn');
     if (pdfBtn) pdfBtn.style.display = selectedRole === 'manager' ? 'flex' : 'none';
-
     // Switch alert ↔ settings based on role
     const iconEl  = document.getElementById('nav-alert-icon');
     const labelEl = document.getElementById('nav-alert-label');
@@ -2162,8 +2330,8 @@ function logout() {
   app.style.opacity = '0';
   setTimeout(() => {
     app.style.display = 'none';
-    // Reset role selection state
     selectedRole = null;
+    selectedName = null;
     document.getElementById('card-inspector').classList.remove('selected');
     document.getElementById('card-manager').classList.remove('selected');
     document.getElementById('role-btn').classList.remove('ready');
