@@ -151,45 +151,73 @@
 
   /* ── Compact Header ── */
   .compact-header {
-    background: linear-gradient(135deg, #1a2e50, #2a4a7a);
-    padding: 14px 16px 12px;
+    background: linear-gradient(135deg, #f0857a 0%, #e8657a 50%, #d4607e 100%);
+    padding: 18px 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .compact-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+  .compact-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 30%;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
   }
   .compact-nav {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
-  .compact-month {
-    display: flex; align-items: baseline; gap: 6px;
+  .compact-year-row {
+    display: flex; align-items: center; gap: 4px;
   }
-  .compact-year { font-size: 13px; color: rgba(255,255,255,0.7); }
-  .compact-monthnum { font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
-  .compact-monthname { font-size: 14px; color: rgba(255,255,255,0.85); }
-  .compact-scores {
-    display: flex; gap: 8px; justify-content: space-between;
+  .compact-year {
+    font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;
   }
-  .compact-pill {
-    flex: 1;
-    background: rgba(255,255,255,0.15);
-    border-radius: 12px;
-    padding: 8px 10px;
-    text-align: center;
+  .compact-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0; cursor: pointer;
   }
-  .compact-pill .score-pill-label { color: rgba(255,255,255,0.75); }
-  .compact-pill .score-val { color: #fff; font-size: 22px; }
-  .compact-pill .score-val span { font-size: 13px; }
-  .compact-pill .score-val.pct { font-size: 20px; }
+  .compact-avatar svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.9); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .compact-month-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .compact-monthname {
+    font-size: 46px; font-weight: 800;
+    color: #fff; line-height: 1;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  }
+  .compact-month-arrows { display: flex; gap: 6px; align-items: center; padding-bottom: 6px; }
+  .compact-month { display: none; }
+  .compact-monthnum { display: none; }
 
   /* score nav used in compact header */
-  .score-nav:hover { background: rgba(255,255,255,0.95); }
   .score-nav {
-    width: 36px; height: 36px;
+    width: 32px; height: 32px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.88);
-    border: none; cursor: pointer;
-    font-size: 20px; color: #334;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: background .15s;
+    color: #fff;
   }
+  .score-nav:hover { background: rgba(255,255,255,0.38); }
+  .score-nav .icon-svg { stroke: #fff; }
   .score-pill-label { font-size: 11px; color: #556; display: block; margin-bottom: 2px; }
   .score-val { font-size: 26px; font-weight: 700; color: #1a2e4a; line-height: 1; }
   .score-val span { font-size: 14px; }
@@ -240,17 +268,16 @@
     transition: all .12s; user-select: none;
   }
   .day-num:hover:not(.empty):not(.past-no-log) { transform: scale(1.08); }
-  .day-num.ok       { background: #d0eaff; color: #1a4a7a; font-weight: 600; }
-  .day-num.warn     { background: #ffe8cc; color: #8a3c00; font-weight: 600; }
-  .day-num.ng       { background: #ffd0d0; color: #8a0000; font-weight: 600; }
+  .day-num.ok       { background: #d0eaff; color: #1a4a7a; font-weight: 700; }
+  .day-num.warn     { background: #ffe8cc; color: #8a3c00; font-weight: 700; }
+  .day-num.ng       { background: #ffd0d0; color: #8a0000; font-weight: 700; }
   .day-num.today    { border: 2px solid #e06020; color: #e06020; font-weight: 700; }
   .day-num.today.ok { border: 2px solid #e06020; background: #d0eaff; color: #1a4a7a; }
   .day-num.empty    { opacity: 0; pointer-events: none; }
-  .day-num.past-no-log { color: #ccc; cursor: default; }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 2px; }
-  .dot-ok   { background: #3a9edc; }
-  .dot-warn { background: #e08020; }
-  .dot-ng   { background: #dc3a3a; }
+  .day-num.past-no-log { background: #fff0f0; color: #e08080; border: 1.5px solid #f8c0c0; cursor: pointer; }
+  .day-num.weekend  { color: #bbb; background: none; }
+  .day-num.weekend:not(.today) { background: none; border: none; }
+
 
   /* ── Legend ── */
   .legend {
@@ -332,23 +359,42 @@
     cursor: pointer; box-shadow: 0 2px 6px rgba(224,96,32,0.4);
   }
 
-  .status-select {
-    display: flex; gap: 8px; margin-bottom: 16px;
+  /* per-item check row */
+  .item-check-row {
+    display: flex; align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0f0f4;
+    gap: 12px;
   }
-  .status-btn {
-    flex: 1; padding: 11px 4px;
+  .item-check-row:last-of-type { border-bottom: none; }
+  .item-check-label {
+    flex: 1; font-size: 14px; color: #334; font-weight: 500;
+  }
+  .item-check-btns { display: flex; gap: 8px; flex-shrink: 0; }
+  .item-btn {
+    width: 52px; height: 40px;
     border-radius: 12px; border: 2px solid #dde;
-    font-size: 13px; font-weight: 600; cursor: pointer;
-    background: #f5f6f8; color: #889; transition: all .15s;
+    font-size: 20px; font-weight: 700;
+    cursor: pointer; background: #f5f6f8; color: #bbc;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
     font-family: 'Noto Sans JP', sans-serif;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
   }
-  .status-btn .icon-svg-sm { stroke: currentColor; }
-  .status-btn.sel-ok   { border-color: #3a9edc; background: #d0eaff; color: #1a4a7a; }
-  .status-btn.sel-warn { border-color: #e08020; background: #ffe8cc; color: #8a3c00; }
-  .status-btn.sel-ng   { border-color: #dc3a3a; background: #ffd0d0; color: #8a0000; }
+  .item-btn.sel-pass { border-color: #22c55e; background: #dcfce7; color: #166534; }
+  .item-btn.sel-fail { border-color: #dc3a3a; background: #ffd0d0; color: #cc0000; }
 
-  .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-all-pass {
+    width: 100%; padding: 11px;
+    border: 2px dashed #22c55e; border-radius: 12px;
+    background: #f0fdf4; color: #166534;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background .15s;
+  }
+  .btn-all-pass:hover { background: #dcfce7; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 4px; }
   .btn-cancel {
     flex: 1; padding: 14px;
     border: 1px solid #dde; border-radius: 14px;
@@ -397,20 +443,74 @@
     display: none; flex-direction: column;
     background: #f5f6f8; flex: 1; overflow-y: auto;
   }
-  .settings-section { margin: 14px 14px 0; }
+  .settings-section {
+    margin: 10px 14px 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+  .settings-section-header {
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; padding: 14px 16px; margin-bottom: 0;
+    user-select: none;
+    border-bottom: 1.5px solid transparent;
+    transition: border-color .2s;
+  }
+  .settings-section.open .settings-section-header {
+    border-bottom-color: #f0f0f4;
+  }
+  .settings-section-icon {
+    width: 36px; height: 36px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .settings-section-icon svg { width: 18px; height: 18px; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .settings-section-meta { flex: 1; }
   .settings-section-title {
-    font-size: 11px; font-weight: 700; color: #889;
-    letter-spacing: .8px; padding: 0 4px; margin-bottom: 8px;
+    font-size: 13px; font-weight: 700; color: #1a2e4a;
+    letter-spacing: .3px;
+  }
+  .settings-section-count {
+    font-size: 11px; color: #99a; margin-top: 1px;
+  }
+  .settings-section-chevron {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f2f6;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .25s ease, background .2s;
+    flex-shrink: 0;
+  }
+  .settings-section-chevron svg { width: 13px; height: 13px; stroke: #667; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .settings-section.open .settings-section-chevron { transform: rotate(180deg); background: #e8edf5; }
+  .settings-section-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .3s ease, opacity .25s ease;
+    opacity: 0;
+  }
+  .settings-section.open .settings-section-body {
+    max-height: 1000px;
+    opacity: 1;
   }
   .settings-card {
-    background: #fff; border-radius: 16px; overflow: hidden;
-    margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column; gap: 8px;
+    background: transparent; overflow: visible;
+    margin-bottom: 8px;
+  }
+  .settings-section-body-inner {
+    padding: 12px 14px 14px;
+    background: #f5f6f8;
+    border-top: 1px solid #f0f0f4;
   }
   .settings-row {
     display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px; border-bottom: 1px solid #f0f0f4;
+    padding: 12px 14px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid #eef0f4;
   }
-  .settings-row:last-child { border-bottom: none; }
   .settings-row-icon {
     width: 34px; height: 34px; border-radius: 10px;
     background: #eef2f8; flex-shrink: 0;
@@ -444,6 +544,81 @@
     white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.2); z-index: 50;
   }
   .settings-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* add / delete row controls */
+  .settings-row-del {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fff0f0; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s;
+  }
+  .settings-row-del:hover { background: #ffd0d0; }
+  .settings-row-del svg { width: 14px; height: 14px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+  .settings-add-btn {
+    width: 100%; padding: 12px;
+    border: 1.5px dashed #c8d4e8; border-radius: 12px;
+    background: transparent; color: #5a7aaa;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; margin-top: 8px; margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background .15s, border-color .15s;
+  }
+  .settings-add-btn:hover { background: #eef2f8; border-color: #a0b4cc; }
+  .settings-add-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+  /* ── Facility sub-tabs ── */
+  .fac-subtabs {
+    display: flex; gap: 6px;
+    padding: 10px 14px 6px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #eef0f4;
+  }
+  .fac-subtab {
+    flex: 1; padding: 8px 6px;
+    border-radius: 10px; border: 1.5px solid #dde;
+    background: #fff; color: #778;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; text-align: center;
+    transition: all .15s;
+  }
+  .fac-subtab.active {
+    border-color: #2a6a3a; background: #eef6ee; color: #2a6a3a;
+  }
+  .fac-subpanel { display: none; }
+  .fac-subpanel.active { display: block; }
+
+  /* linkage card */
+  .link-card {
+    margin: 10px 14px 0;
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border: 1px solid #eef0f4; background: #fff;
+  }
+  .link-card:last-child { margin-bottom: 10px; }
+  .link-card-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px;
+    background: #f8f9fc; border-bottom: 1px solid #f0f0f4;
+  }
+  .link-card-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: #eef2f8; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; color: #2a4a7a;
+  }
+  .link-card-name { font-size: 13px; font-weight: 700; color: #1a2e4a; }
+  .link-items {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 10px 14px 12px;
+  }
+  .link-item-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: #2a4a7a;
+    background: #eef2f8; border-radius: 20px;
+    padding: 4px 10px; font-weight: 500;
+  }
+  .link-item-tag svg { width: 11px; height: 11px; stroke: #2a4a7a; stroke-width: 2; fill: none; stroke-linecap: round; }
 </style>
 </head>
 <body>
@@ -508,43 +683,39 @@
 
   <!-- Header -->
   <div class="compact-header">
+    <!-- top row: year + avatar/logout -->
     <div class="compact-nav">
-      <button class="score-nav" onclick="prevMonth()">
-        <svg class="icon-svg" style="width:18px;height:18px" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="compact-month">
+      <div class="compact-year-row">
         <span class="compact-year" id="year-label">2026</span>
-        <span class="compact-monthnum" id="month-num">4</span>
-        <span class="compact-monthname" id="month-name-el">April</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <span id="header-role-badge" style="margin-left:6px;font-size:10px;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.18);padding:2px 9px;border-radius:20px;letter-spacing:.5px;"></span>
       </div>
-      <button class="score-nav" onclick="nextMonth()">
-        <svg class="icon-svg" style="width:18px;height:18px" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;min-height:22px;">
-      <span id="header-role-badge" style="font-size:10px;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.12);padding:3px 10px;border-radius:20px;letter-spacing:.5px;"></span>
-      <button onclick="logout()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px 3px 8px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:10px;font-family:inherit;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
+      <button onclick="logout()" class="compact-avatar" title="ログアウト">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
         </svg>
-        ログアウト
       </button>
     </div>
-    <div class="compact-scores">
-      <div class="compact-pill">
-        <span class="score-pill-label">設備状態</span>
-        <div class="score-val" id="avg-equip">–</div>
+    <!-- bottom row: big month name + nav arrows -->
+    <div class="compact-month-row">
+      <span class="compact-monthname" id="month-name-el">April</span>
+      <div class="compact-month-arrows">
+        <button class="score-nav" onclick="prevMonth()">
+          <svg class="icon-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="score-nav" onclick="nextMonth()">
+          <svg class="icon-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button id="pdf-btn" class="score-nav" onclick="exportPDF()" title="PDF出力" style="display:none;background:rgba(224,96,32,0.35);border-color:rgba(224,96,32,0.6);gap:4px;width:auto;padding:0 10px;border-radius:20px;font-size:11px;color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:700;">
+          <svg style="width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          PDF
+        </button>
       </div>
-      <div class="compact-pill">
-        <span class="score-pill-label">安全確認</span>
-        <div class="score-val" id="avg-safety">–</div>
-      </div>
-      <div class="compact-pill">
-        <span class="score-pill-label">完了率</span>
-        <div class="score-val pct" id="avg-comp">–</div>
-      </div>
+    </div>
+    <!-- hidden legacy elements -->
+    <div class="compact-month" style="display:none">
+      <span id="month-num"></span>
     </div>
     <div id="avg-label-el" style="display:none"></div>
   </div>
@@ -571,23 +742,22 @@
           <line x1="9" y1="16" x2="13" y2="16"/>
         </svg>
       </span>
-      点検一覧
+      紐づけ一覧
     </div>
   </div>
 
   <!-- Calendar view -->
   <div id="view-cal">
     <div class="cal-head">
-      <div class="cal-dh">MON</div><div class="cal-dh">TUE</div>
-      <div class="cal-dh">WED</div><div class="cal-dh">THU</div>
-      <div class="cal-dh">FRI</div>
-      <div class="cal-dh sat">SAT</div><div class="cal-dh sun">SUN</div>
+      <div class="cal-dh">月</div><div class="cal-dh">火</div>
+      <div class="cal-dh">水</div><div class="cal-dh">木</div>
+      <div class="cal-dh">金</div>
+      <div class="cal-dh sat">土</div><div class="cal-dh sun">日</div>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#3a9edc"></div>正常</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#e08020"></div>要注意</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#dc3a3a"></div>異常</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fff0f0;border:1.5px solid #f8c0c0;border-radius:4px;"></div>点検未</div>
     </div>
   </div>
 
@@ -598,28 +768,100 @@
 
   <!-- Settings view (manager only) -->
   <div id="view-settings" class="settings-view">
-    <div class="settings-section">
-      <div class="settings-section-title">点検項目</div>
-      <div class="settings-card" id="settings-items-card">
-        <!-- rendered by JS -->
+    <div class="settings-section" id="sec-items">
+      <div class="settings-section-header" onclick="toggleSection('sec-items')">
+        <div class="settings-section-icon" style="background:#eef2f8;">
+          <svg viewBox="0 0 24 24" style="stroke:#2a4a7a"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">点検項目</div>
+          <div class="settings-section-count" id="count-items"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div class="settings-card" id="settings-items-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('items')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する
+          </button>
+        </div>
       </div>
     </div>
-    <div class="settings-section">
-      <div class="settings-section-title">設備名</div>
-      <div class="settings-card" id="settings-facilities-card">
-        <!-- rendered by JS -->
+    <div class="settings-section" id="sec-facilities">
+      <div class="settings-section-header" onclick="toggleSection('sec-facilities')">
+        <div class="settings-section-icon" style="background:#eef6ee;">
+          <svg viewBox="0 0 24 24" style="stroke:#2a6a3a"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">設備名</div>
+          <div class="settings-section-count" id="count-facilities"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div class="settings-card" id="settings-facilities-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('facilities')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する
+          </button>
+        </div>
       </div>
     </div>
-    <div class="settings-save-wrap">
-      <button class="settings-save-btn" onclick="saveSettings()">
-        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        設定を保存する
-      </button>
+    <div class="settings-section" id="sec-managers">
+      <div class="settings-section-header" onclick="toggleSection('sec-managers')">
+        <div class="settings-section-icon" style="background:#fff3ee;">
+          <svg viewBox="0 0 24 24" style="stroke:#c04010"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="17" y1="11" x2="23" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">管理者</div>
+          <div class="settings-section-count" id="count-managers"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div class="settings-card" id="settings-managers-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('managers')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>管理者を追加
+          </button>
+        </div>
+      </div>
     </div>
+    <div class="settings-section" id="sec-inspectors">
+      <div class="settings-section-header" onclick="toggleSection('sec-inspectors')">
+        <div class="settings-section-icon" style="background:#eef2f8;">
+          <svg viewBox="0 0 24 24" style="stroke:#2a4a7a"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">点検者</div>
+          <div class="settings-section-count" id="count-inspectors"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div class="settings-card" id="settings-staff-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('inspectors')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>点検者を追加
+          </button>
+        </div>
+      </div>
+    </div>
+    <div style="height:14px"></div>
   </div>
 
   <!-- Toast -->
-  <div class="settings-toast" id="settings-toast">✓ 設定を保存しました</div>
+  <div class="settings-toast" id="settings-toast">✓ 自動保存しました</div>
+
+  <!-- Facilities linkage view -->
+  <div id="view-facilities" style="display:none;flex-direction:column;background:#f5f6f8;min-height:200px;">
+    <div style="padding:14px 14px 4px;">
+      <div style="font-size:16px;font-weight:700;color:#1a2e4a;">紐づけ一覧</div>
+      <div style="font-size:11px;color:#889;margin-top:2px;">設備と点検項目の対応</div>
+    </div>
+    <div id="fac-linkage-content" style="padding-bottom:16px;"></div>
+  </div>
 
   <!-- Bottom Nav -->
   <div class="bottom-nav">
@@ -660,14 +902,15 @@
       </div>
       <div class="nav-label" id="nav-alert-label">アラート</div>
     </div>
-    <div class="nav-item">
+    <div class="nav-item" id="nav-facilities" onclick="openFacilities()">
       <div class="nav-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          <polyline points="12 8 12 12 14 14"/>
+          <path d="M3.05 11a9 9 0 1 0 .5-3"/>
+          <polyline points="3 4 3 11 10 11"/>
         </svg>
       </div>
-      <div class="nav-label">設備一覧</div>
+      <div class="nav-label">履歴</div>
     </div>
   </div>
 
@@ -677,47 +920,14 @@
       <div class="modal-handle"></div>
       <div class="modal-title" id="modal-title">点検記録を入力</div>
 
-      <div style="font-size:11px;color:#889;margin-bottom:8px;text-align:center;">判定</div>
-      <div class="status-select">
-        <button class="status-btn sel-ok" id="btn-ok" onclick="selectStatus('ok')">
-          <svg class="icon-svg-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          正常
-        </button>
-        <button class="status-btn" id="btn-warn" onclick="selectStatus('warn')">
-          <svg class="icon-svg-sm" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          要注意
-        </button>
-        <button class="status-btn" id="btn-ng" onclick="selectStatus('ng')">
-          <svg class="icon-svg-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          異常
-        </button>
-      </div>
+      <div id="modal-facility-name" style="font-size:12px;font-weight:700;color:#2a4a7a;margin-bottom:8px;text-align:center;"></div>
+      <div style="font-size:11px;color:#889;margin-bottom:10px;text-align:center;">点検項目</div>
+      <div id="item-checks" style="max-height:52vh;overflow-y:auto;"></div>
 
-      <div class="check-row">
-        <div class="check-label">
-          <span id="label-equip">設備状態スコア</span>
-          <strong id="val-equip">8</strong>
-        </div>
-        <input type="range" min="1" max="10" value="8" step="1" id="inp-equip"
-               oninput="document.getElementById('val-equip').textContent=this.value">
-      </div>
-      <div class="check-row">
-        <div class="check-label">
-          <span id="label-safety">安全確認スコア</span>
-          <strong id="val-safety">8</strong>
-        </div>
-        <input type="range" min="1" max="10" value="8" step="1" id="inp-safety"
-               oninput="document.getElementById('val-safety').textContent=this.value">
-      </div>
-      <div class="check-row">
-        <div class="check-label">
-          <span id="label-comp">完了率（%）</span>
-          <strong id="val-comp">100</strong>
-        </div>
-        <input type="range" min="0" max="100" value="100" step="5" id="inp-comp"
-               oninput="document.getElementById('val-comp').textContent=this.value">
-      </div>
-
+      <button class="btn-all-pass" onclick="setAllPass()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        全て○にする
+      </button>
       <div class="modal-btns">
         <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
         <button class="btn-save"   onclick="saveEntry()">保存する</button>
@@ -730,7 +940,8 @@
 const TODAY = new Date(2026, 3, 18);
 let viewYear = 2026, viewMonth = 3;
 let selectedDay = null;
-let currentStatus = 'ok';
+let itemStatuses = []; // array indexed by item position
+let currentFacilityIdx = 0;
 let currentTab = 0;
 
 const MONTHS_EN = ['January','February','March','April','May','June',
@@ -747,31 +958,36 @@ const FACILITY_ICONS = {
 };
 
 const FACILITIES = [
-  { icon: FACILITY_ICONS.gear,        name:'空調設備 A棟' },
-  { icon: FACILITY_ICONS.droplet,     name:'給排水設備' },
-  { icon: FACILITY_ICONS.zap,         name:'電気設備' },
-  { icon: FACILITY_ICONS.flame,       name:'消防設備' },
-  { icon: FACILITY_ICONS.shower,      name:'衛生設備 B棟' },
-  { icon: FACILITY_ICONS.thermometer, name:'冷凍設備' },
+  { icon: FACILITY_ICONS.gear,        name:'空調設備 A棟', items:['フィルター清掃','冷媒漏れ確認','ベルト点検','運転音確認','温度設定確認'] },
+  { icon: FACILITY_ICONS.droplet,     name:'給排水設備',   items:['配管漏れ確認','水圧確認','排水詰まり点検','弁動作確認','水質確認'] },
+  { icon: FACILITY_ICONS.zap,         name:'電気設備',     items:['絶縁抵抗測定','ブレーカー確認','配線損傷確認','アース確認','過負荷確認'] },
+  { icon: FACILITY_ICONS.flame,       name:'消防設備',     items:['消火器残量確認','スプリンクラー点検','火災報知器テスト','避難経路確認','消火栓確認'] },
+  { icon: FACILITY_ICONS.shower,      name:'衛生設備 B棟', items:['給湯温度確認','シャワー水圧確認','排水トラップ点検','防臭措置確認','清掃状態確認'] },
+  { icon: FACILITY_ICONS.thermometer, name:'冷凍設備',     items:['庫内温度確認','ドアパッキン点検','霜取り状態確認','コンプレッサー確認','警報テスト'] },
 ];
 
+function makeChecks(n, fails=[]){
+  const c={};
+  for(let i=0;i<n;i++) c[i]=fails.includes(i)?'ng':'ok';
+  return c;
+}
 let entries = {
-  '2026-4-1':  {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-2':  {equip:8,safety:8,comp:100,status:'ok'},
-  '2026-4-3':  {equip:7,safety:8,comp:80, status:'warn'},
-  '2026-4-5':  {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-6':  {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-7':  {equip:8,safety:8,comp:100,status:'ok'},
-  '2026-4-8':  {equip:6,safety:7,comp:70, status:'warn'},
-  '2026-4-9':  {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-10': {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-11': {equip:4,safety:5,comp:50, status:'ng'},
-  '2026-4-12': {equip:8,safety:8,comp:90, status:'ok'},
-  '2026-4-13': {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-14': {equip:9,safety:9,comp:100,status:'ok'},
-  '2026-4-15': {equip:8,safety:9,comp:100,status:'ok'},
-  '2026-4-16': {equip:7,safety:7,comp:80, status:'warn'},
-  '2026-4-17': {equip:9,safety:9,comp:100,status:'ok'},
+  '2026-4-1':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-2':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-3':  { checks:makeChecks(5,[2]),  status:'ng' },
+  '2026-4-5':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-6':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-7':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-8':  { checks:makeChecks(5,[1,3]),status:'ng' },
+  '2026-4-9':  { checks:makeChecks(5),      status:'ok' },
+  '2026-4-10': { checks:makeChecks(5),      status:'ok' },
+  '2026-4-11': { checks:makeChecks(5,[0,2,4]),status:'ng'},
+  '2026-4-12': { checks:makeChecks(5),      status:'ok' },
+  '2026-4-13': { checks:makeChecks(5),      status:'ok' },
+  '2026-4-14': { checks:makeChecks(5),      status:'ok' },
+  '2026-4-15': { checks:makeChecks(5),      status:'ok' },
+  '2026-4-16': { checks:makeChecks(5,[4]),  status:'ng' },
+  '2026-4-17': { checks:makeChecks(5),      status:'ok' },
 };
 
 function key(y,m,d){ return y+'-'+(m+1)+'-'+d; }
@@ -802,17 +1018,21 @@ function renderCalendar(){
     const isToday=isCur&&d===TODAY.getDate();
     const isPast=new Date(viewYear,viewMonth,d)<TODAY;
 
+    const dow = new Date(viewYear,viewMonth,d).getDay(); // 0=Sun,6=Sat
+    const isWeekend = dow===0 || dow===6;
+
     let cls='day-num';
-    let dot='';
     if(e){
       cls+=' '+e.status;
-      dot=`<div class="status-dot dot-${e.status}"></div>`;
-    } else if(isPast&&!isToday){ cls+=' past-no-log'; }
+    } else if(isPast&&!isToday&&!isWeekend){
+      cls+=' past-no-log';
+    }
+    if(isWeekend) cls+=' weekend';
     if(isToday) cls+=' today';
 
     const cell=document.createElement('div');
     cell.className='cal-cell';
-    cell.innerHTML=`<div class="${cls}" onclick="dayClick(${d})">${d}</div>${dot}`;
+    cell.innerHTML=`<div class="${cls}" onclick="dayClick(${d})">${d}</div>`;
     grid.appendChild(cell);
   }
   updateAverages();
@@ -835,10 +1055,10 @@ function updateAverages(){
     const f=v.toFixed(1).split('.');
     return f[0]+'<span>.'+f[1]+'</span>';
   };
-  document.getElementById('avg-equip').innerHTML  = fmtScore(avg(eq));
-  document.getElementById('avg-safety').innerHTML = fmtScore(avg(sf));
+  const eqEl=document.getElementById('avg-equip'); if(eqEl) eqEl.innerHTML=fmtScore(avg(eq));
+  const sfEl=document.getElementById('avg-safety'); if(sfEl) sfEl.innerHTML=fmtScore(avg(sf));
   const c=avg(cp);
-  document.getElementById('avg-comp').innerHTML   = c===null?'–':Math.round(c)+'<span>%</span>';
+  const cpEl=document.getElementById('avg-comp'); if(cpEl) cpEl.innerHTML=c===null?'–':Math.round(c)+'<span>%</span>';
 }
 
 function renderList(){
@@ -851,20 +1071,77 @@ function renderList(){
     c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">この月の記録はありません</div>';
     return;
   }
-  c.innerHTML = monthEntries.map(k=>{
-    const d=k.split('-')[2];
-    const e=entries[k];
-    const fac=FACILITIES[parseInt(d)%FACILITIES.length];
-    const statusLabel={'ok':'正常','warn':'要注意','ng':'異常'}[e.status];
-    return `<div class="detail-item">
-      <div class="detail-icon">${fac.icon}</div>
-      <div style="flex:1">
-        <div class="detail-name">${(viewMonth+1)}/${d} ${fac.name}</div>
-        <div style="font-size:10px;color:#aab;">設備:${e.equip} / 安全:${e.safety} / 完了:${e.comp}%</div>
-      </div>
-      <span class="detail-status ${e.status}">${statusLabel}</span>
-    </div>`;
-  }).join('');
+
+  // Group entries by facility index
+  const byFac = FACILITIES.map(()=>[]);
+  monthEntries.forEach(k=>{
+    const d=parseInt(k.split('-')[2]);
+    const fi=(d-1)%FACILITIES.length;
+    byFac[fi].push(k);
+  });
+
+  const mo=viewMonth+1;
+  let html='';
+  FACILITIES.forEach((fac,fi)=>{
+    const fkeys=byFac[fi];
+    if(!fkeys.length) return;
+    const ngCount=fkeys.filter(k=>entries[k].status==='ng').length;
+    const headerColor=ngCount>0?'#dc3a3a':'#22c55e';
+    const headerBg=ngCount>0?'#fff0f0':'#f0fdf4';
+
+    let rows='';
+    fkeys.forEach(k=>{
+      const d=k.split('-')[2];
+      const e=entries[k];
+      const statusCls=e.status==='ng'?'ng':'ok';
+      const statusLbl=e.status==='ng'?'✕':'○';
+      let checks='';
+      fac.items.forEach((label,i)=>{
+        const v=(e.checks||{})[i];
+        const isNg=v==='ng';
+        checks+=`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;`
+          +`color:${isNg?'#cc0000':'#166534'};background:${isNg?'#ffd0d0':'#dcfce7'};`
+          +`border-radius:6px;padding:1px 6px;">${label} ${isNg?'✕':'○'}</span>`;
+      });
+      rows+=`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;`
+        +`border-bottom:1px solid #f0f0f4;background:#fff;">`
+        +`<div style="min-width:34px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:2px;">${mo}/${d}</div>`
+        +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">${checks}</div>`
+        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;">${statusLbl}</span>`
+        +`</div>`;
+    });
+
+    const chevron = `<svg style="width:16px;height:16px;stroke:#aab;stroke-width:2;fill:none;`
+      +`stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:transform .2s;`
+      +`" id="chev-${fi}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+    html+=`<div style="margin:12px 14px 0;border-radius:14px;overflow:hidden;`
+      +`box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #eef0f4;">`
+      +`<div onclick="toggleFacCard(${fi})" style="display:flex;align-items:center;gap:10px;padding:12px 14px;`
+      +`background:${headerBg};cursor:pointer;user-select:none;">`
+      +`<div style="width:36px;height:36px;border-radius:10px;background:#fff;`
+      +`display:flex;align-items:center;justify-content:center;`
+      +`box-shadow:0 1px 4px rgba(0,0,0,0.08);color:#2a4a7a;flex-shrink:0;">${fac.icon}</div>`
+      +`<div style="flex:1;">`
+      +`<div style="font-size:14px;font-weight:700;color:#1a2e4a;">${fac.name}</div>`
+      +`<div style="font-size:11px;color:#889;margin-top:2px;">${fkeys.length}件の記録 / NG: ${ngCount}件</div>`
+      +`</div>`
+      +`<span style="font-size:18px;font-weight:700;color:${headerColor};margin-right:6px;">${ngCount>0?'✕':'○'}</span>`
+      +chevron
+      +`</div>`
+      +`<div id="fac-rows-${fi}" style="display:none;">${rows}</div>`
+      +`</div>`;
+  });
+  c.innerHTML=html+'<div style="height:16px;"></div>';
+}
+
+function toggleFacCard(fi) {
+  const rows = document.getElementById('fac-rows-' + fi);
+  const chev = document.getElementById('chev-' + fi);
+  if (!rows) return;
+  const isOpen = rows.style.display !== 'none';
+  rows.style.display = isOpen ? 'none' : 'block';
+  if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
 }
 
 function setTab(i){
@@ -882,26 +1159,39 @@ function nextMonth(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} ren
 function dayClick(d){
   selectedDay=d;
   const k=key(viewYear,viewMonth,d);
-  const e=entries[k]||{equip:8,safety:8,comp:100,status:'ok'};
+  const facIdx = (d-1) % FACILITIES.length;
+  currentFacilityIdx = facIdx;
+  const e = entries[k] || { checks:{}, status:'ok' };
   document.getElementById('modal-title').textContent=(viewMonth+1)+'月'+d+'日の点検記録';
-  document.getElementById('inp-equip').value=e.equip;
-  document.getElementById('inp-safety').value=e.safety;
-  document.getElementById('inp-comp').value=e.comp;
-  document.getElementById('val-equip').textContent=e.equip;
-  document.getElementById('val-safety').textContent=e.safety;
-  document.getElementById('val-comp').textContent=e.comp;
-  selectStatus(e.status);
+  document.getElementById('modal-facility-name').textContent = FACILITIES[facIdx].name;
+  renderItemChecks(facIdx, e.checks);
   document.getElementById('modal').classList.add('open');
 }
 
 function openAdd(){ dayClick(TODAY.getDate()); }
 
-function selectStatus(s){
-  currentStatus=s;
-  ['ok','warn','ng'].forEach(t=>{
-    const b=document.getElementById('btn-'+t);
-    b.className='status-btn'+(t===s?' sel-'+t:'');
-  });
+function renderItemChecks(facIdx, savedChecks){
+  const fac = FACILITIES[facIdx];
+  const container = document.getElementById('item-checks');
+  itemStatuses = fac.items.map((_,i) => (savedChecks && savedChecks[i]) || 'ok');
+  container.innerHTML = fac.items.map((label, i) => `
+    <div class="item-check-row">
+      <span class="item-check-label">${label}</span>
+      <div class="item-check-btns">
+        <button class="item-btn${itemStatuses[i]==='ok'?' sel-pass':''}" id="iok-${i}" onclick="setItemStatus(${i},'ok')">○</button>
+        <button class="item-btn${itemStatuses[i]==='ng'?' sel-fail':''}" id="ing-${i}" onclick="setItemStatus(${i},'ng')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function setItemStatus(i, s){
+  itemStatuses[i] = s;
+  document.getElementById('iok-'+i).className = 'item-btn'+(s==='ok'?' sel-pass':'');
+  document.getElementById('ing-'+i).className = 'item-btn'+(s==='ng'?' sel-fail':'');
+}
+
+function setAllPass(){
+  itemStatuses.forEach((_,i) => setItemStatus(i,'ok'));
 }
 
 function closeModal(e){
@@ -911,12 +1201,10 @@ function closeModal(e){
 
 function saveEntry(){
   const k=key(viewYear,viewMonth,selectedDay);
-  entries[k]={
-    equip:  parseInt(document.getElementById('inp-equip').value),
-    safety: parseInt(document.getElementById('inp-safety').value),
-    comp:   parseInt(document.getElementById('inp-comp').value),
-    status: currentStatus,
-  };
+  const checks = {};
+  itemStatuses.forEach((v,i) => checks[i]=v);
+  const allOk = itemStatuses.every(v=>v==='ok');
+  entries[k]={ checks, status: allOk?'ok':'ng' };
   document.getElementById('modal').classList.remove('open');
   renderCalendar();
 }
@@ -930,28 +1218,200 @@ let inspectionItems = [
   { key: 'comp',   label: '完了率（%）' },
 ];
 
+// Staff data
+let staffData = {
+  managers:   ['山田 太郎'],
+  inspectors: ['佐藤 一郎', '鈴木 花子', '田中 次郎'],
+};
+
 // Facility icon pool (same order as FACILITIES)
 const FAC_ICON_POOL = [
   FACILITY_ICONS.gear, FACILITY_ICONS.droplet, FACILITY_ICONS.zap,
   FACILITY_ICONS.flame, FACILITY_ICONS.shower, FACILITY_ICONS.thermometer,
 ];
 
+const ICON_CHECK = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+const ICON_USER  = `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+const ICON_GEAR  = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`;
+const DEL_BTN = `<button class="settings-row-del" onclick="this.closest('.settings-row').remove(); saveSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+const ADD_BTN_HTML = (fn) => `<button class="settings-add-btn" onclick="${fn}()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する</button>`;
+
+function makeRow(icon, label, id, value, placeholder) {
+  return `<div class="settings-row">
+    <div class="settings-row-icon">${icon}</div>
+    <div class="settings-row-body">
+      <div class="settings-row-label">${label}</div>
+      <input class="settings-row-input" id="${id}" value="${value}" placeholder="${placeholder}" onblur="saveSettings()">
+    </div>
+    ${DEL_BTN}
+  </div>`;
+}
+
+function exportPDF() {
+  const yr = viewYear, mo = viewMonth + 1;
+  const daysInMonth = getDays(viewYear, viewMonth);
+  const dayNums = Array.from({length: daysInMonth}, (_, i) => i + 1);
+
+  // Build one page per facility
+  const pages = FACILITIES.map((fac, facIdx) => {
+    // Determine items for this facility
+    const items = fac.items.length ? fac.items : inspectionItems.map(i => i.label);
+
+    // Collect day data
+    const dayData = dayNums.map(d => {
+      const dow = new Date(yr, viewMonth, d).getDay();
+      const isWeekend = dow === 0 || dow === 6;
+      const k = key(yr, viewMonth, d);
+      const entry = entries[k];
+      // Only show entry if facIdx matches ((d-1)%FACILITIES.length === facIdx)
+      const entryForThisFac = ((d - 1) % FACILITIES.length === facIdx) ? entry : null;
+      return { d, isWeekend, entry: entryForThisFac };
+    });
+
+    const manager = staffData.managers[0] || '';
+    const inspector = staffData.inspectors[0] || '';
+
+    // Build rows HTML: one row per item
+    const itemRows = items.map((itemLabel, itemIdx) => {
+      const cells = dayData.map(({ d, isWeekend, entry }) => {
+        if (isWeekend) return `<td class="cell weekend"><div class="slash"></div></td>`;
+        if (!entry) return `<td class="cell empty"></td>`;
+        const v = entry.checks ? entry.checks[itemIdx] : 'ok';
+        return `<td class="cell ${v === 'ng' ? 'ng' : 'ok'}">${v === 'ng' ? '×' : '○'}</td>`;
+      }).join('');
+      return `<tr><td class="item-no">${itemIdx + 1}</td><td class="item-label">${itemLabel}</td>${cells}</tr>`;
+    }).join('');
+
+    const dateHeaders = dayData.map(({ d, isWeekend }) =>
+      `<th class="day-header${isWeekend ? ' weekend-h' : ''}">${d}</th>`
+    ).join('');
+
+    return `
+    <div class="sheet">
+      <div class="sheet-title-block">
+        <div class="sheet-main-title">日常・定期点検表</div>
+        <div class="sheet-period">（${yr}年 ${mo}月度）</div>
+      </div>
+      <table class="meta-table">
+        <tr>
+          <td class="meta-label">設備No.</td><td class="meta-val">FAC-${String(facIdx+1).padStart(3,'0')}</td>
+          <td class="meta-label">設備名</td><td class="meta-val fac-name">${fac.name}</td>
+          <td class="meta-label">点検頻度</td><td class="meta-val">日常</td>
+          <td class="meta-label">設置場所</td><td class="meta-val">NC施設</td>
+        </tr>
+        <tr>
+          <td class="meta-label">管理者</td><td class="meta-val">${manager}</td>
+          <td class="meta-label">点検担当者名</td><td class="meta-val">${inspector}</td>
+          <td class="meta-label">作成日</td><td class="meta-val">${yr}/${String(mo).padStart(2,'0')}/01</td>
+          <td class="meta-label">確認</td><td class="meta-val"></td>
+        </tr>
+      </table>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th class="no-h">No.</th>
+            <th class="item-h">点検項目</th>
+            ${dateHeaders}
+          </tr>
+        </thead>
+        <tbody>${itemRows}</tbody>
+      </table>
+      <table class="sign-table">
+        <tr>
+          <td class="sign-label">正常：○</td>
+          <td class="sign-label">異常：× / 記入なし</td>
+          <td class="sign-label">休日：斜線</td>
+          <td class="sign-cell" style="width:80px">承認</td>
+          <td class="sign-cell" style="width:80px">確認</td>
+          <td class="sign-cell" style="width:80px">担当</td>
+        </tr>
+      </table>
+    </div>`;
+  }).join('<div class="page-break"></div>');
+
+  const html = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>点検表 ${yr}年${mo}月</title>
+<style>
+  @page { size: A4 landscape; margin: 6mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Meiryo', 'Hiragino Sans', sans-serif; background: #fff; font-size: 9px; }
+  .page-break { page-break-after: always; }
+  .sheet { padding: 2mm 2mm 1mm; min-height: 195mm; display: flex; flex-direction: column; }
+  .sheet-title-block { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2mm; justify-content: center; }
+  .sheet-main-title { font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #1a2e4a; }
+  .sheet-period { font-size: 11px; color: #334; font-weight: 600; }
+
+  /* Meta table */
+  .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
+  .meta-table td { border: 1px solid #666; padding: 1.5mm 2mm; font-size: 8.5px; height: 7mm; }
+  .meta-label { background: #d8e4f0; font-weight: 700; color: #1a2e4a; white-space: nowrap; width: 18mm; text-align: center; }
+  .meta-val { min-width: 28mm; color: #222; }
+  .fac-name { font-weight: 700; color: #1a2e4a; font-size: 10px; }
+
+  /* Main table */
+  .main-table { width: 100%; border-collapse: collapse; flex: 1; }
+  .main-table th, .main-table td { border: 1px solid #999; text-align: center; vertical-align: middle; }
+  .no-h  { width: 7mm; background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; }
+  .item-h { width: 52mm; background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; }
+  .day-header { height: 7mm; font-size: 8px; font-weight: 700; background: #d8e4f0; padding: 0 1px; width: 6.5mm; color: #1a2e4a; }
+  .day-header.weekend-h { background: #e8eef4; color: #7090b0; }
+  .item-no { font-size: 8px; font-weight: 700; color: #1a2e4a; padding: 1mm; height: 8mm; }
+  .item-label { text-align: left; font-size: 8.5px; padding: 1mm 2mm; color: #1a2e4a; font-weight: 500; height: 8mm; }
+  .cell { height: 8mm; font-size: 11px; font-weight: 700; padding: 0; position: relative; }
+  .cell.ok { color: #1a6aaa; }
+  .cell.ng { color: #cc0000; }
+  .cell.empty { background: #fafafa; }
+  .cell.weekend { background: #f0f4f8; padding: 0; }
+  .slash { position: absolute; inset: 0; overflow: hidden; }
+  .slash::after { content: ''; position: absolute; top: 0; left: 0; width: 141%; height: 1px; background: #999; transform-origin: top left; transform: rotate(30deg) translateY(3.5mm); }
+
+  /* Signature table */
+  .sign-table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
+  .sign-table td { border: 1px solid #999; padding: 1.5mm 2mm; height: 8mm; font-size: 8px; }
+  .sign-label { background: #f5f7fa; color: #556; flex: 1; }
+  .sign-cell { background: #fff; min-width: 60px; }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-break { page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+${pages}
+<script>window.onload = () => { window.print(); }<\/script>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+function updateCounts() {
+  const c = (id) => document.getElementById(id);
+  const n = (sel) => document.querySelectorAll(sel + ' .settings-row').length;
+  const fmt = (count, unit) => count > 0 ? `${count}${unit}` : '未設定';
+  if (c('count-items'))      c('count-items').textContent      = fmt(n('#settings-items-card'),     '項目');
+  if (c('count-facilities')) c('count-facilities').textContent = fmt(n('#settings-facilities-card'),'件');
+  if (c('count-managers'))   c('count-managers').textContent   = fmt(n('#settings-managers-card'),  '名');
+  if (c('count-inspectors')) c('count-inspectors').textContent = fmt(n('#settings-staff-card'),     '名');
+}
+
+function toggleSection(id) {
+  const sec = document.getElementById(id);
+  const wasOpen = sec.classList.contains('open');
+  sec.classList.toggle('open');
+  // auto-save when closing a section
+  if (wasOpen) saveSettings();
+}
+
 function renderSettingsView() {
   // 点検項目 card
-  const itemIcons = [
-    `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
-    `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    `<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-  ];
-  document.getElementById('settings-items-card').innerHTML = inspectionItems.map((item, i) =>
-    `<div class="settings-row">
-      <div class="settings-row-icon">${itemIcons[i]}</div>
-      <div class="settings-row-body">
-        <div class="settings-row-label">点検項目 ${i+1}</div>
-        <input class="settings-row-input" id="set-item-${item.key}" value="${item.label}" placeholder="項目名を入力">
-      </div>
-    </div>`
-  ).join('');
+  document.getElementById('settings-items-card').innerHTML =
+    inspectionItems.map((item, i) => makeRow(ICON_CHECK, `点検項目 ${i+1}`, `set-item-${item.key}`, item.label, '項目名を入力')).join('');
 
   // 設備名 card
   const facIconsSvg = [
@@ -962,15 +1422,49 @@ function renderSettingsView() {
     `<svg viewBox="0 0 24 24"><path d="M4 4l16 16"/><path d="M12 3a9 9 0 019 9"/><circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/></svg>`,
     `<svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>`,
   ];
-  document.getElementById('settings-facilities-card').innerHTML = FACILITIES.map((fac, i) =>
-    `<div class="settings-row">
-      <div class="settings-row-icon">${facIconsSvg[i % facIconsSvg.length]}</div>
-      <div class="settings-row-body">
-        <div class="settings-row-label">設備 ${i+1}</div>
-        <input class="settings-row-input" id="set-fac-${i}" value="${fac.name}" placeholder="設備名を入力">
-      </div>
-    </div>`
-  ).join('');
+  // 管理者 card
+  const mgrIcon = `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="17" y1="11" x2="23" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>`;
+  document.getElementById('settings-managers-card').innerHTML =
+    staffData.managers.map((name, i) => makeRow(mgrIcon, `管理者 ${i+1}`, `set-manager-${i}`, name, '管理者名を入力')).join('');
+  // 点検者 card
+  document.getElementById('settings-staff-card').innerHTML =
+    staffData.inspectors.map((name, i) => makeRow(ICON_USER, `点検者 ${i+1}`, `set-inspector-${i}`, name, '点検者名を入力')).join('');
+
+  document.getElementById('settings-facilities-card').innerHTML =
+    FACILITIES.map((fac, i) => makeRow(ICON_GEAR, `設備 ${i+1}`, `set-fac-${i}`, fac.name, '設備名を入力')).join('');
+  updateCounts();
+}
+
+function addSettingsRow(type) {
+  const mgrIcon = `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="17" y1="11" x2="23" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>`;
+  const delBtn = `<button class="settings-row-del" onclick="this.closest('.settings-row').remove(); saveSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+
+  let card, icon, labelPrefix, placeholder;
+  if (type === 'items') {
+    card = document.getElementById('settings-items-card');
+    icon = ICON_CHECK; labelPrefix = '点検項目'; placeholder = '項目名を入力';
+  } else if (type === 'facilities') {
+    card = document.getElementById('settings-facilities-card');
+    icon = ICON_GEAR; labelPrefix = '設備'; placeholder = '設備名を入力';
+  } else if (type === 'managers') {
+    card = document.getElementById('settings-managers-card');
+    icon = mgrIcon; labelPrefix = '管理者'; placeholder = '管理者名を入力';
+  } else {
+    card = document.getElementById('settings-staff-card');
+    icon = ICON_USER; labelPrefix = '点検者'; placeholder = '点検者名を入力';
+  }
+  const count = card.querySelectorAll('.settings-row').length + 1;
+  const div = document.createElement('div');
+  div.innerHTML = `<div class="settings-row">
+    <div class="settings-row-icon">${icon}</div>
+    <div class="settings-row-body">
+      <div class="settings-row-label">${labelPrefix} ${count}</div>
+      <input class="settings-row-input" value="" placeholder="${placeholder}" autofocus onblur="saveSettings()">
+    </div>
+    ${delBtn}
+  </div>`;
+  card.appendChild(div.firstElementChild);
+  div.firstElementChild?.querySelector('input')?.focus();
 }
 
 function saveSettings() {
@@ -984,12 +1478,18 @@ function saveSettings() {
     const el = document.getElementById('label-' + item.key);
     if (el) el.textContent = item.label;
   });
+  // Save staff names - read live DOM rows
+  staffData.managers   = [...document.querySelectorAll('#settings-managers-card .settings-row')]
+    .map(r => r.querySelector('input').value.trim()).filter(Boolean);
+  staffData.inspectors = [...document.querySelectorAll('#settings-staff-card .settings-row')]
+    .map(r => r.querySelector('input').value.trim()).filter(Boolean);
   // Save facility names
   FACILITIES.forEach((fac, i) => {
     const inp = document.getElementById('set-fac-' + i);
     if (inp) fac.name = inp.value.trim() || fac.name;
   });
   renderList();
+  updateCounts();
   // Show toast
   const toast = document.getElementById('settings-toast');
   toast.classList.add('show');
@@ -998,20 +1498,22 @@ function saveSettings() {
 
 function openSettings() {
   renderSettingsView();
-  document.getElementById('view-cal').style.display   = 'none';
-  document.getElementById('view-list').style.display  = 'none';
-  document.getElementById('view-settings').style.display = 'flex';
+  document.getElementById('view-cal').style.display       = 'none';
+  document.getElementById('view-list').style.display      = 'none';
+  document.getElementById('view-facilities').style.display = 'none';
+  document.getElementById('view-settings').style.display  = 'flex';
   setNavActive('nav-alert-or-settings');
 }
 
 function goHome() {
-  document.getElementById('view-settings').style.display = 'none';
+  document.getElementById('view-settings').style.display  = 'none';
+  document.getElementById('view-facilities').style.display = 'none';
   setTab(currentTab);
   setNavActive('nav-home');
 }
 
 function setNavActive(id) {
-  ['nav-home', 'nav-alert-or-settings'].forEach(nid => {
+  ['nav-home', 'nav-alert-or-settings', 'nav-facilities'].forEach(nid => {
     const el = document.getElementById(nid);
     if (el) el.classList.toggle('active', nid === id);
   });
@@ -1020,6 +1522,36 @@ function setNavActive(id) {
 function navAlertOrSettings() {
   if (selectedRole === 'manager') openSettings();
 }
+function openFacilities() {
+  document.getElementById('view-cal').style.display       = 'none';
+  document.getElementById('view-settings').style.display  = 'none';
+  document.getElementById('view-facilities').style.display = 'none';
+  // Reuse view-list with its rendered content
+  document.getElementById('view-list').style.display      = 'block';
+  renderList();
+  setNavActive('nav-facilities');
+  // Keep top tabs visual in sync
+  document.querySelectorAll('.tab').forEach((t,idx) => t.classList.toggle('active', idx===1));
+}
+
+function renderLinkageList() {
+  const el = document.getElementById('fac-linkage-content');
+  if (!el) return;
+  const checkIcon = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+  el.innerHTML = FACILITIES.map(fac => {
+    const tags = fac.items.map(item =>
+      `<span class="link-item-tag">${checkIcon}${item}</span>`
+    ).join('');
+    return `<div class="link-card">
+      <div class="link-card-header">
+        <div class="link-card-icon">${fac.icon}</div>
+        <div class="link-card-name">${fac.name}</div>
+      </div>
+      <div class="link-items">${tags}</div>
+    </div>`;
+  }).join('');
+}
+
 let selectedRole = null;
 
 function selectRole(role) {
@@ -1046,6 +1578,8 @@ function enterApp() {
     const roleLabel = selectedRole === 'inspector' ? '点検者' : '管理人';
     const badge = document.getElementById('header-role-badge');
     if (badge) badge.textContent = roleLabel;
+    const pdfBtn = document.getElementById('pdf-btn');
+    if (pdfBtn) pdfBtn.style.display = selectedRole === 'manager' ? 'flex' : 'none';
 
     // Switch alert ↔ settings based on role
     const iconEl  = document.getElementById('nav-alert-icon');
