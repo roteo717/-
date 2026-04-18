@@ -607,164 +607,101 @@
     background: #eef2f8; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center; color: #2a4a7a;
   }
-  .link-card-name { font-size: 13px; font-weight: 700; color: #1a2e4a; }
-  .link-items {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 10px 14px 12px;
-  }
-  .link-item-tag {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; color: #2a4a7a;
-    background: #eef2f8; border-radius: 20px;
-    padding: 4px 10px; font-weight: 500;
-  }
-  .link-item-tag svg { width: 11px; height: 11px; stroke: #2a4a7a; stroke-width: 2; fill: none; stroke-linecap: round; }
-
-  /* linkage toggle UI */
   .link-card-name { font-size: 13px; font-weight: 700; color: #1a2e4a; flex: 1; }
   .link-ng-badge {
-    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600;
-    flex-shrink: 0;
+    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0;
   }
   .link-ng-badge.ng  { background: #ffd0d0; color: #cc0000; }
   .link-ng-badge.ok  { background: #dcfce7; color: #166534; }
 
-  .link-items { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px 12px; }
-
-  .link-toggle-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 12px; font-weight: 500; border-radius: 20px;
-    padding: 5px 12px; cursor: pointer; border: 1.5px solid #dde;
-    background: #f5f6f8; color: #99a;
-    transition: all .15s; user-select: none;
+  .link-section {
+    padding: 8px 14px 10px; border-top: 1px solid #f0f0f4;
   }
-  .link-toggle-chip.linked {
-    background: #eef2f8; color: #2a4a7a; border-color: #b0c8e8;
+  .link-section-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 7px;
   }
-  .link-toggle-chip svg {
-    width: 11px; height: 11px; stroke-width: 2.2; fill: none;
-    stroke-linecap: round; stroke-linejoin: round;
-    stroke: currentColor; flex-shrink: 0;
+  .link-section-label {
+    font-size: 10px; font-weight: 700; color: #99a; letter-spacing: .5px; text-transform: uppercase;
   }
-  .link-empty-msg {
-    font-size: 12px; color: #aab; padding: 2px 0 6px;
-    font-style: italic;
-  }
-
-  /* custom item chips (fac.items) */
-  .link-custom-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 12px; font-weight: 500; border-radius: 20px;
-    padding: 5px 8px 5px 12px;
-    background: #f0fdf4; color: #166534; border: 1.5px solid #a8e0b8;
-  }
-  .link-custom-del {
-    width: 16px; height: 16px; border-radius: 50%; border: none;
-    background: rgba(0,0,0,0.08); cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s; padding: 0;
-  }
-  .link-custom-del:hover { background: rgba(220,50,50,0.18); }
-  .link-custom-del svg { width: 9px; height: 9px; stroke: #166534; stroke-width: 2.5; fill: none; stroke-linecap: round; }
-
-  .link-items-divider {
-    width: 100%; display: flex; align-items: center; gap: 6px;
-    padding: 2px 0 4px; margin-top: 2px;
-  }
-  .link-items-divider span {
-    font-size: 10px; color: #aab; font-weight: 600; white-space: nowrap; letter-spacing: .3px;
-  }
-  .link-items-divider::before, .link-items-divider::after {
-    content: ''; flex: 1; height: 1px; background: #eef0f4;
-  }
-
-  /* per-card item add row */
-  .link-item-add-row {
-    display: none; align-items: center; gap: 6px;
-    padding: 0 14px 10px; width: 100%;
-  }
-  .link-item-add-row.open { display: flex; }
-  .link-item-add-input {
-    flex: 1; border: 1.5px solid #b0c8e8; border-radius: 20px;
-    padding: 6px 12px; font-size: 12px; color: #1a2e4a;
-    font-family: 'Noto Sans JP', sans-serif; outline: none;
-    background: #f8faff; transition: border-color .15s;
-  }
-  .link-item-add-input:focus { border-color: #6a9ad8; background: #fff; }
-  .link-item-add-ok {
-    width: 30px; height: 30px; border-radius: 50%; border: none; flex-shrink: 0;
-    background: linear-gradient(135deg, #e06020, #c04010); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: opacity .15s;
-  }
-  .link-item-add-ok:hover { opacity: .85; }
-  .link-item-add-ok svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .link-item-add-cancel {
-    width: 30px; height: 30px; border-radius: 50%; border: none; flex-shrink: 0;
-    background: #eef0f4; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: background .15s;
-  }
-  .link-item-add-cancel:hover { background: #dde0e8; }
-  .link-item-add-cancel svg { width: 12px; height: 12px; stroke: #778; stroke-width: 2.2; fill: none; stroke-linecap: round; }
-
-  .link-add-item-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; color: #5a7aaa; font-weight: 600;
-    border: 1.5px dashed #b0c8e8; border-radius: 20px;
-    padding: 4px 10px; cursor: pointer; background: transparent;
-    font-family: 'Noto Sans JP', sans-serif; transition: background .15s;
-    margin-bottom: 2px;
-  }
-  .link-add-item-btn:hover { background: #eef2f8; }
-  .link-add-item-btn svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
-
-  /* add / delete in linkage */
-  .link-del-btn {
-    width: 26px; height: 26px; border-radius: 8px; border: none;
-    background: #fff0f0; cursor: pointer; flex-shrink: 0; margin-left: auto;
-    display: flex; align-items: center; justify-content: center;
+  .link-add-chip-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 600; color: #5a7aaa;
+    background: #eef2f8; border: none; border-radius: 20px;
+    padding: 3px 10px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
     transition: background .15s;
   }
-  .link-del-btn:hover { background: #ffd0d0; }
-  .link-del-btn svg { width: 13px; height: 13px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .link-add-chip-btn:hover { background: #dce8f8; }
+  .link-add-chip-btn svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+  .link-picker {
+    flex-wrap: wrap; gap: 6px;
+    background: #f8f9fc; border-radius: 10px;
+    padding: 8px 10px; margin-bottom: 8px;
+    border: 1px solid #e8ecf4;
+  }
+  .link-picker-opt {
+    display: inline-flex; align-items: center;
+    font-size: 12px; font-weight: 500; color: #334;
+    background: #fff; border: 1.5px solid #dde; border-radius: 20px;
+    padding: 4px 12px; cursor: pointer;
+    transition: all .15s;
+  }
+  .link-picker-opt:hover { background: #eef2f8; border-color: #b0c8e8; color: #2a4a7a; }
+
+  .link-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .link-unset {
+    font-size: 11px; color: #bbc; letter-spacing: .3px;
+    padding: 4px 0 2px;
+  }
+
+  .link-selected-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 500;
+    background: #eef2f8; color: #2a4a7a; border: 1.5px solid #b0c8e8;
+    border-radius: 20px; padding: 4px 8px 4px 12px;
+  }
+  .link-selected-chip.inspector {
+    background: #f0fdf4; color: #166534; border-color: #86efac;
+  }
+  .link-picker-new {
+    width: 100%; display: flex; align-items: center; gap: 6px;
+    padding-top: 7px; margin-top: 4px; border-top: 1px solid #e8ecf4;
+  }
+  .link-picker-input {
+    flex: 1; border: 1.5px solid #dde; border-radius: 20px;
+    padding: 5px 12px; font-size: 12px; color: #1a2e4a;
+    font-family: 'Noto Sans JP', sans-serif; outline: none;
+    background: #fff; transition: border-color .15s;
+  }
+  .link-picker-input:focus { border-color: #6a9ad8; }
+  .link-picker-add-btn {
+    padding: 5px 12px; border: none; border-radius: 20px;
+    background: linear-gradient(135deg, #e06020, #c04010);
+    color: #fff; font-size: 11px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
+    white-space: nowrap; transition: opacity .15s; flex-shrink: 0;
+  }
+  .link-picker-add-btn:hover { opacity: .85; }
+  .link-chip-del {
+    width: 14px; height: 14px; border: none; border-radius: 2px;
+    background: transparent; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; opacity: 0.35; transition: opacity .15s;
+  }
+  .link-chip-del:hover { opacity: 1; }
+  .link-chip-del svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 2.8; fill: none; stroke-linecap: round; }
 
   .link-add-fac-btn {
-    margin: 6px 14px 16px; width: calc(100% - 28px);
-    padding: 12px; border: 1.5px dashed #c8d4e8; border-radius: 14px;
-    background: transparent; color: #5a7aaa; font-size: 13px; font-weight: 600;
+    margin: 10px 14px 4px; width: auto; display: inline-flex;
+    padding: 6px 14px; border: 1.5px solid #c8d4e8; border-radius: 20px;
+    background: #fff; color: #5a7aaa; font-size: 12px; font-weight: 600;
     font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    transition: background .15s;
+    align-items: center; gap: 5px;
+    transition: background .15s, border-color .15s;
   }
-  .link-add-fac-btn:hover { background: #eef2f8; }
-  .link-add-fac-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
-
-  .link-add-card {
-    margin: 6px 14px 0;
-    border-radius: 14px; border: 1.5px solid #c0d0e8;
-    background: #fff; padding: 14px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-  }
-  .link-add-card-label { font-size: 10px; color: #99a; font-weight: 600; letter-spacing: .4px; margin-bottom: 6px; }
-  .link-add-card-input {
-    width: 100%; border: 1.5px solid #dde; border-radius: 10px;
-    padding: 9px 12px; font-size: 13px; color: #1a2e4a;
-    font-family: 'Noto Sans JP', sans-serif; outline: none;
-    background: #f8f9fc; transition: border-color .15s; margin-bottom: 10px;
-  }
-  .link-add-card-input:focus { border-color: #6a9ad8; background: #fff; }
-  .link-add-card-btns { display: flex; gap: 8px; }
-  .link-add-cancel {
-    flex: 1; padding: 9px; border: 1px solid #dde; border-radius: 10px;
-    background: #fff; font-size: 13px; cursor: pointer; color: #889;
-    font-family: 'Noto Sans JP', sans-serif;
-  }
-  .link-add-confirm {
-    flex: 2; padding: 9px; border: none; border-radius: 10px;
-    background: linear-gradient(135deg, #e06020, #c04010);
-    font-size: 13px; font-weight: 700; cursor: pointer; color: #fff;
-    font-family: 'Noto Sans JP', sans-serif; transition: opacity .15s;
-  }
-  .link-add-confirm:hover { opacity: .88; }
+  .link-add-fac-btn:hover { background: #eef2f8; border-color: #a0b4cc; }
+  .link-add-fac-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
 </style>
 </head>
 <body>
@@ -884,10 +821,10 @@
   <!-- Calendar view -->
   <div id="view-cal">
     <div class="cal-head">
-      <div class="cal-dh">月</div><div class="cal-dh">火</div>
-      <div class="cal-dh">水</div><div class="cal-dh">木</div>
-      <div class="cal-dh">金</div>
-      <div class="cal-dh sat">土</div><div class="cal-dh sun">日</div>
+      <div class="cal-dh sun">日</div><div class="cal-dh">月</div>
+      <div class="cal-dh">火</div><div class="cal-dh">水</div>
+      <div class="cal-dh">木</div>
+      <div class="cal-dh">金</div><div class="cal-dh sat">土</div>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
     <div class="legend">
@@ -993,7 +930,7 @@
   <div id="view-facilities" style="display:none;flex-direction:column;background:#f5f6f8;min-height:200px;">
     <div style="padding:14px 14px 4px;">
       <div style="font-size:16px;font-weight:700;color:#1a2e4a;">紐づけ一覧</div>
-      <div style="font-size:11px;color:#889;margin-top:2px;">設備と点検項目の対応</div>
+      <div style="font-size:11px;color:#889;margin-top:2px;">設備と点検項目・点検者の対応</div>
     </div>
     <div id="fac-linkage-content" style="padding-bottom:16px;"></div>
   </div>
@@ -1127,7 +1064,7 @@ let entries = {
 
 function key(y,m,d){ return y+'-'+(m+1)+'-'+d; }
 function getDays(y,m){ return new Date(y,m+1,0).getDate(); }
-function getFirstDow(y,m){ let d=new Date(y,m,1).getDay(); return d===0?6:d-1; }
+function getFirstDow(y,m){ return new Date(y,m,1).getDay(); }
 
 function renderCalendar(){
   const grid = document.getElementById('cal-grid');
@@ -1285,13 +1222,15 @@ function setTab(i){
   document.getElementById('view-cal').style.display      = i===0?'block':'none';
   document.getElementById('view-list').style.display     = i===1?'block':'none';
   document.getElementById('view-settings').style.display = 'none';
-  setNavActive('nav-alert-or-settings');
+  setNavActive('nav-home');
 }
 
 function prevMonth(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCalendar(); }
 function nextMonth(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCalendar(); }
 
 function dayClick(d){
+  const dow = new Date(viewYear,viewMonth,d).getDay();
+  if(dow===0 || dow===6) return; // 休日は点検不要
   selectedDay=d;
   const k=key(viewYear,viewMonth,d);
   const facIdx = (d-1) % FACILITIES.length;
@@ -1303,7 +1242,11 @@ function dayClick(d){
   document.getElementById('modal').classList.add('open');
 }
 
-function openAdd(){ dayClick(TODAY.getDate()); }
+function openAdd(){
+  const dow = TODAY.getDay();
+  if(dow===0 || dow===6) return; // 休日は点検不要
+  dayClick(TODAY.getDate());
+}
 
 function renderItemChecks(facIdx, savedChecks){
   const fac = FACILITIES[facIdx];
@@ -1697,7 +1640,7 @@ function goHome() {
       カレンダー
     </div>`;
   setTab(0);
-  setNavActive('nav-alert-or-settings');
+  setNavActive('nav-home');
 }
 
 function setNavActive(id) {
@@ -1717,7 +1660,7 @@ function openFacilities() {
   // Reuse view-list with its rendered content
   document.getElementById('view-list').style.display      = 'block';
   renderList();
-  setNavActive('nav-alert-or-settings');
+  setNavActive('nav-facilities');
   // Keep top tabs visual in sync
   document.querySelectorAll('.tab').forEach((t,idx) => t.classList.toggle('active', idx===1));
 }
@@ -1726,168 +1669,140 @@ function renderLinkageList() {
   const el = document.getElementById('fac-linkage-content');
   if (!el) return;
 
-  const trashSvg  = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`;
-  const checkSvg  = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
-  const plusSvg   = `<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
-  const xSvg      = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const xSvg    = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const plusSvg = `<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+
+  if (FACILITIES.length === 0) {
+    el.innerHTML = `<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">編集タブで設備名を追加してください</div>`;
+    return;
+  }
 
   const cards = FACILITIES.map((fac, fi) => {
-    const linked = fac.linkedKeys || [];
+    const linkedItems      = fac.linkedKeys || [];
+    const linkedInspectors = fac.linkedInspectors || [];
 
-    // Global inspection item chips (toggle ON/OFF)
-    const globalChips = inspectionItems.length === 0
-      ? `<span class="link-empty-msg">編集タブで点検項目を追加してください</span>`
-      : inspectionItems.map(item => {
-          const isLinked = linked.includes(item.key);
-          return `<span class="link-toggle-chip ${isLinked ? 'linked' : ''}"
-            onclick="toggleLinkKey(${fi},'${item.key}',this)">
-            ${isLinked ? checkSvg : plusSvg}${item.label}
+    // 選択済み点検項目チップ
+    const selectedItemChips = linkedItems.length === 0
+      ? `<span class="link-unset">— 未選択</span>`
+      : linkedItems.map(key => {
+          const item = inspectionItems.find(i => i.key === key);
+          const label = item ? item.label : key;
+          return `<span class="link-selected-chip">
+            ${label}
+            <button class="link-chip-del" onclick="toggleLinkItem(${fi},'${key}',null)">${xSvg}</button>
           </span>`;
         }).join('');
 
-    // Custom items (fac.items) with delete button
-    const customChips = (fac.items || []).map((label, ii) =>
-      `<span class="link-custom-chip">
-        ${label}
-        <button class="link-custom-del" onclick="deleteCustomItem(${fi},${ii})">${xSvg}</button>
-      </span>`
+    // 未選択の点検項目（追加候補）
+    const availableItems = inspectionItems.filter(i => !linkedItems.includes(i.key));
+    const itemPickerOptions = availableItems.map(i =>
+      `<div class="link-picker-opt" onclick="toggleLinkItem(${fi},'${i.key}',null)">${i.label}</div>`
     ).join('');
+    const itemPickerContent = (itemPickerOptions || '') +
+      `<div class="link-picker-new">
+        <input class="link-picker-input" id="new-item-input-${fi}" placeholder="新しい点検項目を入力"
+          onkeydown="if(event.key==='Enter')addNewInspectionItem(${fi})">
+        <button class="link-picker-add-btn" onclick="addNewInspectionItem(${fi})">追加</button>
+      </div>`;
 
-    const customSection = (fac.items && fac.items.length) || true ? `
-      <div class="link-items-divider" style="padding:4px 14px 2px;box-sizing:border-box;width:100%;">
-        <span>設備固有の項目</span>
-      </div>
-      <div class="link-items" id="link-custom-items-${fi}" style="padding-top:4px;">
-        ${customChips}
-        <button class="link-add-item-btn" onclick="showItemAddRow(${fi})">${plusSvg} 項目を追加</button>
-      </div>` : '';
+    // 選択済み点検者チップ
+    const selectedInspChips = linkedInspectors.length === 0
+      ? `<span class="link-unset">— 未選択</span>`
+      : linkedInspectors.map(name => {
+          const safe = name.replace(/'/g, "\\'");
+          return `<span class="link-selected-chip inspector">
+            ${name}
+            <button class="link-chip-del" onclick="toggleLinkInspector(${fi},'${safe}',null)">${xSvg}</button>
+          </span>`;
+        }).join('');
 
-    const totalLinked = linked.length + (fac.items || []).length;
+    // 未選択の点検者（追加候補）
+    const availableInsp = staffData.inspectors.filter(n => !linkedInspectors.includes(n));
+    const inspPickerOptions = availableInsp.map(n => {
+      const safe = n.replace(/'/g, "\\'");
+      return `<div class="link-picker-opt" onclick="toggleLinkInspector(${fi},'${safe}',null)">${n}</div>`;
+    }).join('');
+
+    const total = linkedItems.length + linkedInspectors.length;
+
     return `<div class="link-card" id="link-card-${fi}">
       <div class="link-card-header">
         <div class="link-card-icon">${fac.icon}</div>
         <div class="link-card-name">${fac.name}</div>
-        <span class="link-ng-badge ${totalLinked ? 'ok' : 'ng'}" id="link-badge-${fi}">${totalLinked}件紐づけ</span>
-        <button class="link-del-btn" onclick="deleteLinkFacility(${fi})">${trashSvg}</button>
+        <span class="link-ng-badge ${total ? 'ok' : 'ng'}" id="link-badge-${fi}">${total}件紐づけ</span>
       </div>
-      <div class="link-items">${globalChips}</div>
-      ${customSection}
-      <div class="link-item-add-row" id="link-item-add-row-${fi}">
-        <input class="link-item-add-input" id="link-item-input-${fi}" placeholder="点検項目名を入力"
-          onkeydown="if(event.key==='Enter')confirmAddItem(${fi});if(event.key==='Escape')hideItemAddRow(${fi})">
-        <button class="link-item-add-ok" onclick="confirmAddItem(${fi})">${checkSvg}</button>
-        <button class="link-item-add-cancel" onclick="hideItemAddRow(${fi})">${xSvg}</button>
+      <div class="link-section">
+        <div class="link-section-row">
+          <div class="link-section-label">点検項目</div>
+          <button class="link-add-chip-btn" onclick="togglePicker('item-picker-${fi}')">${plusSvg} 追加</button>
+        </div>
+        <div class="link-picker" id="item-picker-${fi}" style="display:none;">${itemPickerContent}</div>
+        <div class="link-items">${selectedItemChips}</div>
+      </div>
+      <div class="link-section">
+        <div class="link-section-row">
+          <div class="link-section-label">点検者</div>
+          ${availableInsp.length > 0 ? `<button class="link-add-chip-btn" onclick="togglePicker('insp-picker-${fi}')">${plusSvg} 追加</button>` : ''}
+        </div>
+        <div class="link-picker" id="insp-picker-${fi}" style="display:none;">${inspPickerOptions || '<span class="link-empty-msg">追加できる点検者がいません</span>'}</div>
+        <div class="link-items">${selectedInspChips}</div>
       </div>
     </div>`;
   }).join('');
 
-  el.innerHTML = cards +
-    `<div id="link-add-form" style="display:none;" class="link-add-card">
-      <div class="link-add-card-label">設備名</div>
-      <input class="link-add-card-input" id="link-add-input" placeholder="例：空調設備 C棟"
-        onkeydown="if(event.key==='Enter')confirmAddFacility()">
-      <div class="link-add-card-btns">
-        <button class="link-add-cancel" onclick="hideLinkAddForm()">キャンセル</button>
-        <button class="link-add-confirm" onclick="confirmAddFacility()">追加する</button>
-      </div>
-    </div>
-    <button class="link-add-fac-btn" id="link-add-btn" onclick="showLinkAddForm()">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      設備を追加
-    </button>`;
+  el.innerHTML = cards;
 }
 
-function toggleLinkKey(fi, key, chipEl) {
+function addNewInspectionItem(fi) {
+  const inp = document.getElementById('new-item-input-' + fi);
+  const label = inp ? inp.value.trim() : '';
+  if (!label) { inp && inp.focus(); return; }
+  const key = 'custom_' + Date.now();
+  inspectionItems.push({ key, label });
+  if (!FACILITIES[fi].linkedKeys) FACILITIES[fi].linkedKeys = [];
+  FACILITIES[fi].linkedKeys.push(key);
+  renderLinkageList();
+  updateCounts();
+  // Re-open picker after re-render
+  const picker = document.getElementById('item-picker-' + fi);
+  if (picker) picker.style.display = 'flex';
+}
+
+function togglePicker(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+
+function updateLinkBadge(fi) {
+  const fac = FACILITIES[fi];
+  const total = (fac.linkedKeys||[]).length + (fac.linkedInspectors||[]).length;
+  const badge = document.getElementById('link-badge-' + fi);
+  if (badge) {
+    badge.textContent = total + '件紐づけ';
+    badge.className = 'link-ng-badge ' + (total ? 'ok' : 'ng');
+  }
+}
+
+function toggleLinkItem(fi, key, chipEl) {
   const fac = FACILITIES[fi];
   if (!fac.linkedKeys) fac.linkedKeys = [];
   const idx = fac.linkedKeys.indexOf(key);
-  const checkSvg = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
-  const plusSvg  = `<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
-  if (idx === -1) {
-    fac.linkedKeys.push(key);
-    chipEl.classList.add('linked');
-    chipEl.querySelector('svg').outerHTML; // swap icon
-    chipEl.innerHTML = checkSvg + chipEl.textContent.trim();
-  } else {
-    fac.linkedKeys.splice(idx, 1);
-    chipEl.classList.remove('linked');
-    chipEl.innerHTML = plusSvg + chipEl.textContent.trim();
-  }
-  // Update badge count
-  const badge = document.querySelector(`#link-card-${fi} .link-ng-badge`);
-  if (badge) {
-    badge.textContent = fac.linkedKeys.length + '件紐づけ';
-    badge.className = 'link-ng-badge ' + (fac.linkedKeys.length ? 'ok' : 'ng');
-  }
-}
-
-function showItemAddRow(fi) {
-  const row = document.getElementById('link-item-add-row-' + fi);
-  if (!row) return;
-  row.classList.add('open');
-  const inp = document.getElementById('link-item-input-' + fi);
-  if (inp) { inp.value = ''; inp.focus(); }
-}
-
-function hideItemAddRow(fi) {
-  const row = document.getElementById('link-item-add-row-' + fi);
-  if (row) row.classList.remove('open');
-}
-
-function confirmAddItem(fi) {
-  const inp = document.getElementById('link-item-input-' + fi);
-  const label = inp ? inp.value.trim() : '';
-  if (!label) { inp && inp.focus(); return; }
-  if (!FACILITIES[fi].items) FACILITIES[fi].items = [];
-  FACILITIES[fi].items.push(label);
+  if (idx === -1) fac.linkedKeys.push(key);
+  else fac.linkedKeys.splice(idx, 1);
   renderLinkageList();
-  updateCounts();
 }
 
-function deleteCustomItem(fi, ii) {
-  FACILITIES[fi].items.splice(ii, 1);
+function toggleLinkInspector(fi, name, chipEl) {
+  const fac = FACILITIES[fi];
+  if (!fac.linkedInspectors) fac.linkedInspectors = [];
+  const idx = fac.linkedInspectors.indexOf(name);
+  if (idx === -1) fac.linkedInspectors.push(name);
+  else fac.linkedInspectors.splice(idx, 1);
   renderLinkageList();
-  updateCounts();
 }
 
-function showLinkAddForm() {
-  const form = document.getElementById('link-add-form');
-  const btn  = document.getElementById('link-add-btn');
-  if (!form) return;
-  form.style.display = 'block';
-  btn.style.display  = 'none';
-  const inp = document.getElementById('link-add-input');
-  if (inp) { inp.value = ''; inp.focus(); }
-}
-
-function hideLinkAddForm() {
-  const form = document.getElementById('link-add-form');
-  const btn  = document.getElementById('link-add-btn');
-  if (form) form.style.display = 'none';
-  if (btn)  btn.style.display  = 'flex';
-}
-
-function confirmAddFacility() {
-  const inp = document.getElementById('link-add-input');
-  const name = inp ? inp.value.trim() : '';
-  if (!name) { inp && inp.focus(); return; }
-  const icons = Object.values(FACILITY_ICONS);
-  const icon  = icons[FACILITIES.length % icons.length];
-  FACILITIES.push({ icon, name, items: [], linkedKeys: [] });
-  renderLinkageList();
-  updateCounts();
-  // Scroll new card into view
-  const newFi = FACILITIES.length - 1;
-  const card = document.getElementById('link-card-' + newFi);
-  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function deleteLinkFacility(fi) {
-  if (!confirm(`「${FACILITIES[fi].name}」を削除しますか？`)) return;
-  FACILITIES.splice(fi, 1);
-  renderLinkageList();
-  updateCounts();
-}
+// legacy alias (toggleLinkKey removed)
 
 function selectRole(role) {
   selectedRole = role;
@@ -1932,7 +1847,7 @@ function enterApp() {
       </svg><span class="notif-dot"></span>`;
       labelEl.textContent = 'アラート';
     }
-    setNavActive('nav-alert-or-settings');
+    setNavActive('nav-home');
   }, 380);
 }
 
