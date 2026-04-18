@@ -439,7 +439,7 @@
   .cal-cell {
     display: flex; flex-direction: column;
     align-items: center;
-    min-height: 54px; padding: 2px 0;
+    min-height: 70px; padding: 2px 0;
   }
   .day-num {
     width: 38px; height: 38px;
@@ -459,6 +459,29 @@
   .day-num.weekend  { color: #bbb; background: none; }
   .day-num.weekend:not(.today) { background: none; border: none; }
 
+  /* ── Periodic Inspection Badge (10日・20日・30日) ── */
+  .periodic-badge {
+    font-size: 8.5px; font-weight: 700;
+    background: linear-gradient(135deg, #e06020, #c04010);
+    color: #fff;
+    border-radius: 5px; padding: 1px 5px;
+    margin-top: 2px; white-space: nowrap;
+    letter-spacing: 0; line-height: 1.5;
+    box-shadow: 0 1px 4px rgba(224,96,32,0.35);
+    pointer-events: none;
+  }
+
+  /* ── Monthly Inspection Badge (1ヶ月点検) ── */
+  .monthly-badge {
+    font-size: 8.5px; font-weight: 700;
+    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
+    color: #fff;
+    border-radius: 5px; padding: 1px 5px;
+    margin-top: 2px; white-space: nowrap;
+    letter-spacing: 0; line-height: 1.5;
+    box-shadow: 0 1px 4px rgba(42,106,170,0.35);
+    pointer-events: none;
+  }
 
   /* ── Legend ── */
   .legend {
@@ -975,6 +998,16 @@
   .link-toggle-chip.inspector.active {
     background: #2a6a3a; border-color: #2a6a3a;
   }
+  /* 定期点検チップ (10・20・30日) */
+  .link-toggle-chip.periodic-active {
+    background: linear-gradient(135deg, #e06020, #c04010) !important;
+    border-color: #c04010 !important; color: #fff !important;
+  }
+  /* 1ヶ月点検チップ (月末) */
+  .link-toggle-chip.monthly-active {
+    background: linear-gradient(135deg, #2a6aaa, #1a4a80) !important;
+    border-color: #1a4a80 !important; color: #fff !important;
+  }
   .link-add-fac-btn {
     margin: 10px 14px 4px; width: auto; display: inline-flex;
     padding: 6px 14px; border: 1.5px solid #c8d4e8; border-radius: 20px;
@@ -1144,6 +1177,8 @@
       <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
       <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
       <div class="legend-item"><div class="legend-dot" style="background:#ffd0d0;border:1.5px solid #f09090;border-radius:4px;"></div>不備あり</div>
+      <div class="legend-item"><div class="periodic-badge" style="font-size:7px;padding:1px 4px;margin-top:0;">定期点検</div></div>
+      <div class="legend-item"><div class="monthly-badge" style="font-size:7px;padding:1px 4px;margin-top:0;">1ヶ月点検</div></div>
     </div>
   </div>
 
@@ -1170,6 +1205,69 @@
           <div class="settings-card" id="settings-items-card"></div>
           <button class="settings-add-btn" onclick="addSettingsRow('items')">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- 定期点検項目セクション (10日・20日・30日) -->
+    <div class="settings-section" id="sec-periodic">
+      <div class="settings-section-header" onclick="toggleSection('sec-periodic')">
+        <div class="settings-section-icon" style="background:#fff3ee;">
+          <svg viewBox="0 0 24 24" style="stroke:#c04010;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <circle cx="8" cy="16" r="1" fill="#c04010" stroke="none"/>
+            <circle cx="12" cy="16" r="1" fill="#c04010" stroke="none"/>
+            <circle cx="16" cy="16" r="1" fill="#c04010" stroke="none"/>
+          </svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">定期点検項目 <span style="font-size:10px;font-weight:400;color:#e06020;background:#fff3ee;border:1px solid #f8c8a0;border-radius:10px;padding:1px 7px;margin-left:4px;">10日・20日・30日</span></div>
+          <div class="settings-section-count" id="count-periodic"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div style="font-size:11px;color:#c04010;background:#fff8f5;border:1px solid #fad0b0;border-radius:8px;padding:8px 12px;margin-bottom:10px;line-height:1.6;">
+            カレンダーの「定期点検」マーク日（10日・20日・30日）に表示される追加点検項目です。
+          </div>
+          <div class="settings-card" id="settings-periodic-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('periodic')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>定期点検項目を追加
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- 1ヶ月点検項目セクション (月末) -->
+    <div class="settings-section" id="sec-monthly">
+      <div class="settings-section-header" onclick="toggleSection('sec-monthly')">
+        <div class="settings-section-icon" style="background:#eef4ff;">
+          <svg viewBox="0 0 24 24" style="stroke:#1a4a80;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <line x1="8" y1="15" x2="16" y2="15"/>
+            <line x1="12" y1="12" x2="12" y2="18"/>
+          </svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">1ヶ月点検項目 <span style="font-size:10px;font-weight:400;color:#2a6aaa;background:#eef4ff;border:1px solid #b0ccf0;border-radius:10px;padding:1px 7px;margin-left:4px;">月末</span></div>
+          <div class="settings-section-count" id="count-monthly"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <div style="font-size:11px;color:#1a4a80;background:#f0f6ff;border:1px solid #b0ccf0;border-radius:8px;padding:8px 12px;margin-bottom:10px;line-height:1.6;">
+            月末日（休日の場合は前の平日）に表示される1ヶ月点検専用の項目です。
+          </div>
+          <div class="settings-card" id="settings-monthly-card"></div>
+          <button class="settings-add-btn" onclick="addSettingsRow('monthly')">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>1ヶ月点検項目を追加
           </button>
         </div>
       </div>
@@ -1356,12 +1454,12 @@ const FACILITY_ICONS = {
 };
 
 const FACILITIES = [
-  { icon: FACILITY_ICONS.gear,        iconKey:'gear',        name:'空調設備 A棟', items:['フィルター清掃','冷媒漏れ確認','ベルト点検','運転音確認','温度設定確認'],   linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.droplet,     iconKey:'droplet',     name:'給排水設備',   items:['配管漏れ確認','水圧確認','排水詰まり点検','弁動作確認','水質確認'],         linkedKeys:['equip','safety'] },
-  { icon: FACILITY_ICONS.zap,         iconKey:'zap',         name:'電気設備',     items:['絶縁抵抗測定','ブレーカー確認','配線損傷確認','アース確認','過負荷確認'],   linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.flame,       iconKey:'flame',       name:'消防設備',     items:['消火器残量確認','スプリンクラー点検','火災報知器テスト','避難経路確認','消火栓確認'], linkedKeys:['safety','comp'] },
-  { icon: FACILITY_ICONS.shower,      iconKey:'shower',      name:'衛生設備 B棟', items:['給湯温度確認','シャワー水圧確認','排水トラップ点検','防臭措置確認','清掃状態確認'], linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.thermometer, iconKey:'thermometer', name:'冷凍設備',     items:['庫内温度確認','ドアパッキン点検','霜取り状態確認','コンプレッサー確認','警報テスト'],  linkedKeys:['equip','comp'] },
+  { icon: FACILITY_ICONS.gear,        iconKey:'gear',        facNo:'FAC-001', name:'空調設備 A棟', items:['フィルター清掃','冷媒漏れ確認','ベルト点検','運転音確認','温度設定確認'],   linkedKeys:['equip','safety','comp'] },
+  { icon: FACILITY_ICONS.droplet,     iconKey:'droplet',     facNo:'FAC-002', name:'給排水設備',   items:['配管漏れ確認','水圧確認','排水詰まり点検','弁動作確認','水質確認'],         linkedKeys:['equip','safety'] },
+  { icon: FACILITY_ICONS.zap,         iconKey:'zap',         facNo:'FAC-003', name:'電気設備',     items:['絶縁抵抗測定','ブレーカー確認','配線損傷確認','アース確認','過負荷確認'],   linkedKeys:['equip','safety','comp'] },
+  { icon: FACILITY_ICONS.flame,       iconKey:'flame',       facNo:'FAC-004', name:'消防設備',     items:['消火器残量確認','スプリンクラー点検','火災報知器テスト','避難経路確認','消火栓確認'], linkedKeys:['safety','comp'] },
+  { icon: FACILITY_ICONS.shower,      iconKey:'shower',      facNo:'FAC-005', name:'衛生設備 B棟', items:['給湯温度確認','シャワー水圧確認','排水トラップ点検','防臭措置確認','清掃状態確認'], linkedKeys:['equip','safety','comp'] },
+  { icon: FACILITY_ICONS.thermometer, iconKey:'thermometer', facNo:'FAC-006', name:'冷凍設備',     items:['庫内温度確認','ドアパッキン点検','霜取り状態確認','コンプレッサー確認','警報テスト'],  linkedKeys:['equip','comp'] },
 ];
 
 function makeChecks(n, fails=[]){
@@ -1397,6 +1495,13 @@ function renderCalendar(){
     c.innerHTML='<div class="day-num empty">·</div>';
     grid.appendChild(c);
   }
+
+  // ── 定期点検日の計算（10日・20日・30日、休日なら前の平日へ）──
+  const periodicDays = getPeriodicDaysForMonth(viewYear, viewMonth, days);
+
+  // ── 1ヶ月点検日の計算（月末日、休日なら前の平日へ）──
+  const monthlyDay = getMonthlyInspectionDay(viewYear, viewMonth, days);
+
   for(let d=1;d<=days;d++){
     const k=key(viewYear,viewMonth,d);
     const e=entries[k];
@@ -1415,9 +1520,14 @@ function renderCalendar(){
     if(isWeekend) cls+=' weekend';
     if(isToday) cls+=' today';
 
+    const isPeriodic = periodicDays.has(d);
+    const isMonthly  = (d === monthlyDay);
+    const badgeHtml  = (isPeriodic ? '<div class="periodic-badge">定期点検</div>' : '')
+                     + (isMonthly  ? '<div class="monthly-badge">1ヶ月点検</div>'  : '');
+
     const cell=document.createElement('div');
     cell.className='cal-cell';
-    cell.innerHTML=`<div class="${cls}" onclick="dayClick(${d})">${d}</div>`;
+    cell.innerHTML=`<div class="${cls}" onclick="dayClick(${d})">${d}</div>${badgeHtml}`;
     grid.appendChild(cell);
   }
   updateAverages();
@@ -1479,33 +1589,89 @@ function renderList(){
     const allOk = ngCount === 0;
 
     let rows='';
-    facEntries.forEach(k=>{
-      const d = k.split('-')[2];
-      const e = entries[k];
-      const rowNg = linkedItems.some((_,i)=> (e.checks||{})['f'+fi+'_'+i] === 'ng');
-      const statusCls = rowNg ? 'ng' : 'ok';
+    const daysInMonthForList = getDays(viewYear, viewMonth);
+    const periodicDaysSet = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonthForList);
+    const monthlyDayNum   = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonthForList);
 
-      let chips='';
+    facEntries.forEach(k=>{
+      const d = parseInt(k.split('-')[2]);
+      const e = entries[k];
+
+      // Periodic / monthly flags for this day
+      const isPeriodicDay = periodicDaysSet.has(d);
+      const isMonthlyDay  = (d === monthlyDayNum);
+
+      const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
+      const facPeriodicItems   = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
+      const linkedMonthlyKeys  = fac.linkedMonthlyKeys || [];
+      const facMonthlyItems    = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
+
+      const rowNg      = linkedItems.some((_,i)=> (e.checks||{})['f'+fi+'_'+i] === 'ng');
+      const periodicNg = isPeriodicDay && facPeriodicItems.some((_,i) => (e.checks||{})['periodic_f'+fi+'_'+i] === 'ng');
+      const monthlyNg  = isMonthlyDay  && facMonthlyItems.some((_,i)  => (e.checks||{})['monthly_f'+fi+'_'+i]  === 'ng');
+      const anyNg      = rowNg || periodicNg || monthlyNg;
+      const statusCls  = anyNg ? 'ng' : 'ok';
+
+      // ── 毎日点検チップス ──
+      let chipsHtml = '';
       linkedItems.forEach((item,i)=>{
         const sk='f'+fi+'_'+i;
         const v=(e.checks||{})[sk];
         const isNg=v==='ng';
-        chips+=`<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${isNg?'#cc0000':'#166534'};margin-right:10px;">`
+        chipsHtml+=`<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${isNg?'#cc0000':'#166534'};margin-right:10px;">`
           +`${item.label}<span style="font-weight:700;margin-left:2px;">${isNg?'✕':'○'}</span></span>`;
       });
+
+      // ── 定期点検チップス（10・20・30日） ──
+      let periodicSection = '';
+      if (isPeriodicDay && facPeriodicItems.length) {
+        let pChips = '';
+        facPeriodicItems.forEach((item, i) => {
+          const sk = 'periodic_f'+fi+'_'+i;
+          const v  = (e.checks||{})[sk];
+          const ng = v === 'ng';
+          pChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#a03010'};margin-right:8px;">`
+            +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
+        });
+        periodicSection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #fad0b0;">`
+          +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#e06020,#c04010);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">定期</span>`
+          +pChips
+          +`</div>`;
+      }
+
+      // ── 1ヶ月点検チップス（月末） ──
+      let monthlySection = '';
+      if (isMonthlyDay && facMonthlyItems.length) {
+        let mChips = '';
+        facMonthlyItems.forEach((item, i) => {
+          const sk = 'monthly_f'+fi+'_'+i;
+          const v  = (e.checks||{})[sk];
+          const ng = v === 'ng';
+          mChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#1a4a80'};margin-right:8px;">`
+            +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
+        });
+        monthlySection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #b0ccf0;">`
+          +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a6aaa,#1a4a80);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">月末</span>`
+          +mChips
+          +`</div>`;
+      }
 
       const delBtn = selectedRole === 'manager'
         ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>` : '';
 
       const inspectorTag = e.inspector
-        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;">${e.inspector}</span>`
+        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;align-self:flex-start;margin-top:1px;">${e.inspector}</span>`
         : '';
 
-      rows+=`<div class="hist-row" style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
-        +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;">${mo}/${d}</div>`
-        +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:0;">${chips}</div>`
+      rows+=`<div class="hist-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
+        +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:1px;">${mo}/${d}</div>`
+        +`<div style="flex:1;min-width:0;">`
+        +  `<div style="display:flex;flex-wrap:wrap;gap:0;">${chipsHtml}</div>`
+        +  periodicSection
+        +  monthlySection
+        +`</div>`
         +inspectorTag
-        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;">${rowNg?'✕':'○'}</span>`
+        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;align-self:flex-start;margin-top:1px;">${anyNg?'✕':'○'}</span>`
         +delBtn
         +`</div>`;
     });
@@ -1650,8 +1816,37 @@ function dayClick(d){
   const e = entries[k] || { checks:{}, status:'ok' };
   document.getElementById('modal-title').textContent=(viewMonth+1)+'月'+d+'日の点検記録';
   document.getElementById('modal-facility-name').textContent = '';
-  renderAllFacChecks(e.checks);
+
+  // 定期点検日かチェック
+  const days = getDays(viewYear,viewMonth);
+  const isPeriodicDay = getPeriodicDaysForMonth(viewYear, viewMonth, days).has(d);
+  const isMonthlyDay  = (d === getMonthlyInspectionDay(viewYear, viewMonth, days));
+
+  renderAllFacChecks(e.checks, isPeriodicDay, isMonthlyDay);
   document.getElementById('modal').classList.add('open');
+}
+
+// 定期点検日セット計算ヘルパー（renderCalendar と共有）
+function getPeriodicDaysForMonth(y, m, daysInMonth) {
+  const set = new Set();
+  [10, 20, 30].forEach(base => {
+    if (base > daysInMonth) return;
+    let target = base;
+    const dow = new Date(y, m, base).getDay();
+    if (dow === 0) target = base - 2;
+    else if (dow === 6) target = base - 1;
+    if (target >= 1) set.add(target);
+  });
+  return set;
+}
+
+// 1ヶ月点検日計算ヘルパー（月末日、休日なら前の平日）
+function getMonthlyInspectionDay(y, m, daysInMonth) {
+  let target = daysInMonth;
+  const dow = new Date(y, m, daysInMonth).getDay();
+  if (dow === 0) target = daysInMonth - 2;
+  else if (dow === 6) target = daysInMonth - 1;
+  return target;
 }
 
 function openAdd(){
@@ -1686,7 +1881,7 @@ function openAdd(){
   });
 }
 
-function renderAllFacChecks(savedChecks){
+function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   const container = document.getElementById('item-checks');
   itemStatuses = {};
   let html = '';
@@ -1711,6 +1906,61 @@ function renderAllFacChecks(savedChecks){
     });
     html += `</div>`;
   });
+
+  // 定期点検日の場合は各設備の紐づけ済み定期点検項目を表示
+  if (isPeriodicDay) {
+    FACILITIES.forEach((fac, fi) => {
+      const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
+      const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
+      if (!facPeriodicItems.length) return;
+      const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;vertical-align:middle;stroke:#c04010;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
+      html += `<div style="margin-top:8px;margin-bottom:4px;">`;
+      html += `<div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#c04010;background:linear-gradient(135deg,#fff3ee,#ffe8d8);padding:6px 10px;border-radius:8px;margin-bottom:4px;border:1px solid #fad0b0;">
+        ${iconHtml}<span>${fac.name} — 定期点検（10・20・30日）</span>
+      </div>`;
+      facPeriodicItems.forEach((item, i) => {
+        const sk = 'periodic_f' + fi + '_' + i;
+        const val = (savedChecks && savedChecks[sk]) || 'unset';
+        itemStatuses[sk] = val;
+        html += `<div class="item-check-row" style="border-left:3px solid #e06020;padding-left:8px;">
+          <span class="item-check-label" style="color:#7a3010;">${item.label}</span>
+          <div class="item-check-btns">
+            <button class="item-btn${val==='ok'?' sel-pass':''}" id="iok-${sk}" onclick="setItemStatusKeyed('${sk}','ok')">○</button>
+            <button class="item-btn${val==='ng'?' sel-fail':''}" id="ing-${sk}" onclick="setItemStatusKeyed('${sk}','ng')">✕</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  }
+
+  // 1ヶ月点検日の場合は各設備の紐づけ済み1ヶ月点検項目を表示
+  if (isMonthlyDay) {
+    FACILITIES.forEach((fac, fi) => {
+      const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
+      const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
+      if (!facMonthlyItems.length) return;
+      const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;vertical-align:middle;stroke:#1a4a80;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
+      html += `<div style="margin-top:8px;margin-bottom:4px;">`;
+      html += `<div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#1a4a80;background:linear-gradient(135deg,#eef4ff,#d8eaff);padding:6px 10px;border-radius:8px;margin-bottom:4px;border:1px solid #b0ccf0;">
+        ${iconHtml}<span>${fac.name} — 1ヶ月点検（月末）</span>
+      </div>`;
+      facMonthlyItems.forEach((item, i) => {
+        const sk = 'monthly_f' + fi + '_' + i;
+        const val = (savedChecks && savedChecks[sk]) || 'unset';
+        itemStatuses[sk] = val;
+        html += `<div class="item-check-row" style="border-left:3px solid #2a6aaa;padding-left:8px;">
+          <span class="item-check-label" style="color:#1a3a60;">${item.label}</span>
+          <div class="item-check-btns">
+            <button class="item-btn${val==='ok'?' sel-pass':''}" id="iok-${sk}" onclick="setItemStatusKeyed('${sk}','ok')">○</button>
+            <button class="item-btn${val==='ng'?' sel-fail':''}" id="ing-${sk}" onclick="setItemStatusKeyed('${sk}','ng')">✕</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  }
+
   if(!html){
     html = '<div style="padding:20px;text-align:center;color:#aab;font-size:13px;">紐づけされた点検項目がありません<br><span style="font-size:11px;">管理者設定で設備に点検項目を紐づけてください</span></div>';
   }
@@ -1761,6 +2011,21 @@ let inspectionItems = [
   { key: 'comp',   label: '完了率（%）' },
 ];
 
+// ── Periodic inspection items (10日・20日・30日) ──
+let periodicInspectionItems = [
+  { key: 'p_filter',    label: 'フィルター点検' },
+  { key: 'p_safety',    label: '安全弁・圧力確認' },
+  { key: 'p_lubricate', label: '潤滑油・グリス補給' },
+];
+
+// ── Monthly inspection items (1ヶ月点検・月末) ──
+let monthlyInspectionItems = [
+  { key: 'm_overall',   label: '総合点検・異常確認' },
+  { key: 'm_record',    label: '点検記録・報告書作成' },
+  { key: 'm_parts',     label: '消耗部品確認・交換' },
+  { key: 'm_cleaning',  label: '設備全体清掃' },
+];
+
 // Staff data
 let staffData = {
   managers:   ['山田 太郎'],
@@ -1785,14 +2050,18 @@ const STORAGE_KEY = 'facInsp_v2';
 function persistData() {
   try {
     const facsToSave = FACILITIES.map(f => ({
-      iconKey:          f.iconKey || 'gear',
-      name:             f.name,
-      items:            f.items            || [],
-      linkedKeys:       f.linkedKeys       || [],
-      linkedInspectors: f.linkedInspectors || [],
+      iconKey:            f.iconKey            || 'gear',
+      facNo:              f.facNo              || '',
+      name:               f.name,
+      items:              f.items              || [],
+      linkedKeys:         f.linkedKeys         || [],
+      linkedInspectors:   f.linkedInspectors   || [],
+      linkedPeriodicKeys: f.linkedPeriodicKeys || [],
+      linkedMonthlyKeys:  f.linkedMonthlyKeys  || [],
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       entries, inspectionItems, staffData, facilities: facsToSave,
+      periodicInspectionItems, monthlyInspectionItems,
     }));
   } catch(e) { console.warn('persistData failed', e); }
 }
@@ -1805,16 +2074,21 @@ function loadPersistedData() {
     if (data.entries)         entries         = data.entries;
     if (data.inspectionItems) inspectionItems = data.inspectionItems;
     if (data.staffData)       staffData       = data.staffData;
+    if (data.periodicInspectionItems) periodicInspectionItems = data.periodicInspectionItems;
+    if (data.monthlyInspectionItems)  monthlyInspectionItems  = data.monthlyInspectionItems;
     if (data.facilities) {
       FACILITIES.length = 0;
       data.facilities.forEach(f => {
         FACILITIES.push({
-          icon:             FACILITY_ICONS[f.iconKey] || FACILITY_ICONS.gear,
-          iconKey:          f.iconKey || 'gear',
-          name:             f.name,
-          items:            f.items            || [],
-          linkedKeys:       f.linkedKeys       || [],
-          linkedInspectors: f.linkedInspectors || [],
+          icon:               FACILITY_ICONS[f.iconKey] || FACILITY_ICONS.gear,
+          iconKey:            f.iconKey            || 'gear',
+          facNo:              f.facNo              || '',
+          name:               f.name,
+          items:              f.items              || [],
+          linkedKeys:         f.linkedKeys         || [],
+          linkedInspectors:   f.linkedInspectors   || [],
+          linkedPeriodicKeys: f.linkedPeriodicKeys || [],
+          linkedMonthlyKeys:  f.linkedMonthlyKeys  || [],
         });
       });
     }
@@ -1839,39 +2113,85 @@ function exportPDF() {
   const daysInMonth = getDays(viewYear, viewMonth);
   const dayNums = Array.from({length: daysInMonth}, (_, i) => i + 1);
 
+  const periodicDaysSet = getPeriodicDaysForMonth(yr, viewMonth, daysInMonth);
+  const monthlyDay      = getMonthlyInspectionDay(yr, viewMonth, daysInMonth);
+
+  const allDayData = dayNums.map(d => {
+    const dow = new Date(yr, viewMonth, d).getDay();
+    return { d, isWeekend: dow===0||dow===6, isPeriodic: periodicDaysSet.has(d), isMonthly: d===monthlyDay, entry: entries[key(yr,viewMonth,d)]||null };
+  });
+
   // Build one page per facility
   const pages = FACILITIES.map((fac, facIdx) => {
-    // Determine items for this facility
-    const items = fac.items.length ? fac.items : inspectionItems.map(i => i.label);
+    const linkedItems        = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
+    const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
+    const linkedMonthlyKeys  = fac.linkedMonthlyKeys  || [];
+    const facPeriodicItems   = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
+    const facMonthlyItems    = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
+    if (!linkedItems.length && !facPeriodicItems.length && !facMonthlyItems.length) return '';
 
-    // Collect day data
-    const dayData = dayNums.map(d => {
-      const dow = new Date(yr, viewMonth, d).getDay();
-      const isWeekend = dow === 0 || dow === 6;
-      const k = key(yr, viewMonth, d);
-      const entry = entries[k];
-      // Only show entry if facIdx matches ((d-1)%FACILITIES.length === facIdx)
-      const entryForThisFac = ((d - 1) % FACILITIES.length === facIdx) ? entry : null;
-      return { d, isWeekend, entry: entryForThisFac };
-    });
+    const manager   = staffData.managers[0] || '';
+    const inspector = (fac.linkedInspectors||[])[0] || staffData.inspectors[0] || '';
+    const totalCols = allDayData.length;
 
-    const manager = staffData.managers[0] || '';
-    const inspector = staffData.inspectors[0] || '';
-
-    // Build rows HTML: one row per item
-    const itemRows = items.map((itemLabel, itemIdx) => {
-      const cells = dayData.map(({ d, isWeekend, entry }) => {
-        if (isWeekend) return `<td class="cell weekend" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
-        if (!entry) return `<td class="cell empty"></td>`;
-        const v = entry.checks ? entry.checks[itemIdx] : 'ok';
-        return `<td class="cell ${v === 'ng' ? 'ng' : 'ok'}">${v === 'ng' ? '×' : '○'}</td>`;
-      }).join('');
-      return `<tr><td class="item-no">${itemIdx + 1}</td><td class="item-label">${itemLabel}</td>${cells}</tr>`;
+    // ── Date header row ──
+    const dateHeaders = allDayData.map(({d, isWeekend, isPeriodic, isMonthly}) => {
+      let cls = 'day-header';
+      if (isWeekend)                cls += ' weekend-h';
+      else if (isMonthly)           cls += ' monthly-h';
+      else if (isPeriodic)          cls += ' periodic-h';
+      return `<th class="${cls}">${d}</th>`;
     }).join('');
 
-    const dateHeaders = dayData.map(({ d, isWeekend }) =>
-      `<th class="day-header${isWeekend ? ' weekend-h' : ''}">${d}</th>`
-    ).join('');
+    // ── Helper: one data cell ──
+    function dataCell(dayMeta, checkKey, restrictToSpecialDay) {
+      const {d, isWeekend, isPeriodic, isMonthly, entry} = dayMeta;
+      if (isWeekend) return `<td class="cell weekend" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
+      // Gray out cells that don't belong to this section
+      if (restrictToSpecialDay === 'periodic' && !isPeriodic) return `<td class="cell n-a"></td>`;
+      if (restrictToSpecialDay === 'monthly'  && !isMonthly)  return `<td class="cell n-a"></td>`;
+      if (!entry||!entry.checks) return `<td class="cell empty"></td>`;
+      const v = entry.checks[checkKey];
+      if (!v) return `<td class="cell empty"></td>`;
+      return `<td class="cell ${v==='ng'?'ng':'ok'}">${v==='ng'?'×':'○'}</td>`;
+    }
+
+    // ── Section header row (spans all columns) ──
+    function sectionRow(label, bgColor, textColor) {
+      return `<tr>
+        <td colspan="${totalCols + 2}" style="background:${bgColor};color:${textColor};font-size:8px;font-weight:700;padding:2px 6px;letter-spacing:.3px;border-top:2px solid ${textColor}20;">${label}</td>
+      </tr>`;
+    }
+
+    // ── Build all rows ──
+    let allRows = '';
+
+    // Daily section
+    if (linkedItems.length) {
+      allRows += sectionRow('▶ 毎日点検', '#d8e4f0', '#1a2e4a');
+      linkedItems.forEach((item, i) => {
+        const cells = allDayData.map(dm => dataCell(dm, 'f'+facIdx+'_'+i, null)).join('');
+        allRows += `<tr><td class="item-no">${i+1}</td><td class="item-label">${item.label}</td>${cells}</tr>`;
+      });
+    }
+
+    // Periodic section
+    if (facPeriodicItems.length) {
+      allRows += sectionRow('▶ 定期点検（10日・20日・30日）', '#fff0e6', '#8a2a00');
+      facPeriodicItems.forEach((item, i) => {
+        const cells = allDayData.map(dm => dataCell(dm, 'periodic_f'+facIdx+'_'+i, 'periodic')).join('');
+        allRows += `<tr><td class="item-no" style="color:#8a2a00;">${i+1}</td><td class="item-label" style="color:#8a2a00;">${item.label}</td>${cells}</tr>`;
+      });
+    }
+
+    // Monthly section
+    if (facMonthlyItems.length) {
+      allRows += sectionRow('▶ 1ヶ月点検（月末：'+monthlyDay+'日）', '#e8f0ff', '#1a3a70');
+      facMonthlyItems.forEach((item, i) => {
+        const cells = allDayData.map(dm => dataCell(dm, 'monthly_f'+facIdx+'_'+i, 'monthly')).join('');
+        allRows += `<tr><td class="item-no" style="color:#1a3a70;">${i+1}</td><td class="item-label" style="color:#1a3a70;">${item.label}</td>${cells}</tr>`;
+      });
+    }
 
     return `
     <div class="sheet">
@@ -1881,9 +2201,9 @@ function exportPDF() {
       </div>
       <table class="meta-table">
         <tr>
-          <td class="meta-label">設備No.</td><td class="meta-val">FAC-${String(facIdx+1).padStart(3,'0')}</td>
+          <td class="meta-label">設備No.</td><td class="meta-val" style="font-weight:700;color:#1a4a70;">${fac.facNo || 'FAC-'+String(facIdx+1).padStart(3,'0')}</td>
           <td class="meta-label">設備名</td><td class="meta-val fac-name">${fac.name}</td>
-          <td class="meta-label">点検頻度</td><td class="meta-val">日常</td>
+          <td class="meta-label">点検頻度</td><td class="meta-val">日常・定期・月次</td>
           <td class="meta-label">設置場所</td><td class="meta-val">NC施設</td>
         </tr>
         <tr>
@@ -1901,20 +2221,23 @@ function exportPDF() {
             ${dateHeaders}
           </tr>
         </thead>
-        <tbody>${itemRows}</tbody>
+        <tbody>${allRows}</tbody>
       </table>
       <table class="sign-table">
         <tr>
           <td class="sign-label">正常：○</td>
-          <td class="sign-label">異常：× / 記入なし</td>
+          <td class="sign-label">異常：×</td>
+          <td class="sign-label">未記入：空白</td>
           <td class="sign-label">休日：斜線</td>
-          <td class="sign-cell" style="width:80px">承認</td>
-          <td class="sign-cell" style="width:80px">確認</td>
-          <td class="sign-cell" style="width:80px">担当</td>
+          <td class="sign-label periodic-legend">定期点検日（10・20・30日）</td>
+          <td class="sign-label monthly-legend">1ヶ月点検日（月末）</td>
+          <td class="sign-cell" style="width:68px">承認</td>
+          <td class="sign-cell" style="width:68px">確認</td>
+          <td class="sign-cell" style="width:68px">担当</td>
         </tr>
       </table>
     </div>`;
-  }).join('<div class="page-break"></div>');
+  }).filter(Boolean).join('<div class="page-break"></div>');
 
   const html = `<!DOCTYPE html>
 <html lang="ja">
@@ -1926,40 +2249,48 @@ function exportPDF() {
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans JP', 'Meiryo', 'Hiragino Sans', sans-serif; background: #fff; font-size: 9px; }
   .page-break { page-break-after: always; }
-  .sheet { padding: 2mm 2mm 1mm; min-height: 195mm; display: flex; flex-direction: column; }
+  .sheet { padding: 2mm 2mm 1mm; display: flex; flex-direction: column; }
+
   .sheet-title-block { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2mm; justify-content: center; }
   .sheet-main-title { font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #1a2e4a; }
   .sheet-period { font-size: 11px; color: #334; font-weight: 600; }
 
-  /* Meta table */
   .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
   .meta-table td { border: 1px solid #666; padding: 1.5mm 2mm; font-size: 8.5px; height: 7mm; }
   .meta-label { background: #d8e4f0; font-weight: 700; color: #1a2e4a; white-space: nowrap; width: 18mm; text-align: center; }
   .meta-val { min-width: 28mm; color: #222; }
   .fac-name { font-weight: 700; color: #1a2e4a; font-size: 10px; }
 
-  /* Main table */
-  .main-table { width: 100%; border-collapse: collapse; flex: 1; }
-  .main-table th, .main-table td { border: 1px solid #999; text-align: center; vertical-align: middle; }
-  .no-h  { width: 7mm; background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; }
-  .item-h { width: 52mm; background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; }
-  .day-header { height: 7mm; font-size: 8px; font-weight: 700; background: #d8e4f0; padding: 0 1px; width: 6.5mm; color: #1a2e4a; }
-  .day-header.weekend-h { background: #e8eef4; color: #7090b0; }
-  .item-no { font-size: 8px; font-weight: 700; color: #1a2e4a; padding: 1mm; height: 8mm; }
-  .item-label { text-align: left; font-size: 8.5px; padding: 1mm 2mm; color: #1a2e4a; font-weight: 500; height: 8mm; }
-  .cell { height: 8mm; font-size: 11px; font-weight: 700; padding: 0; position: relative; }
-  .cell.ok { color: #1a6aaa; }
-  .cell.ng { color: #cc0000; }
-  .cell.empty { background: #fafafa; }
-  .cell.weekend { background: #f0f4f8; padding: 0; }
-  .slash { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .slash line { stroke: #aaa; stroke-width: 0.6; }
+  .main-table { width: 100%; border-collapse: collapse; border: 1.5px solid #9ab0cc; }
+  .main-table th, .main-table td { border: 1px solid #bbc; text-align: center; vertical-align: middle; }
 
-  /* Signature table */
+  .no-h   { width: 7mm;  background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; color: #1a2e4a; }
+  .item-h { width: 50mm; background: #d8e4f0; font-weight: 700; font-size: 8px; padding: 1mm; color: #1a2e4a; }
+
+  /* Day headers */
+  .day-header           { height: 6mm; font-size: 7.5px; font-weight: 700; background: #d8e4f0; padding: 0 1px; width: 6.5mm; color: #1a2e4a; }
+  .day-header.weekend-h { background: #e8eef4; color: #90a8c0; }
+  .day-header.periodic-h{ background: #ffe4cc; color: #8a2a00; }
+  .day-header.monthly-h { background: #ccdaff; color: #1a3a70; }
+
+  /* Data rows */
+  .item-no    { font-size: 8px; font-weight: 700; color: #1a2e4a; padding: 1mm; height: 7mm; }
+  .item-label { text-align: left; font-size: 8px; padding: 1mm 2mm; color: #1a2e4a; font-weight: 500; height: 7mm; }
+  .cell       { height: 7mm; font-size: 11px; font-weight: 700; padding: 0; position: relative; }
+  .cell.ok      { color: #1a6aaa; }
+  .cell.ng      { color: #cc0000; background: #fff0f0; }
+  .cell.empty   { background: #fafafa; }
+  .cell.weekend { background: #edf2f7; }
+  .cell.n-a     { background: #f2f2f4; }  /* not applicable for this section */
+  .slash { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .slash line { stroke: #b0b8c4; stroke-width: 0.6; }
+
   .sign-table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
-  .sign-table td { border: 1px solid #999; padding: 1.5mm 2mm; height: 8mm; font-size: 8px; }
-  .sign-label { background: #f5f7fa; color: #556; flex: 1; }
-  .sign-cell { background: #fff; min-width: 60px; }
+  .sign-table td { border: 1px solid #999; padding: 1.5mm 2mm; height: 8mm; font-size: 7.5px; }
+  .sign-label          { background: #f5f7fa; color: #556; }
+  .sign-label.periodic-legend { background: #fff0e6; color: #8a2a00; font-weight: 700; }
+  .sign-label.monthly-legend  { background: #e8f0ff; color: #1a3a70; font-weight: 700; }
+  .sign-cell  { background: #fff; min-width: 60px; }
 
   @media print {
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1982,6 +2313,8 @@ function updateCounts() {
   const n = (sel) => document.querySelectorAll(sel + ' .settings-row').length;
   const fmt = (count, unit) => count > 0 ? `${count}${unit}` : '未設定';
   if (c('count-items'))      c('count-items').textContent      = fmt(n('#settings-items-card'),     '項目');
+  if (c('count-periodic'))   c('count-periodic').textContent   = fmt(n('#settings-periodic-card'),  '項目');
+  if (c('count-monthly'))    c('count-monthly').textContent    = fmt(n('#settings-monthly-card'),   '項目');
   if (c('count-facilities')) c('count-facilities').textContent = fmt(n('#settings-facilities-card'),'件');
   if (c('count-managers'))   c('count-managers').textContent   = fmt(n('#settings-managers-card'),  '名');
   if (c('count-inspectors')) c('count-inspectors').textContent = fmt(n('#settings-staff-card'),     '名');
@@ -1999,6 +2332,16 @@ function renderSettingsView() {
   // 点検項目 card
   document.getElementById('settings-items-card').innerHTML =
     inspectionItems.map((item, i) => makeRow(ICON_CHECK, `点検項目 ${i+1}`, `set-item-${item.key}`, item.label, '項目名を入力')).join('');
+
+  // 定期点検項目 card
+  const ICON_PERIODIC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/></svg>`;
+  document.getElementById('settings-periodic-card').innerHTML =
+    periodicInspectionItems.map((item, i) => makeRow(ICON_PERIODIC, `定期点検項目 ${i+1}`, `set-pitem-${item.key}`, item.label, '項目名を入力')).join('');
+
+  // 1ヶ月点検項目 card
+  const ICON_MONTHLY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>`;
+  document.getElementById('settings-monthly-card').innerHTML =
+    monthlyInspectionItems.map((item, i) => makeRow(ICON_MONTHLY, `1ヶ月点検項目 ${i+1}`, `set-mitem-${item.key}`, item.label, '項目名を入力')).join('');
 
   // 設備名 card
   const facIconsSvg = [
@@ -2018,7 +2361,21 @@ function renderSettingsView() {
     staffData.inspectors.map((name, i) => makeRow(ICON_USER, `点検者 ${i+1}`, `set-inspector-${i}`, name, '点検者名を入力')).join('');
 
   document.getElementById('settings-facilities-card').innerHTML =
-    FACILITIES.map((fac, i) => makeRow(ICON_GEAR, `設備 ${i+1}`, `set-fac-${i}`, fac.name, '設備名を入力')).join('');
+    FACILITIES.map((fac, i) => `<div class="settings-row">
+      <div class="settings-row-icon">${ICON_GEAR}</div>
+      <div class="settings-row-body" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+        <div style="flex-shrink:0;">
+          <div class="settings-row-label" style="font-size:9px;color:#aab;margin-bottom:1px;">設備No.</div>
+          <input class="settings-row-input" id="set-fac-no-${i}" value="${fac.facNo||''}" placeholder="FAC-001" onblur="saveSettings()" style="width:68px;font-size:12px;color:#4a6080;font-weight:700;border-bottom:1px solid #d0d8e8;">
+        </div>
+        <div style="width:1px;height:30px;background:#e8ecf4;flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="settings-row-label" style="font-size:9px;color:#aab;margin-bottom:1px;">設備名</div>
+          <input class="settings-row-input" id="set-fac-${i}" value="${fac.name}" placeholder="設備名を入力" onblur="saveSettings()">
+        </div>
+      </div>
+      ${DEL_BTN}
+    </div>`).join('');
   updateCounts();
 }
 
@@ -2030,6 +2387,14 @@ function addSettingsRow(type) {
   if (type === 'items') {
     card = document.getElementById('settings-items-card');
     icon = ICON_CHECK; labelPrefix = '点検項目'; placeholder = '項目名を入力';
+  } else if (type === 'periodic') {
+    card = document.getElementById('settings-periodic-card');
+    const ICON_PERIODIC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/></svg>`;
+    icon = ICON_PERIODIC; labelPrefix = '定期点検項目'; placeholder = '項目名を入力';
+  } else if (type === 'monthly') {
+    card = document.getElementById('settings-monthly-card');
+    const ICON_MONTHLY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>`;
+    icon = ICON_MONTHLY; labelPrefix = '1ヶ月点検項目'; placeholder = '項目名を入力';
   } else if (type === 'facilities') {
     card = document.getElementById('settings-facilities-card');
     icon = ICON_GEAR; labelPrefix = '設備'; placeholder = '設備名を入力';
@@ -2060,6 +2425,21 @@ function saveSettings() {
     const inp = document.getElementById('set-item-' + item.key);
     if (inp) item.label = inp.value.trim() || item.label;
   });
+  // Save periodic inspection item labels from live DOM rows
+  periodicInspectionItems = [...document.querySelectorAll('#settings-periodic-card .settings-row')]
+    .map((r, i) => {
+      const val = r.querySelector('input')?.value.trim();
+      const existingKey = periodicInspectionItems[i]?.key || ('p_custom_' + i);
+      return val ? { key: existingKey, label: val } : null;
+    }).filter(Boolean);
+
+  // Save monthly inspection item labels from live DOM rows
+  monthlyInspectionItems = [...document.querySelectorAll('#settings-monthly-card .settings-row')]
+    .map((r, i) => {
+      const val = r.querySelector('input')?.value.trim();
+      const existingKey = monthlyInspectionItems[i]?.key || ('m_custom_' + i);
+      return val ? { key: existingKey, label: val } : null;
+    }).filter(Boolean);
   // Update modal labels
   inspectionItems.forEach(item => {
     const el = document.getElementById('label-' + item.key);
@@ -2070,10 +2450,12 @@ function saveSettings() {
     .map(r => r.querySelector('input').value.trim()).filter(Boolean);
   staffData.inspectors = [...document.querySelectorAll('#settings-staff-card .settings-row')]
     .map(r => r.querySelector('input').value.trim()).filter(Boolean);
-  // Save facility names
+  // Save facility names and numbers
   FACILITIES.forEach((fac, i) => {
-    const inp = document.getElementById('set-fac-' + i);
-    if (inp) fac.name = inp.value.trim() || fac.name;
+    const inpNo   = document.getElementById('set-fac-no-' + i);
+    const inpName = document.getElementById('set-fac-' + i);
+    if (inpNo)   fac.facNo = inpNo.value.trim();
+    if (inpName) fac.name  = inpName.value.trim() || fac.name;
     // Remove any linkedKeys that no longer exist in inspectionItems
     const validKeys = inspectionItems.map(it => it.key);
     if (fac.linkedKeys) fac.linkedKeys = fac.linkedKeys.filter(k => validKeys.includes(k));
@@ -2200,10 +2582,12 @@ function renderLinkageList() {
   }
 
   const cards = FACILITIES.map((fac, fi) => {
-    const linkedItems      = fac.linkedKeys || [];
-    const linkedInspectors = fac.linkedInspectors || [];
+    const linkedItems         = fac.linkedKeys          || [];
+    const linkedInspectors    = fac.linkedInspectors    || [];
+    const linkedPeriodicKeys  = fac.linkedPeriodicKeys  || [];
+    const linkedMonthlyKeys   = fac.linkedMonthlyKeys   || [];
 
-    // 点検項目: 全件をトグルチップで表示
+    // ── 点検項目チップ ──
     const allItemChips = inspectionItems.map(item => {
       const active = linkedItems.includes(item.key);
       return `<span class="link-toggle-chip${active?' active':''}" onclick="toggleLinkItem(${fi},'${item.key}',null)">
@@ -2212,14 +2596,13 @@ function renderLinkageList() {
       </span>`;
     }).join('');
 
-    // 編集タブへの案内
     const newItemForm = `
       <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;display:flex;align-items:center;gap:6px;">
         <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#8899aa;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span style="font-size:11px;color:#8899aa;">項目を追加するには<strong style="color:#e06020;cursor:pointer;" onclick="navAlertOrSettings()">編集タブ</strong>から行ってください</span>
       </div>`;
 
-    // 点検者: 全件をトグルチップで表示
+    // ── 点検者チップ ──
     const allInspChips = staffData.inspectors.map(name => {
       const active = linkedInspectors.includes(name);
       const safe = name.replace(/'/g, "\\'");
@@ -2229,7 +2612,29 @@ function renderLinkageList() {
       </span>`;
     }).join('');
 
-    const total = linkedItems.length + linkedInspectors.length;
+    // ── 定期点検項目チップ (10・20・30日) ──
+    const allPeriodicChips = periodicInspectionItems.length > 0
+      ? periodicInspectionItems.map(item => {
+          const active = linkedPeriodicKeys.includes(item.key);
+          return `<span class="link-toggle-chip periodic-chip${active?' active periodic-active':''}" onclick="toggleLinkPeriodicItem(${fi},'${item.key}')">
+            ${active ? `<svg style="width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+            ${item.label}
+          </span>`;
+        }).join('')
+      : '<span class="link-unset">定期点検項目がありません（編集タブで追加）</span>';
+
+    // ── 1ヶ月点検項目チップ (月末) ──
+    const allMonthlyChips = monthlyInspectionItems.length > 0
+      ? monthlyInspectionItems.map(item => {
+          const active = linkedMonthlyKeys.includes(item.key);
+          return `<span class="link-toggle-chip monthly-chip${active?' active monthly-active':''}" onclick="toggleLinkMonthlyItem(${fi},'${item.key}')">
+            ${active ? `<svg style="width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+            ${item.label}
+          </span>`;
+        }).join('')
+      : '<span class="link-unset">1ヶ月点検項目がありません（編集タブで追加）</span>';
+
+    const total = linkedItems.length + linkedInspectors.length + linkedPeriodicKeys.length + linkedMonthlyKeys.length;
     const chevSvg = `<div class="link-card-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>`;
     const delFacBtn = `<button class="link-fac-del-btn" onclick="confirmDeleteFac(${fi},event)" title="設備を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
 
@@ -2238,17 +2643,48 @@ function renderLinkageList() {
         <div class="link-card-icon">${fac.icon}</div>
         <div class="link-card-meta">
           <div class="link-card-name">${fac.name}</div>
+          ${fac.facNo ? `<div style="font-size:10px;color:#6a88a8;font-weight:600;margin-bottom:1px;">${fac.facNo}</div>` : ''}
           <div class="link-ng-badge ${total ? 'ok' : 'ng'}" id="link-badge-${fi}">${total}件紐づけ</div>
         </div>
         ${delFacBtn}
         ${chevSvg}
       </div>
       <div class="link-card-body" id="link-body-${fi}" style="display:none;">
+
+        <!-- 点検項目 -->
         <div class="link-section">
           <div class="link-section-label" style="margin-bottom:8px;">点検項目 — タップして紐づけ</div>
           <div class="link-items" style="gap:7px;">${allItemChips || '<span class="link-unset">点検項目がありません</span>'}</div>
           ${newItemForm}
         </div>
+
+        <!-- 定期点検項目 (10・20・30日) -->
+        <div class="link-section">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <div class="link-section-label" style="margin-bottom:0;">定期点検項目 — タップして紐づけ</div>
+            <span style="font-size:9px;font-weight:700;background:linear-gradient(135deg,#e06020,#c04010);color:#fff;border-radius:4px;padding:1px 5px;white-space:nowrap;">10・20・30日</span>
+          </div>
+          <div class="link-items" style="gap:7px;">${allPeriodicChips}</div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#8899aa;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:11px;color:#8899aa;">項目を追加するには<strong style="color:#e06020;cursor:pointer;" onclick="openSettingsTab('edit')">編集タブ</strong>から行ってください</span>
+          </div>
+        </div>
+
+        <!-- 1ヶ月点検項目 (月末) -->
+        <div class="link-section">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <div class="link-section-label" style="margin-bottom:0;">1ヶ月点検項目 — タップして紐づけ</div>
+            <span style="font-size:9px;font-weight:700;background:linear-gradient(135deg,#2a6aaa,#1a4a80);color:#fff;border-radius:4px;padding:1px 5px;white-space:nowrap;">月末</span>
+          </div>
+          <div class="link-items" style="gap:7px;">${allMonthlyChips}</div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#8899aa;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:11px;color:#8899aa;">項目を追加するには<strong style="color:#2a6aaa;cursor:pointer;" onclick="openSettingsTab('edit')">編集タブ</strong>から行ってください</span>
+          </div>
+        </div>
+
+        <!-- 点検者 -->
         <div class="link-section">
           <div class="link-section-label" style="margin-bottom:8px;">点検者 — タップして紐づけ</div>
           <div class="link-items" style="gap:7px;">${allInspChips || '<span class="link-unset">点検者がいません</span>'}</div>
@@ -2257,6 +2693,7 @@ function renderLinkageList() {
             <span style="font-size:11px;color:#8899aa;">点検者を追加するには<strong style="color:#e06020;cursor:pointer;" onclick="navAlertOrSettings()">編集タブ</strong>から行ってください</span>
           </div>
         </div>
+
       </div>
     </div>`;
   }).join('');
@@ -2305,7 +2742,8 @@ function togglePicker(id) {
 
 function updateLinkBadge(fi) {
   const fac = FACILITIES[fi];
-  const total = (fac.linkedKeys||[]).length + (fac.linkedInspectors||[]).length;
+  const total = (fac.linkedKeys||[]).length + (fac.linkedInspectors||[]).length
+              + (fac.linkedPeriodicKeys||[]).length + (fac.linkedMonthlyKeys||[]).length;
   const badge = document.getElementById('link-badge-' + fi);
   if (badge) {
     badge.textContent = total + '件紐づけ';
@@ -2368,13 +2806,41 @@ function toggleLinkInspector(fi, name, chipEl) {
   if (card) { card.classList.add('open'); }
 }
 
+function toggleLinkPeriodicItem(fi, key) {
+  const fac = FACILITIES[fi];
+  if (!fac.linkedPeriodicKeys) fac.linkedPeriodicKeys = [];
+  const idx = fac.linkedPeriodicKeys.indexOf(key);
+  if (idx === -1) fac.linkedPeriodicKeys.push(key);
+  else fac.linkedPeriodicKeys.splice(idx, 1);
+  renderLinkageList();
+  persistData();
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
+  if (body) body.style.display = 'block';
+  if (card) card.classList.add('open');
+}
+
+function toggleLinkMonthlyItem(fi, key) {
+  const fac = FACILITIES[fi];
+  if (!fac.linkedMonthlyKeys) fac.linkedMonthlyKeys = [];
+  const idx = fac.linkedMonthlyKeys.indexOf(key);
+  if (idx === -1) fac.linkedMonthlyKeys.push(key);
+  else fac.linkedMonthlyKeys.splice(idx, 1);
+  renderLinkageList();
+  persistData();
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
+  if (body) body.style.display = 'block';
+  if (card) card.classList.add('open');
+}
+
 function addFacilityFromInput() {
   const inp = document.getElementById('new-fac-input');
   const name = inp ? inp.value.trim() : '';
   if (!name) { inp && inp.focus(); return; }
   const icons = Object.keys(FACILITY_ICONS);
   const iconKey = icons[FACILITIES.length % icons.length];
-  FACILITIES.push({ icon: FACILITY_ICONS[iconKey], iconKey, name, items: [], linkedKeys: [], linkedInspectors: [] });
+  FACILITIES.push({ icon: FACILITY_ICONS[iconKey], iconKey, facNo: '', name, items: [], linkedKeys: [], linkedInspectors: [], linkedPeriodicKeys: [], linkedMonthlyKeys: [] });
   renderLinkageList();
   updateCounts();
   persistData();
