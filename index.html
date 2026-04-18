@@ -43,6 +43,112 @@
     vertical-align: middle;
   }
 
+  /* ── Role Select Screen ── */
+  .role-screen {
+    position: fixed; inset: 0; z-index: 100;
+    background: linear-gradient(160deg, #1a2e50 0%, #2a4a7a 55%, #1e3a6a 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 24px;
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .role-screen.fade-out {
+    opacity: 0; transform: scale(1.04); pointer-events: none;
+  }
+  .role-screen.hidden { display: none; }
+
+  .role-logo {
+    margin-bottom: 10px;
+    opacity: .9;
+  }
+  .role-app-name {
+    font-size: 20px; font-weight: 700; color: #fff;
+    letter-spacing: 1px; margin-bottom: 4px;
+  }
+  .role-app-sub {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    margin-bottom: 48px; letter-spacing: .5px;
+  }
+
+  .role-heading {
+    font-size: 13px; color: rgba(255,255,255,0.65);
+    margin-bottom: 20px; letter-spacing: .5px;
+  }
+
+  .role-cards {
+    display: flex; gap: 14px; width: 100%; max-width: 340px;
+    margin-bottom: 32px;
+  }
+  .role-card {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 24px 12px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, transform .15s;
+    user-select: none;
+  }
+  .role-card:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+  .role-card.selected {
+    background: rgba(255,255,255,0.22);
+    border-color: #e06020;
+    transform: translateY(-2px);
+  }
+  .role-card-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    transition: background .2s;
+  }
+  .role-card.selected .role-card-icon { background: rgba(224,96,32,0.35); }
+  .role-card-icon svg { width: 28px; height: 28px; stroke: #fff; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .role-card-name {
+    font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .5px;
+  }
+  .role-card-desc {
+    font-size: 10px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5;
+  }
+  .role-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s;
+  }
+  .role-card.selected .role-check {
+    background: #e06020; border-color: #e06020;
+  }
+  .role-check svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s; }
+  .role-card.selected .role-check svg { opacity: 1; }
+
+  .role-btn {
+    width: 100%; max-width: 340px;
+    padding: 16px;
+    border: none; border-radius: 16px;
+    background: linear-gradient(135deg, #e06020, #c04010);
+    color: #fff; font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; opacity: .4;
+    transition: opacity .2s, transform .15s;
+    box-shadow: 0 6px 20px rgba(224,96,32,0.4);
+  }
+  .role-btn.ready { opacity: 1; }
+  .role-btn.ready:hover { transform: scale(1.02); }
+
+  .role-badge {
+    margin-top: 24px;
+    display: none; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 8px 14px;
+    font-size: 12px; color: rgba(255,255,255,0.8);
+  }
+  .role-badge.show { display: flex; }
+  .role-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #4cd964; flex-shrink: 0; }
+
   /* ── Compact Header ── */
   .compact-header {
     background: linear-gradient(135deg, #1a2e50, #2a4a7a);
@@ -285,10 +391,120 @@
   .detail-status.ok   { background: #d0eaff; color: #1a4a7a; }
   .detail-status.warn { background: #ffe8cc; color: #8a3c00; }
   .detail-status.ng   { background: #ffd0d0; color: #8a0000; }
+
+  /* ── Settings View ── */
+  .settings-view {
+    display: none; flex-direction: column;
+    background: #f5f6f8; flex: 1; overflow-y: auto;
+  }
+  .settings-section { margin: 14px 14px 0; }
+  .settings-section-title {
+    font-size: 11px; font-weight: 700; color: #889;
+    letter-spacing: .8px; padding: 0 4px; margin-bottom: 8px;
+  }
+  .settings-card {
+    background: #fff; border-radius: 16px; overflow: hidden;
+    margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .settings-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid #f0f0f4;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: #eef2f8; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .settings-row-icon svg { width: 17px; height: 17px; stroke: #2a4a7a; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .settings-row-body { flex: 1; min-width: 0; }
+  .settings-row-label { font-size: 10px; color: #aab; margin-bottom: 2px; }
+  .settings-row-input {
+    width: 100%; border: none; outline: none;
+    font-size: 14px; color: #334; font-family: 'Noto Sans JP', sans-serif;
+    background: transparent; padding: 0;
+  }
+  .settings-row-input:focus { color: #1a2e50; }
+  .settings-save-wrap { padding: 4px 14px 14px; }
+  .settings-save-btn {
+    width: 100%; padding: 15px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #1a2e50, #2a4a7a);
+    color: #fff; font-size: 15px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; transition: opacity .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .settings-save-btn:hover { opacity: .88; }
+  .settings-save-btn svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .settings-toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(12px);
+    background: #1a2e50; color: #fff; font-size: 13px;
+    padding: 10px 22px; border-radius: 24px; opacity: 0;
+    transition: opacity .25s, transform .25s; pointer-events: none;
+    white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.2); z-index: 50;
+  }
+  .settings-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-<div class="phone" id="app">
+<!-- Role Selection Screen -->
+<div class="role-screen" id="role-screen">
+  <div class="role-logo">
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="56" height="56" rx="16" fill="rgba(255,255,255,0.12)"/>
+      <path d="M14 38V24l14-10 14 10v14a2 2 0 01-2 2H16a2 2 0 01-2-2z" stroke="white" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+      <path d="M22 40v-8h12v8" stroke="white" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+      <circle cx="28" cy="24" r="3" stroke="white" stroke-width="1.6" fill="none"/>
+    </svg>
+  </div>
+  <div class="role-app-name">設備点検アプリ</div>
+  <div class="role-app-sub">Facility Inspection System</div>
+
+  <div class="role-heading">ログインする役割を選択してください</div>
+
+  <div class="role-cards">
+    <!-- 点検者 -->
+    <div class="role-card" id="card-inspector" onclick="selectRole('inspector')">
+      <div class="role-card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+      </div>
+      <div class="role-card-name">点検者</div>
+      <div class="role-card-desc">現場での設備点検・<br>記録入力を行う</div>
+      <div class="role-check">
+        <svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>
+      </div>
+    </div>
+    <!-- 管理人 -->
+    <div class="role-card" id="card-manager" onclick="selectRole('manager')">
+      <div class="role-card-icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          <line x1="17" y1="11" x2="23" y2="11"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+        </svg>
+      </div>
+      <div class="role-card-name">管理人</div>
+      <div class="role-card-desc">点検結果の確認・<br>レポート管理を行う</div>
+      <div class="role-check">
+        <svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <button class="role-btn" id="role-btn" onclick="enterApp()">ログイン</button>
+
+  <div class="role-badge" id="role-badge">
+    <span class="role-badge-dot"></span>
+    <span id="role-badge-text"></span>
+  </div>
+</div>
+
+<div class="phone" id="app-inner" style="display:none">
 
   <!-- Header -->
   <div class="compact-header">
@@ -303,6 +519,17 @@
       </div>
       <button class="score-nav" onclick="nextMonth()">
         <svg class="icon-svg" style="width:18px;height:18px" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;min-height:22px;">
+      <span id="header-role-badge" style="font-size:10px;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.12);padding:3px 10px;border-radius:20px;letter-spacing:.5px;"></span>
+      <button onclick="logout()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px 3px 8px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:10px;font-family:inherit;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        ログアウト
       </button>
     </div>
     <div class="compact-scores">
@@ -369,9 +596,34 @@
     <div id="list-content"></div>
   </div>
 
+  <!-- Settings view (manager only) -->
+  <div id="view-settings" class="settings-view">
+    <div class="settings-section">
+      <div class="settings-section-title">点検項目</div>
+      <div class="settings-card" id="settings-items-card">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">設備名</div>
+      <div class="settings-card" id="settings-facilities-card">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+    <div class="settings-save-wrap">
+      <button class="settings-save-btn" onclick="saveSettings()">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        設定を保存する
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="settings-toast" id="settings-toast">✓ 設定を保存しました</div>
+
   <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <div class="nav-item active">
+    <div class="nav-item active" id="nav-home" onclick="goHome()">
       <div class="nav-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
           <path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
@@ -398,15 +650,15 @@
         </svg>
       </div>
     </div>
-    <div class="nav-item">
-      <div class="nav-icon" style="position:relative;">
+    <div class="nav-item" id="nav-alert-or-settings" onclick="navAlertOrSettings()">
+      <div class="nav-icon" style="position:relative;" id="nav-alert-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
           <path d="M13.73 21a2 2 0 01-3.46 0"/>
         </svg>
         <span class="notif-dot"></span>
       </div>
-      <div class="nav-label">アラート</div>
+      <div class="nav-label" id="nav-alert-label">アラート</div>
     </div>
     <div class="nav-item">
       <div class="nav-icon">
@@ -443,7 +695,7 @@
 
       <div class="check-row">
         <div class="check-label">
-          <span>設備状態スコア</span>
+          <span id="label-equip">設備状態スコア</span>
           <strong id="val-equip">8</strong>
         </div>
         <input type="range" min="1" max="10" value="8" step="1" id="inp-equip"
@@ -451,7 +703,7 @@
       </div>
       <div class="check-row">
         <div class="check-label">
-          <span>安全確認スコア</span>
+          <span id="label-safety">安全確認スコア</span>
           <strong id="val-safety">8</strong>
         </div>
         <input type="range" min="1" max="10" value="8" step="1" id="inp-safety"
@@ -459,7 +711,7 @@
       </div>
       <div class="check-row">
         <div class="check-label">
-          <span>完了率（%）</span>
+          <span id="label-comp">完了率（%）</span>
           <strong id="val-comp">100</strong>
         </div>
         <input type="range" min="0" max="100" value="100" step="5" id="inp-comp"
@@ -618,8 +870,10 @@ function renderList(){
 function setTab(i){
   currentTab=i;
   document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
-  document.getElementById('view-cal').style.display  = i===0?'block':'none';
-  document.getElementById('view-list').style.display = i===1?'block':'none';
+  document.getElementById('view-cal').style.display      = i===0?'block':'none';
+  document.getElementById('view-list').style.display     = i===1?'block':'none';
+  document.getElementById('view-settings').style.display = 'none';
+  setNavActive('nav-home');
 }
 
 function prevMonth(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderCalendar(); }
@@ -668,6 +922,171 @@ function saveEntry(){
 }
 
 renderCalendar();
+
+// ── Inspection item labels (editable by manager) ──
+let inspectionItems = [
+  { key: 'equip',  label: '設備状態スコア' },
+  { key: 'safety', label: '安全確認スコア' },
+  { key: 'comp',   label: '完了率（%）' },
+];
+
+// Facility icon pool (same order as FACILITIES)
+const FAC_ICON_POOL = [
+  FACILITY_ICONS.gear, FACILITY_ICONS.droplet, FACILITY_ICONS.zap,
+  FACILITY_ICONS.flame, FACILITY_ICONS.shower, FACILITY_ICONS.thermometer,
+];
+
+function renderSettingsView() {
+  // 点検項目 card
+  const itemIcons = [
+    `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    `<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  ];
+  document.getElementById('settings-items-card').innerHTML = inspectionItems.map((item, i) =>
+    `<div class="settings-row">
+      <div class="settings-row-icon">${itemIcons[i]}</div>
+      <div class="settings-row-body">
+        <div class="settings-row-label">点検項目 ${i+1}</div>
+        <input class="settings-row-input" id="set-item-${item.key}" value="${item.label}" placeholder="項目名を入力">
+      </div>
+    </div>`
+  ).join('');
+
+  // 設備名 card
+  const facIconsSvg = [
+    `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>`,
+    `<svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M4 4l16 16"/><path d="M12 3a9 9 0 019 9"/><circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>`,
+  ];
+  document.getElementById('settings-facilities-card').innerHTML = FACILITIES.map((fac, i) =>
+    `<div class="settings-row">
+      <div class="settings-row-icon">${facIconsSvg[i % facIconsSvg.length]}</div>
+      <div class="settings-row-body">
+        <div class="settings-row-label">設備 ${i+1}</div>
+        <input class="settings-row-input" id="set-fac-${i}" value="${fac.name}" placeholder="設備名を入力">
+      </div>
+    </div>`
+  ).join('');
+}
+
+function saveSettings() {
+  // Save inspection item labels
+  inspectionItems.forEach(item => {
+    const inp = document.getElementById('set-item-' + item.key);
+    if (inp) item.label = inp.value.trim() || item.label;
+  });
+  // Update modal labels
+  inspectionItems.forEach(item => {
+    const el = document.getElementById('label-' + item.key);
+    if (el) el.textContent = item.label;
+  });
+  // Save facility names
+  FACILITIES.forEach((fac, i) => {
+    const inp = document.getElementById('set-fac-' + i);
+    if (inp) fac.name = inp.value.trim() || fac.name;
+  });
+  renderList();
+  // Show toast
+  const toast = document.getElementById('settings-toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function openSettings() {
+  renderSettingsView();
+  document.getElementById('view-cal').style.display   = 'none';
+  document.getElementById('view-list').style.display  = 'none';
+  document.getElementById('view-settings').style.display = 'flex';
+  setNavActive('nav-alert-or-settings');
+}
+
+function goHome() {
+  document.getElementById('view-settings').style.display = 'none';
+  setTab(currentTab);
+  setNavActive('nav-home');
+}
+
+function setNavActive(id) {
+  ['nav-home', 'nav-alert-or-settings'].forEach(nid => {
+    const el = document.getElementById(nid);
+    if (el) el.classList.toggle('active', nid === id);
+  });
+}
+
+function navAlertOrSettings() {
+  if (selectedRole === 'manager') openSettings();
+}
+let selectedRole = null;
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('card-inspector').classList.toggle('selected', role === 'inspector');
+  document.getElementById('card-manager').classList.toggle('selected', role === 'manager');
+  document.getElementById('role-btn').classList.add('ready');
+  const label = role === 'inspector' ? '点検者としてログイン中' : '管理人としてログイン中';
+  document.getElementById('role-badge-text').textContent = label;
+  document.getElementById('role-badge').classList.add('show');
+}
+
+function enterApp() {
+  if (!selectedRole) return;
+  const screen = document.getElementById('role-screen');
+  screen.classList.add('fade-out');
+  setTimeout(() => {
+    screen.classList.add('hidden');
+    const app = document.getElementById('app-inner');
+    app.style.display = 'flex';
+    app.style.opacity = '0';
+    app.style.transition = 'opacity .35s ease';
+    requestAnimationFrame(() => { app.style.opacity = '1'; });
+    const roleLabel = selectedRole === 'inspector' ? '点検者' : '管理人';
+    const badge = document.getElementById('header-role-badge');
+    if (badge) badge.textContent = roleLabel;
+
+    // Switch alert ↔ settings based on role
+    const iconEl  = document.getElementById('nav-alert-icon');
+    const labelEl = document.getElementById('nav-alert-label');
+    if (selectedRole === 'manager') {
+      iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>`;
+      labelEl.textContent = '設定';
+    } else {
+      iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+      </svg><span class="notif-dot"></span>`;
+      labelEl.textContent = 'アラート';
+    }
+  }, 380);
+}
+
+function logout() {
+  const app = document.getElementById('app-inner');
+  app.style.transition = 'opacity .3s ease';
+  app.style.opacity = '0';
+  setTimeout(() => {
+    app.style.display = 'none';
+    // Reset role selection state
+    selectedRole = null;
+    document.getElementById('card-inspector').classList.remove('selected');
+    document.getElementById('card-manager').classList.remove('selected');
+    document.getElementById('role-btn').classList.remove('ready');
+    document.getElementById('role-badge').classList.remove('show');
+    document.getElementById('role-badge-text').textContent = '';
+    // Show role screen again
+    const screen = document.getElementById('role-screen');
+    screen.classList.remove('hidden', 'fade-out');
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity .35s ease';
+    requestAnimationFrame(() => { screen.style.opacity = '1'; });
+  }, 280);
+}
 </script>
 </body>
 </html>
