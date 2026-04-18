@@ -438,6 +438,68 @@
   .detail-status.warn { background: #ffe8cc; color: #8a3c00; }
   .detail-status.ng   { background: #ffd0d0; color: #8a0000; }
 
+  /* history row */
+  .hist-row { position: relative; }
+  .hist-del-btn {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fff0f0; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s, opacity .15s;
+    opacity: 0;
+  }
+  .hist-row:hover .hist-del-btn { opacity: 1; }
+  .hist-del-btn:hover { background: #ffd0d0 !important; }
+  .hist-del-btn svg { width: 13px; height: 13px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+
+  /* facility card header delete-all button */
+  .fac-del-all-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #cc4444;
+    background: #fff0f0; border: 1px solid #f8c0c0; border-radius: 20px;
+    padding: 4px 10px; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: background .15s; flex-shrink: 0;
+  }
+  .fac-del-all-btn:hover { background: #ffd0d0; border-color: #f09090; }
+  .fac-del-all-btn svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+  /* confirm dialog overlay */
+  .confirm-overlay {
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(0,0,0,0.45);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box {
+    background: #fff; border-radius: 20px;
+    padding: 24px 22px 20px; width: 100%; max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    text-align: center;
+  }
+  .confirm-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #fff0f0; margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .confirm-icon svg { width: 22px; height: 22px; stroke: #cc4444; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .confirm-title { font-size: 16px; font-weight: 700; color: #1a2e4a; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: #667; line-height: 1.6; margin-bottom: 20px; }
+  .confirm-btns { display: flex; gap: 10px; }
+  .confirm-cancel {
+    flex: 1; padding: 13px; border: 1px solid #dde; border-radius: 12px;
+    background: #fff; font-size: 14px; color: #889; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .confirm-ok {
+    flex: 1; padding: 13px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, #e03030, #b01010);
+    font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: opacity .15s;
+  }
+  .confirm-ok:hover { opacity: .88; }
+
   /* ── Settings View ── */
   .settings-view {
     display: none; flex-direction: column;
@@ -589,30 +651,57 @@
   .fac-subpanel { display: none; }
   .fac-subpanel.active { display: block; }
 
-  /* linkage card */
+  /* linkage card — same look as settings-section */
   .link-card {
     margin: 10px 14px 0;
-    border-radius: 14px; overflow: hidden;
+    border-radius: 16px; overflow: hidden;
     box-shadow: 0 1px 4px rgba(0,0,0,0.07);
     border: 1px solid #eef0f4; background: #fff;
   }
   .link-card:last-child { margin-bottom: 10px; }
   .link-card-header {
-    display: flex; align-items: center; gap: 10px;
-    padding: 11px 14px;
-    background: #f8f9fc; border-bottom: 1px solid #f0f0f4;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    border-bottom: 1.5px solid transparent;
+    transition: border-color .2s;
   }
+  .link-card.open .link-card-header { border-bottom-color: #f0f0f4; }
   .link-card-icon {
-    width: 32px; height: 32px; border-radius: 9px;
+    width: 36px; height: 36px; border-radius: 11px;
     background: #eef2f8; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center; color: #2a4a7a;
   }
-  .link-card-name { font-size: 13px; font-weight: 700; color: #1a2e4a; flex: 1; }
+  .link-card-icon svg { width: 18px; height: 18px; stroke: #2a4a7a; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .link-card-meta { flex: 1; }
+  .link-card-name { font-size: 13px; font-weight: 700; color: #1a2e4a; letter-spacing: .3px; }
   .link-ng-badge {
-    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0;
+    font-size: 11px; color: #99a; margin-top: 1px;
   }
-  .link-ng-badge.ng  { background: #ffd0d0; color: #cc0000; }
-  .link-ng-badge.ok  { background: #dcfce7; color: #166534; }
+  .link-ng-badge.ng  { color: #cc4444; }
+  .link-ng-badge.ok  { color: #99a; }
+  .link-card-chevron {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f2f6; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .25s ease, background .2s;
+  }
+  .link-card-chevron svg { width: 13px; height: 13px; stroke: #667; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .link-card.open .link-card-chevron { transform: rotate(180deg); background: #e8edf5; }
+  .link-card-body {
+    background: #f5f6f8;
+    border-top: 1px solid #f0f0f4;
+  }
+  .link-fac-del-btn {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fff0f0; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s, opacity .15s;
+    opacity: 0;
+  }
+  .link-card-header:hover .link-fac-del-btn { opacity: 1; }
+  .link-fac-del-btn:hover { background: #ffd0d0; }
+  .link-fac-del-btn svg { width: 13px; height: 13px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; }
 
   .link-section {
     padding: 8px 14px 10px; border-top: 1px solid #f0f0f4;
@@ -928,11 +1017,22 @@
 
   <!-- Facilities linkage view -->
   <div id="view-facilities" style="display:none;flex-direction:column;background:#f5f6f8;min-height:200px;">
-    <div style="padding:14px 14px 4px;">
-      <div style="font-size:16px;font-weight:700;color:#1a2e4a;">紐づけ一覧</div>
-      <div style="font-size:11px;color:#889;margin-top:2px;">設備と点検項目・点検者の対応</div>
+    <div id="fac-linkage-content" style="padding-bottom:14px;"></div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <div class="confirm-title" id="confirm-title">削除の確認</div>
+      <div class="confirm-msg" id="confirm-msg">この記録を削除しますか？<br>この操作は取り消せません。</div>
+      <div class="confirm-btns">
+        <button class="confirm-cancel" onclick="closeConfirm()">キャンセル</button>
+        <button class="confirm-ok" onclick="executeConfirm()">削除する</button>
+      </div>
     </div>
-    <div id="fac-linkage-content" style="padding-bottom:16px;"></div>
   </div>
 
   <!-- Bottom Nav -->
@@ -1015,6 +1115,7 @@ let selectedDay = null;
 let itemStatuses = []; // array indexed by item position
 let currentFacilityIdx = 0;
 let currentTab = 0;
+let selectedRole = null;
 
 const MONTHS_EN = ['January','February','March','April','May','June',
                    'July','August','September','October','November','December'];
@@ -1175,17 +1276,25 @@ function renderList(){
           +`color:${isNg?'#cc0000':'#166534'};background:${isNg?'#ffd0d0':'#dcfce7'};`
           +`border-radius:6px;padding:1px 6px;">${label} ${isNg?'✕':'○'}</span>`;
       });
-      rows+=`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;`
+      const delBtn = selectedRole === 'manager'
+        ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`
+        : '';
+      rows+=`<div class="hist-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;`
         +`border-bottom:1px solid #f0f0f4;background:#fff;">`
         +`<div style="min-width:34px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:2px;">${mo}/${d}</div>`
         +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">${checks}</div>`
         +`<span class="detail-status ${statusCls}" style="flex-shrink:0;">${statusLbl}</span>`
+        +delBtn
         +`</div>`;
     });
 
     const chevron = `<svg style="width:16px;height:16px;stroke:#aab;stroke-width:2;fill:none;`
       +`stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:transform .2s;`
       +`" id="chev-${fi}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+    const delAllBtn = selectedRole === 'manager'
+      ? `<button class="fac-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除</button>`
+      : '';
 
     html+=`<div style="margin:12px 14px 0;border-radius:14px;overflow:hidden;`
       +`box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #eef0f4;">`
@@ -1199,12 +1308,76 @@ function renderList(){
       +`<div style="font-size:11px;color:#889;margin-top:2px;">${fkeys.length}件の記録 / NG: ${ngCount}件</div>`
       +`</div>`
       +`<span style="font-size:18px;font-weight:700;color:${headerColor};margin-right:6px;">${ngCount>0?'✕':'○'}</span>`
+      +delAllBtn
       +chevron
       +`</div>`
       +`<div id="fac-rows-${fi}" style="display:none;">${rows}</div>`
       +`</div>`;
   });
   c.innerHTML=html+'<div style="height:16px;"></div>';
+}
+
+// ── History delete functions ──
+let _confirmCallback = null;
+
+function showConfirm(title, msg, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').innerHTML = msg;
+  _confirmCallback = cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  _confirmCallback = null;
+}
+
+function executeConfirm() {
+  if (_confirmCallback) _confirmCallback();
+  closeConfirm();
+}
+
+function confirmDeleteEntry(k) {
+  const parts = k.split('-');
+  const label = parts[1] + '月' + parts[2] + '日';
+  showConfirm(
+    '記録を削除',
+    label + 'の点検記録を削除しますか？<br>この操作は取り消せません。',
+    function() {
+      delete entries[k];
+      renderCalendar();
+      showHistToast('🗑 記録を削除しました');
+    }
+  );
+}
+
+function confirmDeleteFacility(fi, event) {
+  event.stopPropagation();
+  const fac = FACILITIES[fi];
+  const facKeys = Object.keys(entries).filter(function(k) {
+    const parts = k.split('-');
+    const d = parseInt(parts[2]);
+    return (d - 1) % FACILITIES.length === fi
+      && parseInt(parts[0]) === viewYear
+      && parseInt(parts[1]) === (viewMonth + 1);
+  });
+  if (!facKeys.length) return;
+  showConfirm(
+    '全記録を削除',
+    '<strong>' + fac.name + '</strong> の<br>' + (viewMonth+1) + '月の全記録（' + facKeys.length + '件）を削除しますか？<br>この操作は取り消せません。',
+    function() {
+      facKeys.forEach(function(k) { delete entries[k]; });
+      renderCalendar();
+      showHistToast('🗑 全記録を削除しました');
+    }
+  );
+}
+
+function showHistToast(msg) {
+  const t = document.getElementById('settings-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2200);
 }
 
 function toggleFacCard(fi) {
@@ -1724,28 +1897,36 @@ function renderLinkageList() {
     }).join('');
 
     const total = linkedItems.length + linkedInspectors.length;
+    const chevSvg = `<div class="link-card-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>`;
+    const delFacBtn = `<button class="link-fac-del-btn" onclick="confirmDeleteFac(${fi},event)" title="設備を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
 
     return `<div class="link-card" id="link-card-${fi}">
-      <div class="link-card-header">
+      <div class="link-card-header" onclick="toggleLinkCard(${fi})" style="cursor:pointer;user-select:none;">
         <div class="link-card-icon">${fac.icon}</div>
-        <div class="link-card-name">${fac.name}</div>
-        <span class="link-ng-badge ${total ? 'ok' : 'ng'}" id="link-badge-${fi}">${total}件紐づけ</span>
-      </div>
-      <div class="link-section">
-        <div class="link-section-row">
-          <div class="link-section-label">点検項目</div>
-          <button class="link-add-chip-btn" onclick="togglePicker('item-picker-${fi}')">${plusSvg} 追加</button>
+        <div class="link-card-meta">
+          <div class="link-card-name">${fac.name}</div>
+          <div class="link-ng-badge ${total ? 'ok' : 'ng'}" id="link-badge-${fi}">${total}件紐づけ</div>
         </div>
-        <div class="link-picker" id="item-picker-${fi}" style="display:none;">${itemPickerContent}</div>
-        <div class="link-items">${selectedItemChips}</div>
+        ${delFacBtn}
+        ${chevSvg}
       </div>
-      <div class="link-section">
-        <div class="link-section-row">
-          <div class="link-section-label">点検者</div>
-          ${availableInsp.length > 0 ? `<button class="link-add-chip-btn" onclick="togglePicker('insp-picker-${fi}')">${plusSvg} 追加</button>` : ''}
+      <div class="link-card-body" id="link-body-${fi}" style="display:none;">
+        <div class="link-section">
+          <div class="link-section-row">
+            <div class="link-section-label">点検項目</div>
+            <button class="link-add-chip-btn" onclick="togglePicker('item-picker-${fi}')">${plusSvg} 追加</button>
+          </div>
+          <div class="link-picker" id="item-picker-${fi}" style="display:none;">${itemPickerContent}</div>
+          <div class="link-items">${selectedItemChips}</div>
         </div>
-        <div class="link-picker" id="insp-picker-${fi}" style="display:none;">${inspPickerOptions || '<span class="link-empty-msg">追加できる点検者がいません</span>'}</div>
-        <div class="link-items">${selectedInspChips}</div>
+        <div class="link-section">
+          <div class="link-section-row">
+            <div class="link-section-label">点検者</div>
+            ${availableInsp.length > 0 ? `<button class="link-add-chip-btn" onclick="togglePicker('insp-picker-${fi}')">${plusSvg} 追加</button>` : ''}
+          </div>
+          <div class="link-picker" id="insp-picker-${fi}" style="display:none;">${inspPickerOptions || '<span class="link-empty-msg">追加できる点検者がいません</span>'}</div>
+          <div class="link-items">${selectedInspChips}</div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1763,7 +1944,11 @@ function addNewInspectionItem(fi) {
   FACILITIES[fi].linkedKeys.push(key);
   renderLinkageList();
   updateCounts();
-  // Re-open picker after re-render
+  // Restore open state and re-open picker
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
+  if (body) { body.style.display = 'block'; }
+  if (card) { card.classList.add('open'); }
   const picker = document.getElementById('item-picker-' + fi);
   if (picker) picker.style.display = 'flex';
 }
@@ -1784,6 +1969,30 @@ function updateLinkBadge(fi) {
   }
 }
 
+function confirmDeleteFac(fi, event) {
+  event.stopPropagation();
+  const fac = FACILITIES[fi];
+  showConfirm(
+    '設備を削除',
+    '<strong>' + fac.name + '</strong> を削除しますか？<br>紐づけ情報もすべて削除されます。',
+    function() {
+      FACILITIES.splice(fi, 1);
+      renderLinkageList();
+      updateCounts();
+      showHistToast('🗑 設備を削除しました');
+    }
+  );
+}
+
+function toggleLinkCard(fi) {
+  const card = document.getElementById('link-card-' + fi);
+  const body = document.getElementById('link-body-' + fi);
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if (card) card.classList.toggle('open', !isOpen);
+}
+
 function toggleLinkItem(fi, key, chipEl) {
   const fac = FACILITIES[fi];
   if (!fac.linkedKeys) fac.linkedKeys = [];
@@ -1791,6 +2000,11 @@ function toggleLinkItem(fi, key, chipEl) {
   if (idx === -1) fac.linkedKeys.push(key);
   else fac.linkedKeys.splice(idx, 1);
   renderLinkageList();
+  // Restore open state
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
+  if (body) { body.style.display = 'block'; }
+  if (card) { card.classList.add('open'); }
 }
 
 function toggleLinkInspector(fi, name, chipEl) {
@@ -1800,6 +2014,11 @@ function toggleLinkInspector(fi, name, chipEl) {
   if (idx === -1) fac.linkedInspectors.push(name);
   else fac.linkedInspectors.splice(idx, 1);
   renderLinkageList();
+  // Restore open state
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
+  if (body) { body.style.display = 'block'; }
+  if (card) { card.classList.add('open'); }
 }
 
 // legacy alias (toggleLinkKey removed)
