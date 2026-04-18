@@ -8,7 +8,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: #f5f6f8;
+    background: #f0ece8;
     min-height: 100vh;
     font-family: 'Noto Sans JP', sans-serif;
   }
@@ -46,82 +46,76 @@
   /* ── Role Select Screen ── */
   .role-screen {
     position: fixed; inset: 0; z-index: 100;
-    background: linear-gradient(160deg, #1a2e50 0%, #2a4a7a 55%, #1e3a6a 100%);
+    background: #f0ece8;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 32px 24px;
-    transition: opacity .4s ease, transform .4s ease;
+    transition: opacity .4s ease;
   }
-  .role-screen.fade-out {
-    opacity: 0; transform: scale(1.04); pointer-events: none;
-  }
+  .role-screen.fade-out { opacity: 0; pointer-events: none; }
   .role-screen.hidden { display: none; }
 
-  .role-logo {
-    margin-bottom: 10px;
-    opacity: .9;
-  }
+  .role-logo { margin-bottom: 10px; opacity: .9; }
   .role-app-name {
-    font-size: 20px; font-weight: 700; color: #fff;
+    font-size: 20px; font-weight: 700; color: #2a2018;
     letter-spacing: 1px; margin-bottom: 4px;
   }
   .role-app-sub {
-    font-size: 12px; color: rgba(255,255,255,0.55);
+    font-size: 12px; color: rgba(60,40,20,0.5);
     margin-bottom: 48px; letter-spacing: .5px;
   }
-
   .role-heading {
-    font-size: 13px; color: rgba(255,255,255,0.65);
+    font-size: 13px; color: rgba(60,40,20,0.55);
     margin-bottom: 20px; letter-spacing: .5px;
   }
-
   .role-cards {
     display: flex; gap: 14px; width: 100%; max-width: 340px;
     margin-bottom: 32px;
   }
   .role-card {
     flex: 1;
-    background: rgba(255,255,255,0.1);
-    border: 1.5px solid rgba(255,255,255,0.18);
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.08);
     border-radius: 20px;
     padding: 24px 12px 20px;
     display: flex; flex-direction: column; align-items: center; gap: 12px;
     cursor: pointer;
     transition: background .2s, border-color .2s, transform .15s;
     user-select: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
   }
-  .role-card:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+  .role-card:hover { background: #faf8f6; transform: translateY(-2px); }
   .role-card.selected {
-    background: rgba(255,255,255,0.22);
+    background: #fff8f5;
     border-color: #e06020;
     transform: translateY(-2px);
+    box-shadow: 0 4px 18px rgba(224,96,32,0.18);
   }
   .role-card-icon {
     width: 56px; height: 56px;
     border-radius: 16px;
-    background: rgba(255,255,255,0.15);
+    background: #f0ece8;
     display: flex; align-items: center; justify-content: center;
-    color: #fff;
+    color: #5a4030;
     transition: background .2s;
   }
-  .role-card.selected .role-card-icon { background: rgba(224,96,32,0.35); }
-  .role-card-icon svg { width: 28px; height: 28px; stroke: #fff; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .role-card.selected .role-card-icon { background: rgba(224,96,32,0.12); }
+  .role-card-icon svg { width: 28px; height: 28px; stroke: #6a4a30; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .role-card.selected .role-card-icon svg { stroke: #e06020; }
   .role-card-name {
-    font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .5px;
+    font-size: 15px; font-weight: 700; color: #2a2018; letter-spacing: .5px;
   }
   .role-card-desc {
-    font-size: 10px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5;
+    font-size: 10px; color: rgba(60,40,20,0.55); text-align: center; line-height: 1.5;
   }
   .role-check {
     width: 20px; height: 20px;
     border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.3);
+    border: 1.5px solid rgba(0,0,0,0.15);
     display: flex; align-items: center; justify-content: center;
     transition: background .2s, border-color .2s;
   }
-  .role-card.selected .role-check {
-    background: #e06020; border-color: #e06020;
-  }
+  .role-card.selected .role-check { background: #e06020; border-color: #e06020; }
   .role-check svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s; }
   .role-card.selected .role-check svg { opacity: 1; }
 
@@ -134,7 +128,7 @@
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer; opacity: .4;
     transition: opacity .2s, transform .15s;
-    box-shadow: 0 6px 20px rgba(224,96,32,0.4);
+    box-shadow: 0 6px 20px rgba(224,96,32,0.3);
   }
   .role-btn.ready { opacity: 1; }
   .role-btn.ready:hover { transform: scale(1.02); }
@@ -142,9 +136,9 @@
   .role-badge {
     margin-top: 24px;
     display: none; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(224,96,32,0.1);
     border-radius: 12px; padding: 8px 14px;
-    font-size: 12px; color: rgba(255,255,255,0.8);
+    font-size: 12px; color: #c04010;
   }
   .role-badge.show { display: flex; }
   .role-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #4cd964; flex-shrink: 0; }
@@ -152,42 +146,42 @@
   /* ── Name Select Screen ── */
   .name-screen {
     position: fixed; inset: 0; z-index: 99;
-    background: linear-gradient(160deg, #1a2e50 0%, #2a4a7a 55%, #1e3a6a 100%);
+    background: #f0ece8;
     display: none; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 32px 24px;
-    transition: opacity .35s ease, transform .35s ease;
+    transition: opacity .35s ease;
   }
   .name-screen.visible { display: flex; }
-  .name-screen.fade-out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  .name-screen.fade-out { opacity: 0; pointer-events: none; }
 
   .name-screen-back {
     position: absolute; top: 20px; left: 20px;
     width: 38px; height: 38px; border-radius: 50%;
-    background: rgba(255,255,255,0.12);
-    border: 1.5px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.06);
+    border: 1.5px solid rgba(0,0,0,0.1);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background .2s;
   }
-  .name-screen-back:hover { background: rgba(255,255,255,0.22); }
-  .name-screen-back svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .name-screen-back:hover { background: rgba(0,0,0,0.1); }
+  .name-screen-back svg { width: 18px; height: 18px; stroke: #4a3020; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
   .name-screen-role-badge {
     display: flex; align-items: center; gap: 8px;
-    background: rgba(224,96,32,0.25);
-    border: 1px solid rgba(224,96,32,0.5);
+    background: rgba(224,96,32,0.12);
+    border: 1px solid rgba(224,96,32,0.35);
     border-radius: 20px; padding: 5px 14px;
-    font-size: 12px; color: rgba(255,255,255,0.9);
+    font-size: 12px; color: #c04010;
     margin-bottom: 10px; letter-spacing: .5px;
   }
   .name-screen-role-dot { width: 7px; height: 7px; border-radius: 50%; background: #e06020; }
 
   .name-screen-title {
-    font-size: 18px; font-weight: 700; color: #fff;
+    font-size: 18px; font-weight: 700; color: #2a2018;
     margin-bottom: 6px; letter-spacing: .5px;
   }
   .name-screen-sub {
-    font-size: 12px; color: rgba(255,255,255,0.5);
+    font-size: 12px; color: rgba(60,40,20,0.5);
     margin-bottom: 32px;
   }
 
@@ -198,32 +192,35 @@
     max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   }
   .name-card {
-    background: rgba(255,255,255,0.1);
-    border: 1.5px solid rgba(255,255,255,0.18);
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.08);
     border-radius: 16px;
     padding: 16px 18px;
     display: flex; align-items: center; gap: 14px;
     cursor: pointer;
     transition: background .2s, border-color .2s, transform .15s;
     user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
-  .name-card:hover { background: rgba(255,255,255,0.18); }
+  .name-card:hover { background: #faf8f6; }
   .name-card.selected {
-    background: rgba(255,255,255,0.2);
+    background: #fff8f5;
     border-color: #e06020;
+    box-shadow: 0 4px 14px rgba(224,96,32,0.15);
   }
   .name-card-avatar {
     width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(255,255,255,0.15);
+    background: #f0ece8;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background .2s;
   }
-  .name-card.selected .name-card-avatar { background: rgba(224,96,32,0.35); }
-  .name-card-avatar svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.85); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .name-card-text { flex: 1; font-size: 15px; font-weight: 600; color: #fff; }
+  .name-card.selected .name-card-avatar { background: rgba(224,96,32,0.12); }
+  .name-card-avatar svg { width: 20px; height: 20px; stroke: #6a4a30; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .name-card.selected .name-card-avatar svg { stroke: #e06020; }
+  .name-card-text { flex: 1; font-size: 15px; font-weight: 600; color: #2a2018; }
   .name-card-check {
     width: 20px; height: 20px; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.3);
+    border: 1.5px solid rgba(0,0,0,0.15);
     display: flex; align-items: center; justify-content: center;
     transition: background .2s, border-color .2s; flex-shrink: 0;
   }
@@ -239,14 +236,14 @@
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer; opacity: .4;
     transition: opacity .2s, transform .15s;
-    box-shadow: 0 6px 20px rgba(224,96,32,0.4);
+    box-shadow: 0 6px 20px rgba(224,96,32,0.3);
   }
   .name-btn.ready { opacity: 1; }
   .name-btn.ready:hover { transform: scale(1.02); }
 
   /* ── Compact Header ── */
   .compact-header {
-    background: linear-gradient(135deg, #f0857a 0%, #e8657a 50%, #d4607e 100%);
+    background: linear-gradient(135deg, #a0a0a4 0%, #8e8e93 50%, #7c7c82 100%);
     padding: 14px 20px 18px;
     position: relative;
     overflow: visible;
@@ -275,7 +272,7 @@
   }
   .compact-nav {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 0;
   }
   .compact-year-row {
     display: flex; align-items: center; gap: 4px;
@@ -284,29 +281,55 @@
     font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;
   }
   .avatar-popup {
-    position: fixed; top: 72px; right: 16px;
-    background: #fff; border-radius: 16px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-    padding: 14px 16px 12px;
-    min-width: 150px;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    z-index: 200;
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.32);
+    border-radius: 22px;
+    padding: 5px 10px 5px 5px;
+    cursor: pointer;
+    transition: background .15s;
+    user-select: none;
   }
+  .avatar-popup:hover { background: rgba(255,255,255,0.26); }
+  .avatar-popup-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .avatar-popup-avatar svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.9); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .avatar-popup-name {
-    font-size: 14px; font-weight: 700; color: #1a2e4a;
-    text-align: center; padding: 0 8px;
+    font-size: 13px; font-weight: 600; color: #fff;
+    white-space: nowrap; letter-spacing: .3px;
   }
-  .avatar-popup-divider { width: 100%; height: 1px; background: #eef; }
-  .avatar-popup-logout {
-    width: 100%; padding: 10px;
-    border: none; border-radius: 12px;
-    background: linear-gradient(135deg, #f0857a, #d4607e);
-    color: #fff; font-size: 13px; font-weight: 700;
-    font-family: 'Noto Sans JP', sans-serif;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-    transition: opacity .15s;
+  .avatar-popup-dots { display: flex; gap: 2px; align-items: center; margin-left: 2px; }
+  .avatar-popup-dots span { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.6); display: block; }
+
+  .avatar-popup-logout-wrap {
+    position: fixed;
+    background: #2a2a2e;
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+    padding: 6px;
+    display: none; flex-direction: column; gap: 0; z-index: 300;
+    min-width: 180px;
+    border: 1px solid rgba(255,255,255,0.08);
   }
-  .avatar-popup-logout:hover { opacity: .88; }
+  .avatar-popup-logout-wrap.show { display: flex; }
+  .avatar-popup-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
+
+  .drop-menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 9px; border: none;
+    background: transparent; color: #f0f0f2;
+    font-size: 13px; font-weight: 500; font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; text-align: left; width: 100%;
+    transition: background .12s;
+  }
+  .drop-menu-item:hover { background: rgba(255,255,255,0.1); }
+  .drop-menu-item svg { width: 15px; height: 15px; stroke: #c8c8d0; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .drop-menu-item.danger { color: #ff6b6b; }
+  .drop-menu-item.danger svg { stroke: #ff6b6b; }
   .avatar-popup-logout svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
   .compact-avatar {
@@ -370,13 +393,13 @@
   .cal-nav-btn {
     width: 38px; height: 38px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f0857a 0%, #d4607e 100%);
+    background: linear-gradient(135deg, #a0a0a4 0%, #7c7c82 100%);
     border: none;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
     transition: transform .15s, opacity .15s;
-    box-shadow: 0 2px 8px rgba(212,96,126,0.35);
+    box-shadow: 0 2px 8px rgba(100,100,110,0.35);
   }
   .cal-nav-btn:hover { transform: scale(1.08); opacity: .9; }
   .cal-nav-btn svg { stroke: #fff; width: 16px; height: 16px; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -599,15 +622,14 @@
   /* history row */
   .hist-row { position: relative; }
   .hist-del-btn {
-    width: 28px; height: 28px; border-radius: 8px;
-    background: #fff0f0; border: none; cursor: pointer;
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #fdecea; border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: background .15s, opacity .15s;
-    opacity: 0;
+    flex-shrink: 0; transition: background .15s, transform .12s;
+    opacity: 1;
   }
-  .hist-row:hover .hist-del-btn { opacity: 1; }
-  .hist-del-btn:hover { background: #ffd0d0 !important; }
-  .hist-del-btn svg { width: 13px; height: 13px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+  .hist-del-btn:hover { background: #fac9c4 !important; transform: scale(1.07); }
+  .hist-del-btn svg { width: 16px; height: 16px; stroke: #d63b2f; stroke-width: 2; fill: none; stroke-linecap: round; }
 
   /* facility card header delete-all button */
   .fac-del-all-btn {
@@ -758,7 +780,7 @@
   .settings-save-btn svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .settings-toast {
     position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(12px);
-    background: #1a2e50; color: #fff; font-size: 13px;
+    background: #f0ece8; color: #fff; font-size: 13px;
     padding: 10px 22px; border-radius: 24px; opacity: 0;
     transition: opacity .25s, transform .25s; pointer-events: none;
     white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.2); z-index: 50;
@@ -1043,37 +1065,15 @@
   <!-- Header -->
   <div class="compact-header">
     <div class="compact-header-bg"></div>
-    <!-- top row: role badge + avatar/logout -->
-    <div class="compact-nav">
+    <!-- top row: role badge (hidden) -->
+    <div class="compact-nav" style="min-height:0;margin-bottom:0;">
       <div class="compact-year-row">
         <span id="year-label" style="display:none"></span>
       </div>
-      <div style="display:flex;align-items:center;">
-        <div style="position:relative;">
-          <!-- 白いカード型バッジ -->
-          <div id="header-user-card" onclick="toggleAvatarPopup(event)"
-               style="display:flex;align-items:center;gap:10px;background:transparent;border-radius:28px;padding:0;box-shadow:none;cursor:default;">
-            <span id="header-role-badge" style="display:none;"></span>
-            <button id="pdf-btn" onclick="event.stopPropagation();exportPDF()" title="PDF出力"
-                    style="display:none;background:linear-gradient(135deg,#e06020,#c04010);border:none;border-radius:20px;padding:6px 11px;font-size:11px;color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(192,64,16,0.35);flex-shrink:0;">
-              <svg style="width:11px;height:11px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-              PDF
-            </button>
-          </div>
-          <!-- ポップアップ（名前のみ表示、タップでログアウト表示） -->
-          <div class="avatar-popup" id="avatar-popup" onclick="toggleLogoutBtn()" style="cursor:pointer;">
-            <div style="font-size:14px;font-weight:700;color:#1a2e4a;padding:2px 4px;text-align:center;" id="avatar-popup-name">-</div>
-            <div id="avatar-popup-divider" style="width:100%;height:1px;background:#eef;display:none;"></div>
-            <button class="avatar-popup-logout" id="avatar-logout-btn" onclick="event.stopPropagation();logout()" style="display:none;">
-              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              ログアウト
-            </button>
-          </div>
-        </div>
-      </div>
+      <span id="header-role-badge" style="display:none;"></span>
     </div>
-    <!-- date display: big month number + abbr / year + arrows -->
-    <div class="compact-month-row">
+    <!-- date display row: date left, badge right -->
+    <div class="compact-month-row" style="align-items:center;">
       <div class="date-display">
         <span class="date-big-num" id="month-num-big">4</span>
         <div class="date-meta">
@@ -1082,6 +1082,28 @@
         </div>
       </div>
       <div class="compact-month-arrows"></div>
+      <div style="display:flex;align-items:center;position:relative;margin-left:auto;">
+        <!-- インラインバッジ（名前表示） -->
+        <div class="avatar-popup" id="avatar-popup" onclick="toggleLogoutBtn()" style="cursor:pointer;">
+          <div class="avatar-popup-avatar">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <span class="avatar-popup-name" id="avatar-popup-name">-</span>
+          <div class="avatar-popup-dots"><span></span><span></span><span></span></div>
+        </div>
+        <!-- ドロップダウンメニュー -->
+        <div class="avatar-popup-logout-wrap" id="avatar-logout-wrap" onclick="event.stopPropagation()">
+          <button class="drop-menu-item" id="drop-pdf-btn" onclick="exportPDF();closeDropMenu()" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            PDF出力
+          </button>
+          <div class="avatar-popup-divider" id="avatar-popup-divider" style="display:none;"></div>
+          <button class="drop-menu-item danger" id="avatar-logout-btn" onclick="logout()" style="display:none;">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            ログアウト
+          </button>
+        </div>
+      </div>
     </div>
     <!-- hidden legacy elements -->
     <div class="compact-month" style="display:none"><span id="month-num"></span></div>
@@ -1121,6 +1143,7 @@
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
       <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffd0d0;border:1.5px solid #f09090;border-radius:4px;"></div>不備あり</div>
     </div>
   </div>
 
@@ -1805,7 +1828,6 @@ function makeRow(icon, label, id, value, placeholder) {
   return `<div class="settings-row">
     <div class="settings-row-icon">${icon}</div>
     <div class="settings-row-body">
-      <div class="settings-row-label">${label}</div>
       <input class="settings-row-input" id="${id}" value="${value}" placeholder="${placeholder}" onblur="saveSettings()">
     </div>
     ${DEL_BTN}
@@ -1839,7 +1861,7 @@ function exportPDF() {
     // Build rows HTML: one row per item
     const itemRows = items.map((itemLabel, itemIdx) => {
       const cells = dayData.map(({ d, isWeekend, entry }) => {
-        if (isWeekend) return `<td class="cell weekend"><div class="slash"></div></td>`;
+        if (isWeekend) return `<td class="cell weekend" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
         if (!entry) return `<td class="cell empty"></td>`;
         const v = entry.checks ? entry.checks[itemIdx] : 'ok';
         return `<td class="cell ${v === 'ng' ? 'ng' : 'ok'}">${v === 'ng' ? '×' : '○'}</td>`;
@@ -1930,8 +1952,8 @@ function exportPDF() {
   .cell.ng { color: #cc0000; }
   .cell.empty { background: #fafafa; }
   .cell.weekend { background: #f0f4f8; padding: 0; }
-  .slash { position: absolute; inset: 0; overflow: hidden; }
-  .slash::after { content: ''; position: absolute; top: 0; left: 0; width: 141%; height: 1px; background: #999; transform-origin: top left; transform: rotate(30deg) translateY(3.5mm); }
+  .slash { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .slash line { stroke: #aaa; stroke-width: 0.6; }
 
   /* Signature table */
   .sign-table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
@@ -2190,17 +2212,11 @@ function renderLinkageList() {
       </span>`;
     }).join('');
 
-    // 新規点検項目追加欄（常時表示）
+    // 編集タブへの案内
     const newItemForm = `
-      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;">
-        <input class="link-picker-input" id="new-item-input-${fi}"
-          placeholder="＋ 新しい項目名を入力"
-          style="flex:1;padding:8px 14px;font-size:13px;border-radius:20px;border:1.5px solid #c8d4e8;outline:none;font-family:'Noto Sans JP',sans-serif;"
-          onkeydown="if(event.key==='Enter')addNewInspectionItem(${fi})">
-        <button onclick="addNewInspectionItem(${fi})"
-          style="flex-shrink:0;padding:8px 16px;border:none;border-radius:20px;background:linear-gradient(135deg,#e06020,#c04010);color:#fff;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">
-          追加
-        </button>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;display:flex;align-items:center;gap:6px;">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#8899aa;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span style="font-size:11px;color:#8899aa;">項目を追加するには<strong style="color:#e06020;cursor:pointer;" onclick="navAlertOrSettings()">編集タブ</strong>から行ってください</span>
       </div>`;
 
     // 点検者: 全件をトグルチップで表示
@@ -2236,6 +2252,10 @@ function renderLinkageList() {
         <div class="link-section">
           <div class="link-section-label" style="margin-bottom:8px;">点検者 — タップして紐づけ</div>
           <div class="link-items" style="gap:7px;">${allInspChips || '<span class="link-unset">点検者がいません</span>'}</div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#8899aa;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:11px;color:#8899aa;">点検者を追加するには<strong style="color:#e06020;cursor:pointer;" onclick="navAlertOrSettings()">編集タブ</strong>から行ってください</span>
+          </div>
         </div>
       </div>
     </div>`;
@@ -2455,8 +2475,7 @@ function proceedToApp() {
     if (popupName) popupName.textContent = selectedName;
     // Align popup (closed by default)
     requestAnimationFrame(alignPopup);
-    const pdfBtn = document.getElementById('pdf-btn');
-    if (pdfBtn) pdfBtn.style.display = selectedRole === 'manager' ? 'flex' : 'none';
+
     // Switch alert ↔ settings based on role
     const iconEl  = document.getElementById('nav-alert-icon');
     const labelEl = document.getElementById('nav-alert-label');
@@ -2486,13 +2505,36 @@ function alignPopup() {
 }
 
 function toggleLogoutBtn() {
+  const wrap    = document.getElementById('avatar-logout-wrap');
   const btn     = document.getElementById('avatar-logout-btn');
   const divider = document.getElementById('avatar-popup-divider');
-  if (!btn) return;
-  const show = btn.style.display === 'none';
-  btn.style.display     = show ? 'flex' : 'none';
-  divider.style.display = show ? 'block' : 'none';
-  requestAnimationFrame(alignPopup);
+  const pdfItem = document.getElementById('drop-pdf-btn');
+  const badge   = document.getElementById('avatar-popup');
+  if (!wrap) return;
+  const show = !wrap.classList.contains('show');
+
+  if (show && badge) {
+    const rect = badge.getBoundingClientRect();
+    wrap.style.top   = (rect.bottom + 8) + 'px';
+    wrap.style.right = (window.innerWidth - rect.right) + 'px';
+  }
+
+  wrap.classList.toggle('show', show);
+  if (btn) btn.style.display = show ? 'flex' : 'none';
+  const showPdf = show && selectedRole === 'manager';
+  if (pdfItem) pdfItem.style.display = showPdf ? 'flex' : 'none';
+  if (divider) divider.style.display = showPdf ? 'block' : 'none';
+}
+
+function closeDropMenu() {
+  const wrap    = document.getElementById('avatar-logout-wrap');
+  const btn     = document.getElementById('avatar-logout-btn');
+  const divider = document.getElementById('avatar-popup-divider');
+  const pdfItem = document.getElementById('drop-pdf-btn');
+  if (wrap) wrap.classList.remove('show');
+  if (btn) btn.style.display = 'none';
+  if (divider) divider.style.display = 'none';
+  if (pdfItem) pdfItem.style.display = 'none';
 }
 
 function toggleAvatarPopup(e) {
@@ -2501,15 +2543,22 @@ function toggleAvatarPopup(e) {
 }
 
 document.addEventListener('click', function(e) {
-  // 常時表示のため閉じない
+  const wrap = document.getElementById('avatar-logout-wrap');
+  if (wrap && wrap.classList.contains('show') && !wrap.contains(e.target) && e.target.id !== 'avatar-popup' && !document.getElementById('avatar-popup')?.contains(e.target)) {
+    closeDropMenu();
+  }
 });
 
 function logout() {
   // ログアウトボタンを非表示に戻す
   const btn = document.getElementById('avatar-logout-btn');
   const div = document.getElementById('avatar-popup-divider');
+  const wrap = document.getElementById('avatar-logout-wrap');
+  const pdfItem = document.getElementById('drop-pdf-btn');
   if (btn) btn.style.display = 'none';
   if (div) div.style.display = 'none';
+  if (wrap) wrap.classList.remove('show');
+  if (pdfItem) pdfItem.style.display = 'none';
   const app = document.getElementById('app-inner');
   app.style.transition = 'opacity .3s ease';
   app.style.opacity = '0';
