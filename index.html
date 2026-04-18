@@ -249,25 +249,29 @@
     background: linear-gradient(135deg, #f0857a 0%, #e8657a 50%, #d4607e 100%);
     padding: 14px 20px 18px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
-  .compact-header::before {
+  /* 装飾円をクリップするラッパー */
+  .compact-header-bg {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    pointer-events: none; z-index: 0; border-radius: inherit;
+  }
+  .compact-header-bg::before {
     content: '';
     position: absolute;
     top: -40px; right: -40px;
     width: 160px; height: 160px;
     border-radius: 50%;
     background: rgba(255,255,255,0.08);
-    pointer-events: none;
   }
-  .compact-header::after {
+  .compact-header-bg::after {
     content: '';
     position: absolute;
     bottom: -20px; left: 30%;
     width: 100px; height: 100px;
     border-radius: 50%;
     background: rgba(255,255,255,0.05);
-    pointer-events: none;
   }
   .compact-nav {
     display: flex; align-items: center; justify-content: space-between;
@@ -279,6 +283,32 @@
   .compact-year {
     font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;
   }
+  .avatar-popup {
+    position: fixed; top: 72px; right: 16px;
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+    padding: 14px 16px 12px;
+    min-width: 150px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    z-index: 200;
+  }
+  .avatar-popup-name {
+    font-size: 14px; font-weight: 700; color: #1a2e4a;
+    text-align: center; padding: 0 8px;
+  }
+  .avatar-popup-divider { width: 100%; height: 1px; background: #eef; }
+  .avatar-popup-logout {
+    width: 100%; padding: 10px;
+    border: none; border-radius: 12px;
+    background: linear-gradient(135deg, #f0857a, #d4607e);
+    color: #fff; font-size: 13px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: opacity .15s;
+  }
+  .avatar-popup-logout:hover { opacity: .88; }
+  .avatar-popup-logout svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
   .compact-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     background: rgba(255,255,255,0.25);
@@ -336,8 +366,23 @@
   .score-val span { font-size: 14px; }
   .score-val.pct { font-size: 22px; }
 
+  /* ── Calendar tab nav buttons ── */
+  .cal-nav-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f0857a 0%, #d4607e 100%);
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform .15s, opacity .15s;
+    box-shadow: 0 2px 8px rgba(212,96,126,0.35);
+  }
+  .cal-nav-btn:hover { transform: scale(1.08); opacity: .9; }
+  .cal-nav-btn svg { stroke: #fff; width: 16px; height: 16px; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
   /* ── Tabs ── */
-  .tabs { display: flex; border-bottom: 1px solid #dde; background: #fff; }
+  .tabs { display: flex; border-bottom: 1px solid #dde; background: #fff; align-items: center; padding: 0 12px; }
   .tab {
     flex: 1; padding: 13px;
     text-align: center; cursor: pointer;
@@ -894,6 +939,20 @@
   .link-chip-del:hover { opacity: 1; }
   .link-chip-del svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 2.8; fill: none; stroke-linecap: round; }
 
+  .link-toggle-chip {
+    display: inline-flex; align-items: center;
+    font-size: 12px; font-weight: 500; color: #667;
+    background: #f0f2f6; border: 1.5px solid #dde; border-radius: 20px;
+    padding: 6px 14px; cursor: pointer;
+    transition: all .15s; user-select: none;
+  }
+  .link-toggle-chip:hover { background: #e8ecf4; }
+  .link-toggle-chip.active {
+    background: #2a4a7a; color: #fff; border-color: #2a4a7a;
+  }
+  .link-toggle-chip.inspector.active {
+    background: #2a6a3a; border-color: #2a6a3a;
+  }
   .link-add-fac-btn {
     margin: 10px 14px 4px; width: auto; display: inline-flex;
     padding: 6px 14px; border: 1.5px solid #c8d4e8; border-radius: 20px;
@@ -983,18 +1042,35 @@
 
   <!-- Header -->
   <div class="compact-header">
+    <div class="compact-header-bg"></div>
     <!-- top row: role badge + avatar/logout -->
     <div class="compact-nav">
       <div class="compact-year-row">
         <span id="year-label" style="display:none"></span>
-        <span id="header-role-badge" style="font-size:10px;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.18);padding:2px 9px;border-radius:20px;letter-spacing:.5px;"></span>
       </div>
-      <button onclick="logout()" class="compact-avatar" title="ログアウト">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="8" r="4"/>
-          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
-      </button>
+      <div style="display:flex;align-items:center;">
+        <div style="position:relative;">
+          <!-- 白いカード型バッジ -->
+          <div id="header-user-card" onclick="toggleAvatarPopup(event)"
+               style="display:flex;align-items:center;gap:10px;background:transparent;border-radius:28px;padding:0;box-shadow:none;cursor:default;">
+            <span id="header-role-badge" style="display:none;"></span>
+            <button id="pdf-btn" onclick="event.stopPropagation();exportPDF()" title="PDF出力"
+                    style="display:none;background:linear-gradient(135deg,#e06020,#c04010);border:none;border-radius:20px;padding:6px 11px;font-size:11px;color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(192,64,16,0.35);flex-shrink:0;">
+              <svg style="width:11px;height:11px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              PDF
+            </button>
+          </div>
+          <!-- ポップアップ（名前のみ表示、タップでログアウト表示） -->
+          <div class="avatar-popup" id="avatar-popup" onclick="toggleLogoutBtn()" style="cursor:pointer;">
+            <div style="font-size:14px;font-weight:700;color:#1a2e4a;padding:2px 4px;text-align:center;" id="avatar-popup-name">-</div>
+            <div id="avatar-popup-divider" style="width:100%;height:1px;background:#eef;display:none;"></div>
+            <button class="avatar-popup-logout" id="avatar-logout-btn" onclick="event.stopPropagation();logout()" style="display:none;">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              ログアウト
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- date display: big month number + abbr / year + arrows -->
     <div class="compact-month-row">
@@ -1005,18 +1081,7 @@
           <span class="date-year-text">/ <span id="year-label-sub">2026</span></span>
         </div>
       </div>
-      <div class="compact-month-arrows">
-        <button class="score-nav" onclick="prevMonth()">
-          <svg class="icon-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button class="score-nav" onclick="nextMonth()">
-          <svg class="icon-svg" style="width:16px;height:16px" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button id="pdf-btn" class="score-nav" onclick="exportPDF()" title="PDF出力" style="display:none;background:rgba(224,96,32,0.35);border-color:rgba(224,96,32,0.6);gap:4px;width:auto;padding:0 10px;border-radius:20px;font-size:11px;color:#fff;font-family:'Noto Sans JP',sans-serif;font-weight:700;">
-          <svg style="width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          PDF
-        </button>
-      </div>
+      <div class="compact-month-arrows"></div>
     </div>
     <!-- hidden legacy elements -->
     <div class="compact-month" style="display:none"><span id="month-num"></span></div>
@@ -1025,6 +1090,9 @@
 
   <!-- Tabs -->
   <div class="tabs" id="main-tabs">
+    <button class="cal-nav-btn" onclick="prevMonth()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
     <div class="tab active" id="tab-cal" onclick="setTab(0)">
       <span class="tab-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
@@ -1036,6 +1104,9 @@
       </span>
       カレンダー
     </div>
+    <button class="cal-nav-btn" onclick="nextMonth()">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
   </div>
 
   <!-- Calendar view -->
@@ -1403,9 +1474,14 @@ function renderList(){
       const delBtn = selectedRole === 'manager'
         ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>` : '';
 
+      const inspectorTag = e.inspector
+        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;">${e.inspector}</span>`
+        : '';
+
       rows+=`<div class="hist-row" style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
         +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;">${mo}/${d}</div>`
         +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:0;">${chips}</div>`
+        +inspectorTag
         +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;">${rowNg?'✕':'○'}</span>`
         +delBtn
         +`</div>`;
@@ -1483,20 +1559,32 @@ function confirmDeleteEntry(k) {
 function confirmDeleteFacility(fi, event) {
   event.stopPropagation();
   const fac = FACILITIES[fi];
+  const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
   const facKeys = Object.keys(entries).filter(function(k) {
     const parts = k.split('-');
-    const d = parseInt(parts[2]);
-    return (d - 1) % FACILITIES.length === fi
-      && parseInt(parts[0]) === viewYear
-      && parseInt(parts[1]) === (viewMonth + 1);
+    if (parseInt(parts[0]) !== viewYear) return false;
+    if (parseInt(parts[1]) !== (viewMonth + 1)) return false;
+    return linkedItems.some(function(_, i) {
+      return (entries[k].checks||{})['f'+fi+'_'+i] !== undefined;
+    });
   });
   if (!facKeys.length) return;
   showConfirm(
     '全記録を削除',
     '<strong>' + fac.name + '</strong> の<br>' + (viewMonth+1) + '月の全記録（' + facKeys.length + '件）を削除しますか？<br>この操作は取り消せません。',
     function() {
-      facKeys.forEach(function(k) { delete entries[k]; });
+      facKeys.forEach(function(k) {
+        // Remove only this facility's check keys from the entry
+        linkedItems.forEach(function(_, i) {
+          delete entries[k].checks['f'+fi+'_'+i];
+        });
+        // If no checks remain, delete the whole entry
+        if (!Object.keys(entries[k].checks||{}).length) {
+          delete entries[k];
+        }
+      });
       renderCalendar();
+      renderList();
       persistData();
       showHistToast('🗑 全記録を削除しました');
     }
@@ -1546,7 +1634,33 @@ function dayClick(d){
 function openAdd(){
   const dow = TODAY.getDay();
   if(dow===0 || dow===6) return; // 休日は点検不要
-  dayClick(TODAY.getDate());
+
+  // ① 今日の月・年に移動
+  viewYear  = TODAY.getFullYear();
+  viewMonth = TODAY.getMonth();
+
+  // ② カレンダータブを表示してカレンダーを再描画
+  setTab(0);
+  renderCalendar();
+
+  // ③ 今日のセルにスクロール & 一瞬フラッシュ演出
+  requestAnimationFrame(() => {
+    const todayEl = document.querySelector('.day-num.today');
+    if (todayEl) {
+      todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      todayEl.style.transition = 'transform .15s, box-shadow .15s';
+      todayEl.style.transform  = 'scale(1.25)';
+      todayEl.style.boxShadow  = '0 0 0 3px #e06020';
+      setTimeout(() => {
+        todayEl.style.transform = '';
+        todayEl.style.boxShadow = '';
+        // ④ 点検モーダルを開く
+        dayClick(TODAY.getDate());
+      }, 350);
+    } else {
+      dayClick(TODAY.getDate());
+    }
+  });
 }
 
 function renderAllFacChecks(savedChecks){
@@ -1611,7 +1725,7 @@ function saveEntry(){
     return;
   }
   const allOk = Object.values(checks).every(v=>v==='ok');
-  entries[k]={ checks, status: allOk?'ok':'ng' };
+  entries[k]={ checks, status: allOk?'ok':'ng', inspector: selectedName || '' };
   document.getElementById('modal').classList.remove('open');
   renderCalendar();
   persistData();
@@ -1945,10 +2059,6 @@ function saveSettings() {
   renderList();
   updateCounts();
   persistData();
-  // Show toast
-  const toast = document.getElementById('settings-toast');
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
 function openSettings() {
@@ -2002,6 +2112,9 @@ function goHome() {
   document.getElementById('view-facilities').style.display = 'none';
   // Restore home tabs
   document.getElementById('main-tabs').innerHTML = `
+    <button class="cal-nav-btn" onclick="prevMonth()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
     <div class="tab active" id="tab-cal" onclick="setTab(0)">
       <span class="tab-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
@@ -2012,7 +2125,10 @@ function goHome() {
         </svg>
       </span>
       カレンダー
-    </div>`;
+    </div>
+    <button class="cal-nav-btn" onclick="nextMonth()">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>`;
   setTab(0);
   setNavActive('nav-home');
 }
@@ -2065,46 +2181,36 @@ function renderLinkageList() {
     const linkedItems      = fac.linkedKeys || [];
     const linkedInspectors = fac.linkedInspectors || [];
 
-    // 選択済み点検項目チップ
-    const selectedItemChips = linkedItems.length === 0
-      ? `<span class="link-unset">— 未選択</span>`
-      : linkedItems.map(key => {
-          const item = inspectionItems.find(i => i.key === key);
-          const label = item ? item.label : key;
-          return `<span class="link-selected-chip">
-            ${label}
-            <button class="link-chip-del" onclick="toggleLinkItem(${fi},'${key}',null)">${xSvg}</button>
-          </span>`;
-        }).join('');
+    // 点検項目: 全件をトグルチップで表示
+    const allItemChips = inspectionItems.map(item => {
+      const active = linkedItems.includes(item.key);
+      return `<span class="link-toggle-chip${active?' active':''}" onclick="toggleLinkItem(${fi},'${item.key}',null)">
+        ${active ? `<svg style="width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+        ${item.label}
+      </span>`;
+    }).join('');
 
-    // 未選択の点検項目（追加候補）
-    const availableItems = inspectionItems.filter(i => !linkedItems.includes(i.key));
-    const itemPickerOptions = availableItems.map(i =>
-      `<div class="link-picker-opt" onclick="toggleLinkItem(${fi},'${i.key}',null)">${i.label}</div>`
-    ).join('');
-    const itemPickerContent = (itemPickerOptions || '') +
-      `<div class="link-picker-new">
-        <input class="link-picker-input" id="new-item-input-${fi}" placeholder="新しい点検項目を入力"
+    // 新規点検項目追加欄（常時表示）
+    const newItemForm = `
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid #e8ecf4;">
+        <input class="link-picker-input" id="new-item-input-${fi}"
+          placeholder="＋ 新しい項目名を入力"
+          style="flex:1;padding:8px 14px;font-size:13px;border-radius:20px;border:1.5px solid #c8d4e8;outline:none;font-family:'Noto Sans JP',sans-serif;"
           onkeydown="if(event.key==='Enter')addNewInspectionItem(${fi})">
-        <button class="link-picker-add-btn" onclick="addNewInspectionItem(${fi})">追加</button>
+        <button onclick="addNewInspectionItem(${fi})"
+          style="flex-shrink:0;padding:8px 16px;border:none;border-radius:20px;background:linear-gradient(135deg,#e06020,#c04010);color:#fff;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">
+          追加
+        </button>
       </div>`;
 
-    // 選択済み点検者チップ
-    const selectedInspChips = linkedInspectors.length === 0
-      ? `<span class="link-unset">— 未選択</span>`
-      : linkedInspectors.map(name => {
-          const safe = name.replace(/'/g, "\\'");
-          return `<span class="link-selected-chip inspector">
-            ${name}
-            <button class="link-chip-del" onclick="toggleLinkInspector(${fi},'${safe}',null)">${xSvg}</button>
-          </span>`;
-        }).join('');
-
-    // 未選択の点検者（追加候補）
-    const availableInsp = staffData.inspectors.filter(n => !linkedInspectors.includes(n));
-    const inspPickerOptions = availableInsp.map(n => {
-      const safe = n.replace(/'/g, "\\'");
-      return `<div class="link-picker-opt" onclick="toggleLinkInspector(${fi},'${safe}',null)">${n}</div>`;
+    // 点検者: 全件をトグルチップで表示
+    const allInspChips = staffData.inspectors.map(name => {
+      const active = linkedInspectors.includes(name);
+      const safe = name.replace(/'/g, "\\'");
+      return `<span class="link-toggle-chip inspector${active?' active':''}" onclick="toggleLinkInspector(${fi},'${safe}',null)">
+        ${active ? `<svg style="width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+        ${name}
+      </span>`;
     }).join('');
 
     const total = linkedItems.length + linkedInspectors.length;
@@ -2123,26 +2229,32 @@ function renderLinkageList() {
       </div>
       <div class="link-card-body" id="link-body-${fi}" style="display:none;">
         <div class="link-section">
-          <div class="link-section-row">
-            <div class="link-section-label">点検項目</div>
-            <button class="link-add-chip-btn" onclick="togglePicker('item-picker-${fi}')">${plusSvg} 追加</button>
-          </div>
-          <div class="link-picker" id="item-picker-${fi}" style="display:none;">${itemPickerContent}</div>
-          <div class="link-items">${selectedItemChips}</div>
+          <div class="link-section-label" style="margin-bottom:8px;">点検項目 — タップして紐づけ</div>
+          <div class="link-items" style="gap:7px;">${allItemChips || '<span class="link-unset">点検項目がありません</span>'}</div>
+          ${newItemForm}
         </div>
         <div class="link-section">
-          <div class="link-section-row">
-            <div class="link-section-label">点検者</div>
-            ${availableInsp.length > 0 ? `<button class="link-add-chip-btn" onclick="togglePicker('insp-picker-${fi}')">${plusSvg} 追加</button>` : ''}
-          </div>
-          <div class="link-picker" id="insp-picker-${fi}" style="display:none;">${inspPickerOptions || '<span class="link-empty-msg">追加できる点検者がいません</span>'}</div>
-          <div class="link-items">${selectedInspChips}</div>
+          <div class="link-section-label" style="margin-bottom:8px;">点検者 — タップして紐づけ</div>
+          <div class="link-items" style="gap:7px;">${allInspChips || '<span class="link-unset">点検者がいません</span>'}</div>
         </div>
       </div>
     </div>`;
   }).join('');
 
-  el.innerHTML = cards;
+  // 設備追加フォーム
+  const addFacRow = `<div style="padding:12px 14px 16px;">
+    <div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #eef0f4;">
+      <input id="new-fac-input" placeholder="＋ 新しい設備名を入力"
+        style="flex:1;border:none;outline:none;font-size:13px;color:#1a2e4a;font-family:'Noto Sans JP',sans-serif;background:transparent;"
+        onkeydown="if(event.key==='Enter')addFacilityFromInput()">
+      <button onclick="addFacilityFromInput()"
+        style="flex-shrink:0;padding:7px 16px;border:none;border-radius:20px;background:linear-gradient(135deg,#e06020,#c04010);color:#fff;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">
+        追加
+      </button>
+    </div>
+  </div>`;
+
+  el.innerHTML = cards + addFacRow;
 }
 
 function addNewInspectionItem(fi) {
@@ -2236,7 +2348,25 @@ function toggleLinkInspector(fi, name, chipEl) {
   if (card) { card.classList.add('open'); }
 }
 
-// legacy alias (toggleLinkKey removed)
+function addFacilityFromInput() {
+  const inp = document.getElementById('new-fac-input');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) { inp && inp.focus(); return; }
+  const icons = Object.keys(FACILITY_ICONS);
+  const iconKey = icons[FACILITIES.length % icons.length];
+  FACILITIES.push({ icon: FACILITY_ICONS[iconKey], iconKey, name, items: [], linkedKeys: [], linkedInspectors: [] });
+  renderLinkageList();
+  updateCounts();
+  persistData();
+  const newFi = FACILITIES.length - 1;
+  const body = document.getElementById('link-body-' + newFi);
+  const card = document.getElementById('link-card-' + newFi);
+  if (body) body.style.display = 'block';
+  if (card) card.classList.add('open');
+  showHistToast('✓ 設備「' + name + '」を追加しました');
+}
+
+function promptAddFacility() { addFacilityFromInput(); }
 
 let selectedName = null;
 
@@ -2321,6 +2451,10 @@ function proceedToApp() {
     const roleLabel = selectedRole === 'inspector' ? '点検者' : '管理人';
     const badge = document.getElementById('header-role-badge');
     if (badge) badge.textContent = selectedName;
+    const popupName = document.getElementById('avatar-popup-name');
+    if (popupName) popupName.textContent = selectedName;
+    // Align popup (closed by default)
+    requestAnimationFrame(alignPopup);
     const pdfBtn = document.getElementById('pdf-btn');
     if (pdfBtn) pdfBtn.style.display = selectedRole === 'manager' ? 'flex' : 'none';
     // Switch alert ↔ settings based on role
@@ -2343,7 +2477,39 @@ function proceedToApp() {
   }, 380);
 }
 
+function alignPopup() {
+  const dateEl = document.getElementById('month-num-big');
+  const popup  = document.getElementById('avatar-popup');
+  if (!dateEl || !popup) return;
+  const rect = dateEl.getBoundingClientRect();
+  popup.style.top = Math.max(8, rect.top) + 'px';
+}
+
+function toggleLogoutBtn() {
+  const btn     = document.getElementById('avatar-logout-btn');
+  const divider = document.getElementById('avatar-popup-divider');
+  if (!btn) return;
+  const show = btn.style.display === 'none';
+  btn.style.display     = show ? 'flex' : 'none';
+  divider.style.display = show ? 'block' : 'none';
+  requestAnimationFrame(alignPopup);
+}
+
+function toggleAvatarPopup(e) {
+  e.stopPropagation();
+  // 常時表示のため何もしない
+}
+
+document.addEventListener('click', function(e) {
+  // 常時表示のため閉じない
+});
+
 function logout() {
+  // ログアウトボタンを非表示に戻す
+  const btn = document.getElementById('avatar-logout-btn');
+  const div = document.getElementById('avatar-popup-divider');
+  if (btn) btn.style.display = 'none';
+  if (div) div.style.display = 'none';
   const app = document.getElementById('app-inner');
   app.style.transition = 'opacity .3s ease';
   app.style.opacity = '0';
