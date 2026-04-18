@@ -22,38 +22,38 @@
     flex-direction: column;
   }
 
-  /* ── Header ── */
-  .header-art { position: relative; height: 220px; overflow: hidden; }
-  .scene-svg { width: 100%; height: 100%; display: block; }
+  /* ── Compact Header ── */
+  .compact-header {
+    background: linear-gradient(135deg, #1a2e50, #2a4a7a);
+    padding: 14px 16px 12px;
+  }
+  .compact-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .compact-month {
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .compact-year { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .compact-monthnum { font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
+  .compact-monthname { font-size: 14px; color: rgba(255,255,255,0.85); }
+  .compact-scores {
+    display: flex; gap: 8px; justify-content: space-between;
+  }
+  .compact-pill {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .compact-pill .score-pill-label { color: rgba(255,255,255,0.75); }
+  .compact-pill .score-val { color: #fff; font-size: 22px; }
+  .compact-pill .score-val span { font-size: 13px; }
+  .compact-pill .score-val.pct { font-size: 20px; }
 
-  .month-tag {
-    position: absolute;
-    top: 20px; left: 20px;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  }
-  .month-year { font-size: 12px; opacity: 0.85; letter-spacing: .5px; }
-  .month-day  { font-size: 60px; font-weight: 700; line-height: 1; }
-  .month-name { font-size: 14px; opacity: 0.9; letter-spacing: 1px; }
-
-  .avg-label {
-    position: absolute;
-    bottom: 74px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px; color: #fff;
-    white-space: nowrap;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-    letter-spacing: .5px;
-  }
-  .score-band {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 0 10px 14px;
-  }
+  /* score nav used in compact header */
+  .score-nav:hover { background: rgba(255,255,255,0.95); }
   .score-nav {
     width: 36px; height: 36px;
     border-radius: 50%;
@@ -62,14 +62,6 @@
     font-size: 20px; color: #334;
     display: flex; align-items: center; justify-content: center;
     transition: background .15s;
-  }
-  .score-nav:hover { background: #fff; }
-  .score-pill {
-    background: rgba(255,255,255,0.88);
-    border-radius: 28px;
-    padding: 8px 16px;
-    text-align: center;
-    min-width: 80px;
   }
   .score-pill-label { font-size: 11px; color: #556; display: block; margin-bottom: 2px; }
   .score-val { font-size: 26px; font-weight: 700; color: #1a2e4a; line-height: 1; }
@@ -264,106 +256,31 @@
 <div class="phone" id="app">
 
   <!-- Header -->
-  <div class="header-art">
-    <svg class="scene-svg" viewBox="0 0 375 250" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1a2e50"/>
-          <stop offset="100%" stop-color="#2a4a7a"/>
-        </linearGradient>
-        <linearGradient id="bldG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#2e3d5a"/>
-          <stop offset="100%" stop-color="#1e2d48"/>
-        </linearGradient>
-        <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#354a68"/>
-          <stop offset="100%" stop-color="#263650"/>
-        </linearGradient>
-      </defs>
-      <!-- Sky bg -->
-      <rect width="375" height="250" fill="url(#skyG)"/>
-      <!-- Floor -->
-      <rect x="0" y="185" width="375" height="65" fill="url(#floorG)"/>
-      <!-- Stars -->
-      <circle cx="320" cy="28" r="1.5" fill="rgba(255,255,255,0.7)"/>
-      <circle cx="280" cy="45" r="1"   fill="rgba(255,255,255,0.5)"/>
-      <circle cx="340" cy="55" r="1.5" fill="rgba(255,255,255,0.6)"/>
-      <circle cx="310" cy="70" r="1"   fill="rgba(255,255,255,0.4)"/>
-      <circle cx="355" cy="35" r="1"   fill="rgba(255,255,255,0.5)"/>
-      <!-- Moon -->
-      <circle cx="338" cy="38" r="18" fill="#f9e9a0" opacity="0.9"/>
-      <circle cx="347" cy="32" r="13" fill="#2a4a7a"/>
-      <!-- Main building -->
-      <rect x="100" y="60" width="175" height="130" fill="url(#bldG)" rx="3"/>
-      <!-- Windows grid -->
-      <rect x="116" y="76" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="155" y="76" width="30" height="22" fill="#f0a030" rx="2" opacity="0.85"/>
-      <rect x="194" y="76" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="233" y="76" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="116" y="108" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="155" y="108" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="194" y="108" width="30" height="22" fill="#f0a030" rx="2" opacity="0.85"/>
-      <rect x="233" y="108" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.85"/>
-      <rect x="116" y="140" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.7"/>
-      <rect x="155" y="140" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.7"/>
-      <rect x="194" y="140" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.7"/>
-      <rect x="233" y="140" width="30" height="22" fill="#4a90d8" rx="2" opacity="0.7"/>
-      <!-- Door -->
-      <rect x="167" y="162" width="42" height="28" fill="#3a6090" rx="2"/>
-      <circle cx="202" cy="176" r="3" fill="#f0c060"/>
-      <!-- Roof antenna -->
-      <rect x="184" y="44" width="6" height="18" fill="#4a5a70"/>
-      <rect x="178" y="44" width="18" height="3" fill="#4a5a70"/>
-      <circle cx="187" cy="42" r="4" fill="#e05030" opacity="0.9"/>
-      <!-- Small building left -->
-      <rect x="20" y="115" width="68" height="75" fill="#263248" rx="2"/>
-      <rect x="30" y="124" width="18" height="14" fill="#3a7abf" rx="1" opacity="0.8"/>
-      <rect x="57" y="124" width="18" height="14" fill="#3a7abf" rx="1" opacity="0.8"/>
-      <rect x="30" y="146" width="18" height="14" fill="#3a7abf" rx="1" opacity="0.7"/>
-      <rect x="57" y="146" width="18" height="14" fill="#f0a030" rx="1" opacity="0.8"/>
-      <!-- Small building right -->
-      <rect x="295" y="130" width="62" height="60" fill="#263248" rx="2"/>
-      <rect x="304" y="140" width="16" height="12" fill="#3a7abf" rx="1" opacity="0.8"/>
-      <rect x="328" y="140" width="16" height="12" fill="#3a7abf" rx="1" opacity="0.8"/>
-      <rect x="304" y="160" width="16" height="12" fill="#3a7abf" rx="1" opacity="0.7"/>
-      <rect x="328" y="160" width="16" height="12" fill="#3a7abf" rx="1" opacity="0.7"/>
-      <!-- Inspection worker figure -->
-      <circle cx="70" cy="173" r="8" fill="#f5c980"/>
-      <rect x="63" y="180" width="14" height="16" rx="2" fill="#e06020"/>
-      <!-- Hard hat -->
-      <ellipse cx="70" cy="168" rx="9" ry="5" fill="#f0c020"/>
-      <rect x="62" y="167" width="16" height="4" rx="2" fill="#f0c020"/>
-      <!-- Clipboard -->
-      <rect x="76" y="183" width="10" height="13" rx="1" fill="#fff" opacity="0.9"/>
-      <line x1="78" y1="186" x2="84" y2="186" stroke="#aaa" stroke-width="1"/>
-      <line x1="78" y1="189" x2="84" y2="189" stroke="#aaa" stroke-width="1"/>
-      <line x1="78" y1="192" x2="82" y2="192" stroke="#aaa" stroke-width="1"/>
-      <!-- Ground line -->
-      <line x1="0" y1="186" x2="375" y2="186" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-    </svg>
-
-    <div class="month-tag">
-      <div class="month-year" id="year-label">2026</div>
-      <div class="month-day"  id="month-num">4</div>
-      <div class="month-name" id="month-name-el">April</div>
-    </div>
-    <div class="avg-label" id="avg-label-el">4月の点検平均スコア</div>
-    <div class="score-band">
+  <div class="compact-header">
+    <div class="compact-nav">
       <button class="score-nav" onclick="prevMonth()">‹</button>
-      <div class="score-pill">
-        <span class="score-pill-label">設備状態</span>
-        <div class="score-val" id="avg-equip">–</div>
-      </div>
-      <div class="score-pill">
-        <span class="score-pill-label">安全確認</span>
-        <div class="score-val" id="avg-safety">–</div>
-      </div>
-      <div class="score-pill">
-        <span class="score-pill-label">完了率</span>
-        <div class="score-val pct" id="avg-comp">–</div>
+      <div class="compact-month">
+        <span class="compact-year" id="year-label">2026</span>
+        <span class="compact-monthnum" id="month-num">4</span>
+        <span class="compact-monthname" id="month-name-el">April</span>
       </div>
       <button class="score-nav" onclick="nextMonth()">›</button>
     </div>
+    <div class="compact-scores">
+      <div class="compact-pill">
+        <span class="score-pill-label">設備状態</span>
+        <div class="score-val" id="avg-equip">–</div>
+      </div>
+      <div class="compact-pill">
+        <span class="score-pill-label">安全確認</span>
+        <div class="score-val" id="avg-safety">–</div>
+      </div>
+      <div class="compact-pill">
+        <span class="score-pill-label">完了率</span>
+        <div class="score-val pct" id="avg-comp">–</div>
+      </div>
+    </div>
+    <div id="avg-label-el" style="display:none"></div>
   </div>
 
   <!-- Tabs -->
