@@ -195,7 +195,7 @@
     width: 100%; max-width: 340px;
     display: flex; flex-direction: column; gap: 10px;
     margin-bottom: 28px;
-    max-height: 50vh; overflow-y: auto;
+    max-height: 50vh; overflow-y: auto; overflow-x: hidden;
   }
   .name-card {
     background: rgba(255,255,255,0.1);
@@ -207,7 +207,7 @@
     transition: background .2s, border-color .2s, transform .15s;
     user-select: none;
   }
-  .name-card:hover { background: rgba(255,255,255,0.18); transform: translateX(3px); }
+  .name-card:hover { background: rgba(255,255,255,0.18); }
   .name-card.selected {
     background: rgba(255,255,255,0.2);
     border-color: #e06020;
@@ -387,7 +387,7 @@
   .day-num.today    { border: 2px solid #e06020; color: #e06020; font-weight: 700; }
   .day-num.today.ok { border: 2px solid #e06020; background: #d0eaff; color: #1a4a7a; }
   .day-num.empty    { opacity: 0; pointer-events: none; }
-  .day-num.past-no-log { background: #fff0f0; color: #e08080; border: 1.5px solid #f8c0c0; cursor: pointer; }
+  .day-num.past-no-log { background: #efefef; color: #bbb; border: 1.5px solid #ddd; cursor: pointer; }
   .day-num.weekend  { color: #bbb; background: none; }
   .day-num.weekend:not(.today) { background: none; border: none; }
 
@@ -1049,7 +1049,7 @@
     <div class="cal-grid" id="cal-grid"></div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#fff0f0;border:1.5px solid #f8c0c0;border-radius:4px;"></div>点検未</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
     </div>
   </div>
 
@@ -1229,7 +1229,7 @@
 
       <button class="btn-all-pass" onclick="setAllPass()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        全て○にする
+        未選択を全て○にする
       </button>
       <div class="modal-btns">
         <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
@@ -1276,22 +1276,6 @@ function makeChecks(n, fails=[]){
   return c;
 }
 let entries = {
-  '2026-4-1':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-2':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-3':  { checks:makeChecks(5,[2]),  status:'ng' },
-  '2026-4-5':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-6':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-7':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-8':  { checks:makeChecks(5,[1,3]),status:'ng' },
-  '2026-4-9':  { checks:makeChecks(5),      status:'ok' },
-  '2026-4-10': { checks:makeChecks(5),      status:'ok' },
-  '2026-4-11': { checks:makeChecks(5,[0,2,4]),status:'ng'},
-  '2026-4-12': { checks:makeChecks(5),      status:'ok' },
-  '2026-4-13': { checks:makeChecks(5),      status:'ok' },
-  '2026-4-14': { checks:makeChecks(5),      status:'ok' },
-  '2026-4-15': { checks:makeChecks(5),      status:'ok' },
-  '2026-4-16': { checks:makeChecks(5,[4]),  status:'ng' },
-  '2026-4-17': { checks:makeChecks(5),      status:'ok' },
 };
 
 function key(y,m,d){ return y+'-'+(m+1)+'-'+d; }
@@ -1379,75 +1363,85 @@ function renderList(){
     return;
   }
 
-  // Group entries by facility index
-  const byFac = FACILITIES.map(()=>[]);
-  monthEntries.forEach(k=>{
-    const d=parseInt(k.split('-')[2]);
-    const fi=(d-1)%FACILITIES.length;
-    byFac[fi].push(k);
-  });
-
-  const mo=viewMonth+1;
+  const hasAnyLinkedInspectors = FACILITIES.some(f => (f.linkedInspectors||[]).length > 0);
+  const inspectorFacFilter = selectedRole === 'inspector' && hasAnyLinkedInspectors;
+  const mo = viewMonth+1;
   let html='';
-  FACILITIES.forEach((fac,fi)=>{
-    const fkeys=byFac[fi];
-    if(!fkeys.length) return;
-    const ngCount=fkeys.filter(k=>entries[k].status==='ng').length;
-    const headerColor=ngCount>0?'#dc3a3a':'#22c55e';
-    const headerBg=ngCount>0?'#fff0f0':'#f0fdf4';
+
+  FACILITIES.forEach((fac, fi)=>{
+    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
+    if(!linkedItems.length) return;
+
+    // Collect entries that have data for this facility
+    const facEntries = monthEntries.filter(k=>{
+      return linkedItems.some((_,i)=> (entries[k].checks||{})['f'+fi+'_'+i] !== undefined);
+    });
+    if(!facEntries.length) return;
+
+    const ngCount = facEntries.filter(k=>
+      linkedItems.some((_,i)=> (entries[k].checks||{})['f'+fi+'_'+i] === 'ng')
+    ).length;
+    const allOk = ngCount === 0;
 
     let rows='';
-    fkeys.forEach(k=>{
-      const d=k.split('-')[2];
-      const e=entries[k];
-      const statusCls=e.status==='ng'?'ng':'ok';
-      const statusLbl=e.status==='ng'?'✕':'○';
-      let checks='';
-      fac.items.forEach((label,i)=>{
-        const v=(e.checks||{})[i];
+    facEntries.forEach(k=>{
+      const d = k.split('-')[2];
+      const e = entries[k];
+      const rowNg = linkedItems.some((_,i)=> (e.checks||{})['f'+fi+'_'+i] === 'ng');
+      const statusCls = rowNg ? 'ng' : 'ok';
+
+      let chips='';
+      linkedItems.forEach((item,i)=>{
+        const sk='f'+fi+'_'+i;
+        const v=(e.checks||{})[sk];
         const isNg=v==='ng';
-        checks+=`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;`
-          +`color:${isNg?'#cc0000':'#166534'};background:${isNg?'#ffd0d0':'#dcfce7'};`
-          +`border-radius:6px;padding:1px 6px;">${label} ${isNg?'✕':'○'}</span>`;
+        chips+=`<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${isNg?'#cc0000':'#166534'};margin-right:10px;">`
+          +`${item.label}<span style="font-weight:700;margin-left:2px;">${isNg?'✕':'○'}</span></span>`;
       });
+
       const delBtn = selectedRole === 'manager'
-        ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`
-        : '';
-      rows+=`<div class="hist-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;`
-        +`border-bottom:1px solid #f0f0f4;background:#fff;">`
-        +`<div style="min-width:34px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:2px;">${mo}/${d}</div>`
-        +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">${checks}</div>`
-        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;">${statusLbl}</span>`
+        ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>` : '';
+
+      rows+=`<div class="hist-row" style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
+        +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;">${mo}/${d}</div>`
+        +`<div style="flex:1;display:flex;flex-wrap:wrap;gap:0;">${chips}</div>`
+        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;">${rowNg?'✕':'○'}</span>`
         +delBtn
         +`</div>`;
     });
 
-    const chevron = `<svg style="width:16px;height:16px;stroke:#aab;stroke-width:2;fill:none;`
-      +`stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:transform .2s;`
-      +`" id="chev-${fi}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const iconHtml = fac.icon.replace('class="icon-svg"','style="width:18px;height:18px;display:block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
+    const headerBg = allOk ? '#f0fdf4' : '#fff0f0';
+    const statusIcon = allOk
+      ? `<svg style="width:20px;height:20px;stroke:#22c55e;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>`
+      : `<svg style="width:20px;height:20px;stroke:#dc3a3a;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
 
     const delAllBtn = selectedRole === 'manager'
-      ? `<button class="fac-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除</button>`
-      : '';
+      ? `<button class="fac-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除</button>` : '';
 
-    html+=`<div style="margin:12px 14px 0;border-radius:14px;overflow:hidden;`
-      +`box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #eef0f4;">`
-      +`<div onclick="toggleFacCard(${fi})" style="display:flex;align-items:center;gap:10px;padding:12px 14px;`
-      +`background:${headerBg};cursor:pointer;user-select:none;">`
-      +`<div style="width:36px;height:36px;border-radius:10px;background:#fff;`
-      +`display:flex;align-items:center;justify-content:center;`
-      +`box-shadow:0 1px 4px rgba(0,0,0,0.08);color:#2a4a7a;flex-shrink:0;">${fac.icon}</div>`
+    const chev = `<svg style="width:16px;height:16px;stroke:#aab;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;" id="chev-${fi}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+    html+=`<div style="margin:12px 14px 0;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #eef0f4;">`
+      +`<div onclick="toggleFacCard(${fi})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:${headerBg};cursor:pointer;user-select:none;">`
+      +`<div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);color:#2a4a7a;flex-shrink:0;">${iconHtml}</div>`
       +`<div style="flex:1;">`
       +`<div style="font-size:14px;font-weight:700;color:#1a2e4a;">${fac.name}</div>`
-      +`<div style="font-size:11px;color:#889;margin-top:2px;">${fkeys.length}件の記録 / NG: ${ngCount}件</div>`
+      +`<div style="font-size:11px;color:#889;margin-top:2px;">${facEntries.length}件の記録 / NG: ${ngCount}件</div>`
       +`</div>`
-      +`<span style="font-size:18px;font-weight:700;color:${headerColor};margin-right:6px;">${ngCount>0?'✕':'○'}</span>`
+      +statusIcon
       +delAllBtn
-      +chevron
+      +chev
       +`</div>`
       +`<div id="fac-rows-${fi}" style="display:none;">${rows}</div>`
       +`</div>`;
   });
+
+  if(!html){
+    const msg = inspectorFacFilter ? 'この月の担当設備の記録はありません' : 'この月の記録はありません';
+    c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">'+msg+'</div>';
+    return;
+  }
   c.innerHTML=html+'<div style="height:16px;"></div>';
 }
 
@@ -1542,12 +1536,10 @@ function dayClick(d){
   if(dow===0 || dow===6) return; // 休日は点検不要
   selectedDay=d;
   const k=key(viewYear,viewMonth,d);
-  const facIdx = (d-1) % FACILITIES.length;
-  currentFacilityIdx = facIdx;
   const e = entries[k] || { checks:{}, status:'ok' };
   document.getElementById('modal-title').textContent=(viewMonth+1)+'月'+d+'日の点検記録';
-  document.getElementById('modal-facility-name').textContent = FACILITIES[facIdx].name;
-  renderItemChecks(facIdx, e.checks);
+  document.getElementById('modal-facility-name').textContent = '';
+  renderAllFacChecks(e.checks);
   document.getElementById('modal').classList.add('open');
 }
 
@@ -1557,28 +1549,49 @@ function openAdd(){
   dayClick(TODAY.getDate());
 }
 
-function renderItemChecks(facIdx, savedChecks){
-  const fac = FACILITIES[facIdx];
+function renderAllFacChecks(savedChecks){
   const container = document.getElementById('item-checks');
-  itemStatuses = fac.items.map((_,i) => (savedChecks && savedChecks[i]) || 'ok');
-  container.innerHTML = fac.items.map((label, i) => `
-    <div class="item-check-row">
-      <span class="item-check-label">${label}</span>
-      <div class="item-check-btns">
-        <button class="item-btn${itemStatuses[i]==='ok'?' sel-pass':''}" id="iok-${i}" onclick="setItemStatus(${i},'ok')">○</button>
-        <button class="item-btn${itemStatuses[i]==='ng'?' sel-fail':''}" id="ing-${i}" onclick="setItemStatus(${i},'ng')">✕</button>
-      </div>
-    </div>`).join('');
+  itemStatuses = {};
+  let html = '';
+  FACILITIES.forEach((fac, fi) => {
+    const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
+    if(!linkedItems.length) return;
+    // facility header
+    const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;vertical-align:middle;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
+    html += `<div style="margin-bottom:6px;">`;
+    html += `<div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#2a4a7a;background:#eef2f8;padding:6px 10px;border-radius:8px;margin-bottom:4px;">${iconHtml}<span>${fac.name}</span></div>`;
+    linkedItems.forEach((item, i) => {
+      const sk = 'f'+fi+'_'+i;
+      const val = (savedChecks && savedChecks[sk]) || 'unset';
+      itemStatuses[sk] = val;
+      html += `<div class="item-check-row">
+        <span class="item-check-label">${item.label}</span>
+        <div class="item-check-btns">
+          <button class="item-btn${val==='ok'?' sel-pass':''}" id="iok-${sk}" onclick="setItemStatusKeyed('${sk}','ok')">○</button>
+          <button class="item-btn${val==='ng'?' sel-fail':''}" id="ing-${sk}" onclick="setItemStatusKeyed('${sk}','ng')">✕</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  if(!html){
+    html = '<div style="padding:20px;text-align:center;color:#aab;font-size:13px;">紐づけされた点検項目がありません<br><span style="font-size:11px;">管理者設定で設備に点検項目を紐づけてください</span></div>';
+  }
+  container.innerHTML = html;
 }
 
-function setItemStatus(i, s){
-  itemStatuses[i] = s;
-  document.getElementById('iok-'+i).className = 'item-btn'+(s==='ok'?' sel-pass':'');
-  document.getElementById('ing-'+i).className = 'item-btn'+(s==='ng'?' sel-fail':'');
+function setItemStatusKeyed(sk, s){
+  itemStatuses[sk] = s;
+  const okBtn = document.getElementById('iok-'+sk);
+  const ngBtn = document.getElementById('ing-'+sk);
+  if(okBtn) okBtn.className = 'item-btn'+(s==='ok'?' sel-pass':'');
+  if(ngBtn) ngBtn.className = 'item-btn'+(s==='ng'?' sel-fail':'');
 }
 
 function setAllPass(){
-  itemStatuses.forEach((_,i) => setItemStatus(i,'ok'));
+  Object.keys(itemStatuses).forEach(sk => {
+    if(itemStatuses[sk] === 'unset') setItemStatusKeyed(sk,'ok');
+  });
 }
 
 function closeModal(e){
@@ -1588,9 +1601,16 @@ function closeModal(e){
 
 function saveEntry(){
   const k=key(viewYear,viewMonth,selectedDay);
-  const checks = {};
-  itemStatuses.forEach((v,i) => checks[i]=v);
-  const allOk = itemStatuses.every(v=>v==='ok');
+  const checks = Object.assign({}, itemStatuses);
+  // 未選択の項目があれば保存不可
+  if(Object.values(checks).some(v=>v==='unset')){
+    const toast = document.getElementById('settings-toast');
+    toast.textContent = '⚠ 全ての項目を選択してください';
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 2200);
+    return;
+  }
+  const allOk = Object.values(checks).every(v=>v==='ok');
   entries[k]={ checks, status: allOk?'ok':'ng' };
   document.getElementById('modal').classList.remove('open');
   renderCalendar();
@@ -1623,7 +1643,7 @@ const DEL_BTN = `<button class="settings-row-del" onclick="this.closest('.settin
 const ADD_BTN_HTML = (fn) => `<button class="settings-add-btn" onclick="${fn}()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する</button>`;
 
 // ── LocalStorage Persistence ──
-const STORAGE_KEY = 'facInsp_v1';
+const STORAGE_KEY = 'facInsp_v2';
 
 function persistData() {
   try {
@@ -1942,7 +1962,6 @@ function openSettings() {
 }
 
 function setSettingsTabs(active) {
-  const linkLabel = active === 'link' ? '検査履歴' : '紐づけ';
   document.getElementById('main-tabs').innerHTML = `
     <div class="tab ${active==='edit'?'active':''}" id="tab-edit" onclick="openSettingsTab('edit')">
       <span class="tab-icon">
@@ -1960,7 +1979,7 @@ function setSettingsTabs(active) {
           <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
         </svg>
       </span>
-      ${linkLabel}
+      紐づけ
     </div>`;
 }
 
