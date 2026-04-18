@@ -8,26 +8,22 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: #e8ecf0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    background: #f5f6f8;
     min-height: 100vh;
-    padding: 2rem 1rem;
     font-family: 'Noto Sans JP', sans-serif;
   }
   .phone {
-    width: 375px;
+    width: 100%;
+    max-width: 100%;
     background: #f5f6f8;
-    border-radius: 44px;
-    overflow: hidden;
-    box-shadow: 0 16px 60px rgba(0,0,0,0.22);
-    border: 8px solid #1a2233;
     position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ── Header ── */
-  .header-art { position: relative; height: 250px; overflow: hidden; }
+  .header-art { position: relative; height: 220px; overflow: hidden; }
   .scene-svg { width: 100%; height: 100%; display: block; }
 
   .month-tag {
@@ -36,9 +32,9 @@
     color: #fff;
     text-shadow: 0 2px 8px rgba(0,0,0,0.25);
   }
-  .month-year { font-size: 11px; opacity: 0.85; letter-spacing: .5px; }
-  .month-day  { font-size: 54px; font-weight: 700; line-height: 1; }
-  .month-name { font-size: 13px; opacity: 0.9; letter-spacing: 1px; }
+  .month-year { font-size: 12px; opacity: 0.85; letter-spacing: .5px; }
+  .month-day  { font-size: 60px; font-weight: 700; line-height: 1; }
+  .month-name { font-size: 14px; opacity: 0.9; letter-spacing: 1px; }
 
   .avg-label {
     position: absolute;
@@ -59,11 +55,11 @@
     padding: 0 10px 14px;
   }
   .score-nav {
-    width: 30px; height: 30px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background: rgba(255,255,255,0.88);
     border: none; cursor: pointer;
-    font-size: 16px; color: #334;
+    font-size: 20px; color: #334;
     display: flex; align-items: center; justify-content: center;
     transition: background .15s;
   }
@@ -71,55 +67,55 @@
   .score-pill {
     background: rgba(255,255,255,0.88);
     border-radius: 28px;
-    padding: 7px 14px;
+    padding: 8px 16px;
     text-align: center;
-    min-width: 76px;
+    min-width: 80px;
   }
-  .score-pill-label { font-size: 10px; color: #556; display: block; margin-bottom: 2px; }
-  .score-val { font-size: 23px; font-weight: 700; color: #1a2e4a; line-height: 1; }
-  .score-val span { font-size: 13px; }
-  .score-val.pct { font-size: 20px; }
+  .score-pill-label { font-size: 11px; color: #556; display: block; margin-bottom: 2px; }
+  .score-val { font-size: 26px; font-weight: 700; color: #1a2e4a; line-height: 1; }
+  .score-val span { font-size: 14px; }
+  .score-val.pct { font-size: 22px; }
 
   /* ── Tabs ── */
   .tabs { display: flex; border-bottom: 1px solid #dde; background: #fff; }
   .tab {
-    flex: 1; padding: 11px;
+    flex: 1; padding: 13px;
     text-align: center; cursor: pointer;
-    font-size: 11px; color: #888; font-weight: 500;
+    font-size: 13px; color: #888; font-weight: 500;
     border-bottom: 2px solid transparent;
     transition: all .15s; letter-spacing: .3px;
   }
-  .tab .tab-icon { font-size: 17px; display: block; margin-bottom: 2px; }
+  .tab .tab-icon { font-size: 20px; display: block; margin-bottom: 2px; }
   .tab.active { border-bottom-color: #e06020; color: #e06020; }
 
   /* ── Calendar ── */
   .cal-head {
     display: grid;
     grid-template-columns: repeat(7,1fr);
-    padding: 10px 12px 4px;
+    padding: 12px 12px 4px;
     background: #fff;
   }
-  .cal-dh { text-align: center; font-size: 10px; font-weight: 500; color: #aab; padding: 4px 0; }
+  .cal-dh { text-align: center; font-size: 11px; font-weight: 500; color: #aab; padding: 4px 0; }
   .cal-dh.sat { color: #4a80c4; }
   .cal-dh.sun { color: #c44a4a; }
 
   .cal-grid {
     display: grid;
     grid-template-columns: repeat(7,1fr);
-    padding: 4px 12px 10px;
-    gap: 2px;
+    padding: 4px 12px 12px;
+    gap: 3px;
     background: #fff;
   }
   .cal-cell {
     display: flex; flex-direction: column;
     align-items: center;
-    min-height: 50px; padding: 2px 0;
+    min-height: 54px; padding: 2px 0;
   }
   .day-num {
-    width: 34px; height: 34px;
-    border-radius: 8px;
+    width: 38px; height: 38px;
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; cursor: pointer;
+    font-size: 14px; cursor: pointer;
     transition: all .12s; user-select: none;
   }
   .day-num:hover:not(.empty):not(.past-no-log) { transform: scale(1.08); }
@@ -149,35 +145,36 @@
   .bottom-nav {
     display: flex; background: #fff;
     border-top: 1px solid #dde;
-    padding: 8px 0 10px;
+    padding: 10px 0 max(12px, env(safe-area-inset-bottom));
+    position: sticky; bottom: 0;
   }
   .nav-item {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; gap: 3px;
     cursor: pointer; padding: 2px 0;
   }
-  .nav-icon  { font-size: 19px; position: relative; }
-  .nav-label { font-size: 9px; color: #aab; }
+  .nav-icon  { font-size: 22px; position: relative; }
+  .nav-label { font-size: 10px; color: #aab; }
   .nav-item.active .nav-label { color: #e06020; }
   .nav-plus {
-    width: 46px; height: 46px;
+    width: 52px; height: 52px;
     border-radius: 50%;
     background: linear-gradient(135deg, #e06020, #c04010);
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 26px;
-    margin-top: -14px;
+    color: #fff; font-size: 30px;
+    margin-top: -16px;
     box-shadow: 0 4px 14px rgba(224,96,32,0.45);
     cursor: pointer; transition: transform .15s;
   }
   .nav-plus:hover { transform: scale(1.08); }
   .notif-dot {
-    width: 7px; height: 7px; background: #dc3a3a;
+    width: 8px; height: 8px; background: #dc3a3a;
     border-radius: 50%; position: absolute; top: 0; right: -2px;
   }
 
   /* ── Modal ── */
   .modal-overlay {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.5);
     display: none; align-items: flex-end; z-index: 20;
   }
@@ -185,39 +182,39 @@
   .modal-sheet {
     background: #fff; width: 100%;
     border-radius: 22px 22px 0 0;
-    padding: 20px 20px 18px;
+    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
   }
-  .modal-handle { width: 36px; height: 4px; background: #dde; border-radius: 2px; margin: 0 auto 14px; }
-  .modal-title  { font-size: 14px; font-weight: 700; color: #1a2e4a; text-align: center; margin-bottom: 16px; }
+  .modal-handle { width: 40px; height: 5px; background: #dde; border-radius: 3px; margin: 0 auto 16px; }
+  .modal-title  { font-size: 16px; font-weight: 700; color: #1a2e4a; text-align: center; margin-bottom: 16px; }
 
-  .check-row { margin-bottom: 13px; }
+  .check-row { margin-bottom: 16px; }
   .check-label {
-    font-size: 12px; color: #667;
+    font-size: 13px; color: #667;
     display: flex; justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
-  .check-label strong { color: #1a2e4a; font-size: 13px; min-width: 28px; text-align: right; }
+  .check-label strong { color: #1a2e4a; font-size: 14px; min-width: 28px; text-align: right; }
 
   input[type=range] {
     -webkit-appearance: none;
-    width: 100%; height: 4px;
-    border-radius: 2px; outline: none;
+    width: 100%; height: 5px;
+    border-radius: 3px; outline: none;
     background: #dde;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px; height: 18px;
+    width: 24px; height: 24px;
     background: #e06020; border-radius: 50%;
     cursor: pointer; box-shadow: 0 2px 6px rgba(224,96,32,0.4);
   }
 
   .status-select {
-    display: flex; gap: 8px; margin-bottom: 14px;
+    display: flex; gap: 8px; margin-bottom: 16px;
   }
   .status-btn {
-    flex: 1; padding: 8px 4px;
-    border-radius: 10px; border: 2px solid #dde;
-    font-size: 12px; font-weight: 600; cursor: pointer;
+    flex: 1; padding: 11px 4px;
+    border-radius: 12px; border: 2px solid #dde;
+    font-size: 13px; font-weight: 600; cursor: pointer;
     background: #f5f6f8; color: #889; transition: all .15s;
     font-family: 'Noto Sans JP', sans-serif;
   }
@@ -225,19 +222,19 @@
   .status-btn.sel-warn { border-color: #e08020; background: #ffe8cc; color: #8a3c00; }
   .status-btn.sel-ng   { border-color: #dc3a3a; background: #ffd0d0; color: #8a0000; }
 
-  .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
   .btn-cancel {
-    flex: 1; padding: 11px;
-    border: 1px solid #dde; border-radius: 12px;
-    background: #fff; font-size: 13px;
+    flex: 1; padding: 14px;
+    border: 1px solid #dde; border-radius: 14px;
+    background: #fff; font-size: 14px;
     cursor: pointer; color: #889;
     font-family: 'Noto Sans JP', sans-serif;
   }
   .btn-save {
-    flex: 2; padding: 11px;
-    border: none; border-radius: 12px;
+    flex: 2; padding: 14px;
+    border: none; border-radius: 14px;
     background: linear-gradient(135deg, #e06020, #c04010);
-    font-size: 13px; cursor: pointer; color: #fff; font-weight: 700;
+    font-size: 14px; cursor: pointer; color: #fff; font-weight: 700;
     font-family: 'Noto Sans JP', sans-serif;
     transition: opacity .15s;
   }
@@ -246,17 +243,17 @@
   /* detail view */
   .detail-item {
     display: flex; align-items: center;
-    padding: 9px 14px; border-bottom: 1px solid #eee;
-    background: #fff; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid #eee;
+    background: #fff; gap: 12px;
   }
-  .detail-icon { font-size: 18px; }
-  .detail-name { flex: 1; font-size: 13px; color: #334; }
-  .detail-score { font-size: 13px; font-weight: 700; }
+  .detail-icon { font-size: 22px; }
+  .detail-name { flex: 1; font-size: 14px; color: #334; }
+  .detail-score { font-size: 14px; font-weight: 700; }
   .detail-score.ok   { color: #1a6aaa; }
   .detail-score.warn { color: #cc5500; }
   .detail-score.ng   { color: #cc0000; }
   .detail-status {
-    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600;
+    font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600;
   }
   .detail-status.ok   { background: #d0eaff; color: #1a4a7a; }
   .detail-status.warn { background: #ffe8cc; color: #8a3c00; }
