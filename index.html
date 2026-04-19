@@ -71,6 +71,7 @@
   .role-cards {
     display: flex; gap: 14px; width: 100%; max-width: 340px;
     margin-bottom: 32px;
+    align-items: stretch;
   }
   .role-card {
     flex: 1;
@@ -80,16 +81,15 @@
     padding: 24px 12px 20px;
     display: flex; flex-direction: column; align-items: center; gap: 12px;
     cursor: pointer;
-    transition: background .2s, border-color .2s, transform .15s;
     user-select: none;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    -webkit-tap-highlight-color: transparent;
   }
-  .role-card:hover { background: #faf8f6; transform: translateY(-2px); }
+  .role-card:hover { background: #faf8f6; }
   .role-card.selected {
     background: #fff8f5;
     border-color: #e06020;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 18px rgba(224,96,32,0.18);
+    box-shadow: 0 2px 12px rgba(224,96,32,0.18);
   }
   .role-card-icon {
     width: 56px; height: 56px;
@@ -537,7 +537,26 @@
   .modal-sheet {
     background: #fff; width: 100%;
     border-radius: 22px 22px 0 0;
-    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-sheet-header {
+    flex-shrink: 0;
+    padding: 20px 20px 0;
+  }
+  .modal-scroll-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px;
+  }
+  .modal-footer {
+    flex-shrink: 0;
+    padding: 4px 20px max(20px, env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid #f0f0f4;
   }
   .modal-handle { width: 40px; height: 5px; background: #dde; border-radius: 3px; margin: 0 auto 16px; }
   .modal-title  { font-size: 16px; font-weight: 700; color: #1a2e4a; text-align: center; margin-bottom: 16px; }
@@ -1025,10 +1044,10 @@
 <div class="role-screen" id="role-screen">
   <div class="role-logo">
     <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="56" height="56" rx="16" fill="rgba(255,255,255,0.12)"/>
-      <path d="M14 38V24l14-10 14 10v14a2 2 0 01-2 2H16a2 2 0 01-2-2z" stroke="white" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
-      <path d="M22 40v-8h12v8" stroke="white" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
-      <circle cx="28" cy="24" r="3" stroke="white" stroke-width="1.6" fill="none"/>
+      <rect width="56" height="56" rx="16" fill="rgba(255,255,255,0.75)" stroke="rgba(90,60,30,0.25)" stroke-width="1.5"/>
+      <path d="M14 38V24l14-10 14 10v14a2 2 0 01-2 2H16a2 2 0 01-2-2z" stroke="#5a3a1a" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+      <path d="M22 40v-8h12v8" stroke="#5a3a1a" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+      <circle cx="28" cy="24" r="3" stroke="#5a3a1a" stroke-width="1.6" fill="none"/>
     </svg>
   </div>
   <div class="role-app-name">設備点検アプリ</div>
@@ -1178,7 +1197,6 @@
       <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
       <div class="legend-item"><div class="legend-dot" style="background:#ffd0d0;border:1.5px solid #f09090;border-radius:4px;"></div>不備あり</div>
       <div class="legend-item"><div class="periodic-badge" style="font-size:7px;padding:1px 4px;margin-top:0;">定期点検</div></div>
-      <div class="legend-item"><div class="monthly-badge" style="font-size:7px;padding:1px 4px;margin-top:0;">1ヶ月点検</div></div>
     </div>
   </div>
 
@@ -1412,20 +1430,24 @@
   <!-- Modal -->
   <div class="modal-overlay" id="modal" onclick="closeModal(event)">
     <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div class="modal-handle"></div>
-      <div class="modal-title" id="modal-title">点検記録を入力</div>
-
-      <div id="modal-facility-name" style="font-size:12px;font-weight:700;color:#2a4a7a;margin-bottom:8px;text-align:center;"></div>
-      <div style="font-size:11px;color:#889;margin-bottom:10px;text-align:center;">点検項目</div>
-      <div id="item-checks" style="max-height:52vh;overflow-y:auto;"></div>
-
-      <button class="btn-all-pass" onclick="setAllPass()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        未選択を全て○にする
-      </button>
-      <div class="modal-btns">
-        <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
-        <button class="btn-save"   onclick="saveEntry()">保存する</button>
+      <div class="modal-sheet-header">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="modal-title">点検記録を入力</div>
+      </div>
+      <div class="modal-scroll-body">
+        <div id="modal-facility-name" style="font-size:12px;font-weight:700;color:#2a4a7a;margin-bottom:8px;text-align:center;"></div>
+        <div style="font-size:11px;color:#889;margin-bottom:10px;text-align:center;">点検項目</div>
+        <div id="item-checks"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-all-pass" onclick="setAllPass()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          未選択を全て○にする
+        </button>
+        <div class="modal-btns">
+          <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+          <button class="btn-save"   onclick="saveEntry()">保存する</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1523,7 +1545,7 @@ function renderCalendar(){
     const isPeriodic = periodicDays.has(d);
     const isMonthly  = (d === monthlyDay);
     const badgeHtml  = (isPeriodic ? '<div class="periodic-badge">定期点検</div>' : '')
-                     + (isMonthly  ? '<div class="monthly-badge">1ヶ月点検</div>'  : '');
+
 
     const cell=document.createElement('div');
     cell.className='cal-cell';
