@@ -1040,6 +1040,117 @@
   }
   .link-add-fac-btn:hover { background: #eef2f8; border-color: #a0b4cc; }
   .link-add-fac-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+  /* ── Approval View ── */
+  .approval-view {
+    display: none; flex-direction: column;
+    background: #f5f6f8; flex: 1; overflow-y: auto;
+  }
+  .approval-month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 10px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+  .approval-month-title {
+    font-size: 15px; font-weight: 700; color: #1a2e4a;
+  }
+  .approval-section {
+    margin: 12px 14px 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+  .approval-section-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f4;
+  }
+  .approval-section-title {
+    font-size: 13px; font-weight: 700; color: #1a2e4a; flex: 1;
+  }
+  .approval-day-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid #f5f6f8;
+  }
+  .approval-day-row:last-child { border-bottom: none; }
+  .approval-day-badge {
+    font-size: 13px; font-weight: 700; color: #2a4a7a;
+    min-width: 40px; padding-top: 2px; flex-shrink: 0;
+  }
+  .approval-fac-list { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .approval-fac-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 12px;
+    background: #f8f9fc; border: 1px solid #e8ecf4;
+  }
+  .approval-fac-name {
+    flex: 1; font-size: 13px; font-weight: 600; color: #334;
+  }
+  .approval-insp-status {
+    font-size: 11px; font-weight: 600; padding: 3px 8px;
+    border-radius: 20px; flex-shrink: 0;
+  }
+  .approval-insp-status.done {
+    background: #d0f0e0; color: #166534;
+  }
+  .approval-insp-status.not-done {
+    background: #f5e0e0; color: #880000;
+  }
+  .approval-approve-btn {
+    padding: 5px 12px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
+    color: #fff; font-size: 11px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; flex-shrink: 0; white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .approval-approve-btn:hover { opacity: .85; }
+  .approval-approve-btn:disabled {
+    background: #ccd; color: #fff; cursor: not-allowed; opacity: 1;
+  }
+  .approval-approved-badge {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #1a6a3a;
+    background: #d0f0e0; border-radius: 10px; padding: 4px 10px;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .approval-approved-badge svg { width: 11px; height: 11px; stroke: #1a6a3a; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .approval-unapprove-btn {
+    padding: 3px 8px; border: 1px solid #b0ccb0; border-radius: 8px;
+    background: #fff; color: #889; font-size: 10px;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
+    flex-shrink: 0; transition: background .12s;
+  }
+  .approval-unapprove-btn:hover { background: #f0f0f0; }
+  .approval-no-items {
+    padding: 20px 16px; text-align: center; color: #aab; font-size: 13px;
+  }
+  .approval-tabs {
+    display: flex; margin: 12px 14px 0; gap: 8px;
+  }
+  .approval-tab {
+    flex: 1; padding: 10px; border-radius: 12px;
+    border: 1.5px solid #dde; background: #fff;
+    font-size: 12px; font-weight: 600; color: #667;
+    cursor: pointer; text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all .15s;
+  }
+  .approval-tab.active {
+    background: linear-gradient(135deg, #1a4a80, #2a6aaa);
+    border-color: #1a4a80; color: #fff;
+  }
+  .approval-pending-dot {
+    display: inline-block; width: 7px; height: 7px;
+    border-radius: 50%; background: #e06020;
+    margin-left: 4px; vertical-align: middle;
+  }
+  .approval-inspector-tag {
+    font-size: 10px; color: #fff; background: #2a4a7a;
+    border-radius: 20px; padding: 1px 7px; flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -1358,6 +1469,28 @@
   <!-- Toast -->
   <div class="settings-toast" id="settings-toast">✓ 自動保存しました</div>
 
+  <!-- Approval View -->
+  <div class="approval-view" id="view-approval">
+    <div class="approval-month-nav">
+      <button class="cal-nav-btn" onclick="prevMonthApproval()" style="width:32px;height:32px;">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="approval-month-title" id="approval-month-title"></span>
+      <button class="cal-nav-btn" onclick="nextMonthApproval()" style="width:32px;height:32px;">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="approval-tabs">
+      <button class="approval-tab active" id="atab-periodic" onclick="setApprovalTab('periodic')">
+        定期点検<br><span style="font-size:10px;font-weight:400;">(10・20・30日)</span>
+      </button>
+      <button class="approval-tab" id="atab-monthly" onclick="setApprovalTab('monthly')">
+        1ヶ月点検<br><span style="font-size:10px;font-weight:400;">(月末)</span>
+      </button>
+    </div>
+    <div id="approval-content" style="padding-bottom:20px;"></div>
+  </div>
+
   <!-- Facilities linkage view -->
   <div id="view-facilities" style="display:none;flex-direction:column;background:#f5f6f8;min-height:200px;">
     <div id="fac-linkage-content" style="padding-bottom:14px;"></div>
@@ -1389,15 +1522,15 @@
       </div>
       <div class="nav-label">ホーム</div>
     </div>
-    <div class="nav-item">
-      <div class="nav-icon">
+    <div class="nav-item" id="nav-report" onclick="openApproval()">
+      <div class="nav-icon" id="nav-report-icon">
         <svg class="icon-svg" viewBox="0 0 24 24">
-          <line x1="18" y1="20" x2="18" y2="10"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="6" y1="20" x2="6" y2="14"/>
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
         </svg>
+        <span class="notif-dot" id="approval-notif-dot" style="display:none;"></span>
       </div>
-      <div class="nav-label">レポート</div>
+      <div class="nav-label">承認</div>
     </div>
     <div class="nav-item" onclick="openAdd()">
       <div class="nav-plus">
@@ -1463,6 +1596,8 @@ let itemStatuses = []; // array indexed by item position
 let currentFacilityIdx = 0;
 let currentTab = 0;
 let selectedRole = null;
+let approvals = {}; // approvals[key][facIdx] = { periodic: {approvedBy, approvedAt}|null, monthly: {approvedBy, approvedAt}|null }
+let approvalTab = 'periodic'; // 'periodic' | 'monthly'
 
 const MONTHS_EN = ['January','February','March','April','May','June',
                    'July','August','September','October','November','December'];
@@ -1478,12 +1613,12 @@ const FACILITY_ICONS = {
 };
 
 const FACILITIES = [
-  { icon: FACILITY_ICONS.gear,        iconKey:'gear',        facNo:'FAC-001', name:'空調設備 A棟', items:['フィルター清掃','冷媒漏れ確認','ベルト点検','運転音確認','温度設定確認'],   linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.droplet,     iconKey:'droplet',     facNo:'FAC-002', name:'給排水設備',   items:['配管漏れ確認','水圧確認','排水詰まり点検','弁動作確認','水質確認'],         linkedKeys:['equip','safety'] },
-  { icon: FACILITY_ICONS.zap,         iconKey:'zap',         facNo:'FAC-003', name:'電気設備',     items:['絶縁抵抗測定','ブレーカー確認','配線損傷確認','アース確認','過負荷確認'],   linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.flame,       iconKey:'flame',       facNo:'FAC-004', name:'消防設備',     items:['消火器残量確認','スプリンクラー点検','火災報知器テスト','避難経路確認','消火栓確認'], linkedKeys:['safety','comp'] },
-  { icon: FACILITY_ICONS.shower,      iconKey:'shower',      facNo:'FAC-005', name:'衛生設備 B棟', items:['給湯温度確認','シャワー水圧確認','排水トラップ点検','防臭措置確認','清掃状態確認'], linkedKeys:['equip','safety','comp'] },
-  { icon: FACILITY_ICONS.thermometer, iconKey:'thermometer', facNo:'FAC-006', name:'冷凍設備',     items:['庫内温度確認','ドアパッキン点検','霜取り状態確認','コンプレッサー確認','警報テスト'],  linkedKeys:['equip','comp'] },
+  { icon: FACILITY_ICONS.gear,        iconKey:'gear',        facNo:'FAC-001', name:'空調設備 A棟', items:['フィルター清掃','冷媒漏れ確認','ベルト点検','運転音確認','温度設定確認'],   linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
+  { icon: FACILITY_ICONS.droplet,     iconKey:'droplet',     facNo:'FAC-002', name:'給排水設備',   items:['配管漏れ確認','水圧確認','排水詰まり点検','弁動作確認','水質確認'],         linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
+  { icon: FACILITY_ICONS.zap,         iconKey:'zap',         facNo:'FAC-003', name:'電気設備',     items:['絶縁抵抗測定','ブレーカー確認','配線損傷確認','アース確認','過負荷確認'],   linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
+  { icon: FACILITY_ICONS.flame,       iconKey:'flame',       facNo:'FAC-004', name:'消防設備',     items:['消火器残量確認','スプリンクラー点検','火災報知器テスト','避難経路確認','消火栓確認'], linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
+  { icon: FACILITY_ICONS.shower,      iconKey:'shower',      facNo:'FAC-005', name:'衛生設備 B棟', items:['給湯温度確認','シャワー水圧確認','排水トラップ点検','防臭措置確認','清掃状態確認'], linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
+  { icon: FACILITY_ICONS.thermometer, iconKey:'thermometer', facNo:'FAC-006', name:'冷凍設備',     items:['庫内温度確認','ドアパッキン点検','霜取り状態確認','コンプレッサー確認','警報テスト'],  linkedKeys:[], linkedInspectors:[], linkedPeriodicKeys:[], linkedMonthlyKeys:[] },
 ];
 
 function makeChecks(n, fails=[]){
@@ -1591,13 +1726,13 @@ function renderList(){
     return;
   }
 
-  const hasAnyLinkedInspectors = FACILITIES.some(f => (f.linkedInspectors||[]).length > 0);
-  const inspectorFacFilter = selectedRole === 'inspector' && hasAnyLinkedInspectors;
+  const inspectorFacFilter = selectedRole === 'inspector';
   const mo = viewMonth+1;
   let html='';
 
   FACILITIES.forEach((fac, fi)=>{
     if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
     if(!linkedItems.length) return;
 
@@ -1657,9 +1792,21 @@ function renderList(){
           pChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#a03010'};margin-right:8px;">`
             +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
         });
+        // 定期承認バッジ（管理者のみ）
+        let periodicApprBadge = '';
+        if (selectedRole === 'manager') {
+          const approvalKey = k + '_f' + fi;
+          const appr = (approvals[approvalKey]||{}).periodic;
+          if (appr) {
+            periodicApprBadge = `<span style="font-size:9px;font-weight:700;color:#1a6a3a;background:#d0f0e0;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">✓ 承認済</span>`;
+          } else {
+            periodicApprBadge = `<span style="font-size:9px;font-weight:700;color:#8a4a00;background:#fff0dd;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">未承認</span>`;
+          }
+        }
         periodicSection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #fad0b0;">`
           +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#e06020,#c04010);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">定期</span>`
           +pChips
+          +periodicApprBadge
           +`</div>`;
       }
 
@@ -1674,9 +1821,21 @@ function renderList(){
           mChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#1a4a80'};margin-right:8px;">`
             +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
         });
+        // 月末承認バッジ（管理者のみ）
+        let monthlyApprBadge = '';
+        if (selectedRole === 'manager') {
+          const approvalKey = k + '_f' + fi;
+          const appr = (approvals[approvalKey]||{}).monthly;
+          if (appr) {
+            monthlyApprBadge = `<span style="font-size:9px;font-weight:700;color:#1a6a3a;background:#d0f0e0;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">✓ 承認済</span>`;
+          } else {
+            monthlyApprBadge = `<span style="font-size:9px;font-weight:700;color:#8a4a00;background:#fff0dd;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">未承認</span>`;
+          }
+        }
         monthlySection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #b0ccf0;">`
           +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a6aaa,#1a4a80);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">月末</span>`
           +mChips
+          +monthlyApprBadge
           +`</div>`;
       }
 
@@ -1914,11 +2073,13 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   let html = '';
 
   // 点検者ロールの場合、自分が紐づけられている設備のみ表示
-  const hasAnyLinkedInspectors = FACILITIES.some(f => (f.linkedInspectors||[]).length > 0);
-  const inspectorFacFilter = selectedRole === 'inspector' && hasAnyLinkedInspectors;
+  // hasAnyLinkedInspectors に関わらず、常にインスペクターフィルターを適用する
+  const inspectorFacFilter = selectedRole === 'inspector';
 
   FACILITIES.forEach((fac, fi) => {
     if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    // 設備名が空の場合はスキップ
+    if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
     if(!linkedItems.length) return;
     // facility header
@@ -1944,6 +2105,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   if (isPeriodicDay) {
     FACILITIES.forEach((fac, fi) => {
       if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+      if(!fac.name || !fac.name.trim()) return;
       const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
       const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
       if (!facPeriodicItems.length) return;
@@ -1972,6 +2134,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   if (isMonthlyDay) {
     FACILITIES.forEach((fac, fi) => {
       if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+      if(!fac.name || !fac.name.trim()) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
       if (!facMonthlyItems.length) return;
@@ -2044,6 +2207,7 @@ function saveEntry(){
   document.body.style.width = '';
   renderCalendar();
   persistData();
+  if (selectedRole === 'manager') updateApprovalNotifDot();
 }
 
 // ── Inspection item labels (editable by manager) ──
@@ -2103,7 +2267,7 @@ function persistData() {
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       entries, inspectionItems, staffData, facilities: facsToSave,
-      periodicInspectionItems, monthlyInspectionItems,
+      periodicInspectionItems, monthlyInspectionItems, approvals,
     }));
   } catch(e) { console.warn('persistData failed', e); }
 }
@@ -2118,6 +2282,7 @@ function loadPersistedData() {
     if (data.staffData)       staffData       = data.staffData;
     if (data.periodicInspectionItems) periodicInspectionItems = data.periodicInspectionItems;
     if (data.monthlyInspectionItems)  monthlyInspectionItems  = data.monthlyInspectionItems;
+    if (data.approvals) approvals = data.approvals;
     if (data.facilities) {
       FACILITIES.length = 0;
       data.facilities.forEach(f => {
@@ -2541,6 +2706,7 @@ function openSettings() {
   document.getElementById('view-cal').style.display       = 'none';
   document.getElementById('view-list').style.display      = 'none';
   document.getElementById('view-facilities').style.display = 'none';
+  document.getElementById('view-approval').style.display  = 'none';
   document.getElementById('view-settings').style.display  = 'flex';
   setNavActive('nav-alert-or-settings');
   setSettingsTabs('edit');
@@ -2574,8 +2740,10 @@ function openSettingsTab(tab) {
   if (tab === 'edit') {
     document.getElementById('view-settings').style.display  = 'flex';
     document.getElementById('view-facilities').style.display = 'none';
+    document.getElementById('view-approval').style.display  = 'none';
   } else {
     document.getElementById('view-settings').style.display  = 'none';
+    document.getElementById('view-approval').style.display  = 'none';
     const vf = document.getElementById('view-facilities');
     vf.style.display = 'flex';
     renderLinkageList();
@@ -2585,6 +2753,7 @@ function openSettingsTab(tab) {
 function goHome() {
   document.getElementById('view-settings').style.display  = 'none';
   document.getElementById('view-facilities').style.display = 'none';
+  document.getElementById('view-approval').style.display  = 'none';
   // Restore home tabs
   document.getElementById('main-tabs').innerHTML = `
     <button class="cal-nav-btn" onclick="prevMonth()">
@@ -2609,7 +2778,7 @@ function goHome() {
 }
 
 function setNavActive(id) {
-  ['nav-home', 'nav-alert-or-settings', 'nav-facilities'].forEach(nid => {
+  ['nav-home', 'nav-report', 'nav-alert-or-settings', 'nav-facilities'].forEach(nid => {
     const el = document.getElementById(nid);
     if (el) el.classList.toggle('active', nid === id);
   });
@@ -2622,6 +2791,7 @@ function openFacilities() {
   document.getElementById('view-cal').style.display       = 'none';
   document.getElementById('view-settings').style.display  = 'none';
   document.getElementById('view-facilities').style.display = 'none';
+  document.getElementById('view-approval').style.display  = 'none';
   // Reuse view-list with its rendered content
   document.getElementById('view-list').style.display      = 'block';
   renderList();
@@ -3018,22 +3188,32 @@ function proceedToApp() {
     // Switch alert ↔ settings based on role
     const iconEl  = document.getElementById('nav-alert-icon');
     const labelEl = document.getElementById('nav-alert-label');
+    const reportNav = document.getElementById('nav-report');
+    const alertNav  = document.getElementById('nav-alert-or-settings');
     if (selectedRole === 'manager') {
       iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
       </svg>`;
       labelEl.textContent = '設定';
+      if (reportNav) reportNav.style.visibility = 'visible';
+      if (alertNav)  alertNav.style.visibility  = 'visible';
+      if (reportNav) reportNav.style.display = '';
+      if (alertNav)  alertNav.style.display  = '';
     } else {
       iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24">
         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
         <path d="M13.73 21a2 2 0 01-3.46 0"/>
       </svg><span class="notif-dot"></span>`;
       labelEl.textContent = 'アラート';
+      // 点検者にはレポートとアラートを非表示にする
+      if (reportNav) reportNav.style.display = 'none';
+      if (alertNav)  alertNav.style.display  = 'none';
     }
     setNavActive('nav-home');
     goHome();
     renderCalendar();
+    if (selectedRole === 'manager') updateApprovalNotifDot();
   }, 380);
 }
 
@@ -3090,6 +3270,258 @@ document.addEventListener('click', function(e) {
   }
 });
 
+function openApproval() {
+  document.getElementById('view-cal').style.display        = 'none';
+  document.getElementById('view-list').style.display       = 'none';
+  document.getElementById('view-settings').style.display   = 'none';
+  document.getElementById('view-facilities').style.display = 'none';
+  document.getElementById('view-approval').style.display   = 'flex';
+  setNavActive('nav-report');
+  document.getElementById('main-tabs').innerHTML = `
+    <div class="tab active" id="tab-approval">
+      <span class="tab-icon">
+        <svg class="icon-svg" viewBox="0 0 24 24">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+      </span>
+      承認管理
+    </div>`;
+  renderApprovalView();
+}
+
+function prevMonthApproval() {
+  viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+  renderApprovalView();
+}
+function nextMonthApproval() {
+  viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+  renderApprovalView();
+}
+
+function setApprovalTab(tab) {
+  approvalTab = tab;
+  document.getElementById('atab-periodic').classList.toggle('active', tab === 'periodic');
+  document.getElementById('atab-monthly').classList.toggle('active', tab === 'monthly');
+  renderApprovalContent();
+}
+
+function renderApprovalView() {
+  const MONTHS_SHORT = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const titleEl = document.getElementById('approval-month-title');
+  if (titleEl) titleEl.textContent = viewYear + '年 ' + MONTHS_SHORT[viewMonth];
+  renderApprovalContent();
+}
+
+function renderApprovalContent() {
+  const c = document.getElementById('approval-content');
+  if (!c) return;
+
+  const daysInMonth = getDays(viewYear, viewMonth);
+  const mo = viewMonth + 1;
+
+  if (approvalTab === 'periodic') {
+    // 定期点検日：10・20・30日（休日なら前の平日）
+    const periodicDaysSet = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonth);
+    const days = Array.from(periodicDaysSet).sort((a,b) => a - b);
+
+    if (days.length === 0) {
+      c.innerHTML = '<div class="approval-no-items">この月に定期点検日はありません</div>';
+      return;
+    }
+
+    let html = '';
+    days.forEach(d => {
+      const k = key(viewYear, viewMonth, d);
+      const entry = entries[k];
+      let facHtml = '';
+      let hasFacs = false;
+
+      FACILITIES.forEach((fac, fi) => {
+        const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
+        const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
+        if (!facPeriodicItems.length) return;
+        hasFacs = true;
+
+        // 点検済みか判定：entryが存在し、全periodic項目がセットされている
+        const inspected = entry && facPeriodicItems.every((item, i) => {
+          const sk = 'periodic_f' + fi + '_' + i;
+          const v = (entry.checks || {})[sk];
+          return v === 'ok' || v === 'ng';
+        });
+
+        // 承認状態取得
+        const approvalKey = k + '_f' + fi;
+        const appr = (approvals[approvalKey] || {}).periodic;
+
+        // 点検者タグ
+        const inspectorTag = entry && entry.inspector
+          ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+          : '';
+
+        const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
+
+        let actionHtml;
+        if (appr) {
+          actionHtml = `<span class="approval-approved-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認済</span>`
+            + `<button class="approval-unapprove-btn" onclick="unapproveInspection('${approvalKey}','periodic')">取消</button>`;
+        } else if (inspected) {
+          actionHtml = `<button class="approval-approve-btn" onclick="approveInspection('${approvalKey}','periodic',this)">承認する</button>`;
+        } else {
+          actionHtml = `<button class="approval-approve-btn" disabled title="点検が完了していません">未点検</button>`;
+        }
+
+        const statusCls = inspected ? 'done' : 'not-done';
+        const statusLabel = inspected ? '点検済' : '未点検';
+
+        facHtml += `<div class="approval-fac-item">
+          <div class="approval-fac-name">${iconHtml}${fac.name}</div>
+          ${inspectorTag}
+          <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
+          ${actionHtml}
+        </div>`;
+      });
+
+      if (!hasFacs) {
+        facHtml = '<div style="font-size:12px;color:#aab;padding:4px 0;">定期点検が紐づけられた設備がありません</div>';
+      }
+
+      html += `<div class="approval-section" style="margin-bottom:0;">
+        <div class="approval-day-row">
+          <div class="approval-day-badge">${mo}/${d}</div>
+          <div class="approval-fac-list">${facHtml}</div>
+        </div>
+      </div>`;
+    });
+
+    c.innerHTML = html || '<div class="approval-no-items">表示するデータがありません</div>';
+
+  } else {
+    // 1ヶ月点検日：月末日（休日なら前の平日）
+    const monthlyDay = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonth);
+    const k = key(viewYear, viewMonth, monthlyDay);
+    const entry = entries[k];
+    let facHtml = '';
+    let hasFacs = false;
+
+    FACILITIES.forEach((fac, fi) => {
+      const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
+      const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
+      if (!facMonthlyItems.length) return;
+      hasFacs = true;
+
+      const inspected = entry && facMonthlyItems.every((item, i) => {
+        const sk = 'monthly_f' + fi + '_' + i;
+        const v = (entry.checks || {})[sk];
+        return v === 'ok' || v === 'ng';
+      });
+
+      const approvalKey = k + '_f' + fi;
+      const appr = (approvals[approvalKey] || {}).monthly;
+
+      const inspectorTag = entry && entry.inspector
+        ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+        : '';
+
+      const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
+
+      let actionHtml;
+      if (appr) {
+        actionHtml = `<span class="approval-approved-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認済</span>`
+          + `<button class="approval-unapprove-btn" onclick="unapproveInspection('${approvalKey}','monthly')">取消</button>`;
+      } else if (inspected) {
+        actionHtml = `<button class="approval-approve-btn" onclick="approveInspection('${approvalKey}','monthly',this)">承認する</button>`;
+      } else {
+        actionHtml = `<button class="approval-approve-btn" disabled title="点検が完了していません">未点検</button>`;
+      }
+
+      const statusCls = inspected ? 'done' : 'not-done';
+      const statusLabel = inspected ? '点検済' : '未点検';
+
+      facHtml += `<div class="approval-fac-item">
+        <div class="approval-fac-name">${iconHtml}${fac.name}</div>
+        ${inspectorTag}
+        <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
+        ${actionHtml}
+      </div>`;
+    });
+
+    if (!hasFacs) {
+      facHtml = '<div style="font-size:12px;color:#aab;padding:4px 0;">1ヶ月点検が紐づけられた設備がありません</div>';
+    }
+
+    c.innerHTML = `<div class="approval-section">
+      <div class="approval-section-header">
+        <svg style="width:16px;height:16px;stroke:#1a4a80;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>
+        <span class="approval-section-title">1ヶ月点検日 — ${mo}/${monthlyDay}</span>
+      </div>
+      <div class="approval-day-row">
+        <div class="approval-fac-list">${facHtml}</div>
+      </div>
+    </div>`;
+  }
+
+  // 未承認バッジ更新
+  updateApprovalNotifDot();
+}
+
+function approveInspection(approvalKey, type, btn) {
+  if (!approvals[approvalKey]) approvals[approvalKey] = {};
+  approvals[approvalKey][type] = {
+    approvedBy: selectedName || '',
+    approvedAt: new Date().toISOString(),
+  };
+  persistData();
+  renderApprovalContent();
+  showHistToast('✓ 承認しました');
+}
+
+function unapproveInspection(approvalKey, type) {
+  if (approvals[approvalKey]) {
+    approvals[approvalKey][type] = null;
+    persistData();
+    renderApprovalContent();
+    showHistToast('承認を取り消しました');
+  }
+}
+
+function updateApprovalNotifDot() {
+  // 承認待ちがある場合にバッジ表示
+  const dotEl = document.getElementById('approval-notif-dot');
+  if (!dotEl) return;
+  const daysInMonth = getDays(viewYear, viewMonth);
+  const periodicDays = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonth);
+  const monthlyDay   = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonth);
+  let hasPending = false;
+
+  const checkDay = (d, type) => {
+    const k = key(viewYear, viewMonth, d);
+    const entry = entries[k];
+    if (!entry) return;
+    FACILITIES.forEach((fac, fi) => {
+      const linkedKeys = type === 'periodic' ? (fac.linkedPeriodicKeys||[]) : (fac.linkedMonthlyKeys||[]);
+      const items = type === 'periodic'
+        ? periodicInspectionItems.filter(it => linkedKeys.includes(it.key))
+        : monthlyInspectionItems.filter(it => linkedKeys.includes(it.key));
+      if (!items.length) return;
+      const inspected = items.every((item, i) => {
+        const sk = (type === 'periodic' ? 'periodic_f' : 'monthly_f') + fi + '_' + i;
+        const v = (entry.checks||{})[sk];
+        return v === 'ok' || v === 'ng';
+      });
+      if (!inspected) return;
+      const approvalKey = k + '_f' + fi;
+      const appr = (approvals[approvalKey]||{})[type];
+      if (!appr) hasPending = true;
+    });
+  };
+
+  periodicDays.forEach(d => checkDay(d, 'periodic'));
+  checkDay(monthlyDay, 'monthly');
+
+  dotEl.style.display = hasPending ? 'block' : 'none';
+}
+
 function logout() {
   // ログアウトボタンを非表示に戻す
   const btn = document.getElementById('avatar-logout-btn');
@@ -3110,6 +3542,7 @@ function logout() {
     document.getElementById('view-list').style.display       = 'none';
     document.getElementById('view-settings').style.display   = 'none';
     document.getElementById('view-facilities').style.display = 'none';
+    document.getElementById('view-approval').style.display   = 'none';
     selectedRole = null;
     selectedName = null;
     document.getElementById('card-inspector').classList.remove('selected');
@@ -3117,6 +3550,11 @@ function logout() {
     document.getElementById('role-btn').classList.remove('ready');
     document.getElementById('role-badge').classList.remove('show');
     document.getElementById('role-badge-text').textContent = '';
+    // ナビゲーションの表示をリセット
+    const reportNavL = document.getElementById('nav-report');
+    const alertNavL  = document.getElementById('nav-alert-or-settings');
+    if (reportNavL) reportNavL.style.visibility = 'visible';
+    if (alertNavL)  alertNavL.style.visibility  = 'visible';
     // Show role screen again
     const screen = document.getElementById('role-screen');
     screen.classList.remove('hidden', 'fade-out');
