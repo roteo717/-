@@ -1362,6 +1362,7 @@
 
   <!-- List view -->
   <div id="view-list" style="display:none; background:#f5f6f8; min-height:200px;">
+    <div id="hist-insp-selector-bar" class="insp-selector-bar" style="display:none;"></div>
     <div id="list-content"></div>
   </div>
 
@@ -1645,6 +1646,7 @@ let itemStatuses = []; // array indexed by item position
 let currentFacilityIdx = 0;
 let currentTab = 0;
 let selectedRole = null;
+let selectedName = null;
 let approvals = {};
 let approvalTab = 'periodic';
 let selectedInspectorFilter = null; // 管理者がカレンダー・承認画面でフィルターする点検者名 (null=全員)
@@ -1782,6 +1784,7 @@ function renderList(){
 
   FACILITIES.forEach((fac, fi)=>{
     if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    if(selectedRole === 'manager' && selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
     if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
     if(!linkedItems.length) return;
@@ -1940,7 +1943,9 @@ function renderList(){
   });
 
   if(!html){
-    const msg = inspectorFacFilter ? 'この月の担当設備の記録はありません' : 'この月の記録はありません';
+    let msg = 'この月の記録はありません';
+    if (inspectorFacFilter) msg = 'この月の担当設備の記録はありません';
+    else if (selectedRole === 'manager' && selectedInspectorFilter) msg = `「${selectedInspectorFilter}」さんの記録はありません`;
     c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">'+msg+'</div>';
     return;
   }
@@ -2340,6 +2345,7 @@ function persistData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       entries, inspectionItems, staffData, facilities: facsToSave,
       periodicInspectionItems, monthlyInspectionItems, approvals,
+      session: { role: selectedRole, name: selectedName },
     }));
   } catch(e) { console.warn('persistData failed', e); }
 }
@@ -2371,11 +2377,76 @@ function loadPersistedData() {
         });
       });
     }
+    // セッション復元（有効なロールと名前のみ受け入れる）
+    if (data.session &&
+        (data.session.role === 'manager' || data.session.role === 'inspector') &&
+        typeof data.session.name === 'string' && data.session.name.length > 0) {
+      selectedRole = data.session.role;
+      selectedName = data.session.name;
+    }
   } catch(e) { console.warn('loadPersistedData failed', e); }
 }
 
+// ── Auto-login: セッションが残っていればそのままアプリを起動 ──
+function autoLogin() {
+  if (!selectedRole || !selectedName) return false;
+  try {
+    // ロール画面を非表示
+    const roleScreen = document.getElementById('role-screen');
+    if (roleScreen) { roleScreen.classList.add('hidden'); roleScreen.classList.remove('fade-out'); }
+    // アプリを表示
+    const app = document.getElementById('app-inner');
+    app.style.display = 'flex';
+    app.style.opacity = '1';
+    // ヘッダーにユーザー名をセット
+    const badge   = document.getElementById('header-role-badge');
+    const popName = document.getElementById('avatar-popup-name');
+    if (badge)   badge.textContent   = selectedName;
+    if (popName) popName.textContent = selectedName;
+    // ナビゲーションをロールに合わせてセット
+    const iconEl    = document.getElementById('nav-alert-icon');
+    const labelEl   = document.getElementById('nav-alert-label');
+    const reportNav = document.getElementById('nav-report');
+    const alertNav  = document.getElementById('nav-alert-or-settings');
+    if (selectedRole === 'manager') {
+      if (iconEl) iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`;
+      if (labelEl) labelEl.textContent = '設定';
+      if (reportNav) { reportNav.style.visibility = 'visible'; reportNav.style.display = ''; }
+      if (alertNav)  { alertNav.style.visibility  = 'visible'; alertNav.style.display  = ''; }
+    } else {
+      if (iconEl) iconEl.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot"></span>`;
+      if (labelEl) labelEl.textContent = 'アラート';
+      if (reportNav) reportNav.style.display = 'none';
+      if (alertNav)  alertNav.style.display  = 'none';
+    }
+    goHome();
+    renderCalendar();
+    if (selectedRole === 'manager') {
+      selectedInspectorFilter = null;
+      renderInspectorBar();
+      updateApprovalNotifDot();
+    }
+    return true;
+  } catch(e) {
+    // エラーが起きた場合はロール画面に戻す
+    console.warn('autoLogin failed, falling back to login screen', e);
+    selectedRole = null;
+    selectedName = null;
+    const roleScreen = document.getElementById('role-screen');
+    if (roleScreen) {
+      roleScreen.classList.remove('hidden', 'fade-out');
+      roleScreen.style.opacity = '1';
+    }
+    const app = document.getElementById('app-inner');
+    if (app) app.style.display = 'none';
+    return false;
+  }
+}
+
 loadPersistedData();
-renderCalendar();
+if (!autoLogin()) {
+  renderCalendar();
+}
 
 function makeRow(icon, label, id, value, placeholder) {
   return `<div class="settings-row">
@@ -2483,13 +2554,11 @@ function exportPDF() {
           <td class="meta-label">設備No.</td><td class="meta-val" style="font-weight:700;color:#1a4a70;">${fac.facNo || 'FAC-'+String(facIdx+1).padStart(3,'0')}</td>
           <td class="meta-label">設備名</td><td class="meta-val fac-name">${fac.name}</td>
           <td class="meta-label">点検頻度</td><td class="meta-val">日常・定期・月次</td>
-          <td class="meta-label">設置場所</td><td class="meta-val">NC施設</td>
         </tr>
         <tr>
           <td class="meta-label">管理者</td><td class="meta-val">${manager}</td>
           <td class="meta-label">点検担当者名</td><td class="meta-val">${inspector}</td>
           <td class="meta-label">作成日</td><td class="meta-val">${yr}/${String(mo).padStart(2,'0')}/01</td>
-          <td class="meta-label">確認</td><td class="meta-val"></td>
         </tr>
       </table>
       <table class="main-table">
@@ -2826,6 +2895,9 @@ function goHome() {
   document.getElementById('view-settings').style.display  = 'none';
   document.getElementById('view-facilities').style.display = 'none';
   document.getElementById('view-approval').style.display  = 'none';
+  // 履歴フィルターバーを非表示
+  const histBar = document.getElementById('hist-insp-selector-bar');
+  if (histBar) histBar.style.display = 'none';
   // Restore home tabs
   document.getElementById('main-tabs').innerHTML = `
     <button class="cal-nav-btn" onclick="prevMonth()">
@@ -2867,6 +2939,10 @@ function openFacilities() {
   document.getElementById('view-approval').style.display  = 'none';
   // Reuse view-list with its rendered content
   document.getElementById('view-list').style.display      = 'block';
+  // 管理者用: 履歴フィルターバーを表示
+  const histBar = document.getElementById('hist-insp-selector-bar');
+  if (histBar) histBar.style.display = selectedRole === 'manager' ? 'flex' : 'none';
+  if (selectedRole === 'manager') renderInspectorBar();
   renderList();
   setNavActive('nav-facilities');
   // Set dedicated 検査履歴 tab header
@@ -3170,8 +3246,6 @@ function openFacFromSelect() {
 
 function promptAddFacility() { /* 編集タブから設備を追加してください */ }
 
-let selectedName = null;
-
 function selectRole(role) {
   selectedRole = role;
   document.getElementById('card-inspector').classList.toggle('selected', role === 'inspector');
@@ -3347,11 +3421,16 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ── Inspector selector bar (manager calendar) ──
+// ── Inspector selector bar (manager calendar & history) ──
 function renderInspectorBar() {
-  const bar = document.getElementById('insp-selector-bar');
+  const bar     = document.getElementById('insp-selector-bar');
+  const histBar = document.getElementById('hist-insp-selector-bar');
   if (!bar) return;
-  if (selectedRole !== 'manager') { bar.style.display = 'none'; return; }
+  if (selectedRole !== 'manager') {
+    bar.style.display = 'none';
+    if (histBar) histBar.style.display = 'none';
+    return;
+  }
   bar.style.display = 'flex';
 
   const chips = [];
@@ -3370,13 +3449,21 @@ function renderInspectorBar() {
       ${name}
     </button>`);
   });
-  bar.innerHTML = chips.join('');
+  const chipsHtml = chips.join('');
+  bar.innerHTML = chipsHtml;
+  // 履歴バーにも同じ内容を反映（表示中のみ）
+  if (histBar) histBar.innerHTML = chipsHtml;
 }
 
 function selectInspFilter(name) {
   selectedInspectorFilter = name;
   renderInspectorBar();
   renderCalendar();
+  // 履歴ビューが開いていれば再レンダー
+  const listView = document.getElementById('view-list');
+  if (listView && listView.style.display !== 'none') {
+    renderList();
+  }
   // 承認画面が開いていれば再レンダー
   const approvalView = document.getElementById('view-approval');
   if (approvalView && approvalView.style.display === 'flex') {
@@ -3689,8 +3776,11 @@ function logout() {
     selectedRole = null;
     selectedName = null;
     selectedInspectorFilter = null;
+    persistData(); // セッション情報をlocalStorageから消去
     const inspBar = document.getElementById('insp-selector-bar');
     if (inspBar) inspBar.style.display = 'none';
+    const histBar = document.getElementById('hist-insp-selector-bar');
+    if (histBar) histBar.style.display = 'none';
     document.getElementById('card-inspector').classList.remove('selected');
     document.getElementById('card-manager').classList.remove('selected');
     document.getElementById('role-btn').classList.remove('ready');
