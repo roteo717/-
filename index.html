@@ -445,7 +445,7 @@
     width: 38px; height: 38px;
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; cursor: pointer;
+    font-size: 14px; cursor: pointer; color: #333;
     transition: all .12s; user-select: none;
   }
   .day-num:hover:not(.empty):not(.past-no-log) { transform: scale(1.08); }
@@ -455,7 +455,7 @@
   .day-num.today    { border: 2px solid #e06020; color: #e06020; font-weight: 700; }
   .day-num.today.ok { border: 2px solid #e06020; background: #d0eaff; color: #1a4a7a; }
   .day-num.empty    { opacity: 0; pointer-events: none; }
-  .day-num.past-no-log { background: #efefef; color: #bbb; border: 1.5px solid #ddd; cursor: pointer; }
+  .day-num.past-no-log { background: none; color: #555; cursor: pointer; }
   .day-num.weekend  { color: #bbb; background: none; }
   .day-num.weekend:not(.today) { background: none; border: none; }
 
@@ -1165,28 +1165,30 @@
   .insp-chip {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 5px 11px; border-radius: 20px;
-    border: 1.5px solid #dde;
-    background: #fff; color: #667;
+    border: 1.5px solid #2a4a7a;
+    background: #2a4a7a; color: #fff;
     font-size: 12px; font-weight: 600;
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer; white-space: nowrap; flex-shrink: 0;
     transition: background .15s, border-color .15s, color .15s;
   }
-  .insp-chip:hover { background: #f0f4f8; border-color: #b0c8e0; }
+  .insp-chip:hover { opacity: 0.85; }
   .insp-chip.active { background: #2a4a7a; border-color: #2a4a7a; color: #fff; }
   .insp-chip.active svg { stroke: #fff; }
-  .insp-chip svg { width: 12px; height: 12px; stroke: #667; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .insp-chip.inactive { background: #fff; border-color: #2a4a7a; color: #2a4a7a; }
+  .insp-chip.inactive svg { stroke: #2a4a7a; }
+  .insp-chip svg { width: 12px; height: 12px; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
   /* "+" more button */
   .insp-more-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; border-radius: 50%;
-    border: 1.5px solid #dde; background: #f5f6f8; color: #667;
-    font-size: 16px; font-weight: 600; line-height: 1;
+    border: 2px solid #2a4a7a; background: #fff; color: #2a4a7a;
+    font-size: 18px; font-weight: 500; line-height: 1;
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer; flex-shrink: 0;
     transition: background .15s, border-color .15s;
   }
-  .insp-more-btn:hover { background: #e8edf5; border-color: #b0c8e0; }
+  .insp-more-btn:hover { background: #eef3fa; }
   .insp-more-btn.has-selection { border-color: #2a4a7a; color: #2a4a7a; background: rgba(42,74,122,0.08); }
 
   /* ── Inspector Sheet (全員一覧) ── */
@@ -1217,13 +1219,14 @@
     font-family: sans-serif;
   }
   .insp-sheet-list {
-    overflow-y: auto; padding: 8px 14px; display: flex; flex-direction: column; gap: 4px;
+    overflow-y: auto; padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
   }
   .insp-sheet-row {
     display: flex; align-items: center; gap: 10px;
-    padding: 11px 14px; border-radius: 12px;
-    cursor: pointer; transition: background .12s;
-    border: 1.5px solid transparent;
+    padding: 12px 14px; border-radius: 14px;
+    cursor: pointer; transition: background .12s, border-color .12s;
+    border: 1.5px solid #eaedf2;
+    background: #fff;
     font-family: 'Noto Sans JP', sans-serif;
   }
   .insp-sheet-row:hover { background: #f5f6f8; }
@@ -1254,9 +1257,9 @@
 
   /* 承認画面の点検者選択 */
   .approval-insp-selector {
-    display: flex; overflow-x: auto; gap: 6px;
-    padding: 8px 14px 0; background: transparent;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    display: flex; overflow-x: auto; gap: 6px; align-items: center;
+    padding: 8px 14px; background: #fff; border-bottom: 1px solid #f0f0f4;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 0;
   }
   .approval-insp-selector::-webkit-scrollbar { display: none; }
 </style>
@@ -1432,9 +1435,9 @@
     <div class="cal-grid" id="cal-grid"></div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
       <div class="legend-item"><div class="legend-dot" style="background:#ffd0d0;border:1.5px solid #f09090;border-radius:4px;"></div>不備あり</div>
     </div>
+
   </div>
 
   <!-- List view -->
@@ -1612,10 +1615,19 @@
         <div class="settings-section-body-inner">
           <p style="font-size:11px;color:#889;line-height:1.6;margin:0 0 10px;padding:0 2px;">祝日や特定休業日を登録すると、点検スケジュールが自動で前の平日にシフトします。</p>
           <div class="settings-card" id="settings-calendar-card"></div>
-          <div style="display:flex;gap:8px;align-items:center;margin:6px 0 4px;">
+          <div style="font-size:11px;color:#c04010;font-weight:600;margin:8px 0 4px;padding:0 2px;">休日を追加</div>
+          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;">
             <input type="date" id="cal-holiday-date-input"
               style="flex:1;font-size:13px;border:1.5px solid #d0d8e8;border-radius:10px;padding:7px 10px;background:#fff;color:#1a2e50;font-family:inherit;outline:none;">
             <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;" onclick="addHolidayDate()">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加
+            </button>
+          </div>
+          <div style="font-size:11px;color:#2a7a4a;font-weight:600;margin:10px 0 4px;padding:0 2px;">出勤日を追加（休日→平日扱いに変更）</div>
+          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;">
+            <input type="date" id="cal-workday-date-input"
+              style="flex:1;font-size:13px;border:1.5px solid #a8d8b8;border-radius:10px;padding:7px 10px;background:#fff;color:#1a2e50;font-family:inherit;outline:none;">
+            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;background:linear-gradient(135deg,#3aaa6a,#2a7a4a);" onclick="addWorkdayDate()">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加
             </button>
           </div>
@@ -1645,7 +1657,7 @@
         定期点検<br><span style="font-size:10px;font-weight:400;">(10・20・30日)</span>
       </button>
       <button class="approval-tab" id="atab-monthly" onclick="setApprovalTab('monthly')">
-        1ヶ月点検<br><span style="font-size:10px;font-weight:400;">(月末)</span>
+        1ヶ月点検<br><span style="font-size:10px;font-weight:400;">(月末日)</span>
       </button>
     </div>
     <!-- 承認画面用 点検者フィルター -->
@@ -1751,7 +1763,7 @@
 </div>
 
 <script>
-const TODAY = new Date(2026, 3, 18);
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 let viewYear = 2026, viewMonth = 3;
 let selectedDay = null;
 let itemStatuses = []; // array indexed by item position
@@ -1800,6 +1812,7 @@ function getFirstDow(y,m){ return new Date(y,m,1).getDay(); }
 
 function renderCalendar(){
   const grid = document.getElementById('cal-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   const days = getDays(viewYear,viewMonth);
   const start = getFirstDow(viewYear,viewMonth);
@@ -1846,7 +1859,7 @@ function renderCalendar(){
 
     const isPeriodic = periodicDays.has(d);
     const isMonthly  = (d === monthlyDay);
-    const badgeHtml  = isMonthly ? `<div class="monthly-badge">1ヶ月</div>` : '';
+    const badgeHtml  = '';
 
 
     const cell=document.createElement('div');
@@ -2197,7 +2210,12 @@ function isCustomHoliday(y, m, d) {
   const k = y + '-' + (m + 1) + '-' + d;
   return workCalendar.holidays.includes(k);
 }
+function isCustomWorkday(y, m, d) {
+  const k = y + '-' + (m + 1) + '-' + d;
+  return (workCalendar.workdays || []).includes(k);
+}
 function isHoliday(y, m, d) {
+  if (isCustomWorkday(y, m, d)) return false; // 出勤日として登録済みなら休日扱いしない
   const dow = new Date(y, m, d).getDay();
   return dow === 0 || dow === 6 || isCustomHoliday(y, m, d);
 }
@@ -2434,7 +2452,7 @@ let staffData = {
 };
 
 // Work calendar: custom holidays as 'YYYY-M-D' strings (e.g. '2025-1-1')
-let workCalendar = { holidays: [] };
+let workCalendar = { holidays: [], workdays: [] };
 
 // Facility icon pool (same order as FACILITIES)
 const FAC_ICON_POOL = [
@@ -2934,16 +2952,19 @@ function addSettingsRow(type) {
 function renderWorkCalendarSection() {
   const card = document.getElementById('settings-calendar-card');
   if (!card) return;
-  const sorted = [...workCalendar.holidays].sort();
-  if (sorted.length === 0) {
-    card.innerHTML = '<div style="font-size:12px;color:#aab;padding:6px 2px;">登録された休日はありません</div>';
+  const sortedHolidays = [...workCalendar.holidays].sort();
+  const sortedWorkdays = [...(workCalendar.workdays || [])].sort();
+  let html = '';
+
+  if (sortedHolidays.length === 0 && sortedWorkdays.length === 0) {
+    html = '<div style="font-size:12px;color:#aab;padding:6px 2px;">登録された休日はありません</div>';
   } else {
-    card.innerHTML = sorted.map(k => {
+    sortedHolidays.forEach(k => {
       const [y, m, d] = k.split('-').map(Number);
       const date = new Date(y, m - 1, d);
       const dow = ['日','月','火','水','木','金','土'][date.getDay()];
       const label = `${y}年${m}月${d}日（${dow}）`;
-      return `<div class="settings-row" style="align-items:center;">
+      html += `<div class="settings-row" style="align-items:center;">
         <div class="settings-row-icon" style="background:#fff0e8;">
           <svg viewBox="0 0 24 24" style="stroke:#c04010;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;width:17px;height:17px;">
             <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -2961,8 +2982,34 @@ function renderWorkCalendarSection() {
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>`;
-    }).join('');
+    });
+    sortedWorkdays.forEach(k => {
+      const [y, m, d] = k.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
+      const dow = ['日','月','火','水','木','金','土'][date.getDay()];
+      const label = `${y}年${m}月${d}日（${dow}）`;
+      html += `<div class="settings-row" style="align-items:center;">
+        <div class="settings-row-icon" style="background:#edf7ee;">
+          <svg viewBox="0 0 24 24" style="stroke:#2a7a4a;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;width:17px;height:17px;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <line x1="8" y1="14" x2="10" y2="14"/>
+            <line x1="9" y1="13" x2="9" y2="15"/>
+          </svg>
+        </div>
+        <div class="settings-row-body">
+          <div class="settings-row-label" style="color:#2a7a4a;">出勤日</div>
+          <div style="font-size:13px;color:#1a2e50;font-weight:500;">${label}</div>
+        </div>
+        <button class="settings-row-del" onclick="removeWorkday('${k}')">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    });
   }
+  card.innerHTML = html;
   updateCounts();
 }
 
@@ -2984,6 +3031,32 @@ function addHolidayDate() {
 
 function removeHoliday(key) {
   workCalendar.holidays = workCalendar.holidays.filter(h => h !== key);
+  persistData();
+  renderWorkCalendarSection();
+  renderCalendar();
+  renderList();
+  showSettingsToast();
+}
+
+function addWorkdayDate() {
+  const input = document.getElementById('cal-workday-date-input');
+  if (!input || !input.value) return;
+  const [y, m, d] = input.value.split('-').map(Number);
+  const key = y + '-' + m + '-' + d;
+  if (!workCalendar.workdays) workCalendar.workdays = [];
+  if (!workCalendar.workdays.includes(key)) {
+    workCalendar.workdays.push(key);
+    persistData();
+    renderCalendar();
+    renderList();
+  }
+  input.value = '';
+  renderWorkCalendarSection();
+  showSettingsToast();
+}
+
+function removeWorkday(key) {
+  workCalendar.workdays = (workCalendar.workdays || []).filter(w => w !== key);
   persistData();
   renderWorkCalendarSection();
   renderCalendar();
@@ -3639,24 +3712,22 @@ function renderInspectorBar() {
   const allActive = !inspFilterActive();
 
   let html = '';
+
   if (allActive) {
-    // 未選択時：「全員」チップのみ
-    html = `<button class="insp-chip active" onclick="selectInspFilter(null)">
+    html += `<button class="insp-chip active" onclick="openInspSheet()">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/></svg>
       全員
     </button>`;
   } else {
-    // 選択中の人だけチップ表示（×で個別解除）
-    selectedInspectorFilter.forEach(name => {
-      const safe = name.replace(/'/g, "\\'");
-      html += `<span class="insp-chip active" style="cursor:default;">
+    (selectedInspectorFilter || []).forEach(name => {
+      html += `<button class="insp-chip active">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         ${lastName(name)}
-      </span>`;
+      </button>`;
     });
   }
 
-  html += `<button class="insp-more-btn" onclick="openInspSheet()" title="点検者を選択">＋</button>`;
+  html += `<button class="insp-more-btn${!allActive ? ' has-selection' : ''}" onclick="openInspSheet()" title="点検者を選択">+</button>`;
 
   bar.innerHTML = html;
   if (histBar) { histBar.innerHTML = html; histBar.style.display = 'flex'; }
@@ -3768,18 +3839,26 @@ function facMatchesInspFilter(fac) {
 function renderApprovalInspSelector() {
   const bar = document.getElementById('approval-insp-selector');
   if (!bar) return;
-  const chips = [];
   const allActive = !inspFilterActive();
-  chips.push(`<button class="insp-chip${allActive?' active':''}" onclick="selectInspFilter(null)" style="font-size:11px;padding:4px 10px;">全員</button>`);
-  staffData.inspectors.forEach(name => {
-    const active = inspFilterActive() && selectedInspectorFilter.includes(name);
-    const safe = name.replace(/'/g, "\\'");
-    chips.push(`<button class="insp-chip${active?' active':''}" onclick="toggleInspFilter('${safe}')" style="font-size:11px;padding:4px 10px;">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      ${name}
-    </button>`);
-  });
-  bar.innerHTML = chips.join('');
+  const lastName = n => n.split(/[\s　]/)[0];
+  let html = '';
+
+  if (allActive) {
+    html += `<button class="insp-chip active" onclick="openInspSheet()">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/></svg>
+      全員
+    </button>`;
+  } else {
+    (selectedInspectorFilter || []).forEach(name => {
+      html += `<button class="insp-chip active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        ${lastName(name)}
+      </button>`;
+    });
+  }
+
+  html += `<button class="insp-more-btn${!allActive ? ' has-selection' : ''}" onclick="openInspSheet()" title="点検者を選択">+</button>`;
+  bar.innerHTML = html;
 }
 
 function openApproval() {
@@ -3814,8 +3893,10 @@ function nextMonthApproval() {
 
 function setApprovalTab(tab) {
   approvalTab = tab;
-  document.getElementById('atab-periodic').classList.toggle('active', tab === 'periodic');
-  document.getElementById('atab-monthly').classList.toggle('active', tab === 'monthly');
+  const tabPeriodic = document.getElementById('atab-periodic');
+  const tabMonthly  = document.getElementById('atab-monthly');
+  if (tabPeriodic) tabPeriodic.classList.toggle('active', tab === 'periodic');
+  if (tabMonthly)  tabMonthly.classList.toggle('active', tab === 'monthly');
   renderApprovalContent();
 }
 
