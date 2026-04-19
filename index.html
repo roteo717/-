@@ -1153,32 +1153,95 @@
   }
 
   /* ── Inspector Selector Bar ── */
+  /* ── Inspector Filter Bar (compact) ── */
   .insp-selector-bar {
-    display: flex; overflow-x: auto; overflow-y: hidden;
+    display: flex; align-items: center;
     padding: 8px 14px; gap: 6px;
     background: #fff;
     border-bottom: 1px solid #f0f0f4;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     flex-shrink: 0;
+    overflow: visible;
   }
-  .insp-selector-bar::-webkit-scrollbar { display: none; }
   .insp-chip {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 5px 12px; border-radius: 20px;
+    padding: 5px 11px; border-radius: 20px;
     border: 1.5px solid #dde;
     background: #fff; color: #667;
     font-size: 12px; font-weight: 600;
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer; white-space: nowrap; flex-shrink: 0;
-    transition: all .15s;
+    transition: background .15s, border-color .15s, color .15s;
   }
   .insp-chip:hover { background: #f0f4f8; border-color: #b0c8e0; }
-  .insp-chip.active {
-    background: #2a4a7a; border-color: #2a4a7a; color: #fff;
-  }
+  .insp-chip.active { background: #2a4a7a; border-color: #2a4a7a; color: #fff; }
   .insp-chip.active svg { stroke: #fff; }
   .insp-chip svg { width: 12px; height: 12px; stroke: #667; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  /* "+" more button */
+  .insp-more-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1.5px solid #dde; background: #f5f6f8; color: #667;
+    font-size: 16px; font-weight: 600; line-height: 1;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, border-color .15s;
+  }
+  .insp-more-btn:hover { background: #e8edf5; border-color: #b0c8e0; }
+  .insp-more-btn.has-selection { border-color: #2a4a7a; color: #2a4a7a; background: rgba(42,74,122,0.08); }
+
+  /* ── Inspector Sheet (全員一覧) ── */
+  .insp-sheet-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.4);
+    display: none; align-items: flex-end;
+  }
+  .insp-sheet-overlay.open { display: flex; }
+  .insp-sheet {
+    background: #fff; width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 0 0 max(24px, env(safe-area-inset-bottom));
+    max-height: 75vh; display: flex; flex-direction: column;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+  }
+  .insp-sheet-header {
+    padding: 14px 20px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #f0f0f4; flex-shrink: 0;
+  }
+  .insp-sheet-title { font-size: 14px; font-weight: 700; color: #1a2e4a; }
+  .insp-sheet-close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0f0f4; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-size: 16px; color: #667; line-height: 1;
+    font-family: sans-serif;
+  }
+  .insp-sheet-list {
+    overflow-y: auto; padding: 8px 14px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .insp-sheet-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; border-radius: 12px;
+    cursor: pointer; transition: background .12s;
+    border: 1.5px solid transparent;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .insp-sheet-row:hover { background: #f5f6f8; }
+  .insp-sheet-row.active { background: #eef3fa; border-color: #2a4a7a; }
+  .insp-sheet-row-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #f0f0f4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .insp-sheet-row.active .insp-sheet-row-icon { background: rgba(42,74,122,0.12); }
+  .insp-sheet-row-icon svg { width: 16px; height: 16px; stroke: #667; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .insp-sheet-row.active .insp-sheet-row-icon svg { stroke: #2a4a7a; }
+  .insp-sheet-row-name { flex: 1; font-size: 14px; font-weight: 600; color: #2a3040; }
+  .insp-sheet-row.active .insp-sheet-row-name { color: #1a3060; }
+  .insp-sheet-row-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #dde; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .insp-sheet-row.active .insp-sheet-row-check { background: #2a4a7a; border-color: #2a4a7a; }
+  .insp-sheet-row-check svg { width: 9px; height: 9px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .insp-sheet-row.active .insp-sheet-row-check svg { opacity: 1; }
+  .insp-sheet-handle { width: 36px; height: 4px; background: #dde; border-radius: 3px; margin: 10px auto 0; }
 
   /* 代理入力バナー */
   .proxy-banner {
@@ -1199,6 +1262,20 @@
 </style>
 </head>
 <body>
+<!-- Inspector All-list Sheet -->
+<div class="insp-sheet-overlay" id="insp-sheet-overlay" onclick="closeInspSheet(event)">
+  <div class="insp-sheet" onclick="event.stopPropagation()">
+    <div class="insp-sheet-handle"></div>
+    <div class="insp-sheet-header">
+      <span class="insp-sheet-title">点検者を選択 <span id="insp-sheet-count" style="font-size:12px;font-weight:500;color:#7a8aaa;margin-left:4px;"></span></span>
+      <button class="insp-sheet-close" onclick="closeInspSheet()">✕</button>
+    </div>
+    <div class="insp-sheet-list" id="insp-sheet-list"></div>
+    <div style="padding:10px 16px 4px;flex-shrink:0;">
+      <button onclick="closeInspSheet()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#2a4a7a,#1a3060);color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">閉じる</button>
+    </div>
+  </div>
+</div>
 <!-- Role Selection Screen -->
 <div class="role-screen" id="role-screen">
   <div class="role-logo">
@@ -1511,6 +1588,41 @@
         </div>
       </div>
     </div>
+
+    <!-- 勤務カレンダー設定 -->
+    <div class="settings-section" id="sec-calendar">
+      <div class="settings-section-header" onclick="toggleSection('sec-calendar')">
+        <div class="settings-section-icon" style="background:#edf7ee;">
+          <svg viewBox="0 0 24 24" style="stroke:#2a7a4a;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <line x1="8" y1="14" x2="10" y2="14"/>
+            <line x1="9" y1="13" x2="9" y2="15"/>
+          </svg>
+        </div>
+        <div class="settings-section-meta">
+          <div class="settings-section-title">勤務カレンダー設定</div>
+          <div class="settings-section-count" id="count-calendar"></div>
+        </div>
+        <div class="settings-section-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-section-body-inner">
+          <p style="font-size:11px;color:#889;line-height:1.6;margin:0 0 10px;padding:0 2px;">祝日や特定休業日を登録すると、点検スケジュールが自動で前の平日にシフトします。</p>
+          <div class="settings-card" id="settings-calendar-card"></div>
+          <div style="display:flex;gap:8px;align-items:center;margin:6px 0 4px;">
+            <input type="date" id="cal-holiday-date-input"
+              style="flex:1;font-size:13px;border:1.5px solid #d0d8e8;border-radius:10px;padding:7px 10px;background:#fff;color:#1a2e50;font-family:inherit;outline:none;">
+            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;" onclick="addHolidayDate()">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div style="height:14px"></div>
   </div>
 
@@ -1649,7 +1761,8 @@ let selectedRole = null;
 let selectedName = null;
 let approvals = {};
 let approvalTab = 'periodic';
-let selectedInspectorFilter = null; // 管理者がカレンダー・承認画面でフィルターする点検者名 (null=全員)
+let selectedInspectorFilter = null; // null=全員, string[]=選択中の点検者リスト
+let inspectorUsageCounts = {}; // 点検者フィルター選択回数（よく使う順）
 
 const MONTHS_EN = ['January','February','March','April','May','June',
                    'July','August','September','October','November','December'];
@@ -1720,7 +1833,7 @@ function renderCalendar(){
     const isPast=new Date(viewYear,viewMonth,d)<TODAY;
 
     const dow = new Date(viewYear,viewMonth,d).getDay(); // 0=Sun,6=Sat
-    const isWeekend = dow===0 || dow===6;
+    const isWeekend = dow===0 || dow===6 || isCustomHoliday(viewYear, viewMonth, d);
 
     let cls='day-num';
     if(e){
@@ -1733,7 +1846,7 @@ function renderCalendar(){
 
     const isPeriodic = periodicDays.has(d);
     const isMonthly  = (d === monthlyDay);
-    const badgeHtml  = ''
+    const badgeHtml  = isMonthly ? `<div class="monthly-badge">1ヶ月</div>` : '';
 
 
     const cell=document.createElement('div');
@@ -1784,7 +1897,7 @@ function renderList(){
 
   FACILITIES.forEach((fac, fi)=>{
     if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
-    if(selectedRole === 'manager' && selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
+    if(selectedRole === 'manager' && inspFilterActive() && !facMatchesInspFilter(fac)) return;
     if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
     if(!linkedItems.length) return;
@@ -1945,7 +2058,7 @@ function renderList(){
   if(!html){
     let msg = 'この月の記録はありません';
     if (inspectorFacFilter) msg = 'この月の担当設備の記録はありません';
-    else if (selectedRole === 'manager' && selectedInspectorFilter) msg = `「${selectedInspectorFilter}」さんの記録はありません`;
+    else if (selectedRole === 'manager' && inspFilterActive()) msg = `選択中の点検者の記録はありません`;
     c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">'+msg+'</div>';
     return;
   }
@@ -2051,8 +2164,7 @@ function prevMonth(){ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} ren
 function nextMonth(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderCalendar(); }
 
 function dayClick(d){
-  const dow = new Date(viewYear,viewMonth,d).getDay();
-  if(dow===0 || dow===6) return;
+  if(isHoliday(viewYear, viewMonth, d)) return;
   selectedDay=d;
   const k=key(viewYear,viewMonth,d);
   const e = entries[k] || { checks:{}, status:'ok' };
@@ -2060,10 +2172,10 @@ function dayClick(d){
 
   // 代理入力バナー
   const facNameEl = document.getElementById('modal-facility-name');
-  if (selectedRole === 'manager' && selectedInspectorFilter) {
+  if (selectedRole === 'manager' && inspFilterActive() && selectedInspectorFilter.length === 1) {
     facNameEl.innerHTML = `<div class="proxy-banner">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M19 8l2 2 4-4" style="display:none"/></svg>
-      <span><strong>${selectedInspectorFilter}</strong> さんの代理入力モード</span>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span><strong>${selectedInspectorFilter[0]}</strong> さんの代理入力モード</span>
     </div>`;
   } else {
     facNameEl.textContent = '';
@@ -2080,15 +2192,23 @@ function dayClick(d){
   document.body.style.width = '100%';
 }
 
+// ── 休日判定ヘルパー（土日 + カスタム祝日）──
+function isCustomHoliday(y, m, d) {
+  const k = y + '-' + (m + 1) + '-' + d;
+  return workCalendar.holidays.includes(k);
+}
+function isHoliday(y, m, d) {
+  const dow = new Date(y, m, d).getDay();
+  return dow === 0 || dow === 6 || isCustomHoliday(y, m, d);
+}
+
 // 定期点検日セット計算ヘルパー（renderCalendar と共有）
 function getPeriodicDaysForMonth(y, m, daysInMonth) {
   const set = new Set();
   [10, 20, 30].forEach(base => {
     if (base > daysInMonth) return;
     let target = base;
-    const dow = new Date(y, m, base).getDay();
-    if (dow === 0) target = base - 2;
-    else if (dow === 6) target = base - 1;
+    while (target >= 1 && isHoliday(y, m, target)) target--;
     if (target >= 1) set.add(target);
   });
   return set;
@@ -2097,15 +2217,13 @@ function getPeriodicDaysForMonth(y, m, daysInMonth) {
 // 1ヶ月点検日計算ヘルパー（月末日、休日なら前の平日）
 function getMonthlyInspectionDay(y, m, daysInMonth) {
   let target = daysInMonth;
-  const dow = new Date(y, m, daysInMonth).getDay();
-  if (dow === 0) target = daysInMonth - 2;
-  else if (dow === 6) target = daysInMonth - 1;
+  while (target >= 1 && isHoliday(y, m, target)) target--;
   return target;
 }
 
 function openAdd(){
   const dow = TODAY.getDay();
-  if(dow===0 || dow===6) return; // 休日は点検不要
+  if(isHoliday(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate())) return; // 休日は点検不要
 
   // ① 今日の月・年に移動
   viewYear  = TODAY.getFullYear();
@@ -2142,11 +2260,12 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
 
   // 点検者ロールの場合、自分が紐づけられている設備のみ表示
   // 管理者で点検者フィルターが設定されている場合もその点検者の設備のみ表示
-  const inspectorFacFilter = selectedRole === 'inspector' || (selectedRole === 'manager' && selectedInspectorFilter !== null);
-  const filterName = selectedRole === 'inspector' ? selectedName : selectedInspectorFilter;
+  const inspectorFacFilter = selectedRole === 'inspector' || (selectedRole === 'manager' && inspFilterActive());
+  const filterName = selectedRole === 'inspector' ? selectedName : (inspFilterActive() && selectedInspectorFilter.length === 1 ? selectedInspectorFilter[0] : null);
 
   FACILITIES.forEach((fac, fi) => {
-    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(filterName)) return;
+    if(selectedRole === 'inspector' && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    if(selectedRole === 'manager' && inspFilterActive() && !facMatchesInspFilter(fac)) return;
     // 設備名が空の場合はスキップ
     if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
@@ -2270,12 +2389,11 @@ function saveEntry(){
   }
   const allOk = Object.values(checks).every(v=>v==='ok');
   // 代理入力の場合は点検者名をフィルター中の点検者、代理者を管理者名で記録
-  const inspectorName = (selectedRole === 'manager' && selectedInspectorFilter)
-    ? selectedInspectorFilter
-    : (selectedName || '');
+  const singleFilter = inspFilterActive() && selectedInspectorFilter.length === 1 ? selectedInspectorFilter[0] : null;
+  const inspectorName = (selectedRole === 'manager' && singleFilter) ? singleFilter : (selectedName || '');
   const entryData = { checks, status: allOk?'ok':'ng', inspector: inspectorName };
-  if (selectedRole === 'manager' && selectedInspectorFilter) {
-    entryData.proxyBy = selectedName; // 代理入力した管理者名
+  if (selectedRole === 'manager' && singleFilter) {
+    entryData.proxyBy = selectedName;
   }
   entries[k] = entryData;
   document.getElementById('modal').classList.remove('open');
@@ -2315,6 +2433,9 @@ let staffData = {
   inspectors: ['佐藤 一郎', '鈴木 花子', '田中 次郎'],
 };
 
+// Work calendar: custom holidays as 'YYYY-M-D' strings (e.g. '2025-1-1')
+let workCalendar = { holidays: [] };
+
 // Facility icon pool (same order as FACILITIES)
 const FAC_ICON_POOL = [
   FACILITY_ICONS.gear, FACILITY_ICONS.droplet, FACILITY_ICONS.zap,
@@ -2346,6 +2467,7 @@ function persistData() {
       entries, inspectionItems, staffData, facilities: facsToSave,
       periodicInspectionItems, monthlyInspectionItems, approvals,
       session: { role: selectedRole, name: selectedName },
+      inspectorUsageCounts, workCalendar,
     }));
   } catch(e) { console.warn('persistData failed', e); }
 }
@@ -2361,6 +2483,8 @@ function loadPersistedData() {
     if (data.periodicInspectionItems) periodicInspectionItems = data.periodicInspectionItems;
     if (data.monthlyInspectionItems)  monthlyInspectionItems  = data.monthlyInspectionItems;
     if (data.approvals) approvals = data.approvals;
+    if (data.inspectorUsageCounts) inspectorUsageCounts = data.inspectorUsageCounts;
+    if (data.workCalendar) workCalendar = data.workCalendar;
     if (data.facilities) {
       FACILITIES.length = 0;
       data.facilities.forEach(f => {
@@ -2666,6 +2790,8 @@ function updateCounts() {
   if (c('count-facilities')) c('count-facilities').textContent = fmt(n('#settings-facilities-card'),'件');
   if (c('count-managers'))   c('count-managers').textContent   = fmt(n('#settings-managers-card'),  '名');
   if (c('count-inspectors')) c('count-inspectors').textContent = fmt(n('#settings-staff-card'),     '名');
+  const hCount = workCalendar.holidays.length;
+  if (c('count-calendar'))   c('count-calendar').textContent   = hCount > 0 ? hCount + '日' : '未設定';
 }
 
 function toggleSection(id) {
@@ -2673,7 +2799,13 @@ function toggleSection(id) {
   const wasOpen = sec.classList.contains('open');
   sec.classList.toggle('open');
   // auto-save when closing a section
-  if (wasOpen) saveSettings();
+  if (wasOpen) {
+    if (id === 'sec-calendar') {
+      persistData();
+    } else {
+      saveSettings();
+    }
+  }
 }
 
 function renderSettingsView() {
@@ -2707,6 +2839,8 @@ function renderSettingsView() {
   // 点検者 card
   document.getElementById('settings-staff-card').innerHTML =
     staffData.inspectors.map((name, i) => makeRow(ICON_USER, `点検者 ${i+1}`, `set-inspector-${i}`, name, '点検者名を入力')).join('');
+
+  renderWorkCalendarSection();
 
   document.getElementById('settings-facilities-card').innerHTML =
     FACILITIES.map((fac, i) => `<div class="settings-row">
@@ -2794,6 +2928,74 @@ function addSettingsRow(type) {
   </div>`;
   card.appendChild(div.firstElementChild);
   div.firstElementChild?.querySelector('input')?.focus();
+}
+
+// ── 勤務カレンダー設定 ──
+function renderWorkCalendarSection() {
+  const card = document.getElementById('settings-calendar-card');
+  if (!card) return;
+  const sorted = [...workCalendar.holidays].sort();
+  if (sorted.length === 0) {
+    card.innerHTML = '<div style="font-size:12px;color:#aab;padding:6px 2px;">登録された休日はありません</div>';
+  } else {
+    card.innerHTML = sorted.map(k => {
+      const [y, m, d] = k.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
+      const dow = ['日','月','火','水','木','金','土'][date.getDay()];
+      const label = `${y}年${m}月${d}日（${dow}）`;
+      return `<div class="settings-row" style="align-items:center;">
+        <div class="settings-row-icon" style="background:#fff0e8;">
+          <svg viewBox="0 0 24 24" style="stroke:#c04010;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;width:17px;height:17px;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <line x1="9" y1="16" x2="15" y2="16"/>
+          </svg>
+        </div>
+        <div class="settings-row-body">
+          <div class="settings-row-label">休日</div>
+          <div style="font-size:13px;color:#1a2e50;font-weight:500;">${label}</div>
+        </div>
+        <button class="settings-row-del" onclick="removeHoliday('${k}')">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+  }
+  updateCounts();
+}
+
+function addHolidayDate() {
+  const input = document.getElementById('cal-holiday-date-input');
+  if (!input || !input.value) return;
+  const [y, m, d] = input.value.split('-').map(Number);
+  const key = y + '-' + m + '-' + d;
+  if (!workCalendar.holidays.includes(key)) {
+    workCalendar.holidays.push(key);
+    persistData();
+    renderCalendar();
+    renderList();
+  }
+  input.value = '';
+  renderWorkCalendarSection();
+  showSettingsToast();
+}
+
+function removeHoliday(key) {
+  workCalendar.holidays = workCalendar.holidays.filter(h => h !== key);
+  persistData();
+  renderWorkCalendarSection();
+  renderCalendar();
+  renderList();
+  showSettingsToast();
+}
+
+function showSettingsToast() {
+  const t = document.getElementById('settings-toast');
+  if (!t) return;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
 }
 
 function saveSettings() {
@@ -3433,38 +3635,120 @@ function renderInspectorBar() {
   }
   bar.style.display = 'flex';
 
-  const chips = [];
-  // 全員チップ
-  const allActive = selectedInspectorFilter === null;
-  chips.push(`<button class="insp-chip${allActive?' active':''}" onclick="selectInspFilter(null)">
-    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/><path d="M11 20c0-3 2.2-5 5-5s5 2 5 5" style="display:none"/></svg>
-    全員
-  </button>`);
-  // 各点検者チップ
-  staffData.inspectors.forEach(name => {
-    const active = selectedInspectorFilter === name;
-    const safe = name.replace(/'/g, "\\'");
-    chips.push(`<button class="insp-chip${active?' active':''}" onclick="selectInspFilter('${safe}')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      ${name}
-    </button>`);
-  });
-  const chipsHtml = chips.join('');
-  bar.innerHTML = chipsHtml;
-  // 履歴バーにも同じ内容を反映（表示中のみ）
-  if (histBar) histBar.innerHTML = chipsHtml;
+  const lastName = n => n.split(/[\s　]/)[0];
+  const allActive = !inspFilterActive();
+
+  let html = '';
+  if (allActive) {
+    // 未選択時：「全員」チップのみ
+    html = `<button class="insp-chip active" onclick="selectInspFilter(null)">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/></svg>
+      全員
+    </button>`;
+  } else {
+    // 選択中の人だけチップ表示（×で個別解除）
+    selectedInspectorFilter.forEach(name => {
+      const safe = name.replace(/'/g, "\\'");
+      html += `<span class="insp-chip active" style="cursor:default;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        ${lastName(name)}
+      </span>`;
+    });
+  }
+
+  html += `<button class="insp-more-btn" onclick="openInspSheet()" title="点検者を選択">＋</button>`;
+
+  bar.innerHTML = html;
+  if (histBar) { histBar.innerHTML = html; histBar.style.display = 'flex'; }
 }
 
+function openInspSheet() {
+  const overlay = document.getElementById('insp-sheet-overlay');
+  const list    = document.getElementById('insp-sheet-list');
+  if (!overlay || !list) return;
+  _renderInspSheetList();
+  overlay.classList.add('open');
+}
+
+function _renderInspSheetList() {
+  const list = document.getElementById('insp-sheet-list');
+  const countEl = document.getElementById('insp-sheet-count');
+  if (!list) return;
+  const all = staffData.inspectors || [];
+  const sorted = [...all].sort((a, b) => (inspectorUsageCounts[b] || 0) - (inspectorUsageCounts[a] || 0));
+
+  // 選択人数バッジ更新
+  if (countEl) {
+    const n = inspFilterActive() ? selectedInspectorFilter.length : 0;
+    countEl.textContent = n > 0 ? `（${n}人選択中）` : '';
+  }
+
+  const allActive = !inspFilterActive();
+  let html = `<div class="insp-sheet-row${allActive ? ' active' : ''}" onclick="selectInspFilter(null);closeInspSheet();">
+    <div class="insp-sheet-row-icon">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/></svg>
+    </div>
+    <span class="insp-sheet-row-name">全員</span>
+    <div class="insp-sheet-row-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+  </div>`;
+
+  sorted.forEach(name => {
+    const active = inspFilterActive() && selectedInspectorFilter.includes(name);
+    const safe = name.replace(/'/g, "\\'");
+    html += `<div class="insp-sheet-row${active ? ' active' : ''}" onclick="toggleInspFilter('${safe}');">
+      <div class="insp-sheet-row-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <span class="insp-sheet-row-name">${name}</span>
+      <div class="insp-sheet-row-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+}
+
+function closeInspSheet(e) {
+  if (e && e.target !== document.getElementById('insp-sheet-overlay')) return;
+  const overlay = document.getElementById('insp-sheet-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+// 全員リセット or 単一選択（全員チップ・承認画面用）
 function selectInspFilter(name) {
-  selectedInspectorFilter = name;
+  if (name === null) {
+    selectedInspectorFilter = null;
+  } else {
+    inspectorUsageCounts[name] = (inspectorUsageCounts[name] || 0) + 1;
+    selectedInspectorFilter = [name];
+    persistData();
+  }
+  _applyInspFilter();
+}
+
+// トグル選択（シート内の各行・バーのチップ）
+function toggleInspFilter(name) {
+  inspectorUsageCounts[name] = (inspectorUsageCounts[name] || 0) + 1;
+  if (!inspFilterActive()) {
+    selectedInspectorFilter = [name];
+  } else {
+    const idx = selectedInspectorFilter.indexOf(name);
+    if (idx >= 0) {
+      const next = selectedInspectorFilter.filter(n => n !== name);
+      selectedInspectorFilter = next.length ? next : null; // 全解除→全員
+    } else {
+      selectedInspectorFilter = [...selectedInspectorFilter, name];
+    }
+  }
+  persistData();
+  _applyInspFilter();
+  _renderInspSheetList(); // シートが開いていれば即更新
+}
+
+function _applyInspFilter() {
   renderInspectorBar();
   renderCalendar();
-  // 履歴ビューが開いていれば再レンダー
   const listView = document.getElementById('view-list');
-  if (listView && listView.style.display !== 'none') {
-    renderList();
-  }
-  // 承認画面が開いていれば再レンダー
+  if (listView && listView.style.display !== 'none') renderList();
   const approvalView = document.getElementById('view-approval');
   if (approvalView && approvalView.style.display === 'flex') {
     renderApprovalInspSelector();
@@ -3472,16 +3756,25 @@ function selectInspFilter(name) {
   }
 }
 
+// ── グローバルヘルパー ──
+function inspFilterActive() {
+  return selectedInspectorFilter !== null && selectedInspectorFilter.length > 0;
+}
+function facMatchesInspFilter(fac) {
+  if (!inspFilterActive()) return true;
+  return selectedInspectorFilter.some(n => (fac.linkedInspectors||[]).includes(n));
+}
+
 function renderApprovalInspSelector() {
   const bar = document.getElementById('approval-insp-selector');
   if (!bar) return;
   const chips = [];
-  const allActive = selectedInspectorFilter === null;
+  const allActive = !inspFilterActive();
   chips.push(`<button class="insp-chip${allActive?' active':''}" onclick="selectInspFilter(null)" style="font-size:11px;padding:4px 10px;">全員</button>`);
   staffData.inspectors.forEach(name => {
-    const active = selectedInspectorFilter === name;
+    const active = inspFilterActive() && selectedInspectorFilter.includes(name);
     const safe = name.replace(/'/g, "\\'");
-    chips.push(`<button class="insp-chip${active?' active':''}" onclick="selectInspFilter('${safe}')" style="font-size:11px;padding:4px 10px;">
+    chips.push(`<button class="insp-chip${active?' active':''}" onclick="toggleInspFilter('${safe}')" style="font-size:11px;padding:4px 10px;">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       ${name}
     </button>`);
@@ -3559,7 +3852,7 @@ function renderApprovalContent() {
 
       FACILITIES.forEach((fac, fi) => {
         // 点検者フィルター適用
-        if (selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
+        if (inspFilterActive() && !facMatchesInspFilter(fac)) return;
         const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
         const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
         if (!facPeriodicItems.length) return;
@@ -3631,7 +3924,7 @@ function renderApprovalContent() {
 
     FACILITIES.forEach((fac, fi) => {
       // 点検者フィルター適用
-      if (selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
+      if (inspFilterActive() && !facMatchesInspFilter(fac)) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
       if (!facMonthlyItems.length) return;
