@@ -1151,6 +1151,51 @@
     font-size: 10px; color: #fff; background: #2a4a7a;
     border-radius: 20px; padding: 1px 7px; flex-shrink: 0;
   }
+
+  /* ── Inspector Selector Bar ── */
+  .insp-selector-bar {
+    display: flex; overflow-x: auto; overflow-y: hidden;
+    padding: 8px 14px; gap: 6px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f4;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+  .insp-selector-bar::-webkit-scrollbar { display: none; }
+  .insp-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1.5px solid #dde;
+    background: #fff; color: #667;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    transition: all .15s;
+  }
+  .insp-chip:hover { background: #f0f4f8; border-color: #b0c8e0; }
+  .insp-chip.active {
+    background: #2a4a7a; border-color: #2a4a7a; color: #fff;
+  }
+  .insp-chip.active svg { stroke: #fff; }
+  .insp-chip svg { width: 12px; height: 12px; stroke: #667; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* 代理入力バナー */
+  .proxy-banner {
+    display: flex; align-items: center; gap: 8px;
+    background: #fffbe6; border: 1.5px solid #f0c840;
+    border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;
+    font-size: 12px; color: #7a5010; font-weight: 500; line-height: 1.4;
+  }
+  .proxy-banner svg { width: 15px; height: 15px; stroke: #c08010; stroke-width: 2; fill: none; flex-shrink: 0; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* 承認画面の点検者選択 */
+  .approval-insp-selector {
+    display: flex; overflow-x: auto; gap: 6px;
+    padding: 8px 14px 0; background: transparent;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .approval-insp-selector::-webkit-scrollbar { display: none; }
 </style>
 </head>
 <body>
@@ -1299,6 +1344,8 @@
 
   <!-- Calendar view -->
   <div id="view-cal">
+    <!-- 管理者用 点検者フィルターバー -->
+    <div id="insp-selector-bar" class="insp-selector-bar" style="display:none;"></div>
     <div class="cal-head">
       <div class="cal-dh sun">日</div><div class="cal-dh">月</div>
       <div class="cal-dh">火</div><div class="cal-dh">水</div>
@@ -1488,6 +1535,8 @@
         1ヶ月点検<br><span style="font-size:10px;font-weight:400;">(月末)</span>
       </button>
     </div>
+    <!-- 承認画面用 点検者フィルター -->
+    <div class="approval-insp-selector" id="approval-insp-selector"></div>
     <div id="approval-content" style="padding-bottom:20px;"></div>
   </div>
 
@@ -1596,8 +1645,9 @@ let itemStatuses = []; // array indexed by item position
 let currentFacilityIdx = 0;
 let currentTab = 0;
 let selectedRole = null;
-let approvals = {}; // approvals[key][facIdx] = { periodic: {approvedBy, approvedAt}|null, monthly: {approvedBy, approvedAt}|null }
-let approvalTab = 'periodic'; // 'periodic' | 'monthly'
+let approvals = {};
+let approvalTab = 'periodic';
+let selectedInspectorFilter = null; // 管理者がカレンダー・承認画面でフィルターする点検者名 (null=全員)
 
 const MONTHS_EN = ['January','February','March','April','May','June',
                    'July','August','September','October','November','December'];
@@ -1845,6 +1895,9 @@ function renderList(){
       const inspectorTag = e.inspector
         ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;align-self:flex-start;margin-top:1px;">${e.inspector}</span>`
         : '';
+      const proxyTag = e.proxyBy
+        ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:2px 7px;flex-shrink:0;align-self:flex-start;margin-top:1px;">代理:${e.proxyBy}</span>`
+        : '';
 
       rows+=`<div class="hist-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
         +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:1px;">${mo}/${d}</div>`
@@ -1854,6 +1907,7 @@ function renderList(){
         +  monthlySection
         +`</div>`
         +inspectorTag
+        +proxyTag
         +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;align-self:flex-start;margin-top:1px;">${anyNg?'✕':'○'}</span>`
         +delBtn
         +`</div>`;
@@ -1993,14 +2047,23 @@ function nextMonth(){ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} ren
 
 function dayClick(d){
   const dow = new Date(viewYear,viewMonth,d).getDay();
-  if(dow===0 || dow===6) return; // 休日は点検不要
+  if(dow===0 || dow===6) return;
   selectedDay=d;
   const k=key(viewYear,viewMonth,d);
   const e = entries[k] || { checks:{}, status:'ok' };
   document.getElementById('modal-title').textContent=(viewMonth+1)+'月'+d+'日の点検記録';
-  document.getElementById('modal-facility-name').textContent = '';
 
-  // 定期点検日かチェック
+  // 代理入力バナー
+  const facNameEl = document.getElementById('modal-facility-name');
+  if (selectedRole === 'manager' && selectedInspectorFilter) {
+    facNameEl.innerHTML = `<div class="proxy-banner">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M19 8l2 2 4-4" style="display:none"/></svg>
+      <span><strong>${selectedInspectorFilter}</strong> さんの代理入力モード</span>
+    </div>`;
+  } else {
+    facNameEl.textContent = '';
+  }
+
   const days = getDays(viewYear,viewMonth);
   const isPeriodicDay = getPeriodicDaysForMonth(viewYear, viewMonth, days).has(d);
   const isMonthlyDay  = (d === getMonthlyInspectionDay(viewYear, viewMonth, days));
@@ -2073,11 +2136,12 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   let html = '';
 
   // 点検者ロールの場合、自分が紐づけられている設備のみ表示
-  // hasAnyLinkedInspectors に関わらず、常にインスペクターフィルターを適用する
-  const inspectorFacFilter = selectedRole === 'inspector';
+  // 管理者で点検者フィルターが設定されている場合もその点検者の設備のみ表示
+  const inspectorFacFilter = selectedRole === 'inspector' || (selectedRole === 'manager' && selectedInspectorFilter !== null);
+  const filterName = selectedRole === 'inspector' ? selectedName : selectedInspectorFilter;
 
   FACILITIES.forEach((fac, fi) => {
-    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(filterName)) return;
     // 設備名が空の場合はスキップ
     if(!fac.name || !fac.name.trim()) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
@@ -2104,7 +2168,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   // 定期点検日の場合は各設備の紐づけ済み定期点検項目を表示
   if (isPeriodicDay) {
     FACILITIES.forEach((fac, fi) => {
-      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(filterName)) return;
       if(!fac.name || !fac.name.trim()) return;
       const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
       const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
@@ -2133,7 +2197,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   // 1ヶ月点検日の場合は各設備の紐づけ済み1ヶ月点検項目を表示
   if (isMonthlyDay) {
     FACILITIES.forEach((fac, fi) => {
-      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
+      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(filterName)) return;
       if(!fac.name || !fac.name.trim()) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
@@ -2200,7 +2264,15 @@ function saveEntry(){
     return;
   }
   const allOk = Object.values(checks).every(v=>v==='ok');
-  entries[k]={ checks, status: allOk?'ok':'ng', inspector: selectedName || '' };
+  // 代理入力の場合は点検者名をフィルター中の点検者、代理者を管理者名で記録
+  const inspectorName = (selectedRole === 'manager' && selectedInspectorFilter)
+    ? selectedInspectorFilter
+    : (selectedName || '');
+  const entryData = { checks, status: allOk?'ok':'ng', inspector: inspectorName };
+  if (selectedRole === 'manager' && selectedInspectorFilter) {
+    entryData.proxyBy = selectedName; // 代理入力した管理者名
+  }
+  entries[k] = entryData;
   document.getElementById('modal').classList.remove('open');
   document.body.style.overflow = '';
   document.body.style.position = '';
@@ -2775,6 +2847,7 @@ function goHome() {
     </button>`;
   setTab(0);
   setNavActive('nav-home');
+  if (selectedRole === 'manager') renderInspectorBar();
 }
 
 function setNavActive(id) {
@@ -3213,7 +3286,11 @@ function proceedToApp() {
     setNavActive('nav-home');
     goHome();
     renderCalendar();
-    if (selectedRole === 'manager') updateApprovalNotifDot();
+    if (selectedRole === 'manager') {
+      selectedInspectorFilter = null;
+      renderInspectorBar();
+      updateApprovalNotifDot();
+    }
   }, 380);
 }
 
@@ -3270,6 +3347,61 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// ── Inspector selector bar (manager calendar) ──
+function renderInspectorBar() {
+  const bar = document.getElementById('insp-selector-bar');
+  if (!bar) return;
+  if (selectedRole !== 'manager') { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+
+  const chips = [];
+  // 全員チップ
+  const allActive = selectedInspectorFilter === null;
+  chips.push(`<button class="insp-chip${allActive?' active':''}" onclick="selectInspFilter(null)">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3 2.7-5 6-5"/><circle cx="16" cy="8" r="3"/><path d="M22 20c0-3-2.7-5-6-5"/><path d="M11 20c0-3 2.2-5 5-5s5 2 5 5" style="display:none"/></svg>
+    全員
+  </button>`);
+  // 各点検者チップ
+  staffData.inspectors.forEach(name => {
+    const active = selectedInspectorFilter === name;
+    const safe = name.replace(/'/g, "\\'");
+    chips.push(`<button class="insp-chip${active?' active':''}" onclick="selectInspFilter('${safe}')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      ${name}
+    </button>`);
+  });
+  bar.innerHTML = chips.join('');
+}
+
+function selectInspFilter(name) {
+  selectedInspectorFilter = name;
+  renderInspectorBar();
+  renderCalendar();
+  // 承認画面が開いていれば再レンダー
+  const approvalView = document.getElementById('view-approval');
+  if (approvalView && approvalView.style.display === 'flex') {
+    renderApprovalInspSelector();
+    renderApprovalContent();
+  }
+}
+
+function renderApprovalInspSelector() {
+  const bar = document.getElementById('approval-insp-selector');
+  if (!bar) return;
+  const chips = [];
+  const allActive = selectedInspectorFilter === null;
+  chips.push(`<button class="insp-chip${allActive?' active':''}" onclick="selectInspFilter(null)" style="font-size:11px;padding:4px 10px;">全員</button>`);
+  staffData.inspectors.forEach(name => {
+    const active = selectedInspectorFilter === name;
+    const safe = name.replace(/'/g, "\\'");
+    chips.push(`<button class="insp-chip${active?' active':''}" onclick="selectInspFilter('${safe}')" style="font-size:11px;padding:4px 10px;">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      ${name}
+    </button>`);
+  });
+  bar.innerHTML = chips.join('');
+}
+
 function openApproval() {
   document.getElementById('view-cal').style.display        = 'none';
   document.getElementById('view-list').style.display       = 'none';
@@ -3287,6 +3419,7 @@ function openApproval() {
       </span>
       承認管理
     </div>`;
+  renderApprovalInspSelector();
   renderApprovalView();
 }
 
@@ -3338,6 +3471,8 @@ function renderApprovalContent() {
       let hasFacs = false;
 
       FACILITIES.forEach((fac, fi) => {
+        // 点検者フィルター適用
+        if (selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
         const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
         const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
         if (!facPeriodicItems.length) return;
@@ -3354,9 +3489,12 @@ function renderApprovalContent() {
         const approvalKey = k + '_f' + fi;
         const appr = (approvals[approvalKey] || {}).periodic;
 
-        // 点検者タグ
+        // 点検者タグ・代理タグ
         const inspectorTag = entry && entry.inspector
           ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+          : '';
+        const proxyTag = entry && entry.proxyBy
+          ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
           : '';
 
         const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
@@ -3376,7 +3514,7 @@ function renderApprovalContent() {
 
         facHtml += `<div class="approval-fac-item">
           <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-          ${inspectorTag}
+          ${inspectorTag}${proxyTag}
           <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
           ${actionHtml}
         </div>`;
@@ -3405,6 +3543,8 @@ function renderApprovalContent() {
     let hasFacs = false;
 
     FACILITIES.forEach((fac, fi) => {
+      // 点検者フィルター適用
+      if (selectedInspectorFilter && !(fac.linkedInspectors||[]).includes(selectedInspectorFilter)) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
       if (!facMonthlyItems.length) return;
@@ -3421,6 +3561,9 @@ function renderApprovalContent() {
 
       const inspectorTag = entry && entry.inspector
         ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+        : '';
+      const proxyTag = entry && entry.proxyBy
+        ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
         : '';
 
       const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
@@ -3440,7 +3583,7 @@ function renderApprovalContent() {
 
       facHtml += `<div class="approval-fac-item">
         <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-        ${inspectorTag}
+        ${inspectorTag}${proxyTag}
         <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
         ${actionHtml}
       </div>`;
@@ -3545,6 +3688,9 @@ function logout() {
     document.getElementById('view-approval').style.display   = 'none';
     selectedRole = null;
     selectedName = null;
+    selectedInspectorFilter = null;
+    const inspBar = document.getElementById('insp-selector-bar');
+    if (inspBar) inspBar.style.display = 'none';
     document.getElementById('card-inspector').classList.remove('selected');
     document.getElementById('card-manager').classList.remove('selected');
     document.getElementById('role-btn').classList.remove('ready');
