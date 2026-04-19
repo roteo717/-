@@ -3308,7 +3308,7 @@ function renderLinkageList() {
         <div class="link-card-icon">${fac.icon}</div>
         <div class="link-card-meta">
           <div class="link-card-name">${fac.name}</div>
-          ${fac.facNo ? `<div style="font-size:10px;color:#6a88a8;font-weight:600;margin-bottom:1px;">${fac.facNo}</div>` : ''}
+          <div style="font-size:10px;color:#6a88a8;font-weight:600;margin-bottom:1px;">${fac.facNo || 'FAC-'+String(fi+1).padStart(3,'0')}</div>
           <div class="link-ng-badge ${total ? 'ok' : 'ng'}" id="link-badge-${fi}">${total}件紐づけ</div>
         </div>
         ${delFacBtn}
@@ -3369,7 +3369,7 @@ function renderLinkageList() {
       <select id="fac-select"
         style="flex:1;border:none;outline:none;font-size:13px;color:#1a2e4a;font-family:'Noto Sans JP',sans-serif;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none;">
         <option value="" disabled selected>＋ 設備を選択...</option>
-        ${FACILITIES.map((f, i) => `<option value="${i}">${f.name}</option>`).join('')}
+        ${FACILITIES.map((f, i) => `<option value="${i}">${f.facNo ? f.facNo + ' ' : 'FAC-'+String(i+1).padStart(3,'0')+' '}${f.name}</option>`).join('')}
       </select>
       <svg style="width:14px;height:14px;stroke:#889;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;pointer-events:none;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
       <button onclick="openFacFromSelect()"
