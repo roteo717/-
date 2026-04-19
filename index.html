@@ -532,6 +532,7 @@
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.5);
     display: none; align-items: flex-end; z-index: 20;
+    overscroll-behavior: contain;
   }
   .modal-overlay.open { display: flex; }
   .modal-sheet {
@@ -550,6 +551,8 @@
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     padding: 0 20px;
   }
   .modal-footer {
@@ -1845,6 +1848,9 @@ function dayClick(d){
 
   renderAllFacChecks(e.checks, isPeriodicDay, isMonthlyDay);
   document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
 }
 
 // 定期点検日セット計算ヘルパー（renderCalendar と共有）
@@ -2011,8 +2017,12 @@ function setAllPass(){
 }
 
 function closeModal(e){
-  if(!e||e.target===document.getElementById('modal'))
+  if(!e||e.target===document.getElementById('modal')) {
     document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+  }
 }
 
 function saveEntry(){
@@ -2029,6 +2039,9 @@ function saveEntry(){
   const allOk = Object.values(checks).every(v=>v==='ok');
   entries[k]={ checks, status: allOk?'ok':'ng', inspector: selectedName || '' };
   document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
   renderCalendar();
   persistData();
 }
