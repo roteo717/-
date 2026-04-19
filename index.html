@@ -1196,7 +1196,6 @@
       <div class="legend-item"><div class="legend-dot" style="background:#d0eaff;border:1.5px solid #a0c8f0;border-radius:4px;"></div>点検済み</div>
       <div class="legend-item"><div class="legend-dot" style="background:#efefef;border:1.5px solid #ddd;border-radius:4px;"></div>点検未</div>
       <div class="legend-item"><div class="legend-dot" style="background:#ffd0d0;border:1.5px solid #f09090;border-radius:4px;"></div>不備あり</div>
-      <div class="legend-item"><div class="periodic-badge" style="font-size:7px;padding:1px 4px;margin-top:0;">定期点検</div></div>
     </div>
   </div>
 
@@ -1544,7 +1543,7 @@ function renderCalendar(){
 
     const isPeriodic = periodicDays.has(d);
     const isMonthly  = (d === monthlyDay);
-    const badgeHtml  = (isPeriodic ? '<div class="periodic-badge">定期点検</div>' : '')
+    const badgeHtml  = ''
 
 
     const cell=document.createElement('div');
@@ -1907,7 +1906,13 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   const container = document.getElementById('item-checks');
   itemStatuses = {};
   let html = '';
+
+  // 点検者ロールの場合、自分が紐づけられている設備のみ表示
+  const hasAnyLinkedInspectors = FACILITIES.some(f => (f.linkedInspectors||[]).length > 0);
+  const inspectorFacFilter = selectedRole === 'inspector' && hasAnyLinkedInspectors;
+
   FACILITIES.forEach((fac, fi) => {
+    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
     const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
     if(!linkedItems.length) return;
     // facility header
@@ -1932,6 +1937,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   // 定期点検日の場合は各設備の紐づけ済み定期点検項目を表示
   if (isPeriodicDay) {
     FACILITIES.forEach((fac, fi) => {
+      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
       const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
       const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
       if (!facPeriodicItems.length) return;
@@ -1959,6 +1965,7 @@ function renderAllFacChecks(savedChecks, isPeriodicDay, isMonthlyDay){
   // 1ヶ月点検日の場合は各設備の紐づけ済み1ヶ月点検項目を表示
   if (isMonthlyDay) {
     FACILITIES.forEach((fac, fi) => {
+      if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
       if (!facMonthlyItems.length) return;
@@ -2418,8 +2425,37 @@ function addSettingsRow(type) {
     const ICON_MONTHLY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>`;
     icon = ICON_MONTHLY; labelPrefix = '1ヶ月点検項目'; placeholder = '項目名を入力';
   } else if (type === 'facilities') {
-    card = document.getElementById('settings-facilities-card');
-    icon = ICON_GEAR; labelPrefix = '設備'; placeholder = '設備名を入力';
+    // 設備は FACILITIES 配列に追加し、正しいIDつきrowを生成する
+    const icons = Object.keys(FACILITY_ICONS);
+    const iconKey = icons[FACILITIES.length % icons.length];
+    const nextNo = 'FAC-' + String(FACILITIES.length + 1).padStart(3, '0');
+    FACILITIES.push({ icon: FACILITY_ICONS[iconKey], iconKey, facNo: nextNo, name: '', items: [], linkedKeys: [], linkedInspectors: [], linkedPeriodicKeys: [], linkedMonthlyKeys: [] });
+    const fi = FACILITIES.length - 1;
+    // 設備カードだけ再描画（他の入力欄に影響しない）
+    const facCard = document.getElementById('settings-facilities-card');
+    if (facCard) {
+      facCard.innerHTML = FACILITIES.map((fac, idx) => `<div class="settings-row">
+        <div class="settings-row-icon">${ICON_GEAR}</div>
+        <div class="settings-row-body" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+          <div style="flex-shrink:0;">
+            <div class="settings-row-label" style="font-size:9px;color:#aab;margin-bottom:1px;">設備No.</div>
+            <input class="settings-row-input" id="set-fac-no-${idx}" value="${fac.facNo||''}" placeholder="FAC-001" onblur="saveSettings()" style="width:68px;font-size:12px;color:#4a6080;font-weight:700;border-bottom:1px solid #d0d8e8;">
+          </div>
+          <div style="width:1px;height:30px;background:#e8ecf4;flex-shrink:0;"></div>
+          <div style="flex:1;min-width:0;">
+            <div class="settings-row-label" style="font-size:9px;color:#aab;margin-bottom:1px;">設備名</div>
+            <input class="settings-row-input" id="set-fac-${idx}" value="${fac.name}" placeholder="設備名を入力" onblur="saveSettings()">
+          </div>
+        </div>
+        ${DEL_BTN}
+      </div>`).join('');
+    }
+    // 追加したrowの設備名inputにフォーカス
+    const inp = document.getElementById('set-fac-' + fi);
+    if (inp) { inp.focus(); inp.select(); }
+    updateCounts();
+    persistData();
+    return;
   } else if (type === 'managers') {
     card = document.getElementById('settings-managers-card');
     icon = mgrIcon; labelPrefix = '管理者'; placeholder = '管理者名を入力';
@@ -2720,15 +2756,18 @@ function renderLinkageList() {
     </div>`;
   }).join('');
 
-  // 設備追加フォーム
+  // 設備選択ドロップダウン（編集タブの設備名リストから選択）
   const addFacRow = `<div style="padding:12px 14px 16px;">
     <div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #eef0f4;">
-      <input id="new-fac-input" placeholder="＋ 新しい設備名を入力"
-        style="flex:1;border:none;outline:none;font-size:13px;color:#1a2e4a;font-family:'Noto Sans JP',sans-serif;background:transparent;"
-        onkeydown="if(event.key==='Enter')addFacilityFromInput()">
-      <button onclick="addFacilityFromInput()"
+      <select id="fac-select"
+        style="flex:1;border:none;outline:none;font-size:13px;color:#1a2e4a;font-family:'Noto Sans JP',sans-serif;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none;">
+        <option value="" disabled selected>＋ 設備を選択...</option>
+        ${FACILITIES.map((f, i) => `<option value="${i}">${f.name}</option>`).join('')}
+      </select>
+      <svg style="width:14px;height:14px;stroke:#889;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;pointer-events:none;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      <button onclick="openFacFromSelect()"
         style="flex-shrink:0;padding:7px 16px;border:none;border-radius:20px;background:linear-gradient(135deg,#e06020,#c04010);color:#fff;font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">
-        追加
+        開く
       </button>
     </div>
   </div>`;
@@ -2856,25 +2895,24 @@ function toggleLinkMonthlyItem(fi, key) {
   if (card) card.classList.add('open');
 }
 
-function addFacilityFromInput() {
-  const inp = document.getElementById('new-fac-input');
-  const name = inp ? inp.value.trim() : '';
-  if (!name) { inp && inp.focus(); return; }
-  const icons = Object.keys(FACILITY_ICONS);
-  const iconKey = icons[FACILITIES.length % icons.length];
-  FACILITIES.push({ icon: FACILITY_ICONS[iconKey], iconKey, facNo: '', name, items: [], linkedKeys: [], linkedInspectors: [], linkedPeriodicKeys: [], linkedMonthlyKeys: [] });
-  renderLinkageList();
-  updateCounts();
-  persistData();
-  const newFi = FACILITIES.length - 1;
-  const body = document.getElementById('link-body-' + newFi);
-  const card = document.getElementById('link-card-' + newFi);
+function openFacFromSelect() {
+  const sel = document.getElementById('fac-select');
+  if (!sel || sel.value === '') {
+    showHistToast('⚠ 設備を選択してください');
+    return;
+  }
+  const fi = parseInt(sel.value, 10);
+  const body = document.getElementById('link-body-' + fi);
+  const card = document.getElementById('link-card-' + fi);
   if (body) body.style.display = 'block';
-  if (card) card.classList.add('open');
-  showHistToast('✓ 設備「' + name + '」を追加しました');
+  if (card) {
+    card.classList.add('open');
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+  sel.value = '';
 }
 
-function promptAddFacility() { addFacilityFromInput(); }
+function promptAddFacility() { /* 編集タブから設備を追加してください */ }
 
 let selectedName = null;
 
@@ -2981,6 +3019,8 @@ function proceedToApp() {
       labelEl.textContent = 'アラート';
     }
     setNavActive('nav-home');
+    goHome();
+    renderCalendar();
   }, 380);
 }
 
@@ -3052,6 +3092,11 @@ function logout() {
   app.style.opacity = '0';
   setTimeout(() => {
     app.style.display = 'none';
+    // ビュー状態をリセット
+    document.getElementById('view-cal').style.display        = 'block';
+    document.getElementById('view-list').style.display       = 'none';
+    document.getElementById('view-settings').style.display   = 'none';
+    document.getElementById('view-facilities').style.display = 'none';
     selectedRole = null;
     selectedName = null;
     document.getElementById('card-inspector').classList.remove('selected');
