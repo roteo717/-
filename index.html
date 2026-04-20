@@ -678,17 +678,336 @@
   .detail-status.warn { background: #ffe8cc; color: #8a3c00; }
   .detail-status.ng   { background: #ffd0d0; color: #8a0000; }
 
-  /* history row */
-  .hist-row { position: relative; }
+  /* ── History Screen ── */
+
+  /* 設備カード外枠 */
+  .hist-fac-card {
+    margin: 12px 14px 0;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+    border: 1px solid #eaecf2;
+    background: #fff;
+  }
+
+  /* カードヘッダー */
+  .hist-fac-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s;
+    position: relative;
+  }
+  .hist-fac-header:active { background: rgba(0,0,0,0.03); }
+
+  /* ヘッダー左アイコン */
+  .hist-fac-icon-wrap {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* 設備名・サブ */
+  .hist-fac-meta { flex: 1; min-width: 0; }
+  .hist-fac-name {
+    font-size: 15px; font-weight: 700; color: #1a2030;
+    line-height: 1.3; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .hist-fac-sub {
+    font-size: 11px; color: #8a9ab0; margin-top: 2px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hist-fac-ng-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 700;
+    border-radius: 6px; padding: 1px 6px;
+  }
+  .hist-fac-ng-badge.has-ng {
+    background: #fde8e8; color: #c02020;
+  }
+  .hist-fac-ng-badge.all-ok {
+    background: #e0f5ea; color: #1a6a3a;
+  }
+
+  /* 右端ステータスアイコン + シェブロン */
+  .hist-fac-status-icon {
+    flex-shrink: 0; display: flex; align-items: center;
+  }
+  .hist-fac-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #f0f2f6;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: transform .25s ease, background .15s;
+  }
+  .hist-fac-chevron svg {
+    width: 13px; height: 13px; stroke: #8a9ab0;
+    stroke-width: 2.2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform .25s ease;
+  }
+  .hist-fac-card.open .hist-fac-chevron { background: #e8ecf4; }
+  .hist-fac-card.open .hist-fac-chevron svg { transform: rotate(180deg); }
+
+  /* カードボディ（開閉） */
+  .hist-fac-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height .35s ease;
+    background: #f7f8fc;
+    border-top: 1.5px solid transparent;
+  }
+  .hist-fac-card.open .hist-fac-body {
+    max-height: 3000px;
+    border-top-color: #eaedf4;
+  }
+
+  /* 日付ブロック */
+  .hist-day-block {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #eaedf4;
+    background: #fff;
+  }
+  .hist-day-block:last-of-type { border-bottom: none; }
+
+  /* 日付ヘッダー行 */
+  .hist-day-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .hist-day-pill {
+    display: flex; align-items: baseline; gap: 3px;
+  }
+  .hist-day-num {
+    font-size: 26px; font-weight: 800; color: #1a2030;
+    line-height: 1; letter-spacing: -1px;
+  }
+  .hist-day-month {
+    font-size: 13px; font-weight: 600; color: #6a7a90;
+  }
+  .hist-day-right {
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* 担当者タグ */
+  .hist-inspector-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #2a5aaa;
+    background: #eaf0fc; border: 1px solid #bcd0f0;
+    border-radius: 20px; padding: 3px 10px;
+  }
+  .hist-inspector-tag svg {
+    width: 10px; height: 10px; stroke: #2a5aaa;
+    stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .hist-proxy-tag {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 600; color: #7a5010;
+    background: #fff8e0; border: 1px solid #e0c060;
+    border-radius: 20px; padding: 3px 9px;
+  }
+
+  /* 日の合計ステータスバッジ */
+  .hist-day-status {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .hist-day-status.ok { background: #e0f5ea; }
+  .hist-day-status.ng { background: #fde8e8; }
+  .hist-day-status svg {
+    width: 14px; height: 14px; stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .hist-day-status.ok svg { stroke: #1a6a3a; }
+  .hist-day-status.ng svg { stroke: #c02020; }
+
+  /* チェック項目リスト（通常） */
+  .hist-check-list {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .hist-check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    background: #f5f6f8; border: 1px solid #e8ecf4;
+  }
+  .hist-check-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .hist-check-icon.ok { background: #e0f5ea; }
+  .hist-check-icon.ng { background: #fde8e8; }
+  .hist-check-icon svg {
+    width: 11px; height: 11px; stroke-width: 2.8; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .hist-check-icon.ok svg { stroke: #1a6a3a; }
+  .hist-check-icon.ng svg { stroke: #c02020; }
+  .hist-check-label {
+    flex: 1; font-size: 12px; color: #2a3040; font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hist-check-result {
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
+  }
+  .hist-check-result.ok { color: #1a6a3a; }
+  .hist-check-result.ng { color: #c02020; }
+
+  /* 定期点検ボックス（オレンジ系） */
+  .hist-periodic-box {
+    margin-top: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid #fad0b0;
+  }
+  .hist-periodic-header {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px;
+    background: linear-gradient(135deg, #fff3ee, #ffe8d4);
+    border-bottom: 1px solid #fad0b0;
+  }
+  .hist-periodic-label {
+    font-size: 10px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #e06020, #c04010);
+    border-radius: 5px; padding: 2px 7px;
+    letter-spacing: .3px;
+  }
+  .hist-periodic-title {
+    font-size: 11px; font-weight: 700; color: #a03010;
+    flex: 1;
+  }
+  .hist-periodic-appr-badge {
+    font-size: 10px; font-weight: 700;
+    border-radius: 6px; padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .hist-periodic-appr-badge.approved {
+    color: #1a6a3a; background: #d0f0e0;
+  }
+  .hist-periodic-appr-badge.pending {
+    color: #8a4a00; background: #fff0dd;
+  }
+  .hist-periodic-items {
+    display: flex; flex-direction: column; gap: 0;
+    background: #fff9f5;
+    padding: 6px 8px;
+  }
+  .hist-periodic-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 8px;
+    background: transparent;
+    transition: background .1s;
+  }
+  .hist-periodic-item + .hist-periodic-item {
+    border-top: 1px solid #fae0cc;
+  }
+  .hist-periodic-item-label {
+    flex: 1; font-size: 12px; color: #5a3010; font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hist-periodic-item-result {
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
+  }
+  .hist-periodic-item-result.ok { color: #a03010; }
+  .hist-periodic-item-result.ng { color: #c02020; }
+
+  /* 1ヶ月点検ボックス（ブルー系） */
+  .hist-monthly-box {
+    margin-top: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid #b0ccf0;
+  }
+  .hist-monthly-header {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px;
+    background: linear-gradient(135deg, #eef4ff, #ddeaff);
+    border-bottom: 1px solid #b0ccf0;
+  }
+  .hist-monthly-label {
+    font-size: 10px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
+    border-radius: 5px; padding: 2px 7px;
+    letter-spacing: .3px;
+  }
+  .hist-monthly-title {
+    font-size: 11px; font-weight: 700; color: #1a4a80;
+    flex: 1;
+  }
+  .hist-monthly-appr-badge {
+    font-size: 10px; font-weight: 700;
+    border-radius: 6px; padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .hist-monthly-appr-badge.approved { color: #1a6a3a; background: #d0f0e0; }
+  .hist-monthly-appr-badge.pending  { color: #8a4a00; background: #fff0dd; }
+  .hist-monthly-items {
+    display: flex; flex-direction: column;
+    background: #f5f8ff;
+    padding: 6px 8px;
+  }
+  .hist-monthly-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 8px;
+  }
+  .hist-monthly-item + .hist-monthly-item {
+    border-top: 1px solid #c8dcf4;
+  }
+  .hist-monthly-item-label {
+    flex: 1; font-size: 12px; color: #1a2a50; font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hist-monthly-item-result {
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
+  }
+  .hist-monthly-item-result.ok { color: #1a4a80; }
+  .hist-monthly-item-result.ng { color: #c02020; }
+
+  /* 削除ボタン（行末） */
   .hist-del-btn {
-    width: 38px; height: 38px; border-radius: 12px;
+    width: 32px; height: 32px; border-radius: 10px;
     background: #fdecea; border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background .15s, transform .12s;
-    opacity: 1;
   }
-  .hist-del-btn:hover { background: #fac9c4 !important; transform: scale(1.07); }
-  .hist-del-btn svg { width: 16px; height: 16px; stroke: #d63b2f; stroke-width: 2; fill: none; stroke-linecap: round; }
+  .hist-del-btn:hover { background: #fac9c4; transform: scale(1.07); }
+  .hist-del-btn svg { width: 14px; height: 14px; stroke: #d63b2f; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* 全削除ボタン */
+  .hist-del-all-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 600; color: #cc4444;
+    background: #fff0f0; border: 1px solid #f8c0c0; border-radius: 20px;
+    padding: 3px 9px; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: background .15s; flex-shrink: 0;
+  }
+  .hist-del-all-btn:hover { background: #ffd0d0; }
+  .hist-del-all-btn svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+
+  /* 月のヘッダーバー */
+  .hist-month-strip {
+    background: #fff;
+    border-bottom: 2px solid #e06020;
+    padding: 14px 20px 10px;
+  }
+  .hist-month-strip-title {
+    font-size: 11px; font-weight: 700; color: #8a9ab0;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .hist-month-strip-label {
+    font-size: 20px; font-weight: 800; color: #1a2030; letter-spacing: -.5px;
+  }
 
   /* facility card header delete-all button */
   .fac-del-all-btn {
@@ -1058,7 +1377,7 @@
   /* ── Approval View ── */
   .approval-view {
     display: none; flex-direction: column;
-    background: #f5f6f8; flex: 1; overflow-y: auto;
+    background: #f2f3f7; flex: 1; overflow-y: auto;
   }
   .approval-month-nav {
     display: flex; align-items: center; justify-content: space-between;
@@ -1069,101 +1388,225 @@
   .approval-month-title {
     font-size: 15px; font-weight: 700; color: #1a2e4a;
   }
+
+  /* ── 新カード設計 ── */
   .approval-section {
-    margin: 12px 14px 0;
+    margin: 10px 14px 0;
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-radius: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     overflow: hidden;
   }
   .approval-section-header {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 16px;
     border-bottom: 1px solid #f0f0f4;
+    background: #fff;
   }
   .approval-section-title {
     font-size: 13px; font-weight: 700; color: #1a2e4a; flex: 1;
   }
+
+  /* 日付グループのラッパー */
   .approval-day-row {
-    display: flex; flex-direction: column; gap: 8px;
-    padding: 12px 14px; border-bottom: 1px solid #f0f2f6;
+    display: block;
+    padding: 10px 12px 6px;
+    border-bottom: 1px solid #f0f1f5;
   }
   .approval-day-row:last-child { border-bottom: none; }
+
+  /* 日付バッジ（縦構造の上段左） */
   .approval-day-badge {
-    display: inline-flex; align-items: center;
-    font-size: 13px; font-weight: 800; color: #fff;
-    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
-    border-radius: 8px; padding: 3px 10px;
-    align-self: flex-start; letter-spacing: .5px;
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; color: #2a4a7a;
+    background: #eef2f8; border-radius: 20px;
+    padding: 3px 10px; margin-bottom: 8px;
+    letter-spacing: .3px;
   }
-  .approval-fac-list { display: flex; flex-direction: column; gap: 8px; }
+
+  /* カードリスト */
+  .approval-fac-list {
+    display: flex; flex-direction: column; gap: 10px;
+    padding-bottom: 4px;
+  }
+
+  /* ── iOS級カード本体 ── */
   .approval-fac-item {
-    display: flex; flex-direction: column; gap: 8px;
-    padding: 10px 12px; border-radius: 14px;
-    background: #fff; border: 1px solid #e4e8f0;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex; flex-direction: column;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   }
-  /* 上段: アイコン＋施設名＋担当者タグ */
-  .approval-fac-top {
-    display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  .approval-fac-item:active { transform: scale(0.98); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  /* ステータス別カラー */
+  .approval-fac-item.status-not-done {
+    background: #fff8f8;
+    border-color: #fddcdc;
+    border-left: 4px solid #e03a3a;
   }
-  .approval-fac-name {
-    font-size: 13px; font-weight: 700; color: #1a2e4a;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    max-width: 140px;
+  .approval-fac-item.status-inspected {
+    background: #fffbf7;
+    border-color: #fde6cc;
+    border-left: 4px solid #e06020;
   }
-  /* 下段: ステータス＋アクションボタン */
-  .approval-fac-bottom {
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  .approval-fac-item.status-approved {
+    background: #f5f6f8;
+    border-color: #dde8e0;
+    border-left: 4px solid #28a060;
   }
-  .approval-fac-bottom-left {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+
+  /* 【1段目】日付+ステータスバッジ */
+  .appr-row1 {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 0 16px;
+    gap: 8px;
   }
-  .approval-fac-bottom-right {
-    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+
+  /* ステータスバッジ */
+  .appr-status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; border-radius: 20px;
+    padding: 3px 10px; white-space: nowrap; flex-shrink: 0;
+    letter-spacing: .3px;
   }
-  .approval-insp-status {
-    font-size: 11px; font-weight: 600; padding: 3px 9px;
-    border-radius: 20px; flex-shrink: 0;
+  .appr-status-badge.badge-not-done {
+    background: #fde8e8; color: #c02020;
+    border: 1px solid #f8c0c0;
   }
-  .approval-insp-status.done {
-    background: #d0f0e0; color: #166534;
+  .appr-status-badge.badge-inspected {
+    background: #fff0e0; color: #b84000;
+    border: 1px solid #fad4a8;
   }
-  .approval-insp-status.not-done {
-    background: #f5e0e0; color: #880000;
+  .appr-status-badge.badge-approved {
+    background: #e0f5ea; color: #1a6a3a;
+    border: 1px solid #a8dfc0;
   }
-  .approval-approve-btn {
-    padding: 7px 16px; border: none; border-radius: 10px;
-    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
-    color: #fff; font-size: 12px; font-weight: 700;
+  .appr-status-badge svg {
+    width: 10px; height: 10px; stroke: currentColor;
+    stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* 【2段目】設備名+点検者タグ */
+  .appr-row2 {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 6px 16px 0;
+    gap: 8px;
+  }
+  .appr-fac-name {
+    font-size: 15px; font-weight: 700; color: #1a2030;
+    line-height: 1.3; flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 点検者タグ（青） */
+  .appr-inspector-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600; color: #2a5aaa;
+    background: #eaf0fc; border: 1px solid #bcd0f0;
+    border-radius: 20px; padding: 2px 9px; flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .appr-inspector-tag svg {
+    width: 9px; height: 9px; stroke: #2a5aaa;
+    stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* 実施者・代理タグ */
+  .appr-extra-tag {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 600;
+    border-radius: 20px; padding: 2px 9px; flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .appr-extra-tag.executor {
+    color: #2a6a2a; background: #e8f8e8; border: 1px solid #80c880;
+  }
+  .appr-extra-tag.proxy {
+    color: #7a5010; background: #fff8e0; border: 1px solid #e0c060;
+  }
+
+  /* 【3段目】アクション行 */
+  .appr-row3 {
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 10px 14px 14px;
+    gap: 8px;
+  }
+
+  /* 「承認する」ボタン（大・オレンジ） */
+  .appr-approve-btn {
+    padding: 10px 24px; border: none; border-radius: 22px;
+    background: linear-gradient(135deg, #f07020, #d04a10);
+    color: #fff; font-size: 13px; font-weight: 700;
     font-family: 'Noto Sans JP', sans-serif;
-    cursor: pointer; flex-shrink: 0; white-space: nowrap;
-    transition: opacity .15s; letter-spacing: .3px;
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(220,80,20,0.35);
+    transition: opacity .15s, transform .12s;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+    display: flex; align-items: center; gap: 6px;
   }
-  .approval-approve-btn:hover { opacity: .85; }
-  .approval-approve-btn:disabled {
-    background: #d0d4de; color: #999; cursor: not-allowed; opacity: 1;
+  .appr-approve-btn:hover { opacity: .88; transform: scale(1.02); }
+  .appr-approve-btn:active { transform: scale(0.97); }
+  .appr-approve-btn svg {
+    width: 14px; height: 14px; stroke: #fff;
+    stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
   }
-  .approval-approved-badge {
-    display: flex; align-items: center; gap: 4px;
-    font-size: 12px; font-weight: 700; color: #166534;
-    background: #d0f0e0; border-radius: 10px; padding: 5px 12px;
-    flex-shrink: 0; white-space: nowrap;
-    border: 1px solid #a8dcc0;
+
+  /* 承認済みバッジ（グリーン） */
+  .appr-approved-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 700; color: #1a6a3a;
+    background: #e0f5ea; border: 1px solid #a8dfc0;
+    border-radius: 22px; padding: 8px 16px;
+    white-space: nowrap; flex-shrink: 0;
   }
-  .approval-approved-badge svg { width: 12px; height: 12px; stroke: #166534; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .approval-unapprove-btn {
-    padding: 5px 10px; border: 1px solid #c8d0d8; border-radius: 8px;
-    background: #f5f7fa; color: #778; font-size: 11px;
+  .appr-approved-badge svg {
+    width: 13px; height: 13px; stroke: #1a6a3a;
+    stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* 承認取消ボタン */
+  .appr-unapprove-btn {
+    padding: 7px 14px; border: 1.5px solid #c8ccd8; border-radius: 20px;
+    background: #fff; color: #889; font-size: 11px; font-weight: 600;
     font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
-    flex-shrink: 0; transition: background .12s; white-space: nowrap;
+    flex-shrink: 0; transition: background .12s, border-color .12s;
+    white-space: nowrap; min-height: 36px;
   }
-  .approval-unapprove-btn:hover { background: #eaecf0; }
+  .appr-unapprove-btn:hover { background: #f5f5f8; border-color: #b0b4c0; color: #667; }
+
+  /* 未点検の非活性ラベル */
+  .appr-not-done-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; color: #c02020;
+    background: #fde8e8; border: 1px solid #f8c0c0;
+    border-radius: 20px; padding: 7px 14px;
+    white-space: nowrap;
+  }
+  .appr-not-done-label svg {
+    width: 12px; height: 12px; stroke: #c02020;
+    stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
   .approval-no-items {
-    padding: 20px 16px; text-align: center; color: #aab; font-size: 13px;
+    padding: 32px 20px; text-align: center; color: #aab; font-size: 13px;
   }
+
+  /* タブ */
   .approval-tabs {
-    display: flex; margin: 12px 14px 0; gap: 8px;
+    display: flex; margin: 10px 14px 0; gap: 8px;
   }
   .approval-tab {
     flex: 1; padding: 10px; border-radius: 12px;
@@ -1182,10 +1625,38 @@
     border-radius: 50%; background: #e06020;
     margin-left: 4px; vertical-align: middle;
   }
+  /* 旧クラス（後方互換用・参照なし） */
   .approval-inspector-tag {
     font-size: 10px; color: #fff; background: #2a4a7a;
     border-radius: 20px; padding: 1px 7px; flex-shrink: 0;
   }
+  .approval-fac-name { flex: 1; font-size: 13px; font-weight: 600; color: #334; }
+  .approval-insp-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
+  .approval-insp-status.done { background: #d0f0e0; color: #166534; }
+  .approval-insp-status.not-done { background: #f5e0e0; color: #880000; }
+  .approval-approve-btn {
+    padding: 5px 12px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #2a6aaa, #1a4a80);
+    color: #fff; font-size: 11px; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer; flex-shrink: 0; white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .approval-approve-btn:disabled { background: #ccd; color: #fff; cursor: not-allowed; opacity: 1; }
+  .approval-approved-badge {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #1a6a3a;
+    background: #d0f0e0; border-radius: 10px; padding: 4px 10px;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .approval-approved-badge svg { width: 11px; height: 11px; stroke: #1a6a3a; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .approval-unapprove-btn {
+    padding: 3px 8px; border: 1px solid #b0ccb0; border-radius: 8px;
+    background: #fff; color: #889; font-size: 10px;
+    font-family: 'Noto Sans JP', sans-serif; cursor: pointer;
+    flex-shrink: 0; transition: background .12s;
+  }
+  .approval-unapprove-btn:hover { background: #f0f0f0; }
 
   /* ── Inspector Selector Bar ── */
   /* ── Inspector Filter Bar (compact) ── */
@@ -1479,15 +1950,19 @@
   </div>
 
   <!-- List view -->
-  <div id="view-list" style="display:none; background:#f5f6f8; min-height:200px;">
-    <div id="hist-month-nav" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:#fff;border-bottom:1px solid #eee;">
-      <button onclick="histPrevMonth()" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a0a0a4,#7c7c82);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(100,100,110,0.3);">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div id="hist-month-label" style="font-size:15px;font-weight:700;color:#1a2e4a;letter-spacing:.5px;"></div>
-      <button onclick="histNextMonth()" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a0a0a4,#7c7c82);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(100,100,110,0.3);">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+  <div id="view-list" style="display:none; background:#f2f3f7; min-height:200px;">
+    <!-- 検査履歴ヘッダー -->
+    <div class="hist-month-strip">
+      <div class="hist-month-strip-title">検査履歴</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+        <button onclick="histPrevMonth()" style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.06);border:1.5px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#4a4a5a;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div id="hist-month-label" class="hist-month-strip-label"></div>
+        <button onclick="histNextMonth()" style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.06);border:1.5px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#4a4a5a;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
     </div>
     <div id="hist-insp-selector-bar" class="insp-selector-bar" style="display:none;"></div>
     <div id="list-content"></div>
@@ -1979,24 +2454,22 @@ function updateAverages(){
 function renderList(){
   // 月ナビゲーションのラベル更新
   const histLabel = document.getElementById('hist-month-label');
-  if (histLabel) histLabel.textContent = viewYear + '年 ' + (viewMonth + 1) + '月';
+  if (histLabel) histLabel.textContent = viewYear + '年' + (viewMonth + 1) + '月';
 
-  const c=document.getElementById('list-content');
-  const monthEntries=Object.keys(entries)
-    .filter(k=>{
-      const p=k.split('-');
-      if(!(parseInt(p[0])===viewYear&&parseInt(p[1])===(viewMonth+1))) return false;
+  const c = document.getElementById('list-content');
+  const monthEntries = Object.keys(entries)
+    .filter(k => {
+      const p = k.split('-');
+      if (!(parseInt(p[0]) === viewYear && parseInt(p[1]) === (viewMonth + 1))) return false;
       const en = entries[k];
-      // 点検者ロールの場合は自分の記録のみ表示
-      if(selectedRole === 'inspector'){
+      if (selectedRole === 'inspector') {
         return en && (
           en.inspector === selectedName ||
           en.proxyBy === selectedName ||
           Object.values(en.facInspectors || {}).includes(selectedName)
         );
       }
-      // 管理者で点検者フィルターが有効な場合は選択中の点検者の記録のみ表示
-      if(selectedRole === 'manager' && inspFilterActive()){
+      if (selectedRole === 'manager' && inspFilterActive()) {
         return en && selectedInspectorFilter.some(n =>
           en.inspector === n ||
           en.proxyBy === n ||
@@ -2005,45 +2478,43 @@ function renderList(){
       }
       return true;
     })
-    .sort((a,b)=>parseInt(a.split('-')[2])-parseInt(b.split('-')[2]));
+    .sort((a, b) => parseInt(a.split('-')[2]) - parseInt(b.split('-')[2]));
 
-  if(!monthEntries.length){
-    c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">この月の記録はありません</div>';
+  if (!monthEntries.length) {
+    c.innerHTML = '<div style="padding:40px 20px;text-align:center;color:#aab;font-size:13px;">この月の記録はありません</div>';
     return;
   }
 
   const inspectorFacFilter = selectedRole === 'inspector';
-  const mo = viewMonth+1;
-  let html='';
+  const mo = viewMonth + 1;
+  let html = '';
 
-  FACILITIES.forEach((fac, fi)=>{
-    if(inspectorFacFilter && !(fac.linkedInspectors||[]).includes(selectedName)) return;
-    if(selectedRole === 'manager' && inspFilterActive() && !facMatchesInspFilter(fac)) return;
-    if(!fac.name || !fac.name.trim()) return;
-    const linkedItems = inspectionItems.filter(it => (fac.linkedKeys||[]).includes(it.key));
-    if(!linkedItems.length) return;
+  const daysInMonthForList = getDays(viewYear, viewMonth);
+  const periodicDaysSet    = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonthForList);
+  const monthlyDayNum      = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonthForList);
 
-    // Collect entries that have data for this facility
-    const facEntries = monthEntries.filter(k=>{
-      return linkedItems.some((_,i)=> (entries[k].checks||{})['f'+fi+'_'+i] !== undefined);
-    });
-    if(!facEntries.length) return;
+  FACILITIES.forEach((fac, fi) => {
+    if (inspectorFacFilter && !(fac.linkedInspectors || []).includes(selectedName)) return;
+    if (selectedRole === 'manager' && inspFilterActive() && !facMatchesInspFilter(fac)) return;
+    if (!fac.name || !fac.name.trim()) return;
+    const linkedItems = inspectionItems.filter(it => (fac.linkedKeys || []).includes(it.key));
+    if (!linkedItems.length) return;
 
-    const ngCount = facEntries.filter(k=>
-      linkedItems.some((_,i)=> (entries[k].checks||{})['f'+fi+'_'+i] === 'ng')
+    const facEntries = monthEntries.filter(k =>
+      linkedItems.some((_, i) => (entries[k].checks || {})['f' + fi + '_' + i] !== undefined)
+    );
+    if (!facEntries.length) return;
+
+    const ngCount = facEntries.filter(k =>
+      linkedItems.some((_, i) => (entries[k].checks || {})['f' + fi + '_' + i] === 'ng')
     ).length;
     const allOk = ngCount === 0;
 
-    let rows='';
-    const daysInMonthForList = getDays(viewYear, viewMonth);
-    const periodicDaysSet = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonthForList);
-    const monthlyDayNum   = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonthForList);
-
-    facEntries.forEach(k=>{
-      const d = parseInt(k.split('-')[2]);
-      const e = entries[k];
-
-      // Periodic / monthly flags for this day
+    // ── 日付ブロック ──
+    let dayBlocksHtml = '';
+    facEntries.forEach(k => {
+      const d   = parseInt(k.split('-')[2]);
+      const e   = entries[k];
       const isPeriodicDay = periodicDaysSet.has(d);
       const isMonthlyDay  = (d === monthlyDayNum);
 
@@ -2052,147 +2523,207 @@ function renderList(){
       const linkedMonthlyKeys  = fac.linkedMonthlyKeys || [];
       const facMonthlyItems    = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
 
-      const rowNg      = linkedItems.some((_,i)=> (e.checks||{})['f'+fi+'_'+i] === 'ng');
-      const periodicNg = isPeriodicDay && facPeriodicItems.some((_,i) => (e.checks||{})['periodic_f'+fi+'_'+i] === 'ng');
-      const monthlyNg  = isMonthlyDay  && facMonthlyItems.some((_,i)  => (e.checks||{})['monthly_f'+fi+'_'+i]  === 'ng');
+      const rowNg      = linkedItems.some((_, i) => (e.checks || {})['f' + fi + '_' + i] === 'ng');
+      const periodicNg = isPeriodicDay && facPeriodicItems.some((_, i) => (e.checks || {})['periodic_f' + fi + '_' + i] === 'ng');
+      const monthlyNg  = isMonthlyDay && facMonthlyItems.some((_, i) => (e.checks || {})['monthly_f' + fi + '_' + i] === 'ng');
       const anyNg      = rowNg || periodicNg || monthlyNg;
-      const statusCls  = anyNg ? 'ng' : 'ok';
 
-      // ── 毎日点検チップス ──
-      let chipsHtml = '';
-      linkedItems.forEach((item,i)=>{
-        const sk='f'+fi+'_'+i;
-        const v=(e.checks||{})[sk];
-        const isNg=v==='ng';
-        chipsHtml+=`<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${isNg?'#cc0000':'#166534'};margin-right:10px;">`
-          +`${item.label}<span style="font-weight:700;margin-left:2px;">${isNg?'✕':'○'}</span></span>`;
+      // 担当者タグ
+      const inspFiName = (e.facInspectors && e.facInspectors['f' + fi]) || e.inspector;
+      const inspTagHtml = inspFiName
+        ? `<span class="hist-inspector-tag">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+             ${inspFiName}
+           </span>`
+        : '';
+      const proxyTagHtml = e.proxyBy
+        ? `<span class="hist-proxy-tag">代理:${e.proxyBy}</span>`
+        : '';
+
+      // 削除ボタン
+      const delBtnHtml = selectedRole === 'manager'
+        ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除">
+             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+           </button>`
+        : '';
+
+      // ステータスアイコン
+      const dayStatusHtml = anyNg
+        ? `<div class="hist-day-status ng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>`
+        : `<div class="hist-day-status ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+
+      // ── 通常チェック項目 ──
+      let checkItemsHtml = '<div class="hist-check-list">';
+      linkedItems.forEach((item, i) => {
+        const sk  = 'f' + fi + '_' + i;
+        const v   = (e.checks || {})[sk];
+        const isNg = v === 'ng';
+        const isSet = v === 'ok' || v === 'ng';
+        if (!isSet) return;
+        const iconSvg = isNg
+          ? `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+          : `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+        checkItemsHtml += `<div class="hist-check-item">
+          <div class="hist-check-icon ${isNg ? 'ng' : 'ok'}">${iconSvg}</div>
+          <span class="hist-check-label">${item.label}</span>
+          <span class="hist-check-result ${isNg ? 'ng' : 'ok'}">${isNg ? '✕' : '○'}</span>
+        </div>`;
       });
+      checkItemsHtml += '</div>';
 
-      // ── 定期点検チップス（10・20・30日） ──
-      let periodicSection = '';
+      // ── 定期点検ボックス ──
+      let periodicBoxHtml = '';
       if (isPeriodicDay && facPeriodicItems.length) {
-        let pChips = '';
+        let apprBadge = '';
+        if (selectedRole === 'manager') {
+          const appr = (approvals[k + '_f' + fi] || {}).periodic;
+          apprBadge = appr
+            ? `<span class="hist-periodic-appr-badge approved">✓ 承認済</span>`
+            : `<span class="hist-periodic-appr-badge pending">未承認</span>`;
+        }
+        let pItems = '';
         facPeriodicItems.forEach((item, i) => {
-          const sk = 'periodic_f'+fi+'_'+i;
-          const v  = (e.checks||{})[sk];
-          const ng = v === 'ng';
-          pChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#a03010'};margin-right:8px;">`
-            +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
+          const sk  = 'periodic_f' + fi + '_' + i;
+          const v   = (e.checks || {})[sk];
+          const ng  = v === 'ng';
+          const isSet = v === 'ok' || v === 'ng';
+          if (!isSet) return;
+          const iconSvg = ng
+            ? `<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:#c02020;stroke-width:2.8;fill:none;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+            : `<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:#a03010;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>`;
+          pItems += `<div class="hist-periodic-item">
+            <div class="hist-check-icon ${ng ? 'ng' : 'ok'}" style="background:${ng ? '#fde8e8' : '#fff0e4'};">${iconSvg}</div>
+            <span class="hist-periodic-item-label">${item.label}</span>
+            <span class="hist-periodic-item-result ${ng ? 'ng' : 'ok'}">${ng ? '✕' : '○'}</span>
+          </div>`;
         });
-        // 定期承認バッジ（管理者のみ）
-        let periodicApprBadge = '';
-        if (selectedRole === 'manager') {
-          const approvalKey = k + '_f' + fi;
-          const appr = (approvals[approvalKey]||{}).periodic;
-          if (appr) {
-            periodicApprBadge = `<span style="font-size:9px;font-weight:700;color:#1a6a3a;background:#d0f0e0;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">✓ 承認済</span>`;
-          } else {
-            periodicApprBadge = `<span style="font-size:9px;font-weight:700;color:#8a4a00;background:#fff0dd;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">未承認</span>`;
-          }
+        if (pItems) {
+          periodicBoxHtml = `<div class="hist-periodic-box">
+            <div class="hist-periodic-header">
+              <span class="hist-periodic-label">定期</span>
+              <span class="hist-periodic-title">定期点検（10・20・30日）</span>
+              ${apprBadge}
+            </div>
+            <div class="hist-periodic-items">${pItems}</div>
+          </div>`;
         }
-        periodicSection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #fad0b0;">`
-          +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#e06020,#c04010);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">定期</span>`
-          +pChips
-          +periodicApprBadge
-          +`</div>`;
       }
 
-      // ── 1ヶ月点検チップス（月末） ──
-      let monthlySection = '';
+      // ── 1ヶ月点検ボックス ──
+      let monthlyBoxHtml = '';
       if (isMonthlyDay && facMonthlyItems.length) {
-        let mChips = '';
-        facMonthlyItems.forEach((item, i) => {
-          const sk = 'monthly_f'+fi+'_'+i;
-          const v  = (e.checks||{})[sk];
-          const ng = v === 'ng';
-          mChips += `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11px;color:${ng?'#cc0000':'#1a4a80'};margin-right:8px;">`
-            +`${item.label}<span style="font-weight:700;margin-left:2px;">${ng?'✕':'○'}</span></span>`;
-        });
-        // 月末承認バッジ（管理者のみ）
-        let monthlyApprBadge = '';
+        let apprBadge = '';
         if (selectedRole === 'manager') {
-          const approvalKey = k + '_f' + fi;
-          const appr = (approvals[approvalKey]||{}).monthly;
-          if (appr) {
-            monthlyApprBadge = `<span style="font-size:9px;font-weight:700;color:#1a6a3a;background:#d0f0e0;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">✓ 承認済</span>`;
-          } else {
-            monthlyApprBadge = `<span style="font-size:9px;font-weight:700;color:#8a4a00;background:#fff0dd;border-radius:4px;padding:1px 6px;margin-left:4px;flex-shrink:0;">未承認</span>`;
-          }
+          const appr = (approvals[k + '_f' + fi] || {}).monthly;
+          apprBadge = appr
+            ? `<span class="hist-monthly-appr-badge approved">✓ 承認済</span>`
+            : `<span class="hist-monthly-appr-badge pending">未承認</span>`;
         }
-        monthlySection = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px;padding-top:5px;border-top:1px dashed #b0ccf0;">`
-          +`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a6aaa,#1a4a80);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;letter-spacing:0;">月末</span>`
-          +mChips
-          +monthlyApprBadge
-          +`</div>`;
+        let mItems = '';
+        facMonthlyItems.forEach((item, i) => {
+          const sk  = 'monthly_f' + fi + '_' + i;
+          const v   = (e.checks || {})[sk];
+          const ng  = v === 'ng';
+          const isSet = v === 'ok' || v === 'ng';
+          if (!isSet) return;
+          const iconSvg = ng
+            ? `<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:#c02020;stroke-width:2.8;fill:none;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+            : `<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:#1a4a80;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>`;
+          mItems += `<div class="hist-monthly-item">
+            <div class="hist-check-icon ${ng ? 'ng' : 'ok'}" style="background:${ng ? '#fde8e8' : '#e4eeff'};">${iconSvg}</div>
+            <span class="hist-monthly-item-label">${item.label}</span>
+            <span class="hist-monthly-item-result ${ng ? 'ng' : 'ok'}">${ng ? '✕' : '○'}</span>
+          </div>`;
+        });
+        if (mItems) {
+          monthlyBoxHtml = `<div class="hist-monthly-box">
+            <div class="hist-monthly-header">
+              <span class="hist-monthly-label">月末</span>
+              <span class="hist-monthly-title">1ヶ月点検</span>
+              ${apprBadge}
+            </div>
+            <div class="hist-monthly-items">${mItems}</div>
+          </div>`;
+        }
       }
 
-      const delBtn = selectedRole === 'manager'
-        ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>` : '';
-
-      const inspFiName = (e.facInspectors && e.facInspectors['f'+fi]) || e.inspector;
-      const inspectorTag = inspFiName
-        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;align-self:flex-start;margin-top:1px;">${inspFiName}</span>`
-        : '';
-      const proxyTag = e.proxyBy
-        ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:2px 7px;flex-shrink:0;align-self:flex-start;margin-top:1px;">代理:${e.proxyBy}</span>`
-        : '';
-
-      rows+=`<div class="hist-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-top:1px solid #f0f0f4;background:#fff;">`
-        +`<div style="min-width:36px;font-size:12px;font-weight:700;color:#2a4a7a;padding-top:1px;">${mo}/${d}</div>`
-        +`<div style="flex:1;min-width:0;">`
-        +  `<div style="display:flex;flex-wrap:wrap;gap:0;">${chipsHtml}</div>`
-        +  periodicSection
-        +  monthlySection
-        +`</div>`
-        +inspectorTag
-        +proxyTag
-        +`<span class="detail-status ${statusCls}" style="flex-shrink:0;font-size:11px;align-self:flex-start;margin-top:1px;">${anyNg?'✕':'○'}</span>`
-        +delBtn
-        +`</div>`;
+      dayBlocksHtml += `<div class="hist-day-block">
+        <div class="hist-day-header">
+          <div class="hist-day-pill">
+            <span class="hist-day-month">${mo}/</span>
+            <span class="hist-day-num">${d}</span>
+          </div>
+          <div class="hist-day-right">
+            ${inspTagHtml}${proxyTagHtml}
+            ${dayStatusHtml}
+            ${delBtnHtml}
+          </div>
+        </div>
+        ${checkItemsHtml}
+        ${periodicBoxHtml}
+        ${monthlyBoxHtml}
+      </div>`;
     });
 
-    const iconHtml = fac.icon.replace('class="icon-svg"','style="width:18px;height:18px;display:block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
-    const headerBg = allOk ? '#f0fdf4' : '#fff0f0';
-    const statusIcon = allOk
-      ? `<svg style="width:20px;height:20px;stroke:#22c55e;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>`
-      : `<svg style="width:20px;height:20px;stroke:#dc3a3a;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+    // ── 設備カードヘッダー ──
+    const iconHtml = fac.icon.replace('class="icon-svg"',
+      'style="width:20px;height:20px;display:block;stroke:#fff;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;"');
+    const headerBg = allOk
+      ? 'linear-gradient(135deg,#2ecc8a,#1a9a5a)'
+      : 'linear-gradient(135deg,#e05050,#c02020)';
 
-    const delAllBtn = selectedRole === 'manager'
-      ? `<button class="fac-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除</button>` : '';
+    const statusIconHtml = allOk
+      ? `<svg style="width:22px;height:22px;stroke:#22c55e;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>`
+      : `<svg style="width:22px;height:22px;stroke:#ef4444;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
 
-    const chev = `<svg style="width:16px;height:16px;stroke:#aab;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;" id="chev-${fi}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const delAllBtnHtml = selectedRole === 'manager'
+      ? `<button class="hist-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除">
+           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除
+         </button>`
+      : '';
 
-    html+=`<div style="margin:12px 14px 0;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #eef0f4;">`
-      +`<div onclick="toggleFacCard(${fi})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:${headerBg};cursor:pointer;user-select:none;">`
-      +`<div style="width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);color:#2a4a7a;flex-shrink:0;">${iconHtml}</div>`
-      +`<div style="flex:1;">`
-      +`<div style="font-size:14px;font-weight:700;color:#1a2e4a;">${fac.name}</div>`
-      +`<div style="font-size:11px;color:#889;margin-top:2px;">${facEntries.length}件の記録 / NG: ${ngCount}件</div>`
-      +`</div>`
-      +statusIcon
-      +delAllBtn
-      +chev
-      +`</div>`
-      +`<div id="fac-rows-${fi}" style="display:none;">${rows}</div>`
-      +`</div>`;
+    html += `<div class="hist-fac-card" id="hist-card-${fi}">
+      <div class="hist-fac-header" onclick="toggleHistCard(${fi})">
+        <div class="hist-fac-icon-wrap" style="background:${headerBg};">${iconHtml}</div>
+        <div class="hist-fac-meta">
+          <div class="hist-fac-name">${fac.name}</div>
+          <div class="hist-fac-sub">
+            <span>${facEntries.length}件の記録</span>
+            <span class="hist-fac-ng-badge ${allOk ? 'all-ok' : 'has-ng'}">
+              ${allOk ? '✓ 異常なし' : 'NG: ' + ngCount + '件'}
+            </span>
+            ${delAllBtnHtml}
+          </div>
+        </div>
+        <div class="hist-fac-status-icon">${statusIconHtml}</div>
+        <div class="hist-fac-chevron">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="hist-fac-body" id="hist-body-${fi}">
+        ${dayBlocksHtml}
+      </div>
+    </div>`;
   });
 
-  if(!html){
+  if (!html) {
     let msg = 'この月の記録はありません';
     if (inspectorFacFilter) msg = 'この月の担当設備の記録はありません';
-    else if (selectedRole === 'manager' && inspFilterActive()) msg = `選択中の点検者の記録はありません`;
-    c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">'+msg+'</div>';
+    else if (selectedRole === 'manager' && inspFilterActive()) msg = '選択中の点検者の記録はありません';
+    c.innerHTML = '<div style="padding:40px 20px;text-align:center;color:#aab;font-size:13px;">' + msg + '</div>';
     return;
   }
+
   const delMonthBtn = selectedRole === 'manager'
-    ? `<div style="padding:12px 14px 4px;text-align:right;">
-        <button onclick="confirmDeleteMonth()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;border:1.5px solid #e8c4c0;background:#fff8f7;color:#d63b2f;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#d63b2f;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-          ${viewYear}年${viewMonth+1}月の記録をすべて削除
+    ? `<div style="padding:16px 14px 4px;text-align:right;">
+        <button onclick="confirmDeleteMonth()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;border:1.5px solid #e8c4c0;background:#fff8f7;color:#d63b2f;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s;">
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#d63b2f;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          ${viewYear}年${viewMonth + 1}月の記録をすべて削除
         </button>
       </div>`
     : '';
-  c.innerHTML=html+delMonthBtn+'<div style="height:16px;"></div>';
+
+  c.innerHTML = html + delMonthBtn + '<div style="height:20px;"></div>';
 }
 
 // ── History delete functions ──
@@ -2303,6 +2834,14 @@ function toggleFacCard(fi) {
   const isOpen = rows.style.display !== 'none';
   rows.style.display = isOpen ? 'none' : 'block';
   if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function toggleHistCard(fi) {
+  const card = document.getElementById('hist-card-' + fi);
+  const body = document.getElementById('hist-body-' + fi);
+  if (!card || !body) return;
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
 }
 
 function setTab(i){
@@ -4209,6 +4748,78 @@ function renderApprovalContent() {
   const daysInMonth = getDays(viewYear, viewMonth);
   const mo = viewMonth + 1;
 
+  // ── 共通：新カード HTML ビルダー ──
+  function buildNewCard(fac, fi, entry, approvalKey, type, inspected, appr) {
+    const linkedInspector = (fac.linkedInspectors || [])[0] || '';
+    const actualInspector = (entry && entry.facInspectors && entry.facInspectors['f'+fi]) || '';
+    const fallbackInspector = linkedInspector ? '' : (actualInspector || (entry && entry.inspector) || '');
+    const inspectorName = linkedInspector || fallbackInspector;
+
+    const inspectorTagHtml = inspectorName
+      ? `<span class="appr-inspector-tag">
+           <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+           ${inspectorName}
+         </span>`
+      : '';
+
+    const executorTagHtml = (linkedInspector && actualInspector && linkedInspector !== actualInspector)
+      ? `<span class="appr-extra-tag executor">実施:${actualInspector}</span>`
+      : '';
+    const proxyTagHtml = entry && entry.proxyBy
+      ? `<span class="appr-extra-tag proxy">代理:${entry.proxyBy}</span>`
+      : '';
+
+    const iconHtml = fac.icon.replace('class="icon-svg"',
+      'style="width:15px;height:15px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"');
+
+    let statusClass, badgeClass, badgeLabel, badgeIcon, actionHtml;
+
+    if (appr) {
+      statusClass = 'status-approved';
+      badgeClass  = 'badge-approved';
+      badgeLabel  = '承認済';
+      badgeIcon   = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+      actionHtml  = `
+        <span class="appr-approved-badge">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認済
+        </span>
+        <button class="appr-unapprove-btn" onclick="event.stopPropagation();unapproveInspection('${approvalKey}','${type}')">取消</button>`;
+    } else if (inspected) {
+      statusClass = 'status-inspected';
+      badgeClass  = 'badge-inspected';
+      badgeLabel  = '点検済';
+      badgeIcon   = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+      actionHtml  = `
+        <button class="appr-approve-btn" onclick="event.stopPropagation();approveInspection('${approvalKey}','${type}',this)">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認する
+        </button>`;
+    } else {
+      statusClass = 'status-not-done';
+      badgeClass  = 'badge-not-done';
+      badgeLabel  = '未点検';
+      badgeIcon   = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+      actionHtml  = `
+        <span class="appr-not-done-label">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>未点検
+        </span>`;
+    }
+
+    const tagsHtml = [inspectorTagHtml, executorTagHtml, proxyTagHtml].filter(Boolean).join(' ');
+
+    return `<div class="approval-fac-item ${statusClass}" onclick="">
+      <div class="appr-row1">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">${tagsHtml}</div>
+        <span class="appr-status-badge ${badgeClass}">${badgeIcon}${badgeLabel}</span>
+      </div>
+      <div class="appr-row2">
+        <div class="appr-fac-name">${iconHtml}${fac.name}</div>
+      </div>
+      <div class="appr-row3">
+        ${actionHtml}
+      </div>
+    </div>`;
+  }
+
   if (approvalTab === 'periodic') {
     // 定期点検日：10・20・30日（休日なら前の平日）
     const periodicDaysSet = getPeriodicDaysForMonth(viewYear, viewMonth, daysInMonth);
@@ -4223,80 +4834,40 @@ function renderApprovalContent() {
     days.forEach(d => {
       const k = key(viewYear, viewMonth, d);
       const entry = entries[k];
-      let facHtml = '';
+      let facCardsHtml = '';
       let hasFacs = false;
 
       FACILITIES.forEach((fac, fi) => {
-        // 点検者フィルター適用
         if (inspFilterActive() && !facMatchesInspFilter(fac)) return;
         const linkedPeriodicKeys = fac.linkedPeriodicKeys || [];
         const facPeriodicItems = periodicInspectionItems.filter(it => linkedPeriodicKeys.includes(it.key));
         if (!facPeriodicItems.length) return;
         hasFacs = true;
 
-        // 点検済みか判定：entryが存在し、全periodic項目がセットされている
         const inspected = entry && facPeriodicItems.every((item, i) => {
           const sk = 'periodic_f' + fi + '_' + i;
           const v = (entry.checks || {})[sk];
           return v === 'ok' || v === 'ng';
         });
 
-        // 承認状態取得
         const approvalKey = k + '_f' + fi;
         const appr = (approvals[approvalKey] || {}).periodic;
-
-        // 担当者タグ（紐づけた点検者）・実施者タグ・代理タグ
-        const linkedInspector = (fac.linkedInspectors || [])[0] || '';
-        // 「実施:」タグはfacInspectorsのみ参照（古いentry.inspectorへのフォールバックなし）
-        const actualInspector = (entry && entry.facInspectors && entry.facInspectors['f'+fi]) || '';
-        const inspectorTagFallback = linkedInspector ? '' : (actualInspector || (entry && entry.inspector) || '');
-        const inspectorTag = linkedInspector
-          ? `<span class="approval-inspector-tag">${linkedInspector}</span>`
-          : (inspectorTagFallback ? `<span class="approval-inspector-tag">${inspectorTagFallback}</span>` : '');
-        const executorTag = (linkedInspector && actualInspector && linkedInspector !== actualInspector)
-          ? `<span style="font-size:10px;color:#2a6a2a;background:#e8f8e8;border:1px solid #80c880;border-radius:20px;padding:1px 7px;flex-shrink:0;">実施:${actualInspector}</span>`
-          : '';
-        const proxyTag = entry && entry.proxyBy
-          ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
-          : '';
-
-        const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
-
-        let actionHtml;
-        if (appr) {
-          actionHtml = `<span class="approval-approved-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認済</span>`
-            + `<button class="approval-unapprove-btn" onclick="unapproveInspection('${approvalKey}','periodic')">取消</button>`;
-        } else if (inspected) {
-          actionHtml = `<button class="approval-approve-btn" onclick="approveInspection('${approvalKey}','periodic',this)">承認する</button>`;
-        } else {
-          actionHtml = `<button class="approval-approve-btn" disabled title="点検が完了していません">未点検</button>`;
-        }
-
-        const statusCls = inspected ? 'done' : 'not-done';
-        const statusLabel = inspected ? '点検済' : '未点検';
-
-        facHtml += `<div class="approval-fac-item">
-          <div class="approval-fac-top">
-            <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-            ${inspectorTag}${executorTag}${proxyTag}
-          </div>
-          <div class="approval-fac-bottom">
-            <div class="approval-fac-bottom-left">
-              <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
-            </div>
-            <div class="approval-fac-bottom-right">${actionHtml}</div>
-          </div>
-        </div>`;
+        facCardsHtml += buildNewCard(fac, fi, entry, approvalKey, 'periodic', inspected, appr);
       });
 
       if (!hasFacs) {
-        facHtml = '<div style="font-size:12px;color:#aab;padding:4px 0;">定期点検が紐づけられた設備がありません</div>';
+        facCardsHtml = '<div style="font-size:12px;color:#aab;padding:8px 4px;">定期点検が紐づけられた設備がありません</div>';
       }
 
       html += `<div class="approval-section" style="margin-bottom:0;">
         <div class="approval-day-row">
-          <div class="approval-day-badge">${mo}/${d}</div>
-          <div class="approval-fac-list">${facHtml}</div>
+          <div class="approval-day-badge">
+            <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#2a4a7a;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            ${mo}月${d}日
+          </div>
+          <div class="approval-fac-list">${facCardsHtml}</div>
         </div>
       </div>`;
     });
@@ -4308,11 +4879,10 @@ function renderApprovalContent() {
     const monthlyDay = getMonthlyInspectionDay(viewYear, viewMonth, daysInMonth);
     const k = key(viewYear, viewMonth, monthlyDay);
     const entry = entries[k];
-    let facHtml = '';
+    let facCardsHtml = '';
     let hasFacs = false;
 
     FACILITIES.forEach((fac, fi) => {
-      // 点検者フィルター適用
       if (inspFilterActive() && !facMatchesInspFilter(fac)) return;
       const linkedMonthlyKeys = fac.linkedMonthlyKeys || [];
       const facMonthlyItems = monthlyInspectionItems.filter(it => linkedMonthlyKeys.includes(it.key));
@@ -4327,52 +4897,11 @@ function renderApprovalContent() {
 
       const approvalKey = k + '_f' + fi;
       const appr = (approvals[approvalKey] || {}).monthly;
-
-      const linkedInspector = (fac.linkedInspectors || [])[0] || '';
-      // 「実施:」タグはfacInspectorsのみ参照（古いentry.inspectorへのフォールバックなし）
-      const actualInspector = (entry && entry.facInspectors && entry.facInspectors['f'+fi]) || '';
-      const inspectorTagFallback2 = linkedInspector ? '' : (actualInspector || (entry && entry.inspector) || '');
-      const inspectorTag = linkedInspector
-        ? `<span class="approval-inspector-tag">${linkedInspector}</span>`
-        : (inspectorTagFallback2 ? `<span class="approval-inspector-tag">${inspectorTagFallback2}</span>` : '');
-      const executorTag = (linkedInspector && actualInspector && linkedInspector !== actualInspector)
-        ? `<span style="font-size:10px;color:#2a6a2a;background:#e8f8e8;border:1px solid #80c880;border-radius:20px;padding:1px 7px;flex-shrink:0;">実施:${actualInspector}</span>`
-        : '';
-      const proxyTag = entry && entry.proxyBy
-        ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
-        : '';
-
-      const iconHtml = fac.icon.replace('class="icon-svg"','style="width:14px;height:14px;display:inline-block;stroke:#2a4a7a;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:4px;"');
-
-      let actionHtml;
-      if (appr) {
-        actionHtml = `<span class="approval-approved-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>承認済</span>`
-          + `<button class="approval-unapprove-btn" onclick="unapproveInspection('${approvalKey}','monthly')">取消</button>`;
-      } else if (inspected) {
-        actionHtml = `<button class="approval-approve-btn" onclick="approveInspection('${approvalKey}','monthly',this)">承認する</button>`;
-      } else {
-        actionHtml = `<button class="approval-approve-btn" disabled title="点検が完了していません">未点検</button>`;
-      }
-
-      const statusCls = inspected ? 'done' : 'not-done';
-      const statusLabel = inspected ? '点検済' : '未点検';
-
-      facHtml += `<div class="approval-fac-item">
-        <div class="approval-fac-top">
-          <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-          ${inspectorTag}${executorTag}${proxyTag}
-        </div>
-        <div class="approval-fac-bottom">
-          <div class="approval-fac-bottom-left">
-            <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
-          </div>
-          <div class="approval-fac-bottom-right">${actionHtml}</div>
-        </div>
-      </div>`;
+      facCardsHtml += buildNewCard(fac, fi, entry, approvalKey, 'monthly', inspected, appr);
     });
 
     if (!hasFacs) {
-      facHtml = '<div style="font-size:12px;color:#aab;padding:4px 0;">1ヶ月点検が紐づけられた設備がありません</div>';
+      facCardsHtml = '<div style="font-size:12px;color:#aab;padding:8px 4px;">1ヶ月点検が紐づけられた設備がありません</div>';
     }
 
     c.innerHTML = `<div class="approval-section">
@@ -4381,7 +4910,7 @@ function renderApprovalContent() {
         <span class="approval-section-title">1ヶ月点検日 — ${mo}/${monthlyDay}</span>
       </div>
       <div class="approval-day-row">
-        <div class="approval-fac-list">${facHtml}</div>
+        <div class="approval-fac-list">${facCardsHtml}</div>
       </div>
     </div>`;
   }
