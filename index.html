@@ -984,16 +984,13 @@
 
   /* 全削除ボタン */
   .hist-del-all-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10px; font-weight: 600; color: #cc4444;
-    background: #fff0f0; border: 1px solid #f8c0c0; border-radius: 20px;
-    padding: 4px 10px; cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif;
-    transition: background .15s; flex-shrink: 0;
-    white-space: nowrap;
+    width: 30px; height: 30px; border-radius: 8px;
+    background: #fff0f0; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s;
   }
   .hist-del-all-btn:hover { background: #ffd0d0; }
-  .hist-del-all-btn svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+  .hist-del-all-btn svg { width: 14px; height: 14px; stroke: #cc4444; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
   /* 月のヘッダーバー */
   .hist-month-strip {
@@ -2679,7 +2676,7 @@ function renderList(){
 
     const delAllBtnHtml = selectedRole === 'manager'
       ? `<button class="hist-del-all-btn" onclick="confirmDeleteFacility(${fi},event)" title="${fac.name}の全記録を削除">
-           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>全削除
+           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
          </button>`
       : '';
 
