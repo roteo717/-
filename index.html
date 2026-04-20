@@ -7,6 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* スクロールバーを全体的に非表示 */
+  html, body { scrollbar-width: none; -ms-overflow-style: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+  *::-webkit-scrollbar { display: none; }
+  * { scrollbar-width: none; -ms-overflow-style: none; }
   body {
     background: #f0ece8;
     min-height: 100vh;
@@ -20,6 +25,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    /* 下部固定ナビ（約70px）分の余白 */
+    padding-bottom: 80px;
   }
 
   /* SVG Icon base style */
@@ -458,6 +465,8 @@
   .day-num.past-no-log { background: none; color: #555; cursor: pointer; }
   .day-num.weekend  { color: #bbb; background: none; }
   .day-num.weekend:not(.today) { background: none; border: none; }
+  .day-num.public-holiday { color: #c04070 !important; }
+  .holiday-label { font-size: 8px; color: #c04070; font-weight: 600; margin-top: 1px; text-align: center; line-height: 1.2; max-width: 48px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
   /* ── Periodic Inspection Badge (10日・20日・30日) ── */
   .periodic-badge {
@@ -498,8 +507,10 @@
     display: flex; background: #fff;
     border-top: 1px solid #dde;
     padding: 10px 0 max(12px, env(safe-area-inset-bottom));
-    position: sticky; bottom: 0;
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    z-index: 100;
   }
+
   .nav-item {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; gap: 3px;
@@ -531,7 +542,7 @@
   .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.5);
-    display: none; align-items: flex-end; z-index: 20;
+    display: none; align-items: flex-end; z-index: 200;
     overscroll-behavior: contain;
   }
   .modal-overlay.open { display: flex; }
@@ -542,6 +553,9 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* ナビバー裏側まで白背景を伸ばす */
+    margin-bottom: -70px;
+    padding-bottom: 70px;
   }
   .modal-sheet-header {
     flex-shrink: 0;
@@ -690,7 +704,7 @@
 
   /* confirm dialog overlay */
   .confirm-overlay {
-    position: fixed; inset: 0; z-index: 99;
+    position: fixed; inset: 0; z-index: 200;
     background: rgba(0,0,0,0.45);
     display: none; align-items: center; justify-content: center;
     padding: 24px;
@@ -728,7 +742,7 @@
   /* ── Settings View ── */
   .settings-view {
     display: none; flex-direction: column;
-    background: #f5f6f8; flex: 1; overflow-y: auto;
+    background: #f5f6f8; flex: 1; overflow-y: auto; overflow-x: hidden;
   }
   .settings-section {
     margin: 10px 14px 0;
@@ -786,7 +800,7 @@
     margin-bottom: 8px;
   }
   .settings-section-body-inner {
-    padding: 12px 14px 14px;
+    padding: 12px 10px 14px;
     background: #f5f6f8;
     border-top: 1px solid #f0f0f4;
   }
@@ -1204,6 +1218,9 @@
     padding: 0 0 max(24px, env(safe-area-inset-bottom));
     max-height: 75vh; display: flex; flex-direction: column;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    /* ナビバー裏側まで白背景を伸ばす */
+    margin-bottom: -70px;
+    padding-bottom: calc(max(24px, env(safe-area-inset-bottom)) + 70px);
   }
   .insp-sheet-header {
     padding: 14px 20px 10px;
@@ -1380,7 +1397,7 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           </div>
           <span class="avatar-popup-name" id="avatar-popup-name">-</span>
-          <div class="avatar-popup-dots"><span></span><span></span><span></span></div>
+          <div class="avatar-popup-dots" style="display:none;"><span></span><span></span><span></span></div>
         </div>
         <!-- ドロップダウンメニュー -->
         <div class="avatar-popup-logout-wrap" id="avatar-logout-wrap" onclick="event.stopPropagation()">
@@ -1442,6 +1459,15 @@
 
   <!-- List view -->
   <div id="view-list" style="display:none; background:#f5f6f8; min-height:200px;">
+    <div id="hist-month-nav" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:#fff;border-bottom:1px solid #eee;">
+      <button onclick="histPrevMonth()" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a0a0a4,#7c7c82);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(100,100,110,0.3);">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div id="hist-month-label" style="font-size:15px;font-weight:700;color:#1a2e4a;letter-spacing:.5px;"></div>
+      <button onclick="histNextMonth()" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a0a0a4,#7c7c82);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(100,100,110,0.3);">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
     <div id="hist-insp-selector-bar" class="insp-selector-bar" style="display:none;"></div>
     <div id="list-content"></div>
   </div>
@@ -1614,20 +1640,33 @@
       <div class="settings-section-body">
         <div class="settings-section-body-inner">
           <p style="font-size:11px;color:#889;line-height:1.6;margin:0 0 10px;padding:0 2px;">祝日や特定休業日を登録すると、点検スケジュールが自動で前の平日にシフトします。</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#f0f4ff;border:1.5px solid #c0d0f0;border-radius:12px;padding:10px 14px;margin-bottom:10px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#1a3a70;">🗾 日本の祝日を自動反映</div>
+              <div style="font-size:10px;color:#6688aa;margin-top:2px;">祝日APIから取得し休日として自動設定します</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;">
+              <input type="checkbox" id="auto-holiday-toggle" onchange="toggleAutoPublicHolidays(this.checked)"
+                style="opacity:0;width:0;height:0;position:absolute;">
+              <span id="auto-holiday-track" style="position:absolute;inset:0;border-radius:12px;background:#ccc;transition:background .2s;cursor:pointer;">
+                <span id="auto-holiday-thumb" style="position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:transform .2s;"></span>
+              </span>
+            </label>
+          </div>
           <div class="settings-card" id="settings-calendar-card"></div>
           <div style="font-size:11px;color:#c04010;font-weight:600;margin:8px 0 4px;padding:0 2px;">休日を追加</div>
-          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;">
+          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;padding-right:2px;">
             <input type="date" id="cal-holiday-date-input"
               style="flex:1;font-size:13px;border:1.5px solid #d0d8e8;border-radius:10px;padding:7px 10px;background:#fff;color:#1a2e50;font-family:inherit;outline:none;">
-            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;" onclick="addHolidayDate()">
+            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;width:auto;" onclick="addHolidayDate()">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加
             </button>
           </div>
           <div style="font-size:11px;color:#2a7a4a;font-weight:600;margin:10px 0 4px;padding:0 2px;">出勤日を追加（休日→平日扱いに変更）</div>
-          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;">
+          <div style="display:flex;gap:8px;align-items:center;margin:0 0 4px;padding-right:2px;">
             <input type="date" id="cal-workday-date-input"
               style="flex:1;font-size:13px;border:1.5px solid #a8d8b8;border-radius:10px;padding:7px 10px;background:#fff;color:#1a2e50;font-family:inherit;outline:none;">
-            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;background:linear-gradient(135deg,#3aaa6a,#2a7a4a);" onclick="addWorkdayDate()">
+            <button class="settings-add-btn" style="margin:0;padding:8px 14px;flex-shrink:0;width:auto;background:linear-gradient(135deg,#3aaa6a,#2a7a4a);color:#fff;" onclick="addWorkdayDate()">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加
             </button>
           </div>
@@ -1841,12 +1880,31 @@ function renderCalendar(){
 
   for(let d=1;d<=days;d++){
     const k=key(viewYear,viewMonth,d);
-    const e=entries[k];
+    const rawEntry=entries[k];
+    // checks が空のエントリは無効として無視する
+    // 点検者ロールの場合は自分の記録のみ点検済みとして表示する
+    const entryValid = rawEntry && Object.keys(rawEntry.checks || {}).length > 0;
+    const entryMine = selectedRole === 'inspector'
+      ? (rawEntry && (
+          rawEntry.inspector === selectedName ||
+          rawEntry.proxyBy === selectedName ||
+          Object.values(rawEntry.facInspectors || {}).includes(selectedName)
+        ))
+      : true;
+    // 管理者で点検者フィルターが有効な場合は選択中の点検者の記録のみ表示
+    const entryMatchesFilter = (selectedRole === 'manager' && inspFilterActive())
+      ? (rawEntry && selectedInspectorFilter.some(n =>
+          rawEntry.inspector === n ||
+          rawEntry.proxyBy === n ||
+          Object.values(rawEntry.facInspectors || {}).includes(n)
+        ))
+      : true;
+    const e = (entryValid && entryMine && entryMatchesFilter) ? rawEntry : null;
     const isToday=isCur&&d===TODAY.getDate();
     const isPast=new Date(viewYear,viewMonth,d)<TODAY;
 
     const dow = new Date(viewYear,viewMonth,d).getDay(); // 0=Sun,6=Sat
-    const isWeekend = dow===0 || dow===6 || isCustomHoliday(viewYear, viewMonth, d);
+    const isWeekend = dow===0 || dow===6 || isCustomHoliday(viewYear, viewMonth, d) || isPublicHoliday(viewYear, viewMonth, d);
 
     let cls='day-num';
     if(e){
@@ -1859,7 +1917,11 @@ function renderCalendar(){
 
     const isPeriodic = periodicDays.has(d);
     const isMonthly  = (d === monthlyDay);
-    const badgeHtml  = '';
+    const pubHolName = isPublicHoliday(viewYear, viewMonth, d) ? (publicHolidays[viewYear+'-'+(viewMonth+1)+'-'+d] || '') : '';
+    const custHolName = isCustomHoliday(viewYear, viewMonth, d) ? '休日' : '';
+    const holName = pubHolName || custHolName;
+    if (pubHolName) cls += ' public-holiday';
+    const badgeHtml = holName ? `<div class="holiday-label">${holName}</div>` : '';
 
 
     const cell=document.createElement('div');
@@ -1894,9 +1956,34 @@ function updateAverages(){
 }
 
 function renderList(){
+  // 月ナビゲーションのラベル更新
+  const histLabel = document.getElementById('hist-month-label');
+  if (histLabel) histLabel.textContent = viewYear + '年 ' + (viewMonth + 1) + '月';
+
   const c=document.getElementById('list-content');
   const monthEntries=Object.keys(entries)
-    .filter(k=>{ const p=k.split('-'); return parseInt(p[0])===viewYear&&parseInt(p[1])===(viewMonth+1); })
+    .filter(k=>{
+      const p=k.split('-');
+      if(!(parseInt(p[0])===viewYear&&parseInt(p[1])===(viewMonth+1))) return false;
+      const en = entries[k];
+      // 点検者ロールの場合は自分の記録のみ表示
+      if(selectedRole === 'inspector'){
+        return en && (
+          en.inspector === selectedName ||
+          en.proxyBy === selectedName ||
+          Object.values(en.facInspectors || {}).includes(selectedName)
+        );
+      }
+      // 管理者で点検者フィルターが有効な場合は選択中の点検者の記録のみ表示
+      if(selectedRole === 'manager' && inspFilterActive()){
+        return en && selectedInspectorFilter.some(n =>
+          en.inspector === n ||
+          en.proxyBy === n ||
+          Object.values(en.facInspectors || {}).includes(n)
+        );
+      }
+      return true;
+    })
     .sort((a,b)=>parseInt(a.split('-')[2])-parseInt(b.split('-')[2]));
 
   if(!monthEntries.length){
@@ -2021,8 +2108,9 @@ function renderList(){
       const delBtn = selectedRole === 'manager'
         ? `<button class="hist-del-btn" onclick="confirmDeleteEntry('${k}')" title="この記録を削除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>` : '';
 
-      const inspectorTag = e.inspector
-        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;align-self:flex-start;margin-top:1px;">${e.inspector}</span>`
+      const inspFiName = (e.facInspectors && e.facInspectors['f'+fi]) || e.inspector;
+      const inspectorTag = inspFiName
+        ? `<span style="font-size:10px;color:#fff;background:#2a4a7a;border-radius:20px;padding:2px 8px;flex-shrink:0;align-self:flex-start;margin-top:1px;">${inspFiName}</span>`
         : '';
       const proxyTag = e.proxyBy
         ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:2px 7px;flex-shrink:0;align-self:flex-start;margin-top:1px;">代理:${e.proxyBy}</span>`
@@ -2075,7 +2163,15 @@ function renderList(){
     c.innerHTML='<div style="padding:24px;text-align:center;color:#aab;font-size:13px;">'+msg+'</div>';
     return;
   }
-  c.innerHTML=html+'<div style="height:16px;"></div>';
+  const delMonthBtn = selectedRole === 'manager'
+    ? `<div style="padding:12px 14px 4px;text-align:right;">
+        <button onclick="confirmDeleteMonth()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;border:1.5px solid #e8c4c0;background:#fff8f7;color:#d63b2f;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#d63b2f;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          ${viewYear}年${viewMonth+1}月の記録をすべて削除
+        </button>
+      </div>`
+    : '';
+  c.innerHTML=html+delMonthBtn+'<div style="height:16px;"></div>';
 }
 
 // ── History delete functions ──
@@ -2148,6 +2244,30 @@ function confirmDeleteFacility(fi, event) {
   );
 }
 
+function confirmDeleteMonth() {
+  const mo = viewMonth + 1;
+  const monthKeys = Object.keys(entries).filter(function(k) {
+    const p = k.split('-');
+    return parseInt(p[0]) === viewYear && parseInt(p[1]) === mo;
+  });
+  if (!monthKeys.length) return;
+  showConfirm(
+    'この月の記録をすべて削除',
+    '<strong>' + viewYear + '年' + mo + '月</strong> の全記録（' + monthKeys.length + '件）を削除しますか？<br>この操作は取り消せません。',
+    function() {
+      monthKeys.forEach(function(k) { delete entries[k]; });
+      // 同月の承認データも削除
+      Object.keys(approvals).forEach(function(ak) {
+        if (ak.startsWith(viewYear + '-' + mo + '-')) delete approvals[ak];
+      });
+      renderCalendar();
+      renderList();
+      persistData();
+      showHistToast('🗑 ' + viewYear + '年' + mo + '月の記録を削除しました');
+    }
+  );
+}
+
 function showHistToast(msg) {
   const t = document.getElementById('settings-toast');
   t.textContent = msg;
@@ -2214,10 +2334,15 @@ function isCustomWorkday(y, m, d) {
   const k = y + '-' + (m + 1) + '-' + d;
   return (workCalendar.workdays || []).includes(k);
 }
+function isPublicHoliday(y, m, d) {
+  if (!autoPublicHolidays) return false;
+  const k = y + '-' + (m + 1) + '-' + d;  // m は0始まりなので+1
+  return k in publicHolidays;
+}
 function isHoliday(y, m, d) {
   if (isCustomWorkday(y, m, d)) return false; // 出勤日として登録済みなら休日扱いしない
   const dow = new Date(y, m, d).getDay();
-  return dow === 0 || dow === 6 || isCustomHoliday(y, m, d);
+  return dow === 0 || dow === 6 || isCustomHoliday(y, m, d) || isPublicHoliday(y, m, d);
 }
 
 // 定期点検日セット計算ヘルパー（renderCalendar と共有）
@@ -2397,6 +2522,14 @@ function closeModal(e){
 function saveEntry(){
   const k=key(viewYear,viewMonth,selectedDay);
   const checks = Object.assign({}, itemStatuses);
+  // 点検項目が1件もない場合は保存不可
+  if(Object.keys(checks).length === 0){
+    const toast = document.getElementById('settings-toast');
+    toast.textContent = '⚠ 点検項目が紐づけられていません';
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 2200);
+    return;
+  }
   // 未選択の項目があれば保存不可
   if(Object.values(checks).some(v=>v==='unset')){
     const toast = document.getElementById('settings-toast');
@@ -2409,7 +2542,24 @@ function saveEntry(){
   // 代理入力の場合は点検者名をフィルター中の点検者、代理者を管理者名で記録
   const singleFilter = inspFilterActive() && selectedInspectorFilter.length === 1 ? selectedInspectorFilter[0] : null;
   const inspectorName = (selectedRole === 'manager' && singleFilter) ? singleFilter : (selectedName || '');
-  const entryData = { checks, status: allOk?'ok':'ng', inspector: inspectorName };
+
+  // 既存エントリーを保持しつつ今回の設備チェックをマージ（他の担当者のデータを消さない）
+  const existingEntry = entries[k] || {};
+  const mergedChecks = Object.assign({}, existingEntry.checks || {}, checks);
+
+  // 設備ごとの実施者マップを更新（他の設備の実施者情報は上書きしない）
+  const facInspectors = Object.assign({}, existingEntry.facInspectors || {});
+  FACILITIES.forEach((fac, fi) => {
+    const hasFacCheck = Object.keys(checks).some(sk =>
+      sk.startsWith('f'+fi+'_') || sk.startsWith('periodic_f'+fi+'_') || sk.startsWith('monthly_f'+fi+'_')
+    );
+    if (hasFacCheck) {
+      facInspectors['f'+fi] = inspectorName;
+    }
+  });
+
+  const allMergedOk = Object.values(mergedChecks).every(v=>v==='ok');
+  const entryData = Object.assign({}, existingEntry, { checks: mergedChecks, status: allMergedOk?'ok':'ng', inspector: inspectorName, facInspectors });
   if (selectedRole === 'manager' && singleFilter) {
     entryData.proxyBy = selectedName;
   }
@@ -2424,25 +2574,30 @@ function saveEntry(){
 }
 
 // ── Inspection item labels (editable by manager) ──
+const INSPECTION_VERSION = 2; // バージョンを上げると強制リセット
 let inspectionItems = [
-  { key: 'equip',  label: '設備状態スコア' },
-  { key: 'safety', label: '安全確認スコア' },
-  { key: 'comp',   label: '完了率（%）' },
+  { key: 'item1', label: '潤滑油量は規定量以上にあるか？（規定以下の場合補充）' },
+  { key: 'item2', label: '機械動作部の周りにキリコが大量に溜まっていないか？（溜まっていたら清掃）' },
+  { key: 'item3', label: '設備周りに油漏れ・エヤー漏れの現象はないか？（漏れ発見時上司へ報告）' },
+  { key: 'item4', label: '制御盤扉が閉まっている事 →開いていたら上司へ報告' },
 ];
 
 // ── Periodic inspection items (10日・20日・30日) ──
+const PERIODIC_ITEMS_VERSION = 3; // バージョンを上げると強制リセット
 let periodicInspectionItems = [
-  { key: 'p_filter',    label: 'フィルター点検' },
-  { key: 'p_safety',    label: '安全弁・圧力確認' },
-  { key: 'p_lubricate', label: '潤滑油・グリス補給' },
+  { key: 'p_panel_filter',  label: '制御盤フィルター(メッシュタイプ)清掃（エアブロー）' },
+  { key: 'p_panel_fan',     label: '制御盤外部ファン、フィンの清掃（エアブロー）、回転確認' },
+  { key: 'p_hydraulic_rad', label: '油圧ポンプラジエター、ファン清掃（エアブロー）、回転確認' },
+  { key: 'p_hydraulic_oil', label: '油圧ユニット作動油量が規定以上ある事' },
+  { key: 'p_cooler_filter', label: 'クーラーフィルタの清掃（エアーブロー）' },
 ];
 
 // ── Monthly inspection items (1ヶ月点検・月末) ──
+const MONTHLY_ITEMS_VERSION = 2; // バージョンを上げると強制リセット
 let monthlyInspectionItems = [
-  { key: 'm_overall',   label: '総合点検・異常確認' },
-  { key: 'm_record',    label: '点検記録・報告書作成' },
-  { key: 'm_parts',     label: '消耗部品確認・交換' },
-  { key: 'm_cleaning',  label: '設備全体清掃' },
+  { key: 'm_panel_filter', label: '制御盤フィルタ交換（ファイバー）→交換日をフィルタへ記入' },
+  { key: 'm_battery_oil',  label: 'バッテリー、オイル交換時期が経過していないか →交換日を記入' },
+  { key: 'm_dirt_damage',  label: '設備周りのひどい汚れ、破損がないか' },
 ];
 
 // Staff data
@@ -2453,6 +2608,8 @@ let staffData = {
 
 // Work calendar: custom holidays as 'YYYY-M-D' strings (e.g. '2025-1-1')
 let workCalendar = { holidays: [], workdays: [] };
+let publicHolidays = {};      // { '2025-1-1': '元日', ... } 祝日APIから取得
+let autoPublicHolidays = true; // 祝日自動取得ON/OFF
 
 // Facility icon pool (same order as FACILITIES)
 const FAC_ICON_POOL = [
@@ -2467,7 +2624,7 @@ const DEL_BTN = `<button class="settings-row-del" onclick="this.closest('.settin
 const ADD_BTN_HTML = (fn) => `<button class="settings-add-btn" onclick="${fn}()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する</button>`;
 
 // ── LocalStorage Persistence ──
-const STORAGE_KEY = 'facInsp_v2';
+const STORAGE_KEY = 'facInsp_v3';
 
 function persistData() {
   try {
@@ -2482,10 +2639,11 @@ function persistData() {
       linkedMonthlyKeys:  f.linkedMonthlyKeys  || [],
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      entries, inspectionItems, staffData, facilities: facsToSave,
-      periodicInspectionItems, monthlyInspectionItems, approvals,
+      entries, inspectionItems, staffData, facilities: facsToSave, inspectionVersion: INSPECTION_VERSION,
+      periodicInspectionItems, monthlyInspectionItems, approvals, periodicItemsVersion: PERIODIC_ITEMS_VERSION, monthlyItemsVersion: MONTHLY_ITEMS_VERSION,
       session: { role: selectedRole, name: selectedName },
       inspectorUsageCounts, workCalendar,
+      inspectorFilter: selectedInspectorFilter,
     }));
   } catch(e) { console.warn('persistData failed', e); }
 }
@@ -2496,10 +2654,10 @@ function loadPersistedData() {
     if (!raw) return;
     const data = JSON.parse(raw);
     if (data.entries)         entries         = data.entries;
-    if (data.inspectionItems) inspectionItems = data.inspectionItems;
+    if (data.inspectionItems && data.inspectionVersion === INSPECTION_VERSION) inspectionItems = data.inspectionItems;
     if (data.staffData)       staffData       = data.staffData;
-    if (data.periodicInspectionItems) periodicInspectionItems = data.periodicInspectionItems;
-    if (data.monthlyInspectionItems)  monthlyInspectionItems  = data.monthlyInspectionItems;
+    if (data.periodicInspectionItems && data.periodicItemsVersion === PERIODIC_ITEMS_VERSION) periodicInspectionItems = data.periodicInspectionItems;
+    if (data.monthlyInspectionItems && data.monthlyItemsVersion === MONTHLY_ITEMS_VERSION)  monthlyInspectionItems  = data.monthlyInspectionItems;
     if (data.approvals) approvals = data.approvals;
     if (data.inspectorUsageCounts) inspectorUsageCounts = data.inspectorUsageCounts;
     if (data.workCalendar) workCalendar = data.workCalendar;
@@ -2519,6 +2677,10 @@ function loadPersistedData() {
         });
       });
     }
+    // 点検者フィルター復元
+    if (data.inspectorFilter !== undefined) {
+      selectedInspectorFilter = data.inspectorFilter;
+    }
     // セッション復元（有効なロールと名前のみ受け入れる）
     if (data.session &&
         (data.session.role === 'manager' || data.session.role === 'inspector') &&
@@ -2526,6 +2688,9 @@ function loadPersistedData() {
       selectedRole = data.session.role;
       selectedName = data.session.name;
     }
+    // 旧データ移行: facInspectorsが存在しないエントリーはinspectorをfacInspectorsに変換しない。
+    // 古い汚染データのentry.inspectorはそのまま残すが、承認画面の「実施:」タグはfacInspectorsのみ参照するため、
+    // 旧データでは「実施:」タグは表示されなくなる（正しい動作）。
   } catch(e) { console.warn('loadPersistedData failed', e); }
 }
 
@@ -2564,7 +2729,7 @@ function autoLogin() {
     goHome();
     renderCalendar();
     if (selectedRole === 'manager') {
-      selectedInspectorFilter = null;
+      // selectedInspectorFilter はlocalStorageから復元済み。リセットしない
       renderInspectorBar();
       updateApprovalNotifDot();
     }
@@ -2586,6 +2751,86 @@ function autoLogin() {
 }
 
 loadPersistedData();
+
+// ── 日本の祝日計算（API不要・ローカル計算） ──
+function calcJapaneseHolidays(year) {
+  const h = {};
+  const add = (m, d, name) => { h[year+'-'+m+'-'+d] = name; };
+
+  // 固定祝日
+  add(1,1,'元日');
+  add(2,11,'建国記念の日');
+  add(2,23,'天皇誕生日');
+  add(4,29,'昭和の日');
+  add(5,3,'憲法記念日');
+  add(5,4,'みどりの日');
+  add(5,5,'こどもの日');
+  add(8,11,'山の日');
+  add(11,3,'文化の日');
+  add(11,23,'勤労感謝の日');
+
+  // ハッピーマンデー（第N月曜）
+  const nthMon = (m, n) => {
+    let d = 1, cnt = 0;
+    while (true) {
+      if (new Date(year, m-1, d).getDay() === 1) { cnt++; if (cnt === n) return d; }
+      d++;
+    }
+  };
+  add(1, nthMon(1,2), '成人の日');
+  add(7, nthMon(7,3), '海の日');
+  add(9, nthMon(9,3), '敬老の日');
+  add(10, nthMon(10,2), 'スポーツの日');
+
+  // 春分の日・秋分の日（天文計算近似）
+  const syunbun = Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+  const shubun  = Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+  add(3, syunbun, '春分の日');
+  add(9, shubun,  '秋分の日');
+
+  // 振替休日（祝日が日曜なら翌月曜）
+  const keys = Object.keys(h);
+  const subs = {};
+  keys.forEach(k => {
+    const [y,m,d] = k.split('-').map(Number);
+    if (new Date(y,m-1,d).getDay() === 0) {
+      let nd = d + 1;
+      // 連続祝日の場合は次の非祝日平日まで繰り越し
+      while (h[y+'-'+m+'-'+nd] || subs[y+'-'+m+'-'+nd]) nd++;
+      subs[y+'-'+m+'-'+nd] = '振替休日';
+    }
+  });
+  Object.assign(h, subs);
+
+  // 国民の休日（祝日と祝日に挟まれた平日）
+  for (let m = 1; m <= 12; m++) {
+    const days = new Date(year, m, 0).getDate();
+    for (let d = 2; d < days; d++) {
+      const k = year+'-'+m+'-'+d;
+      if (h[k]) continue;
+      const dow = new Date(year,m-1,d).getDay();
+      if (dow === 0 || dow === 6) continue;
+      if (h[year+'-'+m+'-'+(d-1)] && h[year+'-'+m+'-'+(d+1)]) {
+        h[k] = '国民の休日';
+      }
+    }
+  }
+
+  return h;
+}
+
+function buildPublicHolidays() {
+  // 全年をローカル計算で生成（年数制限なし・永久対応）
+  const curYear = new Date().getFullYear();
+  publicHolidays = {};
+  for (let y = curYear - 2; y <= curYear + 50; y++) {
+    Object.assign(publicHolidays, calcJapaneseHolidays(y));
+  }
+  renderCalendar();
+  renderWorkCalendarSection();
+}
+buildPublicHolidays();
+
 if (!autoLogin()) {
   renderCalendar();
 }
@@ -2610,7 +2855,10 @@ function exportPDF() {
 
   const allDayData = dayNums.map(d => {
     const dow = new Date(yr, viewMonth, d).getDay();
-    return { d, isWeekend: dow===0||dow===6, isPeriodic: periodicDaysSet.has(d), isMonthly: d===monthlyDay, entry: entries[key(yr,viewMonth,d)]||null };
+    const isWeekend = dow===0||dow===6;
+    const isWorkday = isCustomWorkday(yr, viewMonth, d);
+    const isHoliday = !isWorkday && (isWeekend || isCustomHoliday(yr, viewMonth, d) || isPublicHoliday(yr, viewMonth, d));
+    return { d, isWeekend, isHoliday, isWorkday, isPeriodic: periodicDaysSet.has(d), isMonthly: d===monthlyDay, entry: entries[key(yr,viewMonth,d)]||null };
   });
 
   // Build one page per facility
@@ -2627,21 +2875,21 @@ function exportPDF() {
     const totalCols = allDayData.length;
 
     // ── Date header row ──
-    const dateHeaders = allDayData.map(({d, isWeekend, isPeriodic, isMonthly}) => {
+    const dateHeaders = allDayData.map(({d, isWeekend, isHoliday, isWorkday, isPeriodic, isMonthly}) => {
       let cls = 'day-header';
-      if (isWeekend)                cls += ' weekend-h';
-      else if (isMonthly)           cls += ' monthly-h';
-      else if (isPeriodic)          cls += ' periodic-h';
+      if (isHoliday)               cls += ' weekend-h';
+      else if (isMonthly)          cls += ' monthly-h';
+      else if (isPeriodic)         cls += ' periodic-h';
       return `<th class="${cls}">${d}</th>`;
     }).join('');
 
     // ── Helper: one data cell ──
     function dataCell(dayMeta, checkKey, restrictToSpecialDay) {
-      const {d, isWeekend, isPeriodic, isMonthly, entry} = dayMeta;
-      if (isWeekend) return `<td class="cell weekend" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
+      const {d, isWeekend, isHoliday, isWorkday, isPeriodic, isMonthly, entry} = dayMeta;
+      if (isHoliday) return `<td class="cell weekend" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
       // Gray out cells that don't belong to this section
-      if (restrictToSpecialDay === 'periodic' && !isPeriodic) return `<td class="cell n-a"></td>`;
-      if (restrictToSpecialDay === 'monthly'  && !isMonthly)  return `<td class="cell n-a"></td>`;
+      if (restrictToSpecialDay === 'periodic' && !isPeriodic) return `<td class="cell n-a" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
+      if (restrictToSpecialDay === 'monthly'  && !isMonthly)  return `<td class="cell n-a" style="position:relative;"><svg class="slash" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="0" x2="10" y2="10"/></svg></td>`;
       if (!entry||!entry.checks) return `<td class="cell empty"></td>`;
       const v = entry.checks[checkKey];
       if (!v) return `<td class="cell empty"></td>`;
@@ -2721,9 +2969,6 @@ function exportPDF() {
           <td class="sign-label">休日：斜線</td>
           <td class="sign-label periodic-legend">定期点検日（10・20・30日）</td>
           <td class="sign-label monthly-legend">1ヶ月点検日（月末）</td>
-          <td class="sign-cell" style="width:68px">承認</td>
-          <td class="sign-cell" style="width:68px">確認</td>
-          <td class="sign-cell" style="width:68px">担当</td>
         </tr>
       </table>
     </div>`;
@@ -2765,7 +3010,7 @@ function exportPDF() {
 
   /* Data rows */
   .item-no    { font-size: 8px; font-weight: 700; color: #1a2e4a; padding: 1mm; height: 7mm; }
-  .item-label { text-align: left; font-size: 8px; padding: 1mm 2mm; color: #1a2e4a; font-weight: 500; height: 7mm; }
+  .item-label { text-align: left !important; font-size: 8px; padding: 1mm 2mm; color: #1a2e4a; font-weight: 500; height: 7mm; }
   .cell       { height: 7mm; font-size: 11px; font-weight: 700; padding: 0; position: relative; }
   .cell.ok      { color: #1a6aaa; }
   .cell.ng      { color: #cc0000; background: #fff0f0; }
@@ -2860,6 +3105,14 @@ function renderSettingsView() {
 
   renderWorkCalendarSection();
 
+  // トグルの初期状態を反映
+  const tog = document.getElementById('auto-holiday-toggle');
+  const track = document.getElementById('auto-holiday-track');
+  const thumb = document.getElementById('auto-holiday-thumb');
+  if (tog) tog.checked = autoPublicHolidays;
+  if (track) track.style.background = autoPublicHolidays ? '#4a90d9' : '#ccc';
+  if (thumb) thumb.style.transform = autoPublicHolidays ? 'translateX(20px)' : 'translateX(0)';
+
   document.getElementById('settings-facilities-card').innerHTML =
     FACILITIES.map((fac, i) => `<div class="settings-row">
       <div class="settings-row-icon">${ICON_GEAR}</div>
@@ -2946,6 +3199,18 @@ function addSettingsRow(type) {
   </div>`;
   card.appendChild(div.firstElementChild);
   div.firstElementChild?.querySelector('input')?.focus();
+}
+
+// 祝日自動取得トグル
+function toggleAutoPublicHolidays(checked) {
+  autoPublicHolidays = checked;
+  const track = document.getElementById('auto-holiday-track');
+  const thumb = document.getElementById('auto-holiday-thumb');
+  if (track) track.style.background = checked ? '#4a90d9' : '#ccc';
+  if (thumb) thumb.style.transform = checked ? 'translateX(20px)' : 'translateX(0)';
+  renderCalendar();
+  renderWorkCalendarSection();
+  updateCounts();
 }
 
 // ── 勤務カレンダー設定 ──
@@ -3232,6 +3497,15 @@ function openFacilities() {
       </span>
       検査履歴
     </div>`;
+}
+
+function histPrevMonth() {
+  viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+  renderList();
+}
+function histNextMonth() {
+  viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+  renderList();
 }
 
 function renderLinkageList() {
@@ -3636,7 +3910,7 @@ function proceedToApp() {
     goHome();
     renderCalendar();
     if (selectedRole === 'manager') {
-      selectedInspectorFilter = null;
+      // selectedInspectorFilter はlocalStorageから復元済み。リセットしない
       renderInspectorBar();
       updateApprovalNotifDot();
     }
@@ -3950,9 +4224,16 @@ function renderApprovalContent() {
         const approvalKey = k + '_f' + fi;
         const appr = (approvals[approvalKey] || {}).periodic;
 
-        // 点検者タグ・代理タグ
-        const inspectorTag = entry && entry.inspector
-          ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+        // 担当者タグ（紐づけた点検者）・実施者タグ・代理タグ
+        const linkedInspector = (fac.linkedInspectors || [])[0] || '';
+        // 「実施:」タグはfacInspectorsのみ参照（古いentry.inspectorへのフォールバックなし）
+        const actualInspector = (entry && entry.facInspectors && entry.facInspectors['f'+fi]) || '';
+        const inspectorTagFallback = linkedInspector ? '' : (actualInspector || (entry && entry.inspector) || '');
+        const inspectorTag = linkedInspector
+          ? `<span class="approval-inspector-tag">${linkedInspector}</span>`
+          : (inspectorTagFallback ? `<span class="approval-inspector-tag">${inspectorTagFallback}</span>` : '');
+        const executorTag = (linkedInspector && actualInspector && linkedInspector !== actualInspector)
+          ? `<span style="font-size:10px;color:#2a6a2a;background:#e8f8e8;border:1px solid #80c880;border-radius:20px;padding:1px 7px;flex-shrink:0;">実施:${actualInspector}</span>`
           : '';
         const proxyTag = entry && entry.proxyBy
           ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
@@ -3975,7 +4256,7 @@ function renderApprovalContent() {
 
         facHtml += `<div class="approval-fac-item">
           <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-          ${inspectorTag}${proxyTag}
+          ${inspectorTag}${executorTag}${proxyTag}
           <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
           ${actionHtml}
         </div>`;
@@ -4020,8 +4301,15 @@ function renderApprovalContent() {
       const approvalKey = k + '_f' + fi;
       const appr = (approvals[approvalKey] || {}).monthly;
 
-      const inspectorTag = entry && entry.inspector
-        ? `<span class="approval-inspector-tag">${entry.inspector}</span>`
+      const linkedInspector = (fac.linkedInspectors || [])[0] || '';
+      // 「実施:」タグはfacInspectorsのみ参照（古いentry.inspectorへのフォールバックなし）
+      const actualInspector = (entry && entry.facInspectors && entry.facInspectors['f'+fi]) || '';
+      const inspectorTagFallback2 = linkedInspector ? '' : (actualInspector || (entry && entry.inspector) || '');
+      const inspectorTag = linkedInspector
+        ? `<span class="approval-inspector-tag">${linkedInspector}</span>`
+        : (inspectorTagFallback2 ? `<span class="approval-inspector-tag">${inspectorTagFallback2}</span>` : '');
+      const executorTag = (linkedInspector && actualInspector && linkedInspector !== actualInspector)
+        ? `<span style="font-size:10px;color:#2a6a2a;background:#e8f8e8;border:1px solid #80c880;border-radius:20px;padding:1px 7px;flex-shrink:0;">実施:${actualInspector}</span>`
         : '';
       const proxyTag = entry && entry.proxyBy
         ? `<span style="font-size:10px;color:#7a5010;background:#fff8e0;border:1px solid #e0c060;border-radius:20px;padding:1px 7px;flex-shrink:0;">代理:${entry.proxyBy}</span>`
@@ -4044,7 +4332,7 @@ function renderApprovalContent() {
 
       facHtml += `<div class="approval-fac-item">
         <div class="approval-fac-name">${iconHtml}${fac.name}</div>
-        ${inspectorTag}${proxyTag}
+        ${inspectorTag}${executorTag}${proxyTag}
         <span class="approval-insp-status ${statusCls}">${statusLabel}</span>
         ${actionHtml}
       </div>`;
