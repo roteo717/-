@@ -13,7 +13,7 @@
   *::-webkit-scrollbar { display: none; }
   * { scrollbar-width: none; -ms-overflow-style: none; }
   body {
-    background: #f0ece8;
+    background: #f5f6f8; /* [BG統一] body */
     min-height: 100vh;
     font-family: 'Noto Sans JP', sans-serif;
   }
@@ -53,7 +53,7 @@
   /* ── Role Select Screen ── */
   .role-screen {
     position: fixed; inset: 0; z-index: 100;
-    background: #f0ece8;
+    background: #f5f6f8; /* [BG統一] body */
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 32px 24px;
@@ -92,7 +92,7 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     -webkit-tap-highlight-color: transparent;
   }
-  .role-card:hover { background: #faf8f6; }
+  .role-card:hover { background: #eef0f4; /* [BG統一] hover */ }
   .role-card.selected {
     background: #fff8f5;
     border-color: #e06020;
@@ -101,7 +101,7 @@
   .role-card-icon {
     width: 56px; height: 56px;
     border-radius: 16px;
-    background: #f0ece8;
+    background: #f5f6f8; /* [BG統一] body */
     display: flex; align-items: center; justify-content: center;
     color: #5a4030;
     transition: background .2s;
@@ -153,7 +153,7 @@
   /* ── Name Select Screen ── */
   .name-screen {
     position: fixed; inset: 0; z-index: 99;
-    background: #f0ece8;
+    background: #f5f6f8; /* [BG統一] body */
     display: none; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 32px 24px;
@@ -209,7 +209,7 @@
     user-select: none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
-  .name-card:hover { background: #faf8f6; }
+  .name-card:hover { background: #eef0f4; /* [BG統一] hover */ }
   .name-card.selected {
     background: #fff8f5;
     border-color: #e06020;
@@ -217,7 +217,7 @@
   }
   .name-card-avatar {
     width: 40px; height: 40px; border-radius: 50%;
-    background: #f0ece8;
+    background: #f5f6f8; /* [BG統一] body */
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background .2s;
   }
@@ -1156,7 +1156,7 @@
   .settings-save-btn svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .settings-toast {
     position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(12px);
-    background: #f0ece8; color: #fff; font-size: 13px;
+    background: #2a2a2e; color: #fff; /* [BG統一] toast dark */ font-size: 13px;
     padding: 10px 22px; border-radius: 24px; opacity: 0;
     transition: opacity .25s, transform .25s; pointer-events: none;
     white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.2); z-index: 50;
