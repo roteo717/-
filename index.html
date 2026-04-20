@@ -987,9 +987,10 @@
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 10px; font-weight: 600; color: #cc4444;
     background: #fff0f0; border: 1px solid #f8c0c0; border-radius: 20px;
-    padding: 3px 9px; cursor: pointer;
+    padding: 4px 10px; cursor: pointer;
     font-family: 'Noto Sans JP', sans-serif;
     transition: background .15s; flex-shrink: 0;
+    white-space: nowrap;
   }
   .hist-del-all-btn:hover { background: #ffd0d0; }
   .hist-del-all-btn svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; }
@@ -2692,9 +2693,9 @@ function renderList(){
             <span class="hist-fac-ng-badge ${allOk ? 'all-ok' : 'has-ng'}">
               ${allOk ? '✓ 異常なし' : 'NG: ' + ngCount + '件'}
             </span>
-            ${delAllBtnHtml}
           </div>
         </div>
+        ${delAllBtnHtml}
         <div class="hist-fac-status-icon">${statusIconHtml}</div>
         <div class="hist-fac-chevron">
           <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
