@@ -3943,6 +3943,22 @@ function saveSettings() {
   renderList();
   updateCounts();
   persistData();
+
+  // ══════════════════════════════════════════
+  // 【追加】設備マスタを Firestore machines に同期
+  // ══════════════════════════════════════════
+  FACILITIES.forEach(fac => {
+    if (!fac.name || !fac.name.trim()) return; // 名前が空の設備はスキップ
+    const machineId = (fac.facNo && fac.facNo.trim())
+      ? fac.facNo.trim()
+      : fac.name.trim().replace(/\s+/g, '_');
+    if (typeof window.saveMachineToFirestore === 'function') {
+      window.saveMachineToFirestore(machineId, fac.name.trim());
+      console.log('[設備同期] machines へ保存:', machineId, fac.name.trim());
+    } else {
+      console.warn('[設備同期] saveMachineToFirestore 未公開 — Firebaseモジュールの初期化を待ってください');
+    }
+  });
 }
 
 function openSettings() {
@@ -5035,7 +5051,7 @@ function logout() {
      ══════════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp }              from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, doc, setDoc, Timestamp }
+import { getFirestore, doc, setDoc, Timestamp, collection, getDocs }
                                        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ── Firebase 設定 ──────────────────────────────
@@ -5091,6 +5107,22 @@ function resolveItemLabel(sk) {
   }
   return sk; // 解決できない場合はキーをそのまま返す
 }
+
+// ══════════════════════════════════════════════════════════
+// 【追加】設備マスタを machines コレクションに保存
+//   呼び出し元: saveSettings()（通常 script）→ window 経由でアクセス
+// ══════════════════════════════════════════════════════════
+window.saveMachineToFirestore = async function(machineId, machineName) {
+  try {
+    await setDoc(doc(db, "machines", machineId), {
+      name:      machineName,
+      createdAt: new Date()   // Timestamp ではなく Date でも Firestore は受け付ける
+    });
+    console.log('[Firestore] machines 設備マスタ保存成功:', machineId, '→', machineName);
+  } catch (err) {
+    console.error('[Firestore] machines 保存エラー:', err);
+  }
+};
 
 // ── メイン保存関数（window に公開して通常 script から呼び出す）──
 window.saveToFirestore = async function(entryData, year, month, day) {
