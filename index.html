@@ -3127,6 +3127,12 @@ function saveEntry(){
   document.body.style.width = '';
   renderCalendar();
   persistData();
+
+  // ── Firestore 保存 ──
+  if (typeof window.saveToFirestore === 'function') {
+    window.saveToFirestore(entryData, viewYear, viewMonth, selectedDay);
+  }
+
   if (selectedRole === 'manager') updateApprovalNotifDot();
 }
 
@@ -5020,6 +5026,165 @@ function logout() {
     requestAnimationFrame(() => { screen.style.opacity = '1'; });
   }, 280);
 }
+</script>
+
+<!-- ══════════════════════════════════════════════
+     Firebase / Firestore 保存モジュール
+     ① このブロックをそのまま </body> 直前にコピペ
+     ② apiKey を実際のキーに書き換える
+     ══════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }              from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, setDoc, Timestamp }
+                                       from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// ── Firebase 設定 ──────────────────────────────
+const firebaseConfig = {
+  apiKey:            "あなたのキー",          // ← 実際のAPIキーに変更
+  authDomain:        "daily-inspection-f0751.firebaseapp.com",
+  projectId:         "daily-inspection-f0751",
+  storageBucket:     "daily-inspection-f0751.firebasestorage.app",
+  messagingSenderId: "914637653048",
+  appId:             "1:914637653048:web:dfc6ed68c8e10e39a152cd"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── ヘルパー：チェックキー → {設備名, 項目ラベル} を解決 ──────
+// 注: FACILITIES / inspectionItems / periodicInspectionItems / monthlyInspectionItems は
+//     グローバルスコープで定義されているため window 経由で参照可能
+function resolveItemLabel(sk) {
+  // sk 例: "f0_1" / "periodic_f2_0" / "monthly_f1_2"
+  const periodicMatch = sk.match(/^periodic_f(\d+)_(\d+)$/);
+  const monthlyMatch  = sk.match(/^monthly_f(\d+)_(\d+)$/);
+  const dailyMatch    = sk.match(/^f(\d+)_(\d+)$/);
+
+  if (periodicMatch) {
+    const fi   = parseInt(periodicMatch[1]);
+    const ii   = parseInt(periodicMatch[2]);
+    const fac  = (window.FACILITIES || [])[fi];
+    const item = (window.periodicInspectionItems || [])[ii];
+    const facLabel = fac ? fac.name : `設備${fi}`;
+    return item ? `[定期] ${facLabel} / ${item.label}` : sk;
+  }
+  if (monthlyMatch) {
+    const fi   = parseInt(monthlyMatch[1]);
+    const ii   = parseInt(monthlyMatch[2]);
+    const fac  = (window.FACILITIES || [])[fi];
+    const item = (window.monthlyInspectionItems || [])[ii];
+    const facLabel = fac ? fac.name : `設備${fi}`;
+    return item ? `[1ヶ月] ${facLabel} / ${item.label}` : sk;
+  }
+  if (dailyMatch) {
+    const fi   = parseInt(dailyMatch[1]);
+    const ii   = parseInt(dailyMatch[2]);
+    const fac  = (window.FACILITIES || [])[fi];
+    const allItems = window.inspectionItems || [];
+    // fac.linkedKeys の順番で紐づいた inspectionItems を取得
+    const linkedItems = fac
+      ? allItems.filter(it => (fac.linkedKeys || []).includes(it.key))
+      : [];
+    const item     = linkedItems[ii];
+    const facLabel = fac ? fac.name : `設備${fi}`;
+    return item ? `${facLabel} / ${item.label}` : sk;
+  }
+  return sk; // 解決できない場合はキーをそのまま返す
+}
+
+// ── メイン保存関数（window に公開して通常 script から呼び出す）──
+window.saveToFirestore = async function(entryData, year, month, day) {
+  try {
+    // 日付文字列を生成
+    const mm    = String(month + 1).padStart(2, '0');
+    const dd    = String(day).padStart(2, '0');
+    const yyyymm   = `${year}-${mm}`;
+    const yyyymmdd = `${year}-${mm}-${dd}`;
+
+    // checks → {項目ラベル: "ok"|"ng"} に変換
+    const checks   = entryData.checks || {};
+    const itemsMap = {};
+    Object.entries(checks).forEach(([sk, val]) => {
+      if (val === 'ok' || val === 'ng') {
+        const label   = resolveItemLabel(sk);
+        itemsMap[label] = val;
+      }
+    });
+
+    // Firestore ドキュメントデータ
+    const payload = {
+      inspector: entryData.inspector  || '',
+      status:    entryData.status     || 'ok',   // "ok" | "ng"
+      items:     itemsMap,
+      updatedAt: Timestamp.now(),
+    };
+    // 代理入力の場合は proxyBy も記録
+    if (entryData.proxyBy) payload.proxyBy = entryData.proxyBy;
+
+    // 設備ごとに machineId を分けて保存
+    const facilities = window.FACILITIES || [];
+    const savedPaths = [];
+
+    for (let fi = 0; fi < facilities.length; fi++) {
+      const fac = facilities[fi];
+      if (!fac.name || !fac.name.trim()) continue;
+
+      // この設備に対応するチェックキーが今回の checks に含まれているか確認
+      const hasFacChecks = Object.keys(checks).some(sk =>
+        sk.startsWith(`f${fi}_`) ||
+        sk.startsWith(`periodic_f${fi}_`) ||
+        sk.startsWith(`monthly_f${fi}_`)
+      );
+      if (!hasFacChecks) continue;
+
+      // machineId: facNo があれば優先、なければ設備名をスラッグ化
+      const machineId = (fac.facNo && fac.facNo.trim())
+        ? fac.facNo.trim()
+        : fac.name.trim().replace(/\s+/g, '_');
+
+      // この設備に属する items のみ抽出
+      const facItems = {};
+      Object.entries(checks).forEach(([sk, val]) => {
+        if (
+          sk.startsWith(`f${fi}_`) ||
+          sk.startsWith(`periodic_f${fi}_`) ||
+          sk.startsWith(`monthly_f${fi}_`)
+        ) {
+          if (val === 'ok' || val === 'ng') {
+            facItems[resolveItemLabel(sk)] = val;
+          }
+        }
+      });
+
+      const allFacOk = Object.values(facItems).every(v => v === 'ok');
+      const facPayload = {
+        inspector: entryData.facInspectors?.['f' + fi] || entryData.inspector || '',
+        status:    allFacOk ? 'ok' : 'ng',
+        items:     facItems,
+        updatedAt: Timestamp.now(),
+      };
+      if (entryData.proxyBy) facPayload.proxyBy = entryData.proxyBy;
+
+      // パス: inspections/{machineId}/{YYYY-MM}/{YYYY-MM-DD}
+      const ref = doc(db, 'inspections', machineId, yyyymm, yyyymmdd);
+      await setDoc(ref, facPayload, { merge: true });
+
+      const path = `inspections/${machineId}/${yyyymm}/${yyyymmdd}`;
+      savedPaths.push(path);
+      console.log('[Firestore] 保存成功:', path, facPayload);
+    }
+
+    if (savedPaths.length === 0) {
+      // 設備が特定できない場合は一括で "all" として保存
+      const ref = doc(db, 'inspections', 'all', yyyymm, yyyymmdd);
+      await setDoc(ref, payload, { merge: true });
+      console.log('[Firestore] 保存成功 (all):', `inspections/all/${yyyymm}/${yyyymmdd}`, payload);
+    }
+
+  } catch (err) {
+    console.error('[Firestore] 保存エラー:', err);
+  }
+};
 </script>
 </body>
 </html>
