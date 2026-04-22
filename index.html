@@ -3186,6 +3186,20 @@ const ICON_GEAR  = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><pat
 const DEL_BTN = `<button class="settings-row-del" onclick="this.closest('.settings-row').remove(); saveSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
 const ADD_BTN_HTML = (fn) => `<button class="settings-add-btn" onclick="${fn}()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する</button>`;
 
+// ══════════════════════════════════════════════════════════
+// 【重要】Firestore モジュール（type="module"）から参照できるよう
+//   const/let 変数を window に明示的に公開する。
+//   ※ saveSettings 内で periodicInspectionItems 等が再代入されるため、
+//      _syncWindowGlobals() を saveSettings の末尾でも呼び出す。
+// ══════════════════════════════════════════════════════════
+function _syncWindowGlobals() {
+  window.FACILITIES              = FACILITIES;
+  window.inspectionItems         = inspectionItems;
+  window.periodicInspectionItems = periodicInspectionItems;
+  window.monthlyInspectionItems  = monthlyInspectionItems;
+}
+_syncWindowGlobals(); // 初回公開
+
 // ── LocalStorage Persistence ──
 const STORAGE_KEY = 'facInsp_v3';
 
@@ -3959,6 +3973,8 @@ function saveSettings() {
       console.warn('[設備同期] saveMachineToFirestore 未公開 — Firebaseモジュールの初期化を待ってください');
     }
   });
+  // window グローバルを再同期（periodicInspectionItems 等が再代入されるため）
+  _syncWindowGlobals();
 }
 
 function openSettings() {
@@ -5056,12 +5072,13 @@ import { getFirestore, doc, setDoc, Timestamp, collection, getDocs }
 
 // ── Firebase 設定 ──────────────────────────────
 const firebaseConfig = {
-  apiKey:            "あなたのキー",          // ← 実際のAPIキーに変更
+  apiKey:            "AIzaSyA6fxlaWUULIMT3bC-Ahul-izBUHziY6FI",
   authDomain:        "daily-inspection-f0751.firebaseapp.com",
   projectId:         "daily-inspection-f0751",
   storageBucket:     "daily-inspection-f0751.firebasestorage.app",
   messagingSenderId: "914637653048",
-  appId:             "1:914637653048:web:dfc6ed68c8e10e39a152cd"
+  appId:             "1:914637653048:web:dfc6ed68c8e10e39a152cd",
+  measurementId:     "G-9G7Q9Y2J1Q"
 };
 
 const app = initializeApp(firebaseConfig);
