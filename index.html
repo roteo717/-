@@ -3186,20 +3186,6 @@ const ICON_GEAR  = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><pat
 const DEL_BTN = `<button class="settings-row-del" onclick="this.closest('.settings-row').remove(); saveSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
 const ADD_BTN_HTML = (fn) => `<button class="settings-add-btn" onclick="${fn}()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>追加する</button>`;
 
-// ══════════════════════════════════════════════════════════
-// 【重要】Firestore モジュール（type="module"）から参照できるよう
-//   const/let 変数を window に明示的に公開する。
-//   ※ saveSettings 内で periodicInspectionItems 等が再代入されるため、
-//      _syncWindowGlobals() を saveSettings の末尾でも呼び出す。
-// ══════════════════════════════════════════════════════════
-function _syncWindowGlobals() {
-  window.FACILITIES              = FACILITIES;
-  window.inspectionItems         = inspectionItems;
-  window.periodicInspectionItems = periodicInspectionItems;
-  window.monthlyInspectionItems  = monthlyInspectionItems;
-}
-_syncWindowGlobals(); // 初回公開
-
 // ── LocalStorage Persistence ──
 const STORAGE_KEY = 'facInsp_v3';
 
@@ -3973,8 +3959,6 @@ function saveSettings() {
       console.warn('[設備同期] saveMachineToFirestore 未公開 — Firebaseモジュールの初期化を待ってください');
     }
   });
-  // window グローバルを再同期（periodicInspectionItems 等が再代入されるため）
-  _syncWindowGlobals();
 }
 
 function openSettings() {
@@ -5072,13 +5056,12 @@ import { getFirestore, doc, setDoc, Timestamp, collection, getDocs }
 
 // ── Firebase 設定 ──────────────────────────────
 const firebaseConfig = {
-  apiKey:            "AIzaSyA6fxlaWUULIMT3bC-Ahul-izBUHziY6FI",
+  apiKey:            "あなたのキー",          // ← 実際のAPIキーに変更
   authDomain:        "daily-inspection-f0751.firebaseapp.com",
   projectId:         "daily-inspection-f0751",
   storageBucket:     "daily-inspection-f0751.firebasestorage.app",
   messagingSenderId: "914637653048",
-  appId:             "1:914637653048:web:dfc6ed68c8e10e39a152cd",
-  measurementId:     "G-9G7Q9Y2J1Q"
+  appId:             "1:914637653048:web:dfc6ed68c8e10e39a152cd"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -5150,13 +5133,12 @@ window.saveToFirestore = async function(entryData, year, month, day) {
     const yyyymm   = `${year}-${mm}`;
     const yyyymmdd = `${year}-${mm}-${dd}`;
 
-    // checks → {項目ラベル: "ok"|"ng"} に変換
+    // checks → {要素ID: "ok"|"ng"} に変換（キーはそのまま sk を使用）
     const checks   = entryData.checks || {};
     const itemsMap = {};
     Object.entries(checks).forEach(([sk, val]) => {
       if (val === 'ok' || val === 'ng') {
-        const label   = resolveItemLabel(sk);
-        itemsMap[label] = val;
+        itemsMap[sk] = val;  // ラベル変換せず元の要素IDをキーとして保存
       }
     });
 
@@ -5164,7 +5146,7 @@ window.saveToFirestore = async function(entryData, year, month, day) {
     const payload = {
       inspector: entryData.inspector  || '',
       status:    entryData.status     || 'ok',   // "ok" | "ng"
-      items:     itemsMap,
+      checks:    itemsMap,                        // フィールド名を checks に統一
       updatedAt: Timestamp.now(),
     };
     // 代理入力の場合は proxyBy も記録
@@ -5191,7 +5173,7 @@ window.saveToFirestore = async function(entryData, year, month, day) {
         ? fac.facNo.trim()
         : fac.name.trim().replace(/\s+/g, '_');
 
-      // この設備に属する items のみ抽出
+      // この設備に属する checks のみ抽出（キーはそのまま sk を使用）
       const facItems = {};
       Object.entries(checks).forEach(([sk, val]) => {
         if (
@@ -5200,7 +5182,7 @@ window.saveToFirestore = async function(entryData, year, month, day) {
           sk.startsWith(`monthly_f${fi}_`)
         ) {
           if (val === 'ok' || val === 'ng') {
-            facItems[resolveItemLabel(sk)] = val;
+            facItems[sk] = val;  // 要素IDをそのままキーとして保存
           }
         }
       });
@@ -5209,7 +5191,7 @@ window.saveToFirestore = async function(entryData, year, month, day) {
       const facPayload = {
         inspector: entryData.facInspectors?.['f' + fi] || entryData.inspector || '',
         status:    allFacOk ? 'ok' : 'ng',
-        items:     facItems,
+        checks:    facItems,                        // フィールド名を checks に統一
         updatedAt: Timestamp.now(),
       };
       if (entryData.proxyBy) facPayload.proxyBy = entryData.proxyBy;
