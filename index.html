@@ -5067,47 +5067,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ── ヘルパー：チェックキー → {設備名, 項目ラベル} を解決 ──────
-// 注: FACILITIES / inspectionItems / periodicInspectionItems / monthlyInspectionItems は
-//     グローバルスコープで定義されているため window 経由で参照可能
-function resolveItemLabel(sk) {
-  // sk 例: "f0_1" / "periodic_f2_0" / "monthly_f1_2"
-  const periodicMatch = sk.match(/^periodic_f(\d+)_(\d+)$/);
-  const monthlyMatch  = sk.match(/^monthly_f(\d+)_(\d+)$/);
-  const dailyMatch    = sk.match(/^f(\d+)_(\d+)$/);
-
-  if (periodicMatch) {
-    const fi   = parseInt(periodicMatch[1]);
-    const ii   = parseInt(periodicMatch[2]);
-    const fac  = (window.FACILITIES || [])[fi];
-    const item = (window.periodicInspectionItems || [])[ii];
-    const facLabel = fac ? fac.name : `設備${fi}`;
-    return item ? `[定期] ${facLabel} / ${item.label}` : sk;
-  }
-  if (monthlyMatch) {
-    const fi   = parseInt(monthlyMatch[1]);
-    const ii   = parseInt(monthlyMatch[2]);
-    const fac  = (window.FACILITIES || [])[fi];
-    const item = (window.monthlyInspectionItems || [])[ii];
-    const facLabel = fac ? fac.name : `設備${fi}`;
-    return item ? `[1ヶ月] ${facLabel} / ${item.label}` : sk;
-  }
-  if (dailyMatch) {
-    const fi   = parseInt(dailyMatch[1]);
-    const ii   = parseInt(dailyMatch[2]);
-    const fac  = (window.FACILITIES || [])[fi];
-    const allItems = window.inspectionItems || [];
-    // fac.linkedKeys の順番で紐づいた inspectionItems を取得
-    const linkedItems = fac
-      ? allItems.filter(it => (fac.linkedKeys || []).includes(it.key))
-      : [];
-    const item     = linkedItems[ii];
-    const facLabel = fac ? fac.name : `設備${fi}`;
-    return item ? `${facLabel} / ${item.label}` : sk;
-  }
-  return sk; // 解決できない場合はキーをそのまま返す
-}
-
 // ══════════════════════════════════════════════════════════
 // 【追加】設備マスタを machines コレクションに保存
 //   呼び出し元: saveSettings()（通常 script）→ window 経由でアクセス
